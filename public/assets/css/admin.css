@@ -105,4 +105,103 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
-.admin-main { flex: 1; padding: 40px; }
+.admin-main { flex: 1; padding: 40px; max-width: 1100px; }
+.admin-main__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.admin-main__header h1 { margin: 0; font-size: 24px; }
+
+.alert--success { background: #e6f4ea; color: #1e7e34; }
+
+.page-toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; gap: 10px; }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+    background: #fff;
+    color: var(--admin-text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn:hover { background: #f4f5f7; }
+.btn--primary { background: var(--admin-accent); border-color: var(--admin-accent); color: #fff; }
+.btn--primary:hover { background: #364fc7; }
+.btn--danger { background: #fff; border-color: var(--admin-danger); color: var(--admin-danger); }
+.btn--danger:hover { background: #fdecea; }
+.btn--small { padding: 5px 10px; font-size: 13px; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 10px; }
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--admin-text);
+}
+.stat-card:hover { border-color: var(--admin-accent); }
+.stat-card--highlight { border-color: var(--admin-danger); }
+.stat-card__value { font-size: 28px; font-weight: 700; }
+.stat-card__label { font-size: 13px; color: #666; }
+
+.data-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 14px; }
+.data-table th { background: #f4f5f7; font-weight: 600; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table__actions { display: flex; gap: 8px; justify-content: flex-end; }
+.data-table__empty { padding: 30px; text-align: center; color: #888; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge--published { background: #e6f4ea; color: #1e7e34; }
+.badge--draft { background: #f1f1f1; color: #666; }
+
+.form-card { background: #fff; border: 1px solid var(--admin-border); border-radius: 12px; padding: 30px; max-width: 720px; }
+.form-grid { display: flex; flex-direction: column; gap: 16px; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: 13px; font-weight: 600; }
+.form-field input, .form-field select, .form-field textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+}
+.form-field textarea { resize: vertical; min-height: 90px; }
+.form-field--checkbox { flex-direction: row; align-items: center; gap: 8px; }
+.form-field--checkbox input { width: auto; }
+.form-hint { font-size: 12px; color: #888; }
+.form-actions { display: flex; gap: 10px; margin-top: 10px; }
+
+.repeater-row {
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+.repeater-row__remove { align-self: flex-end; }
+.repeater-actions { margin-bottom: 20px; }
+
+.block-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+}
+.block-list-item__meta { display: flex; flex-direction: column; gap: 2px; }
+.block-list-item__type { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: .04em; }
+.block-list-item__actions { display: flex; gap: 6px; align-items: center; }

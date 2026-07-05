@@ -1,40 +1,43 @@
 <?php
 
-use App\Core\Csrf;
+$pageTitle = 'Дашборд';
+$activeNav = 'dashboard';
+require __DIR__ . '/layout/header.php';
 
-/** @var array|null $user */
+/** @var array $user */
+/** @var array $counts */
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Панель управления</title>
-<link rel="stylesheet" href="/assets/css/admin.css">
-</head>
-<body>
-<div class="admin-shell">
-    <aside class="admin-sidebar">
-        <div class="admin-sidebar__brand">ArtStudio CMS</div>
-        <nav>
-            <a href="/admin" class="is-active">Дашборд</a>
-            <a href="/admin/news">Новости</a>
-            <a href="/admin/pages">Страницы</a>
-            <a href="/admin/projects">Проекты</a>
-            <a href="/admin/team">Команда</a>
-            <a href="/admin/forms">Формы</a>
-            <a href="/admin/files">Файлы</a>
-            <a href="/admin/settings">Настройки</a>
-        </nav>
-        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
-            <?= Csrf::field() ?>
-            <button type="submit">Выйти</button>
-        </form>
-    </aside>
-    <main class="admin-main">
-        <h1>Добро пожаловать, <?= htmlspecialchars($user['username'] ?? '', ENT_QUOTES) ?></h1>
-        <p>Разделы CRUD (Новости, Страницы, Проекты, Команда, Формы, Файлы, Настройки) добавляются на следующем этапе.</p>
-    </main>
+<p>Добро пожаловать, <strong><?= htmlspecialchars($user['username'] ?? '', ENT_QUOTES) ?></strong>.</p>
+
+<div class="stat-grid">
+    <a href="/admin/news" class="stat-card">
+        <span class="stat-card__value"><?= (int) $counts['news'] ?></span>
+        <span class="stat-card__label">Новостей</span>
+    </a>
+    <a href="/admin/pages" class="stat-card">
+        <span class="stat-card__value"><?= (int) $counts['pages'] ?></span>
+        <span class="stat-card__label">Страниц</span>
+    </a>
+    <a href="/admin/projects" class="stat-card">
+        <span class="stat-card__value"><?= (int) $counts['projects'] ?></span>
+        <span class="stat-card__label">Проектов</span>
+    </a>
+    <a href="/admin/team" class="stat-card">
+        <span class="stat-card__value"><?= (int) $counts['team'] ?></span>
+        <span class="stat-card__label">Сотрудников</span>
+    </a>
+    <a href="/admin/forms" class="stat-card">
+        <span class="stat-card__value"><?= (int) $counts['forms'] ?></span>
+        <span class="stat-card__label">Форм</span>
+    </a>
+    <a href="/admin/forms" class="stat-card<?= $counts['submissions_unread'] > 0 ? ' stat-card--highlight' : '' ?>">
+        <span class="stat-card__value"><?= (int) $counts['submissions_unread'] ?></span>
+        <span class="stat-card__label">Непрочитанных заявок</span>
+    </a>
+    <a href="/admin/files" class="stat-card">
+        <span class="stat-card__value"><?= (int) $counts['files'] ?></span>
+        <span class="stat-card__label">Файлов</span>
+    </a>
 </div>
-</body>
-</html>
+
+<?php require __DIR__ . '/layout/footer.php'; ?>
