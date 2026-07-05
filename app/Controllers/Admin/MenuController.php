@@ -16,7 +16,7 @@ final class MenuController
 {
     public function index(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         View::render('admin/menu/index', [
             'items' => MenuItem::all(),
             'pages' => Page::all(),
@@ -26,7 +26,7 @@ final class MenuController
 
     public function store(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         [$data, $error] = $this->collectInput();
@@ -44,7 +44,7 @@ final class MenuController
 
     public function update(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $item = MenuItem::findById((int) $params['id']);
@@ -69,7 +69,7 @@ final class MenuController
 
     public function destroy(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         MenuItem::delete((int) $params['id']);
@@ -80,7 +80,7 @@ final class MenuController
 
     public function move(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $direction = ($_POST['direction'] ?? '') === 'up' ? 'up' : 'down';

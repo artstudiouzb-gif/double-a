@@ -20,13 +20,13 @@ final class SettingsController
 
     public function index(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         View::render('admin/settings/index', ['settings' => Setting::all()]);
     }
 
     public function update(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         foreach (self::TEXT_KEYS as $key) {

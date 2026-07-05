@@ -195,6 +195,31 @@ final class Auth
         }
     }
 
+    public static function role(): string
+    {
+        return (string) ($_SESSION['role'] ?? 'editor');
+    }
+
+    /**
+     * Супер-администратор имеет полный доступ. Роль 'editor' ограничена
+     * только управлением контентом. Исторически роль называлась 'admin' —
+     * она эквивалентна super_admin.
+     */
+    public static function isSuperAdmin(): bool
+    {
+        return in_array(self::role(), ['super_admin', 'admin'], true);
+    }
+
+    public static function requireSuperAdmin(): void
+    {
+        self::requireLogin();
+        if (!self::isSuperAdmin()) {
+            http_response_code(403);
+            \App\Core\View::render('errors/403');
+            exit;
+        }
+    }
+
     public static function logout(): void
     {
         $_SESSION = [];

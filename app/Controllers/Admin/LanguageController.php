@@ -14,13 +14,13 @@ final class LanguageController
 {
     public function index(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         View::render('admin/languages/index', ['items' => Language::all()]);
     }
 
     public function store(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         [$data, $error] = $this->collectInput(null);
@@ -38,7 +38,7 @@ final class LanguageController
 
     public function update(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $id = (int) $params['id'];
@@ -64,7 +64,7 @@ final class LanguageController
 
     public function destroy(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $id = (int) $params['id'];

@@ -13,7 +13,7 @@ final class BackupController
 {
     public function create(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         try {

@@ -9,6 +9,27 @@ use App\Models\FormDef;
 final class BlockRenderer
 {
     /**
+     * Дефолтная структура данных для каждого типа блока. Служит источником
+     * истины и для конструктора (BlockController), и для рендера: сохранённые
+     * JSON сливаются с этими дефолтами, поэтому изменение набора полей блока в
+     * будущем не приводит к обращению к несуществующим ключам (задача 27).
+     */
+    public const DEFAULTS = [
+        'text' => ['title' => '', 'content' => ''],
+        'html' => ['html' => ''],
+        'cta' => ['title' => '', 'text' => '', 'button_text' => '', 'button_url' => ''],
+        'advantages' => ['title' => '', 'items' => []],
+        'slider' => ['slides' => []],
+        'gallery' => ['title' => '', 'images' => []],
+        'form' => ['form_id' => null],
+    ];
+
+    public static function defaultsFor(string $type): array
+    {
+        return self::DEFAULTS[$type] ?? [];
+    }
+
+    /**
      * @param array<string, mixed> $block
      * @return array{html: string, css: string}
      */
@@ -21,6 +42,9 @@ final class BlockRenderer
             $data = [];
         }
 
+        // Смердживание с дефолтами по типу блока — устойчивость к старым/
+        // неполным JSON-данным.
+        $data = array_merge(self::defaultsFor($type), $data);
         $data = self::enrichData($type, $data);
 
         $templateFile = dirname(__DIR__, 2) . '/templates/blocks/' . $type . '.php';

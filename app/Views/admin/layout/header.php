@@ -1,11 +1,15 @@
 <?php
 
+use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Flash;
 
 /** @var string $pageTitle */
 /** @var string $activeNav */
 
+$isSuper = Auth::isSuperAdmin();
+
+// Разделы, доступные редактору (управление контентом).
 $navItems = [
     'dashboard' => ['/admin', 'Дашборд'],
     'news' => ['/admin/news', 'Новости'],
@@ -14,13 +18,20 @@ $navItems = [
     'team' => ['/admin/team', 'Команда'],
     'forms' => ['/admin/forms', 'Формы'],
     'files' => ['/admin/files', 'Файлы'],
-    'menu' => ['/admin/menu', 'Меню'],
-    'widgets' => ['/admin/widgets', 'Виджеты'],
-    'header' => ['/admin/header', 'Шапка сайта'],
-    'languages' => ['/admin/languages', 'Языки'],
     'trash' => ['/admin/trash', 'Корзина'],
-    'settings' => ['/admin/settings', 'Настройки'],
 ];
+
+// Системные разделы — только для супер-администратора.
+if ($isSuper) {
+    $navItems += [
+        'menu' => ['/admin/menu', 'Меню'],
+        'widgets' => ['/admin/widgets', 'Виджеты'],
+        'header' => ['/admin/header', 'Шапка сайта'],
+        'languages' => ['/admin/languages', 'Языки'],
+        'users' => ['/admin/users', 'Пользователи'],
+        'settings' => ['/admin/settings', 'Настройки'],
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">

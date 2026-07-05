@@ -63,11 +63,21 @@ final class TrashController
             return;
         }
 
-        match ($type) {
-            'pages' => Page::forceDelete($id),
-            'news' => News::forceDelete($id),
-            'projects' => Project::forceDelete($id),
-        };
+        // Собираем привязанные медиа ДО удаления, удаляем сущность, затем
+        // чистим файлы-сироты (не используемые больше нигде).
+        $media = [];
+        if ($type === 'pages') {
+            $media = \App\Core\MediaCleaner::collectForPage($id);
+            Page::forceDelete($id);
+        } elseif ($type === 'news') {
+            $news = News::findById($id);
+            $media = $news ? \App\Core\MediaCleaner::collectForNews($news) : [];
+            News::forceDelete($id);
+        } else {
+            Project::forceDelete($id);
+        }
+
+        \App\Core\MediaCleaner::purgeUnreferenced($media);
 
         Flash::success('Элемент удалён навсегда.');
         header('Location: /admin/trash');

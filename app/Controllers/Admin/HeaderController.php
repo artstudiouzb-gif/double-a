@@ -14,13 +14,13 @@ final class HeaderController
 {
     public function index(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         View::render('admin/header/index', ['config' => HeaderConfig::get()]);
     }
 
     public function update(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $social = [];

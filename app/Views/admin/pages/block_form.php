@@ -200,6 +200,7 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             </div>
         <?php endif; ?>
 
+        <?php if (\App\Core\Auth::isSuperAdmin()): ?>
         <div class="form-field">
             <label for="custom_css">Собственный CSS блока</label>
             <textarea id="custom_css" name="custom_css" style="min-height:140px; font-family: monospace;"><?= htmlspecialchars($block['custom_css'] ?? '', ENT_QUOTES) ?></textarea>
@@ -209,6 +210,10 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 Пример: <code>h2 { color: red; }</code> → <code>#block-<?= (int) $block['id'] ?> h2 { color: red; }</code>.
             </span>
         </div>
+        <?php else: ?>
+            <?php /* Редактор не может менять кастомный CSS — сохраняем прежнее значение. */ ?>
+            <input type="hidden" name="custom_css" value="<?= htmlspecialchars($block['custom_css'] ?? '', ENT_QUOTES) ?>">
+        <?php endif; ?>
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Сохранить блок</button>

@@ -8,6 +8,32 @@ use App\Core\Database;
 
 final class User
 {
+    public static function all(): array
+    {
+        $stmt = Database::pdo()->query('SELECT id, username, email, role, totp_enabled, last_login_at, created_at FROM users ORDER BY id ASC');
+
+        return $stmt->fetchAll();
+    }
+
+    public static function count(): int
+    {
+        return (int) Database::pdo()->query('SELECT COUNT(*) FROM users')->fetchColumn();
+    }
+
+    public static function delete(int $id): void
+    {
+        $stmt = Database::pdo()->prepare('DELETE FROM users WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+    }
+
+    public static function emailExists(string $email): bool
+    {
+        $stmt = Database::pdo()->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
+        $stmt->execute([':email' => $email]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public static function findByUsername(string $username): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE username = :username LIMIT 1');

@@ -15,7 +15,7 @@ final class WidgetController
 {
     public function index(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         View::render('admin/widgets/index', [
             'left' => Widget::forSidebar('left'),
             'right' => Widget::forSidebar('right'),
@@ -25,7 +25,7 @@ final class WidgetController
 
     public function create(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         View::render('admin/widgets/form', [
             'widget' => null,
             'data' => [],
@@ -36,7 +36,7 @@ final class WidgetController
 
     public function store(): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         [$data, $error] = $this->collectInput();
@@ -58,7 +58,7 @@ final class WidgetController
 
     public function edit(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
 
         $widget = Widget::findById((int) $params['id']);
         if (!$widget) {
@@ -77,7 +77,7 @@ final class WidgetController
 
     public function update(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $widget = Widget::findById((int) $params['id']);
@@ -106,7 +106,7 @@ final class WidgetController
 
     public function destroy(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         Widget::delete((int) $params['id']);
@@ -117,7 +117,7 @@ final class WidgetController
 
     public function move(array $params): void
     {
-        Auth::requireLogin();
+        Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
         $direction = ($_POST['direction'] ?? '') === 'up' ? 'up' : 'down';

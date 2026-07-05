@@ -8,6 +8,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\View;
+use App\Core\TextProcessor;
 use App\Models\Block;
 use App\Models\FormDef;
 use App\Models\Language;
@@ -16,16 +17,6 @@ use App\Models\Page;
 final class BlockController
 {
     private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form'];
-
-    private const DEFAULTS = [
-        'text' => ['title' => '', 'content' => ''],
-        'html' => ['html' => ''],
-        'cta' => ['title' => '', 'text' => '', 'button_text' => '', 'button_url' => ''],
-        'advantages' => ['title' => '', 'items' => []],
-        'slider' => ['slides' => []],
-        'gallery' => ['title' => '', 'images' => []],
-        'form' => ['form_id' => null],
-    ];
 
     public function store(array $params): void
     {
@@ -53,7 +44,7 @@ final class BlockController
         }
 
         $title = trim((string) ($_POST['title'] ?? ''));
-        $blockId = Block::create($pageId, $lang, $type, $title !== '' ? $title : null, self::DEFAULTS[$type], '');
+        $blockId = Block::create($pageId, $lang, $type, $title !== '' ? $title : null, \App\Core\BlockRenderer::defaultsFor($type), '');
         \App\Core\Cache::forgetPrefix('page:' . $pageId);
 
         Flash::success('Блок добавлен. Заполните его содержимое.');
@@ -94,8 +85,13 @@ final class BlockController
         }
 
         $title = trim((string) ($_POST['title'] ?? ''));
-        $customCss = (string) ($_POST['custom_css'] ?? '');
-        $data = $this->collectData($block['type']);
+        // Кастомный CSS может менять только супер-администратор; для редактора
+        // сохраняем прежнее значение независимо от присланных данных.
+        $customCss = Auth::isSuperAdmin()
+            ? (string) ($_POST['custom_css'] ?? '')
+            : (string) ($block['custom_css'] ?? '');
+        $locale = ((string) $block['lang'] === 'en') ? 'en' : 'ru';
+        $data = $this->collectData($block['type'], $locale);
 
         Block::update((int) $block['id'], $title !== '' ? $title : null, $data, $customCss);
         \App\Core\Cache::forgetPrefix('page:' . (int) $block['page_id']);
@@ -154,20 +150,21 @@ final class BlockController
         return '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . urlencode((string) $block['lang']);
     }
 
-    private function collectData(string $type): array
+    private function collectData(string $type, string $locale = 'ru'): array
     {
         switch ($type) {
             case 'text':
                 return [
-                    'title' => trim((string) ($_POST['title_field'] ?? '')),
-                    'content' => (string) ($_POST['content'] ?? ''),
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'content' => TextProcessor::process((string) ($_POST['content'] ?? ''), $locale),
                 ];
             case 'html':
+                // Произвольный HTML/код не типографим.
                 return ['html' => (string) ($_POST['html'] ?? '')];
             case 'cta':
                 return [
-                    'title' => trim((string) ($_POST['title_field'] ?? '')),
-                    'text' => trim((string) ($_POST['text'] ?? '')),
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'text' => TextProcessor::typographPlain(trim((string) ($_POST['text'] ?? '')), $locale),
                     'button_text' => trim((string) ($_POST['button_text'] ?? '')),
                     'button_url' => trim((string) ($_POST['button_url'] ?? '')),
                 ];
@@ -181,12 +178,12 @@ final class BlockController
                     }
                     $items[] = [
                         'icon' => trim((string) ($item['icon'] ?? '')),
-                        'title' => $itemTitle,
-                        'text' => $itemText,
+                        'title' => TextProcessor::typographPlain($itemTitle, $locale),
+                        'text' => TextProcessor::typographPlain($itemText, $locale),
                     ];
                 }
                 return [
-                    'title' => trim((string) ($_POST['title_field'] ?? '')),
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
                     'items' => $items,
                 ];
             case 'slider':
