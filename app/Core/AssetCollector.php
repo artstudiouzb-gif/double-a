@@ -21,6 +21,7 @@ final class AssetCollector
     private const JS_MAP = [
         'slider' => '/assets/js/blocks/slider.js',
         'gallery' => '/assets/js/blocks/gallery.js',
+        'news' => '/assets/js/news.js',
     ];
 
     public static function requireJs(string $key): void

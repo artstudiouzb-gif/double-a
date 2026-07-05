@@ -7,6 +7,7 @@ namespace App\Controllers\Site;
 use App\Core\Locale;
 use App\Core\View;
 use App\Models\News;
+use App\Models\NewsImage;
 
 final class NewsController
 {
@@ -28,6 +29,9 @@ final class NewsController
             return;
         }
 
-        View::render('site/news_show', ['news' => $news]);
+        View::render('site/news_show', [
+            'news' => $news,
+            'gallery' => NewsImage::forNews((int) $news['id']),
+        ]);
     }
 }

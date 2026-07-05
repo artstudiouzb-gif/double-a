@@ -1,22 +1,31 @@
 <?php
 
+use App\Core\AssetCollector;
 use App\Core\Locale;
+use App\Models\News;
 
 /** @var array $news */
+/** @var array $gallery */
+$gallery = $gallery ?? [];
 
 $metaTitle = $news['meta_title'] ?: $news['title'];
 $metaDescription = $news['meta_description'] ?: ($news['excerpt'] ?? '');
 $ogType = 'article';
-$ogImage = $news['image'] ?? '';
+// og:image — по централизованному приоритету обложки.
+$ogImage = News::getCoverImage($news) ?? '';
+
+// Слайдер/видео новостей используют один общий скрипт — подключаем один раз.
+AssetCollector::requireJs('news');
+
 require __DIR__ . '/_header.php';
+
+// Динамический выбор шаблона по типу отображения (задача 67).
+$layout = News::normalizeLayout($news['layout_type'] ?? 'standard');
+$typeTemplate = __DIR__ . '/news/_type_' . $layout . '.php';
+if (!is_file($typeTemplate)) {
+    $typeTemplate = __DIR__ . '/news/_type_standard.php';
+}
+require $typeTemplate;
 ?>
-<article class="news-single">
-    <h1><?= htmlspecialchars($news['title'], ENT_QUOTES) ?></h1>
-    <time><?= htmlspecialchars(substr((string) $news['published_at'], 0, 10), ENT_QUOTES) ?></time>
-    <?php if (!empty($news['image'])): ?>
-        <img src="<?= htmlspecialchars($news['image'], ENT_QUOTES) ?>" alt="<?= htmlspecialchars($news['title'], ENT_QUOTES) ?>">
-    <?php endif; ?>
-    <div class="news-single__content"><?= $news['content'] ?></div>
-</article>
-<p><a href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>">&larr; Все новости</a></p>
+<p class="news-single__back"><a href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>">&larr; Все новости</a></p>
 <?php require __DIR__ . '/_footer.php'; ?>
