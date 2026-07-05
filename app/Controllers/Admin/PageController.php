@@ -19,7 +19,29 @@ final class PageController
     public function index(): void
     {
         Auth::requireLogin();
-        View::render('admin/pages/index', ['items' => Page::all()]);
+        $status = (string) ($_GET['status'] ?? '');
+        $lang = (string) ($_GET['lang'] ?? '');
+        View::render('admin/pages/index', [
+            'items' => Page::filter($status ?: null, $lang ?: null),
+            'filterStatus' => $status,
+            'filterLang' => $lang,
+        ]);
+    }
+
+    public function duplicate(array $params): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyRequest();
+        $newId = Page::duplicate((int) $params['id']);
+        if ($newId === null) {
+            http_response_code(404);
+            View::render('errors/404');
+            return;
+        }
+        \App\Core\Cache::forgetPrefix('page:');
+        Flash::success('Страница дублирована как черновик.');
+        header('Location: /admin/pages/' . $newId . '/edit');
+        exit;
     }
 
     public function create(): void

@@ -90,6 +90,10 @@ $router->post('/admin/profile/sessions/{id}/revoke', [\App\Controllers\Admin\Pro
 // --- Admin: дашборд ---
 $router->get('/admin', [DashboardController::class, 'index']);
 
+// --- Admin: массовые операции + быстрый поиск (этап 12.4) ---
+$router->post('/admin/bulk/{type}', [\App\Controllers\Admin\BulkController::class, 'handle']);
+$router->get('/admin/search', [\App\Controllers\Admin\SearchController::class, 'query']);
+
 // --- Admin: новости ---
 $router->get('/admin/news', [AdminNewsController::class, 'index']);
 $router->get('/admin/news/create', [AdminNewsController::class, 'create']);
@@ -97,6 +101,7 @@ $router->post('/admin/news/create', [AdminNewsController::class, 'store']);
 $router->get('/admin/news/{id}/edit', [AdminNewsController::class, 'edit']);
 $router->post('/admin/news/{id}/edit', [AdminNewsController::class, 'update']);
 $router->post('/admin/news/{id}/delete', [AdminNewsController::class, 'destroy']);
+$router->post('/admin/news/{id}/duplicate', [AdminNewsController::class, 'duplicate']);
 
 // --- Admin: страницы + конструктор блоков ---
 $router->get('/admin/pages', [AdminPageController::class, 'index']);
@@ -105,6 +110,7 @@ $router->post('/admin/pages/create', [AdminPageController::class, 'store']);
 $router->get('/admin/pages/{id}/edit', [AdminPageController::class, 'edit']);
 $router->post('/admin/pages/{id}/edit', [AdminPageController::class, 'update']);
 $router->post('/admin/pages/{id}/delete', [AdminPageController::class, 'destroy']);
+$router->post('/admin/pages/{id}/duplicate', [AdminPageController::class, 'duplicate']);
 $router->post('/admin/pages/{id}/blocks/add', [AdminBlockController::class, 'store']);
 
 $router->get('/admin/blocks/{id}/edit', [AdminBlockController::class, 'edit']);
@@ -119,6 +125,7 @@ $router->post('/admin/projects/create', [AdminProjectController::class, 'store']
 $router->get('/admin/projects/{id}/edit', [AdminProjectController::class, 'edit']);
 $router->post('/admin/projects/{id}/edit', [AdminProjectController::class, 'update']);
 $router->post('/admin/projects/{id}/delete', [AdminProjectController::class, 'destroy']);
+$router->post('/admin/projects/{id}/duplicate', [AdminProjectController::class, 'duplicate']);
 
 // --- Admin: команда ---
 $router->get('/admin/team', [AdminTeamController::class, 'index']);

@@ -97,6 +97,87 @@
         });
     }
 
+    // --- Массовый выбор в списках (задача 91) ---
+    document.querySelectorAll('[data-select-all]').forEach(function (master) {
+        var table = master.closest('table');
+        if (!table) { return; }
+        var items = table.querySelectorAll('[data-bulk-item]');
+        var counter = document.querySelector('[data-bulk-count]');
+        function refresh() {
+            var checked = table.querySelectorAll('[data-bulk-item]:checked').length;
+            if (counter) { counter.textContent = checked + ' выбрано'; }
+            master.checked = checked > 0 && checked === items.length;
+            master.indeterminate = checked > 0 && checked < items.length;
+        }
+        master.addEventListener('change', function () {
+            items.forEach(function (i) { i.checked = master.checked; });
+            refresh();
+        });
+        items.forEach(function (i) { i.addEventListener('change', refresh); });
+    });
+
+    // Не отправлять bulk-форму без выбранного действия/записей.
+    document.querySelectorAll('[data-bulk-form]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            var anyChecked = document.querySelectorAll('[data-bulk-item]:checked').length > 0;
+            var action = form.querySelector('[name="bulk_action"]');
+            if (!anyChecked) { e.preventDefault(); alert('Выберите хотя бы одну запись.'); return; }
+            if (action && !action.value) { e.preventDefault(); alert('Выберите действие.'); }
+        });
+    });
+
+    // --- Быстрый глобальный поиск (задача 92, Ctrl+K) ---
+    (function () {
+        var box = document.querySelector('[data-search]');
+        if (!box) { return; }
+        var input = box.querySelector('[data-search-input]');
+        var results = box.querySelector('[data-search-results]');
+        var timer = null, lastQuery = '';
+
+        function render(items) {
+            if (!items.length) { results.innerHTML = '<div class="admin-search__empty">Ничего не найдено</div>'; }
+            else {
+                results.innerHTML = items.map(function (r) {
+                    return '<a class="admin-search__item" href="' + r.url + '">' +
+                        '<span class="admin-search__type">' + r.type + '</span>' +
+                        '<span class="admin-search__title"></span></a>';
+                }).join('');
+                // Заголовки вставляем через textContent (без риска XSS).
+                var links = results.querySelectorAll('.admin-search__item');
+                items.forEach(function (r, i) {
+                    links[i].querySelector('.admin-search__title').textContent = r.title;
+                });
+            }
+            results.hidden = false;
+        }
+
+        function search() {
+            var q = input.value.trim();
+            if (q === lastQuery) { return; }
+            lastQuery = q;
+            if (q.length < 2) { results.hidden = true; results.innerHTML = ''; return; }
+            fetch('/admin/search?q=' + encodeURIComponent(q), { credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) { render(data.results || []); })
+                .catch(function () { results.hidden = true; });
+        }
+
+        input.addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(search, 200);
+        });
+        input.addEventListener('focus', function () { if (results.innerHTML) { results.hidden = false; } });
+        document.addEventListener('click', function (e) {
+            if (!box.contains(e.target)) { results.hidden = true; }
+        });
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+                e.preventDefault(); input.focus(); input.select();
+            }
+            if (e.key === 'Escape') { results.hidden = true; input.blur(); }
+        });
+    })();
+
     // Языковые вкладки: переключение панелей внутри одной группы [data-lang-tabs]
     document.querySelectorAll('[data-lang-tabs]').forEach(function (group) {
         const buttons = group.querySelectorAll('.lang-tab-btn');

@@ -61,6 +61,69 @@ final class News
         return $stmt->fetchAll();
     }
 
+    /** Список с фильтрами админки (задача 91). */
+    public static function filter(?string $status = null, ?string $lang = null): array
+    {
+        $sql = 'SELECT n.* FROM news n';
+        $params = [];
+        if ($lang !== null && $lang !== '' && $lang !== Language::defaultCode()) {
+            $sql .= ' INNER JOIN news_translations nt ON nt.news_id = n.id AND nt.lang = :lang';
+            $params[':lang'] = $lang;
+        }
+        $sql .= ' WHERE n.deleted_at IS NULL';
+        if ($status === 'published' || $status === 'draft') {
+            $sql .= ' AND n.status = :status';
+            $params[':status'] = $status;
+        }
+        $sql .= ' ORDER BY n.created_at DESC';
+
+        $stmt = Database::pdo()->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
+
+    public static function setStatus(int $id, string $status): void
+    {
+        if (!in_array($status, ['draft', 'published'], true)) {
+            return;
+        }
+        $stmt = Database::pdo()->prepare('UPDATE news SET status = :s WHERE id = :id AND deleted_at IS NULL');
+        $stmt->execute([':s' => $status, ':id' => $id]);
+    }
+
+    /** Полная копия новости с переводами и галереей (черновик, slug -copy). */
+    public static function duplicate(int $id): ?int
+    {
+        $news = self::findById($id);
+        if (!$news) {
+            return null;
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $newSlug = \App\Core\Duplicator::uniqueCopySlug(
+                (string) $news['slug'],
+                static fn (string $s) => self::slugExists($s)
+            );
+            $newId = \App\Core\Duplicator::copyRow('news', $news, [
+                'slug' => $newSlug,
+                'status' => 'draft',
+                'deleted_at' => null,
+            ]);
+            \App\Core\Duplicator::copyChildren('news_translations', 'news_id', $id, $newId);
+            \App\Core\Duplicator::copyChildren('news_images', 'news_id', $id, $newId);
+
+            $pdo->commit();
+
+            return $newId;
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
     public static function restore(int $id): void
     {
         $stmt = Database::pdo()->prepare('UPDATE news SET deleted_at = NULL WHERE id = :id');

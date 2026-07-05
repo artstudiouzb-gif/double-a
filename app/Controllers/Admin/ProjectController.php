@@ -19,7 +19,26 @@ final class ProjectController
     public function index(): void
     {
         Auth::requireLogin();
-        View::render('admin/projects/index', ['items' => Project::all()]);
+        $status = (string) ($_GET['status'] ?? '');
+        View::render('admin/projects/index', [
+            'items' => Project::filter($status ?: null),
+            'filterStatus' => $status,
+        ]);
+    }
+
+    public function duplicate(array $params): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyRequest();
+        $newId = Project::duplicate((int) $params['id']);
+        if ($newId === null) {
+            http_response_code(404);
+            View::render('errors/404');
+            return;
+        }
+        Flash::success('Проект дублирован как черновик.');
+        header('Location: /admin/projects/' . $newId . '/edit');
+        exit;
     }
 
     public function create(): void

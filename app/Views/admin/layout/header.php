@@ -65,4 +65,9 @@ if ($isSuper) {
         <?php endforeach; ?>
         <div class="admin-main__header">
             <h1><?= htmlspecialchars($pageTitle, ENT_QUOTES) ?></h1>
+            <div class="admin-search" data-search>
+                <input type="search" class="admin-search__input" data-search-input
+                       placeholder="Поиск… (Ctrl+K)" autocomplete="off" aria-label="Поиск по админке">
+                <div class="admin-search__results" data-search-results hidden></div>
+            </div>
         </div>

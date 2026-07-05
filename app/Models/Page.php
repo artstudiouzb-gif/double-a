@@ -15,6 +15,73 @@ final class Page
         return $stmt->fetchAll();
     }
 
+    /**
+     * Список с фильтрами админки (задача 91). deleted_at IS NULL всегда.
+     * $lang (не-дефолтный) ограничивает страницами, имеющими перевод.
+     */
+    public static function filter(?string $status = null, ?string $lang = null): array
+    {
+        $sql = 'SELECT p.* FROM pages p';
+        $params = [];
+        if ($lang !== null && $lang !== '' && $lang !== Language::defaultCode()) {
+            $sql .= ' INNER JOIN page_translations pt ON pt.page_id = p.id AND pt.lang = :lang';
+            $params[':lang'] = $lang;
+        }
+        $sql .= ' WHERE p.deleted_at IS NULL';
+        if ($status === 'published' || $status === 'draft') {
+            $sql .= ' AND p.status = :status';
+            $params[':status'] = $status;
+        }
+        $sql .= ' ORDER BY p.created_at DESC';
+
+        $stmt = Database::pdo()->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
+
+    public static function setStatus(int $id, string $status): void
+    {
+        if (!in_array($status, ['draft', 'published'], true)) {
+            return;
+        }
+        $stmt = Database::pdo()->prepare('UPDATE pages SET status = :s WHERE id = :id AND deleted_at IS NULL');
+        $stmt->execute([':s' => $status, ':id' => $id]);
+    }
+
+    /** Полная копия страницы с блоками и переводами (черновик, slug -copy). */
+    public static function duplicate(int $id): ?int
+    {
+        $page = self::findById($id);
+        if (!$page) {
+            return null;
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $newSlug = \App\Core\Duplicator::uniqueCopySlug(
+                (string) $page['slug'],
+                static fn (string $s) => self::slugExists($s)
+            );
+            $newId = \App\Core\Duplicator::copyRow('pages', $page, [
+                'slug' => $newSlug,
+                'status' => 'draft',
+                'is_home' => 0,
+                'deleted_at' => null,
+            ]);
+            \App\Core\Duplicator::copyChildren('blocks', 'page_id', $id, $newId);
+            \App\Core\Duplicator::copyChildren('page_translations', 'page_id', $id, $newId);
+
+            $pdo->commit();
+
+            return $newId;
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
     public static function trashed(): array
     {
         $stmt = Database::pdo()->query('SELECT * FROM pages WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC');

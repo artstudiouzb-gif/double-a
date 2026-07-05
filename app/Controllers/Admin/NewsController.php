@@ -19,7 +19,28 @@ final class NewsController
     public function index(): void
     {
         Auth::requireLogin();
-        View::render('admin/news/index', ['items' => News::all()]);
+        $status = (string) ($_GET['status'] ?? '');
+        $lang = (string) ($_GET['lang'] ?? '');
+        View::render('admin/news/index', [
+            'items' => News::filter($status ?: null, $lang ?: null),
+            'filterStatus' => $status,
+            'filterLang' => $lang,
+        ]);
+    }
+
+    public function duplicate(array $params): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyRequest();
+        $newId = News::duplicate((int) $params['id']);
+        if ($newId === null) {
+            http_response_code(404);
+            View::render('errors/404');
+            return;
+        }
+        Flash::success('Новость дублирована как черновик.');
+        header('Location: /admin/news/' . $newId . '/edit');
+        exit;
     }
 
     public function create(): void
