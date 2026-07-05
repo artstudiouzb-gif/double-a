@@ -6,6 +6,7 @@ namespace App\Controllers\Admin;
 
 use App\Core\Auth;
 use App\Core\Csrf;
+use App\Core\RateLimiter;
 use App\Core\Uploader;
 
 /**
@@ -26,6 +27,13 @@ final class ChunkedUploadController
 
         if (!Csrf::verify($_POST['csrf_token'] ?? null)) {
             $this->json(['ok' => false, 'error' => 'CSRF token mismatch'], 419);
+        }
+
+        // Ограничение частоты чанков: до 600 чанков / 5 минут на пользователя
+        // (хватает на несколько параллельных 200-МБ загрузок, но отсекает
+        // злоупотребление записью на диск).
+        if (!RateLimiter::throttle('chunk', 'user:' . (int) Auth::id(), 600, 5)) {
+            $this->json(['ok' => false, 'error' => 'Слишком много запросов, повторите позже.'], 429);
         }
 
         $uploadId = preg_replace('/[^a-f0-9]/', '', strtolower((string) ($_POST['upload_id'] ?? '')));

@@ -108,7 +108,8 @@ final class AuthController
         $code = trim((string) ($_POST['code'] ?? ''));
 
         if (Auth::confirmTwoFactorSetup($code)) {
-            header('Location: /admin');
+            // Ведём на профиль: там сразу показываются свежие backup-коды.
+            header('Location: /admin/profile');
             exit;
         }
 

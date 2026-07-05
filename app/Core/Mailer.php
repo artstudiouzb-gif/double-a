@@ -78,11 +78,18 @@ final class Mailer
 
         $transport = ($this->config['encryption'] ?? '') === 'ssl' ? 'ssl://' : 'tcp://';
 
-        // verify_peer можно отключить в конфиге для релеев с самоподписанным
-        // сертификатом (по умолчанию проверка включена).
-        $verify = !isset($this->config['verify_peer']) || (bool) $this->config['verify_peer'];
+        // Проверка TLS-сертификата сервера включена ЖЁСТКО и не отключается из
+        // конфига: verify_peer/verify_peer_name = true, запрет самоподписанных.
+        // Это защищает учётные данные SMTP от MITM. Релеи с самоподписанным
+        // сертификатом не поддерживаются намеренно (используйте валидный TLS).
         $context = stream_context_create([
-            'ssl' => ['verify_peer' => $verify, 'verify_peer_name' => $verify, 'SNI_enabled' => true],
+            'ssl' => [
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+                'allow_self_signed' => false,
+                'SNI_enabled' => true,
+                'peer_name' => $host,
+            ],
         ]);
 
         $errno = 0;

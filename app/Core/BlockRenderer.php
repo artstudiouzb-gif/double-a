@@ -58,8 +58,12 @@ final class BlockRenderer
         }
 
         // Дизайн-система: пресет отступов и опция анимации появления.
-        $spacing = in_array($data['_spacing'] ?? 'premium', ['none', 'small', 'premium', 'max'], true)
-            ? $data['_spacing'] : 'premium';
+        // Ключи _spacing/_reveal могут отсутствовать (старые/битые данные) —
+        // берём безопасные значения по умолчанию.
+        $spacing = (string) ($data['_spacing'] ?? 'premium');
+        if (!in_array($spacing, ['none', 'small', 'premium', 'max'], true)) {
+            $spacing = 'premium';
+        }
         $reveal = !empty($data['_reveal']) ? ' data-reveal' : '';
 
         $wrapped = sprintf(

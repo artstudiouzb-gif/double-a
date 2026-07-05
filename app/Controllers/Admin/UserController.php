@@ -32,8 +32,10 @@ final class UserController
         $role = ($_POST['role'] ?? 'editor') === 'admin' ? 'admin' : 'editor';
 
         $error = null;
-        if ($username === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 10) {
-            $error = 'Заполните поля. Пароль — не короче 10 символов, email — корректный.';
+        if ($username === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Заполните логин и корректный email.';
+        } elseif (($pwErrors = \App\Core\PasswordPolicy::validate($password, [$username, $email])) !== []) {
+            $error = implode(' ', $pwErrors);
         } elseif (User::findByUsername($username)) {
             $error = 'Пользователь с таким логином уже существует.';
         } elseif (User::emailExists($email)) {

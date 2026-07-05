@@ -17,8 +17,13 @@ spl_autoload_register(static function (string $class): void {
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\ErrorHandler;
+use App\Core\SecurityHeaders;
 
 define('APP_ROOT', dirname(__DIR__, 2));
+
+// Заголовки безопасности выставляем до любого вывода, чтобы они попали
+// на ВСЕ ответы, включая брендированный fail-safe 503 ниже и страницы ошибок.
+SecurityHeaders::send();
 
 $configFile = APP_ROOT . '/config/config.php';
 $installedLock = APP_ROOT . '/storage/installed.lock';

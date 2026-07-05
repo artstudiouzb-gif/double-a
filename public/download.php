@@ -7,6 +7,7 @@ require __DIR__ . '/../app/Core/bootstrap.php';
 use App\Core\Auth;
 use App\Core\Config;
 use App\Core\Database;
+use App\Core\RateLimiter;
 
 $fileId = filter_input(INPUT_GET, 'file_id', FILTER_VALIDATE_INT);
 $token = $_GET['token'] ?? null;
@@ -14,6 +15,17 @@ $token = $_GET['token'] ?? null;
 if (!$fileId) {
     http_response_code(400);
     exit('Некорректный запрос.');
+}
+
+// Анти-перебор токенов доступа: неавторизованные попытки скачать защищённый
+// файл ограничены (30 запросов / 5 минут с одного IP). Авторизованные сессией
+// пользователи и публичные файлы под лимит не попадают (проверка ниже).
+$downloadIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+if (!Auth::check()
+    && !RateLimiter::throttle('download', $downloadIp, 30, 5)) {
+    http_response_code(429);
+    header('Retry-After: 300');
+    exit('Слишком много запросов. Повторите позже.');
 }
 
 $stmt = Database::pdo()->prepare('SELECT * FROM files WHERE id = :id LIMIT 1');

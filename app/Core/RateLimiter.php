@@ -72,6 +72,52 @@ final class RateLimiter
     }
 
     /**
+     * Универсальный сдвигающийся лимитер для любых действий за пределами
+     * логина (отправка форм, перебор download-токенов, частота чанков).
+     * Переиспользует таблицу login_attempts с namespace-идентификатором
+     * (например, 'form|slug|1.2.3.4'). Записывает попытку и возвращает,
+     * РАЗРЕШЕНО ли действие (true) или лимит превышен (false).
+     */
+    public static function throttle(string $namespace, string $key, int $maxAttempts, int $windowMinutes): bool
+    {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $identifier = $namespace . '|' . $key;
+
+        try {
+            $count = self::countRecent($identifier, $windowMinutes);
+            self::recordAttempt($identifier, false);
+
+            if ($count >= $maxAttempts) {
+                Logger::error(sprintf(
+                    'Rate limit exceeded: ns=%s key=%s ip=%s count=%d/%d',
+                    $namespace, $key, $ip, $count + 1, $maxAttempts
+                ));
+                return false;
+            }
+        } catch (\Throwable $e) {
+            // Отказ БД не должен ронять пользовательский сценарий — пропускаем.
+            Logger::error('RateLimiter::throttle failed: ' . $e->getMessage());
+            return true;
+        }
+
+        return true;
+    }
+
+    public static function countRecent(string $identifier, int $windowMinutes): int
+    {
+        $stmt = Database::pdo()->prepare(
+            'SELECT COUNT(*) FROM login_attempts
+             WHERE identifier = :identifier
+               AND attempted_at > (NOW() - INTERVAL :window MINUTE)'
+        );
+        $stmt->bindValue(':identifier', $identifier);
+        $stmt->bindValue(':window', $windowMinutes, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
      * Garbage collector: удаляет записи login_attempts старше суток и
      * ротирует лог-файлы. Вызывается вероятностно (не на каждый запрос),
      * чтобы не нагружать БД. Вероятность ~2% на успешный вход.

@@ -169,6 +169,8 @@ $blockTypeLabels = [
                 <label for="type">Добавить блок (язык: <?= htmlspecialchars($blockLang, ENT_QUOTES) ?>)</label>
                 <select id="type" name="type">
                     <?php foreach ($blockTypeLabels as $type => $label): ?>
+                        <?php // Блок сырого HTML доступен только супер-администратору. ?>
+                        <?php if ($type === 'html' && !\App\Core\Auth::isSuperAdmin()) { continue; } ?>
                         <option value="<?= $type ?>"><?= htmlspecialchars($label, ENT_QUOTES) ?></option>
                     <?php endforeach; ?>
                 </select>

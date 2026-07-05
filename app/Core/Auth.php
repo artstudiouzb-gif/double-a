@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Models\BackupCode;
+use App\Models\SessionRegistry;
 use App\Models\User;
 
 final class Auth
@@ -58,7 +60,12 @@ final class Auth
             return false;
         }
 
-        if (!TOTP::verify($user['totp_secret'], $code)) {
+        // Основной путь: код из приложения-аутентификатора (TOTP).
+        // Альтернатива: одноразовый backup-код (если введён не 6-значный код).
+        $ok = TOTP::verify($user['totp_secret'], $code)
+            || BackupCode::consume((int) $userId, $code);
+
+        if (!$ok) {
             RateLimiter::recordAttempt($identifier, false);
             return false;
         }
@@ -108,6 +115,11 @@ final class Auth
 
         $user = User::findById((int) $userId);
         User::enableTotp((int) $userId, $secret);
+
+        // Генерируем пул backup-кодов и кладём в сессию для однократного показа
+        // сразу после установления сессии (страница /admin показывает баннер).
+        $_SESSION['fresh_backup_codes'] = BackupCode::regenerate((int) $userId);
+
         unset($_SESSION['pending_totp_secret']);
         self::clearPending();
         self::establishSession($user);
@@ -125,6 +137,19 @@ final class Auth
         $_SESSION['fingerprint'] = self::fingerprint();
 
         User::touchLastLogin((int) $user['id']);
+
+        // Регистрируем сессию в реестре: даёт список устройств и мгновенный
+        // серверный отзыв (страница «Мои сессии»).
+        try {
+            SessionRegistry::register(
+                (int) $user['id'],
+                session_id(),
+                $_SERVER['REMOTE_ADDR'] ?? null,
+                $_SERVER['HTTP_USER_AGENT'] ?? null
+            );
+        } catch (\Throwable $e) {
+            Logger::error('SessionRegistry::register failed: ' . $e->getMessage());
+        }
 
         // Вероятностная очистка старых записей брутфорса и ротация логов.
         RateLimiter::garbageCollect();
@@ -168,6 +193,25 @@ final class Auth
         if (!isset($_SESSION['fingerprint']) || !hash_equals($_SESSION['fingerprint'], self::fingerprint())) {
             self::logout();
             return false;
+        }
+
+        // Мгновенный серверный отзыв: сессия действительна, только пока её
+        // строка присутствует в реестре. Удаление строки («выйти на этом
+        // устройстве»/«везде»/смена пароля) немедленно завершает сессию.
+        try {
+            if (!SessionRegistry::exists((int) $_SESSION['user_id'], session_id())) {
+                self::logout();
+                return false;
+            }
+            // Обновляем «последнюю активность» не чаще раза в минуту.
+            if ((time() - (int) ($_SESSION['sid_seen_at'] ?? 0)) > 60) {
+                SessionRegistry::touch((int) $_SESSION['user_id'], session_id());
+                $_SESSION['sid_seen_at'] = time();
+            }
+        } catch (\Throwable $e) {
+            // Транзиентная ошибка БД не должна разлогинивать всех — фингерпринт
+            // уже проверен; логируем и пропускаем.
+            Logger::error('SessionRegistry check failed: ' . $e->getMessage());
         }
 
         return true;
@@ -222,6 +266,15 @@ final class Auth
 
     public static function logout(): void
     {
+        // Снимаем сессию с реестра активных сессий.
+        try {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                SessionRegistry::remove(session_id());
+            }
+        } catch (\Throwable $e) {
+            Logger::error('SessionRegistry::remove failed: ' . $e->getMessage());
+        }
+
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {

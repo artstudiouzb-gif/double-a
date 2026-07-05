@@ -52,6 +52,24 @@ final class User
         return $row ?: null;
     }
 
+    public static function findByEmail(string $email): ?array
+    {
+        $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
+        $stmt->execute([':email' => $email]);
+        $row = $stmt->fetch();
+
+        return $row ?: null;
+    }
+
+    public static function updatePassword(int $id, string $newPassword): void
+    {
+        $stmt = Database::pdo()->prepare('UPDATE users SET password_hash = :hash WHERE id = :id');
+        $stmt->execute([
+            ':hash' => password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]),
+            ':id' => $id,
+        ]);
+    }
+
     public static function enableTotp(int $id, string $secret): void
     {
         $stmt = Database::pdo()->prepare('UPDATE users SET totp_secret = :secret, totp_enabled = 1 WHERE id = :id');

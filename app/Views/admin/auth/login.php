@@ -26,6 +26,7 @@ use App\Core\Csrf;
         <input type="password" id="password" name="password" autocomplete="current-password" required>
         <button type="submit">Войти</button>
     </form>
+    <p style="margin-top:16px; text-align:center;"><a href="/admin/forgot">Забыли пароль?</a></p>
 </div>
 </body>
 </html>

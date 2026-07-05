@@ -7,6 +7,7 @@ namespace App\Controllers\Site;
 use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\Mailer;
+use App\Core\RateLimiter;
 use App\Core\View;
 use App\Models\FormDef;
 use App\Models\FormSubmission;
@@ -26,6 +27,15 @@ final class FormController
 
         if (!Csrf::verify($_POST['csrf_token'] ?? null)) {
             Flash::error('Сессия устарела, попробуйте отправить форму ещё раз.');
+            $this->redirectBack();
+        }
+
+        // Анти-флуд: не более 10 отправок форм с одного IP за 10 минут.
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        if (!RateLimiter::throttle('form', $ip, 10, 10)) {
+            http_response_code(429);
+            header('Retry-After: 600');
+            Flash::error('Слишком много отправок. Пожалуйста, попробуйте позже.');
             $this->redirectBack();
         }
 

@@ -19,6 +19,7 @@ $navItems = [
     'forms' => ['/admin/forms', 'Формы'],
     'files' => ['/admin/files', 'Файлы'],
     'trash' => ['/admin/trash', 'Корзина'],
+    'profile' => ['/admin/profile', 'Профиль'],
 ];
 
 // Системные разделы — только для супер-администратора.

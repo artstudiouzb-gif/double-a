@@ -324,6 +324,45 @@ CREATE TABLE IF NOT EXISTS mail_queue (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- Безопасность (Блок 11): сброс пароля, backup-коды 2FA, реестр сессий.
+-- Все токены/коды хранятся как SHA-256 хеши; сравнение через hash_equals.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS password_resets (
+    id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT UNSIGNED NOT NULL,
+    token_hash  CHAR(64)     NOT NULL COMMENT 'sha256(token)',
+    expires_at  DATETIME     NOT NULL,
+    used_at     DATETIME     NULL,
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_password_resets_hash (token_hash),
+    KEY idx_password_resets_user (user_id),
+    CONSTRAINT fk_password_resets_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS backup_codes (
+    id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT UNSIGNED NOT NULL,
+    code_hash   CHAR(64)     NOT NULL COMMENT 'sha256(code)',
+    used_at     DATETIME     NULL,
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_backup_codes_user (user_id),
+    CONSTRAINT fk_backup_codes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS user_sessions (
+    id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id      INT UNSIGNED NOT NULL,
+    sid_hash     CHAR(64)     NOT NULL COMMENT 'sha256(session_id)',
+    ip_address   VARCHAR(45)  NULL,
+    user_agent   VARCHAR(255) NULL,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_user_sessions_sid (sid_hash),
+    KEY idx_user_sessions_user (user_id),
+    CONSTRAINT fk_user_sessions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- Применённые миграции (для CLI database/migrate.php)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS migrations (
@@ -340,7 +379,8 @@ CREATE TABLE IF NOT EXISTS migrations (
 INSERT INTO migrations (filename) VALUES
     ('2026_07_05_block5_multilang_header_widgets.sql'),
     ('2026_07_05_soft_deletes.sql'),
-    ('2026_07_05_mail_queue.sql')
+    ('2026_07_05_mail_queue.sql'),
+    ('2026_07_05_security_block11.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

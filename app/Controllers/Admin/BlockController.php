@@ -43,6 +43,13 @@ final class BlockController
             exit;
         }
 
+        // Блок сырого HTML может создавать только супер-администратор.
+        if ($type === 'html' && !Auth::isSuperAdmin()) {
+            Flash::error('Блок «HTML-код» доступен только супер-администратору.');
+            header('Location: /admin/pages/' . $pageId . '/edit?block_lang=' . urlencode($lang));
+            exit;
+        }
+
         $title = trim((string) ($_POST['title'] ?? ''));
         $blockId = Block::create($pageId, $lang, $type, $title !== '' ? $title : null, \App\Core\BlockRenderer::defaultsFor($type), '');
         \App\Core\Cache::forgetPrefix('page:' . $pageId);
@@ -164,14 +171,26 @@ final class BlockController
                     'content' => TextProcessor::process((string) ($_POST['content'] ?? ''), $locale),
                 ];
             case 'html':
-                // Произвольный HTML/код не типографим.
-                return ['html' => (string) ($_POST['html'] ?? '')];
+                // Супер-администратор — доверенный источник (сырой HTML).
+                // Роль editor: контент проходит строгий allowlist-санитайзер,
+                // вырезающий <script>, обработчики on* и опасные URI.
+                $rawHtml = (string) ($_POST['html'] ?? '');
+                return [
+                    'html' => Auth::isSuperAdmin()
+                        ? $rawHtml
+                        : \App\Core\HtmlSanitizer::sanitize($rawHtml),
+                ];
             case 'cta':
+                $buttonUrl = trim((string) ($_POST['button_url'] ?? ''));
+                // Отсекаем javascript:/data: и прочие небезопасные схемы в ссылке.
+                if ($buttonUrl !== '' && !\App\Core\UrlGuard::isSafeLink($buttonUrl)) {
+                    $buttonUrl = '';
+                }
                 return [
                     'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
                     'text' => TextProcessor::typographPlain(trim((string) ($_POST['text'] ?? '')), $locale),
                     'button_text' => trim((string) ($_POST['button_text'] ?? '')),
-                    'button_url' => trim((string) ($_POST['button_url'] ?? '')),
+                    'button_url' => $buttonUrl,
                 ];
             case 'advantages':
                 $items = [];

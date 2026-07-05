@@ -111,6 +111,9 @@ final class MenuController
         if ($urlType === 'custom' && $urlValue === '') {
             return [[], 'Укажите URL для пункта меню.'];
         }
+        if ($urlType === 'custom' && !\App\Core\UrlGuard::isSafeLink($urlValue)) {
+            return [[], 'Недопустимый URL: разрешены http(s)-ссылки, относительные пути, mailto/tel.'];
+        }
         if ($urlType === 'news_index') {
             $urlValue = '';
         }
