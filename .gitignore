@@ -1,0 +1,8 @@
+/config/config.php
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/protected_uploads/*
+!/storage/protected_uploads/.gitkeep
+/public/uploads/public/*
+!/public/uploads/public/.gitkeep
+.DS_Store

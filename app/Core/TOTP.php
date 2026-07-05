@@ -1,0 +1,111 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Core;
+
+/**
+ * Реализация TOTP (RFC 6238) на чистом PHP, без внешних зависимостей.
+ * Совместима с Google Authenticator, Яндекс Ключ и аналогичными приложениями.
+ */
+final class TOTP
+{
+    private const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    private const PERIOD = 30;
+    private const DIGITS = 6;
+
+    public static function generateSecret(int $bytesLength = 20): string
+    {
+        return self::base32Encode(random_bytes($bytesLength));
+    }
+
+    public static function provisioningUri(string $secret, string $accountName, string $issuer): string
+    {
+        $label = rawurlencode($issuer) . ':' . rawurlencode($accountName);
+        $params = http_build_query([
+            'secret' => $secret,
+            'issuer' => $issuer,
+            'algorithm' => 'SHA1',
+            'digits' => self::DIGITS,
+            'period' => self::PERIOD,
+        ], '', '&', PHP_QUERY_RFC3986);
+
+        return "otpauth://totp/{$label}?{$params}";
+    }
+
+    public static function verify(string $secret, string $code, int $windowSteps = 1): bool
+    {
+        $code = preg_replace('/\s+/', '', $code) ?? '';
+        if (!preg_match('/^\d{6}$/', $code)) {
+            return false;
+        }
+
+        $currentTimeSlice = (int) floor(time() / self::PERIOD);
+
+        for ($i = -$windowSteps; $i <= $windowSteps; $i++) {
+            if (hash_equals(self::calculateCode($secret, $currentTimeSlice + $i), $code)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function calculateCode(string $secret, int $timeSlice): string
+    {
+        $secretBinary = self::base32Decode($secret);
+        $timeBinary = pack('N*', 0) . pack('N*', $timeSlice);
+        $hash = hash_hmac('sha1', $timeBinary, $secretBinary, true);
+
+        $offset = ord($hash[19]) & 0x0F;
+        $value = ((ord($hash[$offset]) & 0x7F) << 24)
+            | ((ord($hash[$offset + 1]) & 0xFF) << 16)
+            | ((ord($hash[$offset + 2]) & 0xFF) << 8)
+            | (ord($hash[$offset + 3]) & 0xFF);
+
+        $mod = $value % (10 ** self::DIGITS);
+
+        return str_pad((string) $mod, self::DIGITS, '0', STR_PAD_LEFT);
+    }
+
+    private static function base32Encode(string $data): string
+    {
+        $bits = '';
+        foreach (str_split($data) as $char) {
+            $bits .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+        }
+
+        $output = '';
+        foreach (str_split($bits, 5) as $chunk) {
+            if (strlen($chunk) < 5) {
+                $chunk = str_pad($chunk, 5, '0');
+            }
+            $output .= self::BASE32_ALPHABET[bindec($chunk)];
+        }
+
+        return $output;
+    }
+
+    private static function base32Decode(string $secret): string
+    {
+        $secret = strtoupper(rtrim($secret, '='));
+        $bits = '';
+
+        foreach (str_split($secret) as $char) {
+            $pos = strpos(self::BASE32_ALPHABET, $char);
+            if ($pos === false) {
+                continue;
+            }
+            $bits .= str_pad(decbin($pos), 5, '0', STR_PAD_LEFT);
+        }
+
+        $bytes = '';
+        foreach (str_split($bits, 8) as $byte) {
+            if (strlen($byte) === 8) {
+                $bytes .= chr(bindec($byte));
+            }
+        }
+
+        return $bytes;
+    }
+}

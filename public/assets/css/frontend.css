@@ -1,0 +1,81 @@
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: var(--font-family, sans-serif);
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
+img { max-width: 100%; display: block; }
+a { color: var(--color-accent, #e63946); }
+
+.site-header__inner { max-width: 1140px; margin: 0 auto; padding: 20px; }
+.site-header__logo {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 20px;
+    text-decoration: none;
+    color: var(--color-primary, #1a1a1a);
+}
+.site-header__logo img { max-height: 48px; }
+
+.site-content { max-width: 1140px; margin: 0 auto; padding: 20px; }
+.site-footer { text-align: center; padding: 30px 20px; color: #888; font-size: 14px; }
+
+.cms-block { margin: 40px 0; }
+
+.block-text__title { font-size: 28px; margin-bottom: 12px; }
+
+.block-cta { text-align: center; padding: 40px; background: #f4f5f7; border-radius: 12px; }
+.block-cta__button {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 12px 28px;
+    background: var(--color-accent, #e63946);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.block-advantages__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.block-advantages__item { text-align: center; padding: 20px; }
+.block-advantages__icon { font-size: 32px; margin-bottom: 8px; }
+
+.block-slider { position: relative; overflow: hidden; border-radius: 12px; }
+.block-slider__slide { display: none; }
+.block-slider__slide.is-active { display: block; }
+.block-slider__nav { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; pointer-events: none; padding: 0 12px; }
+.block-slider__nav button {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, .4);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+}
+
+.block-gallery__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.block-gallery__item img { border-radius: 8px; }
+
+.block-form__field { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.block-form__field input, .block-form__field textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+}
+.block-form__submit {
+    padding: 12px 24px;
+    background: var(--color-primary, #1a1a1a);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}

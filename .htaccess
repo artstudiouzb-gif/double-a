@@ -1,0 +1,20 @@
+# Этот файл нужен ТОЛЬКО если хостинг не позволяет указать document root
+# на папку /public (например, дешёвый shared-хостинг, где сайт = корень
+# аккаунта). Если вы настраиваете document root на /public в панели
+# хостинга или в конфиге веб-сервера — этот файл можно удалить.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^$ public/ [L]
+
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
+
+# Полностью запрещаем прямой доступ к служебным папкам, если docroot
+# указывает на корень проекта.
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(sql|env|log)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
