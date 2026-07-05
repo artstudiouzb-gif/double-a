@@ -9,6 +9,7 @@ use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\ImageField;
 use App\Core\Slug;
+use App\Core\TextProcessor;
 use App\Core\View;
 use App\Models\Language;
 use App\Models\News;
@@ -138,7 +139,7 @@ final class NewsController
             NewsTranslation::upsert($newsId, $code, [
                 'title' => trim((string) ($t['title'] ?? '')),
                 'excerpt' => trim((string) ($t['excerpt'] ?? '')),
-                'content' => (string) ($t['content'] ?? ''),
+                'content' => TextProcessor::process((string) ($t['content'] ?? ''), $code),
                 'meta_title' => trim((string) ($t['meta_title'] ?? '')),
                 'meta_description' => trim((string) ($t['meta_description'] ?? '')),
             ]);
@@ -164,7 +165,8 @@ final class NewsController
         $title = trim((string) ($_POST['title'] ?? ''));
         $slugInput = trim((string) ($_POST['slug'] ?? ''));
         $excerpt = trim((string) ($_POST['excerpt'] ?? ''));
-        $content = (string) ($_POST['content'] ?? '');
+        // WYSIWYG-контент прогоняем через типограф/санитайзер (задача 75).
+        $content = TextProcessor::process((string) ($_POST['content'] ?? ''), Language::defaultCode());
         $metaTitle = trim((string) ($_POST['meta_title'] ?? ''));
         $metaDescription = trim((string) ($_POST['meta_description'] ?? ''));
         $status = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';

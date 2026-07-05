@@ -178,6 +178,63 @@
         });
     })();
 
+    // --- Медиабиблиотека: выбор уже загруженного файла (задача 90) ---
+    (function () {
+        var modal = document.querySelector('[data-media-modal]');
+        if (!modal) { return; }
+        var grid = modal.querySelector('[data-media-grid]');
+        var currentTarget = null;
+        var loaded = false;
+
+        function open(targetSelector) {
+            currentTarget = document.querySelector(targetSelector);
+            modal.hidden = false;
+            if (loaded) { return; }
+            grid.innerHTML = '<div class="media-modal__empty">Загрузка…</div>';
+            fetch('/admin/media/list', { credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    loaded = true;
+                    var items = data.items || [];
+                    if (!items.length) { grid.innerHTML = '<div class="media-modal__empty">В библиотеке нет изображений.</div>'; return; }
+                    grid.innerHTML = '';
+                    items.forEach(function (it) {
+                        var fig = document.createElement('button');
+                        fig.type = 'button';
+                        fig.className = 'media-modal__item';
+                        fig.title = it.name;
+                        var img = document.createElement('img');
+                        img.src = it.url; img.alt = it.name; img.loading = 'lazy';
+                        fig.appendChild(img);
+                        fig.addEventListener('click', function () {
+                            if (currentTarget) {
+                                currentTarget.value = it.url;
+                                currentTarget.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                            close();
+                        });
+                        grid.appendChild(fig);
+                    });
+                })
+                .catch(function () { grid.innerHTML = '<div class="media-modal__empty">Ошибка загрузки.</div>'; });
+        }
+        function close() { modal.hidden = true; }
+
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-media-pick]');
+            if (btn) { e.preventDefault(); open(btn.getAttribute('data-media-target')); return; }
+            if (e.target.closest('[data-media-close]') || e.target === modal) { close(); }
+        });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
+    })();
+
+    // --- Автономный WYSIWYG (задача 75): инициализация на textarea[data-wysiwyg] ---
+    if (window.ArtEditor) {
+        document.querySelectorAll('textarea[data-wysiwyg]').forEach(function (ta) {
+            window.ArtEditor.attach(ta);
+        });
+    }
+
     // Языковые вкладки: переключение панелей внутри одной группы [data-lang-tabs]
     document.querySelectorAll('[data-lang-tabs]').forEach(function (group) {
         const buttons = group.querySelectorAll('.lang-tab-btn');

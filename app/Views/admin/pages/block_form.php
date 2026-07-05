@@ -33,8 +33,8 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
 
         <?php if ($type === 'text'): ?>
             <div class="form-field">
-                <label for="content">Текст (допускается HTML)</label>
-                <textarea id="content" name="content" style="min-height:200px;"><?= htmlspecialchars($data['content'] ?? '', ENT_QUOTES) ?></textarea>
+                <label for="content">Текст</label>
+                <textarea id="content" name="content" data-wysiwyg style="min-height:200px;"><?= htmlspecialchars($data['content'] ?? '', ENT_QUOTES) ?></textarea>
             </div>
         <?php endif; ?>
 

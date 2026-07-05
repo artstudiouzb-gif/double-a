@@ -16,6 +16,7 @@ $printUrl = $canonicalUrl ?? '';
     <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($siteName, ENT_QUOTES) ?></p>
 </footer>
 <script src="/assets/js/frontend.js"></script>
+<script src="/assets/js/forms.js" defer></script>
 <?= \App\Core\AssetCollector::renderScripts() /* JS блоков — по одному разу */ ?>
 <?= $counterCodes /* коды счётчиков вводятся администратором в настройках */ ?>
 </body>

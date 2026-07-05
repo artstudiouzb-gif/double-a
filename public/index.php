@@ -190,6 +190,7 @@ $router->post('/admin/backup', [\App\Controllers\Admin\BackupController::class, 
 
 // --- Admin: файловый менеджер ---
 $router->get('/admin/files', [AdminFileController::class, 'index']);
+$router->get('/admin/media/list', [AdminFileController::class, 'library']);
 $router->post('/admin/files/upload', [AdminFileController::class, 'upload']);
 $router->post('/admin/files/chunk', [\App\Controllers\Admin\ChunkedUploadController::class, 'chunk']);
 $router->post('/admin/files/{id}/delete', [AdminFileController::class, 'destroy']);

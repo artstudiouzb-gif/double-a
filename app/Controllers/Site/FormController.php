@@ -25,50 +25,45 @@ final class FormController
             return;
         }
 
+        $successMessage = $form['success_message'] ?: 'Спасибо! Ваша заявка отправлена.';
+
         if (!Csrf::verify($_POST['csrf_token'] ?? null)) {
-            Flash::error('Сессия устарела, попробуйте отправить форму ещё раз.');
-            $this->redirectBack();
+            $this->fail('Сессия устарела, обновите страницу и попробуйте снова.', [], 419);
         }
 
         // Анти-флуд: не более 10 отправок форм с одного IP за 10 минут.
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         if (!RateLimiter::throttle('form', $ip, 10, 10)) {
-            http_response_code(429);
-            header('Retry-After: 600');
-            Flash::error('Слишком много отправок. Пожалуйста, попробуйте позже.');
-            $this->redirectBack();
+            $this->fail('Слишком много отправок. Пожалуйста, попробуйте позже.', [], 429);
         }
 
         // Honeypot: боты заполняют скрытое поле или отправляют форму мгновенно.
         // Тихо показываем «успех», чтобы не подсказывать спамеру о срабатывании.
         if (Csrf::isSpam()) {
-            Flash::success($form['success_message'] ?: 'Спасибо! Ваша заявка отправлена.');
-            $this->redirectBack();
+            $this->success($successMessage);
         }
 
         $data = [];
-        $missing = [];
+        $errors = [];
 
         foreach ($form['fields'] as $field) {
             $name = $field['name'];
             $value = trim((string) ($_POST[$name] ?? ''));
 
             if (!empty($field['required']) && $value === '') {
-                $missing[] = $field['label'];
+                $errors[$name] = 'Поле «' . $field['label'] . '» обязательно.';
                 continue;
             }
-
             if ($field['type'] === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                $missing[] = $field['label'] . ' (некорректный email)';
+                $errors[$name] = 'Некорректный email.';
                 continue;
             }
 
             $data[$name] = $value;
         }
 
-        if (!empty($missing)) {
-            Flash::error('Заполните обязательные поля: ' . implode(', ', $missing));
-            $this->redirectBack();
+        if ($errors !== []) {
+            $this->fail('Проверьте правильность заполнения формы.', $errors);
         }
 
         FormSubmission::create(
@@ -82,7 +77,42 @@ final class FormController
             $this->notify($form, $data);
         }
 
-        Flash::success($form['success_message'] ?: 'Спасибо! Ваша заявка отправлена.');
+        $this->success($successMessage);
+    }
+
+    /** AJAX-запрос ли это (fetch с X-Requested-With). */
+    private function wantsJson(): bool
+    {
+        return strtolower((string) ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest'
+            || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json');
+    }
+
+    /**
+     * @param array<string, string> $errors
+     */
+    private function fail(string $message, array $errors = [], int $code = 200): never
+    {
+        if ($this->wantsJson()) {
+            http_response_code($code);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(['ok' => false, 'message' => $message, 'errors' => $errors], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        if ($code !== 200) {
+            http_response_code($code);
+        }
+        Flash::error($message);
+        $this->redirectBack();
+    }
+
+    private function success(string $message): never
+    {
+        if ($this->wantsJson()) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(['ok' => true, 'message' => $message], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        Flash::success($message);
         $this->redirectBack();
     }
 

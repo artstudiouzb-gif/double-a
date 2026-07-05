@@ -20,6 +20,32 @@ final class FileController
         View::render('admin/files/index', ['items' => FileEntry::all()]);
     }
 
+    /**
+     * JSON-список публичных изображений для модальной «Медиабиблиотеки»
+     * (задача 90). Позволяет переиспользовать уже загруженные файлы.
+     */
+    public function library(): void
+    {
+        Auth::requireLogin();
+        header('Content-Type: application/json; charset=UTF-8');
+
+        $items = [];
+        foreach (FileEntry::all() as $f) {
+            if (($f['access_type'] ?? '') !== 'public') {
+                continue;
+            }
+            if (!str_starts_with((string) $f['mime_type'], 'image/')) {
+                continue;
+            }
+            $items[] = [
+                'url' => FileEntry::publicUrl($f),
+                'name' => (string) $f['original_name'],
+            ];
+        }
+
+        echo json_encode(['items' => $items], JSON_UNESCAPED_UNICODE);
+    }
+
     public function upload(): void
     {
         Auth::requireLogin();
@@ -51,6 +77,16 @@ final class FileController
 
         $file = FileEntry::findById((int) $params['id']);
         if ($file) {
+            // Переиспользование файлов (задача 90): не удаляем файл, который ещё
+            // где-то используется — иначе сломались бы связанные сущности.
+            $publicUrl = FileEntry::publicUrl($file);
+            $refs = \App\Core\MediaCleaner::referenceCount($publicUrl);
+            if ($refs > 0) {
+                Flash::error("Файл используется в {$refs} местах и не может быть удалён. Сначала уберите его из этих записей.");
+                header('Location: /admin/files');
+                exit;
+            }
+
             $basePath = $file['access_type'] === 'protected'
                 ? Config::get('paths.protected_uploads')
                 : Config::get('paths.public_uploads');

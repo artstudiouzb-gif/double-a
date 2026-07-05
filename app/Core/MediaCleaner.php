@@ -72,34 +72,65 @@ final class MediaCleaner
         }
     }
 
-    private static function isReferenced(string $publicUrl): bool
+    public static function isReferenced(string $publicUrl): bool
     {
-        $pdo = Database::pdo();
-        $like = '%' . $publicUrl . '%';
+        return self::referenceCount($publicUrl) > 0;
+    }
 
-        $queries = [
+    /**
+     * Число упоминаний файла во всех таблицах системы (задача 90 —
+     * переиспользование файлов). Файл удаляется с диска только при нуле.
+     */
+    public static function referenceCount(string $publicUrl): int
+    {
+        if ($publicUrl === '') {
+            return 0;
+        }
+        $pdo = Database::pdo();
+        // Для JSON/HTML-полей ищем по имени файла: в JSON слэши экранируются
+        // (\/uploads\/...), поэтому поиск по полному пути даёт ложные нули.
+        // Имена файлов — случайные 32-hex, коллизии исключены.
+        $like = '%' . basename($publicUrl) . '%';
+        $total = 0;
+
+        // LIKE — для полей, где путь встречается внутри JSON/HTML.
+        $likeQueries = [
             'SELECT COUNT(*) FROM blocks WHERE data LIKE :v',
+            'SELECT COUNT(*) FROM news WHERE content LIKE :v',
+            'SELECT COUNT(*) FROM news_translations WHERE content LIKE :v',
+        ];
+        // Точное совпадение — для отдельных полей-ссылок.
+        $exactQueries = [
             'SELECT COUNT(*) FROM news WHERE image = :exact',
+            'SELECT COUNT(*) FROM news_images WHERE path = :exact',
             'SELECT COUNT(*) FROM projects WHERE cover_image = :exact',
             'SELECT COUNT(*) FROM project_images WHERE file_path = :exact',
             'SELECT COUNT(*) FROM team_members WHERE photo = :exact',
             'SELECT COUNT(*) FROM settings WHERE `value` = :exact',
         ];
 
-        foreach ($queries as $sql) {
-            $stmt = $pdo->prepare($sql);
-            if (str_contains($sql, ':v')) {
+        foreach ($likeQueries as $sql) {
+            try {
+                $stmt = $pdo->prepare($sql);
                 $stmt->bindValue(':v', $like);
-            } else {
-                $stmt->bindValue(':exact', $publicUrl);
+                $stmt->execute();
+                $total += (int) $stmt->fetchColumn();
+            } catch (\Throwable $e) {
+                Logger::error('referenceCount (like) failed: ' . $e->getMessage());
             }
-            $stmt->execute();
-            if ((int) $stmt->fetchColumn() > 0) {
-                return true;
+        }
+        foreach ($exactQueries as $sql) {
+            try {
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindValue(':exact', $publicUrl);
+                $stmt->execute();
+                $total += (int) $stmt->fetchColumn();
+            } catch (\Throwable $e) {
+                Logger::error('referenceCount (exact) failed: ' . $e->getMessage());
             }
         }
 
-        return false;
+        return $total;
     }
 
     private static function deletePhysical(string $publicUrl): void

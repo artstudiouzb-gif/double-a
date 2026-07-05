@@ -191,6 +191,19 @@ a { color: var(--color-accent, #e63946); }
     cursor: pointer;
     font-weight: 600;
 }
+.block-form__submit.is-loading { opacity: .7; cursor: progress; }
+
+/* AJAX-состояния публичной формы (задача 67.1) */
+.block-form__field.is-error input,
+.block-form__field.is-error textarea { border-color: var(--color-accent, #e63946); }
+.block-form__error { color: var(--color-accent, #e63946); font-size: 13px; }
+.block-form__message { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 15px; }
+.block-form__message--error { background: #fdecea; color: #c0392b; }
+.block-form__thanks {
+    padding: 24px; border-radius: 12px; background: var(--bg-surface);
+    text-align: center; font-size: 18px; font-weight: 600; animation: fadeIn .4s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .site-alert { padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-size: 15px; }
 .site-alert--success { background: #e6f4ea; color: #1e7e34; }

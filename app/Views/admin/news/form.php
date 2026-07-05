@@ -52,8 +52,8 @@ $languages = Language::active();
                             <textarea name="excerpt"><?= htmlspecialchars($news['excerpt'] ?? '', ENT_QUOTES) ?></textarea>
                         </div>
                         <div class="form-field">
-                            <label>Текст новости (допускается HTML)</label>
-                            <textarea name="content" style="min-height:220px;"><?= htmlspecialchars($news['content'] ?? '', ENT_QUOTES) ?></textarea>
+                            <label>Текст новости</label>
+                            <textarea name="content" data-wysiwyg style="min-height:220px;"><?= htmlspecialchars($news['content'] ?? '', ENT_QUOTES) ?></textarea>
                         </div>
                         <div class="form-field">
                             <label>SEO: meta title</label>
@@ -75,8 +75,8 @@ $languages = Language::active();
                             <textarea name="translations[<?= $code ?>][excerpt]"><?= htmlspecialchars($t['excerpt'] ?? '', ENT_QUOTES) ?></textarea>
                         </div>
                         <div class="form-field">
-                            <label>Текст новости (допускается HTML)</label>
-                            <textarea name="translations[<?= $code ?>][content]" style="min-height:220px;"><?= htmlspecialchars($t['content'] ?? '', ENT_QUOTES) ?></textarea>
+                            <label>Текст новости</label>
+                            <textarea name="translations[<?= $code ?>][content]" data-wysiwyg style="min-height:220px;"><?= htmlspecialchars($t['content'] ?? '', ENT_QUOTES) ?></textarea>
                         </div>
                         <div class="form-field">
                             <label>SEO: meta title</label>
@@ -103,8 +103,11 @@ $languages = Language::active();
             <input type="file" id="image_file" name="image_file" accept="image/*">
         </div>
         <div class="form-field">
-            <label for="image_url">...либо ссылка на изображение</label>
-            <input type="text" id="image_url" name="image_url" value="<?= htmlspecialchars($news['image'] ?? '', ENT_QUOTES) ?>">
+            <label for="image_url">...либо ссылка / из медиабиблиотеки</label>
+            <div style="display:flex;gap:8px;">
+                <input type="text" id="image_url" name="image_url" value="<?= htmlspecialchars($news['image'] ?? '', ENT_QUOTES) ?>" style="flex:1;">
+                <button type="button" class="btn btn--small" data-media-pick data-media-target="#image_url">Медиабиблиотека</button>
+            </div>
         </div>
 
         <div class="form-field">
