@@ -161,6 +161,7 @@ $router->post('/admin/languages/{id}/delete', [AdminLanguageController::class, '
 // --- Admin: конструктор меню ---
 $router->get('/admin/menu', [AdminMenuController::class, 'index']);
 $router->post('/admin/menu/create', [AdminMenuController::class, 'store']);
+$router->post('/admin/menu/reorder', [AdminMenuController::class, 'reorder']);
 $router->post('/admin/menu/{id}/edit', [AdminMenuController::class, 'update']);
 $router->post('/admin/menu/{id}/delete', [AdminMenuController::class, 'destroy']);
 $router->post('/admin/menu/{id}/move', [AdminMenuController::class, 'move']);

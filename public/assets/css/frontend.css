@@ -72,9 +72,29 @@ summary:focus-visible {
 .site-header--logo-center .site-header__zone--right { flex: 1; }
 .site-header--logo-center .site-header__zone--right { margin-left: 0; }
 
-.site-menu { display: flex; gap: 18px; flex-wrap: wrap; }
-.site-menu a { text-decoration: none; color: var(--color-primary, #1a1a1a); font-weight: 600; }
-.site-menu a:hover { color: var(--color-accent, #e63946); }
+.site-menu { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.site-menu a, .site-menu__link { text-decoration: none; color: var(--color-primary, #1a1a1a); font-weight: 600; }
+.site-menu a:hover, .site-menu__link:hover { color: var(--color-accent, #e63946); }
+
+/* Выпадающее подменю (задача 3, группа 3) */
+.site-menu__item { position: relative; }
+.site-menu__item--has-children > .site-menu__link { display: inline-flex; align-items: center; gap: 4px; }
+.site-menu__toggle { background: none; border: 0; cursor: pointer; font-size: 0.8em; color: inherit; padding: 0 2px; line-height: 1; }
+.site-submenu {
+    position: absolute; top: 100%; left: 0; min-width: 180px; z-index: 50;
+    display: none; flex-direction: column; gap: 2px; padding: 8px;
+    background: var(--bg-surface, #fff); border: 1px solid var(--border, #e0e0e0);
+    border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.site-submenu__link { padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+.site-submenu__link:hover { background: var(--bg-muted, #f2f2f2); }
+/* Desktop: раскрытие по hover и по фокусу внутри пункта (клавиатура). */
+@media (hover: hover) {
+    .site-menu__item--has-children:hover > .site-submenu,
+    .site-menu__item--has-children:focus-within > .site-submenu { display: flex; }
+}
+/* Явное раскрытие по клику/тапу (мобильные): JS ставит .is-open на пункт. */
+.site-menu__item.is-open > .site-submenu { display: flex; }
 
 .site-lang-switcher { display: flex; gap: 8px; }
 .site-lang-switcher__item { text-decoration: none; color: #888; font-weight: 600; font-size: 14px; }

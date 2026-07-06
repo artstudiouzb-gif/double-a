@@ -18,6 +18,7 @@ final class MenuController
     {
         Auth::requireSuperAdmin();
         View::render('admin/menu/index', [
+            'tree' => MenuItem::allTree(),
             'items' => MenuItem::all(),
             'pages' => Page::all(),
             'languages' => Language::active(),
@@ -32,6 +33,13 @@ final class MenuController
         [$data, $error] = $this->collectInput();
         if ($error !== null) {
             Flash::error($error);
+            header('Location: /admin/menu');
+            exit;
+        }
+
+        $parentError = MenuItem::validateParent($data['parent_id'], null, $data['lang']);
+        if ($parentError !== null) {
+            Flash::error($parentError);
             header('Location: /admin/menu');
             exit;
         }
@@ -61,10 +69,52 @@ final class MenuController
             exit;
         }
 
+        $parentError = MenuItem::validateParent($data['parent_id'], (int) $item['id'], $data['lang']);
+        if ($parentError !== null) {
+            Flash::error($parentError);
+            header('Location: /admin/menu');
+            exit;
+        }
+
         MenuItem::update((int) $item['id'], $data);
         Flash::success('Пункт меню обновлён.');
         header('Location: /admin/menu');
         exit;
+    }
+
+    /**
+     * AJAX: пакетное сохранение порядка и вложенности (drag-and-drop, задача 3).
+     */
+    public function reorder(): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+        header('Content-Type: application/json');
+
+        $ids = $_POST['id'] ?? [];
+        $parents = $_POST['parent_id'] ?? [];
+        if (!is_array($ids)) {
+            echo json_encode(['ok' => false, 'error' => 'bad_request']);
+            return;
+        }
+
+        $rows = [];
+        foreach (array_values($ids) as $i => $id) {
+            $parent = $parents[$i] ?? '';
+            $rows[] = [
+                'id' => (int) $id,
+                'parent_id' => ($parent === '' || $parent === '0') ? null : (int) $parent,
+                'sort_order' => $i + 1,
+            ];
+        }
+
+        try {
+            MenuItem::reorder($rows);
+            echo json_encode(['ok' => true]);
+        } catch (\Throwable $e) {
+            \App\Core\Logger::warning('Не удалось сохранить порядок меню', ['error' => $e->getMessage()]);
+            echo json_encode(['ok' => false, 'error' => 'server_error']);
+        }
     }
 
     public function destroy(array $params): void
@@ -118,11 +168,15 @@ final class MenuController
             $urlValue = '';
         }
 
+        $parentRaw = trim((string) ($_POST['parent_id'] ?? ''));
+        $parentId = ($parentRaw === '' || $parentRaw === '0') ? null : (int) $parentRaw;
+
         return [[
             'title' => $title,
             'lang' => $lang,
             'url_type' => $urlType,
             'url_value' => $urlValue !== '' ? $urlValue : null,
+            'parent_id' => $parentId,
             'is_active' => !empty($_POST['is_active']),
         ], null];
     }

@@ -47,10 +47,10 @@ final class MenuItem
             );
             $stmt->execute([':lang' => $default]);
 
-            return $stmt->fetchAll();
+            return self::buildTree($stmt->fetchAll());
         }
 
-        return $rows;
+        return self::buildTree($rows);
     }
 
     public static function findById(int $id): ?array
@@ -64,21 +64,26 @@ final class MenuItem
 
     public static function create(array $data): int
     {
+        $parentId = isset($data['parent_id']) && $data['parent_id'] !== null ? (int) $data['parent_id'] : null;
+
+        // Порядок считаем в пределах одного родителя и языка.
         $stmt = Database::pdo()->prepare(
-            'SELECT COALESCE(MAX(sort_order), 0) + 1 FROM menu_items WHERE lang = :lang'
+            'SELECT COALESCE(MAX(sort_order), 0) + 1 FROM menu_items
+             WHERE lang = :lang AND parent_id <=> :parent'
         );
-        $stmt->execute([':lang' => $data['lang']]);
+        $stmt->execute([':lang' => $data['lang'], ':parent' => $parentId]);
         $nextOrder = (int) $stmt->fetchColumn();
 
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO menu_items (lang, title, url_type, url_value, sort_order, is_active, created_at)
-             VALUES (:lang, :title, :url_type, :url_value, :sort_order, :is_active, NOW())'
+            'INSERT INTO menu_items (lang, title, url_type, url_value, parent_id, sort_order, is_active, created_at)
+             VALUES (:lang, :title, :url_type, :url_value, :parent_id, :sort_order, :is_active, NOW())'
         );
         $stmt->execute([
             ':lang' => $data['lang'],
             ':title' => $data['title'],
             ':url_type' => $data['url_type'],
             ':url_value' => $data['url_value'],
+            ':parent_id' => $parentId,
             ':sort_order' => $nextOrder,
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
         ]);
@@ -88,18 +93,173 @@ final class MenuItem
 
     public static function update(int $id, array $data): void
     {
+        $parentId = isset($data['parent_id']) && $data['parent_id'] !== null ? (int) $data['parent_id'] : null;
+
         $stmt = Database::pdo()->prepare(
             'UPDATE menu_items SET lang = :lang, title = :title, url_type = :url_type,
-             url_value = :url_value, is_active = :is_active WHERE id = :id'
+             url_value = :url_value, parent_id = :parent_id, is_active = :is_active WHERE id = :id'
         );
         $stmt->execute([
             ':lang' => $data['lang'],
             ':title' => $data['title'],
             ':url_type' => $data['url_type'],
             ':url_value' => $data['url_value'],
+            ':parent_id' => $parentId,
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
             ':id' => $id,
         ]);
+    }
+
+    /**
+     * Проверяет допустимость назначения родителя (глубина максимум 1 уровень,
+     * без циклов и «внуков»). Возвращает текст ошибки или null, если всё ок.
+     *
+     * @param int|null $selfId id редактируемого пункта (null при создании)
+     */
+    public static function validateParent(?int $parentId, ?int $selfId, string $lang): ?string
+    {
+        if ($parentId === null) {
+            return null; // Пункт верхнего уровня — всегда допустимо.
+        }
+        if ($selfId !== null && $parentId === $selfId) {
+            return 'Пункт не может быть родителем самому себе.';
+        }
+        $parent = self::findById($parentId);
+        if (!$parent) {
+            return 'Выбранный родительский пункт не найден.';
+        }
+        // Глубина ограничена одним уровнем: у родителя не должно быть своего родителя.
+        if ($parent['parent_id'] !== null) {
+            return 'Меню поддерживает только один уровень вложенности.';
+        }
+        // Родитель и потомок должны быть на одном языке (или оба «для всех»).
+        if ((string) $parent['lang'] !== $lang) {
+            return 'Родитель и вложенный пункт должны быть на одном языке.';
+        }
+        // Нельзя вкладывать пункт, у которого уже есть свои дети (появились бы «внуки»).
+        if ($selfId !== null && self::hasChildren($selfId)) {
+            return 'У этого пункта есть вложенные — сначала перенесите или удалите их.';
+        }
+
+        return null;
+    }
+
+    public static function hasChildren(int $id): bool
+    {
+        $stmt = Database::pdo()->prepare('SELECT 1 FROM menu_items WHERE parent_id = :id LIMIT 1');
+        $stmt->execute([':id' => $id]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    /**
+     * Пункты, пригодные быть родителями для указанного языка: только верхнего
+     * уровня (parent_id IS NULL), исключая сам редактируемый пункт.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function parentCandidates(string $lang, ?int $excludeId = null): array
+    {
+        $stmt = Database::pdo()->prepare(
+            'SELECT * FROM menu_items WHERE parent_id IS NULL AND lang = :lang
+             ORDER BY sort_order ASC, id ASC'
+        );
+        $stmt->execute([':lang' => $lang]);
+        $rows = $stmt->fetchAll();
+
+        return array_values(array_filter($rows, static fn ($r) => $excludeId === null || (int) $r['id'] !== $excludeId));
+    }
+
+    /**
+     * Пакетное сохранение порядка и вложенности (AJAX drag-and-drop, задача 3).
+     * Каждый элемент: ['id'=>int, 'parent_id'=>?int, 'sort_order'=>int].
+     * Отклоняет попытки превысить глубину/создать цикл (валидируется на сервере).
+     *
+     * @param array<int,array{id:int,parent_id:?int,sort_order:int}> $rows
+     */
+    public static function reorder(array $rows): void
+    {
+        // Индекс всех пунктов для проверки глубины.
+        $byId = [];
+        foreach (self::all() as $r) {
+            $byId[(int) $r['id']] = $r;
+        }
+        // Множество «будущих» родителей верхнего уровня (после применения).
+        $futureParent = [];
+        foreach ($rows as $row) {
+            $id = (int) $row['id'];
+            if (!isset($byId[$id])) {
+                continue;
+            }
+            $futureParent[$id] = isset($row['parent_id']) && $row['parent_id'] !== null ? (int) $row['parent_id'] : null;
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare('UPDATE menu_items SET parent_id = :parent, sort_order = :order WHERE id = :id');
+            foreach ($rows as $row) {
+                $id = (int) $row['id'];
+                if (!isset($byId[$id])) {
+                    continue;
+                }
+                $parent = $futureParent[$id];
+                // Глубина: родитель не должен сам иметь родителя (после применения).
+                if ($parent !== null) {
+                    if ($parent === $id) {
+                        continue; // сам себе родитель — пропускаем
+                    }
+                    $parentOfParent = $futureParent[$parent] ?? ($byId[$parent]['parent_id'] ?? null);
+                    if ($parentOfParent !== null) {
+                        continue; // превышение глубины — пропускаем этот элемент
+                    }
+                }
+                $stmt->execute([
+                    ':parent' => $parent,
+                    ':order' => (int) ($row['sort_order'] ?? 0),
+                    ':id' => $id,
+                ]);
+            }
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Строит двухуровневое дерево из плоского списка строк: пункты верхнего
+     * уровня получают ключ 'children' с отсортированными дочерними пунктами.
+     *
+     * @param array<int,array<string,mixed>> $rows
+     * @return array<int,array<string,mixed>>
+     */
+    public static function buildTree(array $rows): array
+    {
+        $top = [];
+        $children = [];
+        foreach ($rows as $r) {
+            if ($r['parent_id'] === null) {
+                $r['children'] = [];
+                $top[(int) $r['id']] = $r;
+            } else {
+                $children[(int) $r['parent_id']][] = $r;
+            }
+        }
+        foreach ($children as $parentId => $kids) {
+            if (isset($top[$parentId])) {
+                $top[$parentId]['children'] = $kids;
+            }
+            // «Осиротевшие» дети (родитель неактивен/не в выборке) не показываем.
+        }
+
+        return array_values($top);
+    }
+
+    /** Все пункты в виде дерева (для админки). */
+    public static function allTree(): array
+    {
+        return self::buildTree(self::all());
     }
 
     public static function delete(int $id): void

@@ -67,7 +67,30 @@ if (!empty($menuItems)) {
     $menuHtml = '<nav class="site-menu">';
     foreach ($menuItems as $mi) {
         $url = MenuItem::resolveUrl($mi, $currentLang);
-        $menuHtml .= '<a href="' . htmlspecialchars($url, ENT_QUOTES) . '">' . htmlspecialchars($mi['title'], ENT_QUOTES) . '</a>';
+        // Показываем только активные дочерние пункты.
+        $children = array_values(array_filter(
+            $mi['children'] ?? [],
+            static fn ($c) => (int) $c['is_active'] === 1
+        ));
+
+        if ($children === []) {
+            $menuHtml .= '<a class="site-menu__link" href="' . htmlspecialchars($url, ENT_QUOTES) . '">'
+                . htmlspecialchars($mi['title'], ENT_QUOTES) . '</a>';
+            continue;
+        }
+
+        // Пункт с выпадающим подменю (dropdown на desktop hover/focus, tap на мобильных).
+        $menuHtml .= '<div class="site-menu__item site-menu__item--has-children">';
+        $menuHtml .= '<a class="site-menu__link" href="' . htmlspecialchars($url, ENT_QUOTES) . '">'
+            . htmlspecialchars($mi['title'], ENT_QUOTES) . '</a>';
+        $menuHtml .= '<button type="button" class="site-menu__toggle" aria-expanded="false" aria-label="Открыть подменю">▾</button>';
+        $menuHtml .= '<div class="site-submenu">';
+        foreach ($children as $child) {
+            $childUrl = MenuItem::resolveUrl($child, $currentLang);
+            $menuHtml .= '<a class="site-submenu__link" href="' . htmlspecialchars($childUrl, ENT_QUOTES) . '">'
+                . htmlspecialchars($child['title'], ENT_QUOTES) . '</a>';
+        }
+        $menuHtml .= '</div></div>';
     }
     $menuHtml .= '</nav>';
 }

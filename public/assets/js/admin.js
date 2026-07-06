@@ -285,6 +285,84 @@
         }
     });
 
+    // --- Меню: drag-and-drop сортировка + вложенность (задача 3, группа 3) ---
+    document.querySelectorAll('[data-menu-sortable]').forEach(function (root) {
+        var dragged = null;
+
+        function isChildList(list) { return list.hasAttribute('data-menu-children'); }
+        function draggedHasChildren() {
+            var kids = dragged.querySelector('[data-menu-children]');
+            return kids && kids.querySelector('.menu-node');
+        }
+
+        root.querySelectorAll('.menu-node').forEach(function (node) {
+            node.setAttribute('draggable', 'true');
+        });
+
+        root.addEventListener('dragstart', function (e) {
+            var node = e.target.closest('.menu-node');
+            if (!node) { return; }
+            dragged = node;
+            node.classList.add('is-dragging');
+            try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); } catch (err) {}
+        });
+
+        root.addEventListener('dragend', function () {
+            if (dragged) { dragged.classList.remove('is-dragging'); }
+            dragged = null;
+            persist();
+        });
+
+        // Разрешаем вставку в root и в любой children-список.
+        var lists = [root].concat(Array.prototype.slice.call(root.querySelectorAll('[data-menu-children]')));
+        lists.forEach(function (list) {
+            list.addEventListener('dragover', function (e) {
+                if (!dragged) { return; }
+                // Ограничение глубины 1: пункт со своими детьми нельзя вкладывать.
+                if (isChildList(list) && draggedHasChildren()) { return; }
+                e.preventDefault();
+                e.stopPropagation();
+                var siblings = Array.prototype.slice.call(list.querySelectorAll(':scope > .menu-node:not(.is-dragging)'));
+                var after = null;
+                for (var i = 0; i < siblings.length; i++) {
+                    var box = siblings[i].getBoundingClientRect();
+                    if (e.clientY < box.top + box.height / 2) { after = siblings[i]; break; }
+                }
+                if (after == null) { list.appendChild(dragged); }
+                else { list.insertBefore(dragged, after); }
+                dragged.classList.toggle('menu-node--child', isChildList(list));
+            });
+        });
+
+        function persist() {
+            var ids = [];
+            var parents = [];
+            Array.prototype.forEach.call(root.querySelectorAll(':scope > .menu-node'), function (top) {
+                ids.push(top.getAttribute('data-menu-id'));
+                parents.push('');
+                var childList = top.querySelector(':scope > [data-menu-children]');
+                if (childList) {
+                    Array.prototype.forEach.call(childList.querySelectorAll(':scope > .menu-node'), function (child) {
+                        ids.push(child.getAttribute('data-menu-id'));
+                        parents.push(top.getAttribute('data-menu-id'));
+                    });
+                }
+            });
+
+            var body = new URLSearchParams();
+            body.append('csrf_token', root.getAttribute('data-csrf'));
+            ids.forEach(function (id) { body.append('id[]', id); });
+            parents.forEach(function (p) { body.append('parent_id[]', p); });
+
+            fetch('/admin/menu/reorder', {
+                method: 'POST', body: body, credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(function (r) { return r.json(); })
+              .then(function (res) { if (!res.ok) { alert('Не удалось сохранить меню. Обновите страницу.'); } })
+              .catch(function () { alert('Сетевая ошибка при сохранении меню.'); });
+        }
+    });
+
     // Языковые вкладки: переключение панелей внутри одной группы [data-lang-tabs]
     document.querySelectorAll('[data-lang-tabs]').forEach(function (group) {
         const buttons = group.querySelectorAll('.lang-tab-btn');
