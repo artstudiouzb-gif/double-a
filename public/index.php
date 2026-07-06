@@ -102,6 +102,7 @@ $router->get('/admin/news/{id}/edit', [AdminNewsController::class, 'edit']);
 $router->post('/admin/news/{id}/edit', [AdminNewsController::class, 'update']);
 $router->post('/admin/news/{id}/delete', [AdminNewsController::class, 'destroy']);
 $router->post('/admin/news/{id}/duplicate', [AdminNewsController::class, 'duplicate']);
+$router->post('/admin/news/{id}/social', [AdminNewsController::class, 'pushSocial']);
 
 // --- Admin: страницы + конструктор блоков ---
 $router->get('/admin/pages', [AdminPageController::class, 'index']);
@@ -184,6 +185,10 @@ $router->post('/admin/users/{id}/delete', [\App\Controllers\Admin\UserController
 // --- Admin: настройки дизайна ---
 $router->get('/admin/settings', [SettingsController::class, 'index']);
 $router->post('/admin/settings', [SettingsController::class, 'update']);
+
+// --- Admin: авто-публикация в соцсети (только супер-админ) ---
+$router->get('/admin/social', [\App\Controllers\Admin\SocialController::class, 'index']);
+$router->post('/admin/social', [\App\Controllers\Admin\SocialController::class, 'update']);
 
 // --- Admin: резервное копирование ---
 $router->post('/admin/backup', [\App\Controllers\Admin\BackupController::class, 'create']);

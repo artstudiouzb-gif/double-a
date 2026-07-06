@@ -66,6 +66,11 @@ final class NewsController
         $this->saveTranslations($id);
         $this->handleGallery($id);
 
+        // Авто-публикация в соцсети при создании сразу опубликованной новости.
+        if ($data['status'] === 'published') {
+            \App\Core\SocialSettings::enqueueForNews($id);
+        }
+
         Flash::success('Новость создана.');
         header('Location: /admin/news/' . $id . '/edit');
         exit;
@@ -112,12 +117,41 @@ final class NewsController
             return;
         }
 
+        $wasPublished = ($news['status'] ?? '') === 'published';
         News::update($id, $data);
         $this->saveTranslations($id);
         $this->handleGallery($id);
 
+        // Авто-публикация при переходе черновик -> опубликовано (без повторов).
+        if ($data['status'] === 'published' && !$wasPublished) {
+            \App\Core\SocialSettings::enqueueForNews($id);
+        }
+
         Flash::success('Новость обновлена.');
         header('Location: /admin/news');
+        exit;
+    }
+
+    /** Ручная постановка новости в очередь публикации во все готовые сети. */
+    public function pushSocial(array $params): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyRequest();
+
+        $news = News::findById((int) $params['id']);
+        if (!$news) {
+            http_response_code(404);
+            View::render('errors/404');
+            return;
+        }
+
+        $count = \App\Core\SocialSettings::enqueueForNews((int) $news['id']);
+        if ($count > 0) {
+            Flash::success("Поставлено в очередь публикации: {$count}. Отправка — по расписанию воркера.");
+        } else {
+            Flash::error('Нет настроенных соцсетей. Включите их в разделе «Соцсети».');
+        }
+        header('Location: /admin/news/' . (int) $news['id'] . '/edit');
         exit;
     }
 

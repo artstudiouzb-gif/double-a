@@ -30,6 +30,7 @@ if ($isSuper) {
         'header' => ['/admin/header', 'Шапка сайта'],
         'languages' => ['/admin/languages', 'Языки'],
         'users' => ['/admin/users', 'Пользователи'],
+        'social' => ['/admin/social', 'Соцсети'],
         'settings' => ['/admin/settings', 'Настройки'],
     ];
 }

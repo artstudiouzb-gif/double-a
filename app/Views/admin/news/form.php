@@ -24,6 +24,41 @@ if (!empty($news['published_at'])) {
 $defaultCode = Language::defaultCode();
 $languages = Language::active();
 ?>
+<?php if ($isEdit): ?>
+    <?php
+    $socialPosts = \App\Models\SocialPost::forNews((int) $news['id']);
+    $readyNetworks = \App\Core\SocialSettings::readyNetworks();
+    $netLabels = ['facebook' => 'Facebook', 'linkedin' => 'LinkedIn', 'instagram' => 'Instagram'];
+    ?>
+    <div class="form-card" style="margin-bottom:20px;">
+        <h2 style="margin-top:0;">Соцсети</h2>
+        <?php if (empty($readyNetworks)): ?>
+            <p class="form-hint">Ни одна сеть не настроена. Включите их в разделе
+                <a href="/admin/social">«Соцсети»</a>.</p>
+        <?php else: ?>
+            <?php if (!empty($socialPosts)): ?>
+                <table class="data-table" style="margin-bottom:12px;">
+                    <thead><tr><th>Сеть</th><th>Статус</th><th>Попыток</th><th>Инфо</th></tr></thead>
+                    <tbody>
+                        <?php foreach ($socialPosts as $sp): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($netLabels[$sp['network']] ?? $sp['network'], ENT_QUOTES) ?></td>
+                                <td><span class="badge badge--<?= $sp['status'] === 'sent' ? 'published' : ($sp['status'] === 'failed' ? 'draft' : 'draft') ?>"><?= htmlspecialchars((string) $sp['status'], ENT_QUOTES) ?></span></td>
+                                <td><?= (int) $sp['attempts'] ?></td>
+                                <td><?= htmlspecialchars((string) ($sp['remote_id'] ?: ($sp['last_error'] ?? '')), ENT_QUOTES) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+            <form method="post" action="/admin/news/<?= (int) $news['id'] ?>/social">
+                <?= Csrf::field() ?>
+                <button type="submit" class="btn">Опубликовать в соцсетях сейчас</button>
+                <span class="form-hint">Ставит в очередь; отправку выполняет воркер по Cron.</span>
+            </form>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
 <div class="form-card">
     <?php if ($error): ?><div class="alert alert--error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div><?php endif; ?>
     <form method="post" action="<?= $action ?>" enctype="multipart/form-data" class="form-grid">
