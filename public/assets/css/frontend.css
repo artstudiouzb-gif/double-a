@@ -372,3 +372,36 @@ body.is-preview { outline: 3px solid #b45309; outline-offset: -3px; }
 /* Вложенные блоки не добавляют собственный вертикальный «воздух». */
 .cms-columns__col > .cms-block { padding-top: 0; padding-bottom: 0; }
 @media (max-width: 720px) { .cms-columns--2, .cms-columns--3, .cms-columns--4 { grid-template-columns: 1fr; } }
+
+/* Новые блоки (группа 4): отзывы, счётчики, команда, проекты */
+.block-testimonials__title, .block-counters__title, .block-team__title, .block-projects__title {
+    text-align: center; margin: 0 0 28px;
+}
+.block-testimonials__track {
+    display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding-bottom: 10px; scrollbar-width: thin;
+}
+.testimonial {
+    scroll-snap-align: start; flex: 0 0 min(360px, 85%); margin: 0;
+    background: var(--bg-surface); border-radius: 12px; padding: 24px; text-align: center;
+}
+.testimonial__photo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin: 0 auto 14px; }
+.testimonial__quote { margin: 0 0 14px; font-style: italic; }
+.testimonial__name { display: block; font-weight: 700; }
+.testimonial__company { color: var(--text-muted); font-size: 14px; }
+
+.block-counters__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; text-align: center; }
+.counter__value, .counter__suffix { font-size: clamp(32px, 5vw, 56px); font-weight: 800; color: var(--color-accent, #e63946); line-height: 1; }
+.counter__suffix { margin-left: 2px; }
+.counter__label { margin-top: 8px; color: var(--text-muted); }
+
+.block-team__grid, .block-projects__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+.team-card { text-align: center; }
+.team-card__photo { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; margin-bottom: 12px; }
+.team-card__name { font-weight: 700; }
+.team-card__position { color: var(--text-muted); font-size: 14px; }
+.project-card { display: block; text-decoration: none; color: inherit; background: var(--bg-surface); border-radius: 12px; overflow: hidden; }
+.project-card__cover { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+.project-card__title { font-weight: 700; padding: 12px 14px 0; }
+.project-card__desc { padding: 6px 14px 14px; margin: 0; color: var(--text-muted); font-size: 14px; }
+.block-team__empty, .block-projects__empty { text-align: center; color: var(--text-muted); }

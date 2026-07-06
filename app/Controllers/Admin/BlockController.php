@@ -17,7 +17,7 @@ use App\Models\Page;
 
 final class BlockController
 {
-    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns'];
+    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns', 'testimonials', 'counters', 'team_list', 'projects_list'];
 
     public function store(array $params): void
     {
@@ -387,6 +387,51 @@ final class BlockController
                 $gap = in_array($_POST['gap'] ?? 'medium', ['small', 'medium', 'large'], true)
                     ? (string) $_POST['gap'] : 'medium';
                 return ['columns' => $cols, 'gap' => $gap];
+            case 'testimonials':
+                $items = [];
+                foreach ((array) ($_POST['items'] ?? []) as $item) {
+                    $quote = trim((string) ($item['quote'] ?? ''));
+                    $name = trim((string) ($item['name'] ?? ''));
+                    if ($quote === '' && $name === '') {
+                        continue;
+                    }
+                    $photo = trim((string) ($item['photo'] ?? ''));
+                    $items[] = [
+                        'quote' => TextProcessor::typographPlain($quote, $locale),
+                        'name' => TextProcessor::typographPlain($name, $locale),
+                        'company' => TextProcessor::typographPlain(trim((string) ($item['company'] ?? '')), $locale),
+                        'photo' => \App\Core\UrlGuard::isSafeLink($photo) ? $photo : '',
+                    ];
+                }
+                return [
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'items' => $items,
+                ];
+            case 'counters':
+                $items = [];
+                foreach ((array) ($_POST['items'] ?? []) as $item) {
+                    $value = trim((string) ($item['value'] ?? ''));
+                    $label = trim((string) ($item['label'] ?? ''));
+                    if ($value === '' && $label === '') {
+                        continue;
+                    }
+                    $items[] = [
+                        // Число хранится как целое (для анимации инкремента).
+                        'value' => (int) preg_replace('/\D+/', '', $value),
+                        'suffix' => trim((string) ($item['suffix'] ?? '')),
+                        'label' => TextProcessor::typographPlain($label, $locale),
+                    ];
+                }
+                return [
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'items' => $items,
+                ];
+            case 'team_list':
+            case 'projects_list':
+                return [
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'limit' => max(0, (int) ($_POST['limit'] ?? 0)),
+                ];
             default:
                 return [];
         }

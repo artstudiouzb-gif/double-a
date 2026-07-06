@@ -23,6 +23,10 @@ final class BlockRenderer
         'gallery' => ['title' => '', 'images' => []],
         'form' => ['form_id' => null],
         'columns' => ['columns' => 2, 'gap' => 'medium'],
+        'testimonials' => ['title' => '', 'items' => []],
+        'counters' => ['title' => '', 'items' => []],
+        'team_list' => ['title' => '', 'limit' => 0],
+        'projects_list' => ['title' => '', 'limit' => 3],
     ];
 
     public static function defaultsFor(string $type): array
@@ -188,6 +192,19 @@ final class BlockRenderer
             if ($form !== null) {
                 $data['form'] = $form;
             }
+        }
+
+        // Блоки-обёртки над существующими сущностями (группа 4): выводят
+        // опубликованные записи команды/проектов, ограниченные limit (0 = все).
+        if ($type === 'team_list') {
+            $items = \App\Models\TeamMember::published();
+            $limit = (int) ($data['limit'] ?? 0);
+            $data['members'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
+        }
+        if ($type === 'projects_list') {
+            $items = \App\Models\Project::published();
+            $limit = (int) ($data['limit'] ?? 0);
+            $data['projects'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
         }
 
         return $data;

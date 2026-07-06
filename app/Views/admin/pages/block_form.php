@@ -25,7 +25,7 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             <input type="text" id="title" name="title" value="<?= htmlspecialchars($block['title'] ?? '', ENT_QUOTES) ?>">
         </div>
 
-        <?php if (in_array($type, ['text', 'cta', 'advantages', 'gallery'], true)): ?>
+        <?php if (in_array($type, ['text', 'cta', 'advantages', 'gallery', 'testimonials', 'counters', 'team_list', 'projects_list'], true)): ?>
             <div class="form-field">
                 <label for="title_field">Заголовок, показываемый на сайте</label>
                 <input type="text" id="title_field" name="title_field" value="<?= htmlspecialchars($data['title'] ?? '', ENT_QUOTES) ?>">
@@ -218,6 +218,62 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                     <?php endforeach; ?>
                 </select>
                 <span class="form-hint">Наполнение колонок настраивается на странице: кнопка «+ блок» в каждой колонке.</span>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($type === 'testimonials'): ?>
+            <div>
+                <label>Отзывы (карусель)</label>
+                <div data-repeater="items">
+                    <?php foreach (($data['items'] ?? []) as $i => $item): ?>
+                        <div class="repeater-row">
+                            <div class="form-field"><label>Цитата</label><textarea name="items[<?= $i ?>][quote]"><?= htmlspecialchars($item['quote'] ?? '', ENT_QUOTES) ?></textarea></div>
+                            <div class="form-field"><label>Имя</label><input type="text" name="items[<?= $i ?>][name]" value="<?= htmlspecialchars($item['name'] ?? '', ENT_QUOTES) ?>"></div>
+                            <div class="form-field"><label>Компания</label><input type="text" name="items[<?= $i ?>][company]" value="<?= htmlspecialchars($item['company'] ?? '', ENT_QUOTES) ?>"></div>
+                            <div class="form-field"><label>Фото (URL)</label><input type="text" name="items[<?= $i ?>][photo]" value="<?= htmlspecialchars($item['photo'] ?? '', ENT_QUOTES) ?>" data-media-target="items[<?= $i ?>][photo]"><button type="button" class="btn btn--small" data-media-pick data-media-target="[name='items[<?= $i ?>][photo]']">Из медиатеки</button></div>
+                            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить отзыв</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <template data-repeater-template="items">
+                    <div class="form-field"><label>Цитата</label><textarea name="items[__INDEX__][quote]"></textarea></div>
+                    <div class="form-field"><label>Имя</label><input type="text" name="items[__INDEX__][name]"></div>
+                    <div class="form-field"><label>Компания</label><input type="text" name="items[__INDEX__][company]"></div>
+                    <div class="form-field"><label>Фото (URL)</label><input type="text" name="items[__INDEX__][photo]"></div>
+                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить отзыв</button>
+                </template>
+                <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="items">+ Добавить отзыв</button></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($type === 'counters'): ?>
+            <div>
+                <label>Счётчики</label>
+                <div data-repeater="items">
+                    <?php foreach (($data['items'] ?? []) as $i => $item): ?>
+                        <div class="repeater-row">
+                            <div class="form-field"><label>Число</label><input type="number" name="items[<?= $i ?>][value]" value="<?= (int) ($item['value'] ?? 0) ?>"></div>
+                            <div class="form-field"><label>Суффикс (напр. + или %)</label><input type="text" name="items[<?= $i ?>][suffix]" value="<?= htmlspecialchars($item['suffix'] ?? '', ENT_QUOTES) ?>"></div>
+                            <div class="form-field"><label>Подпись</label><input type="text" name="items[<?= $i ?>][label]" value="<?= htmlspecialchars($item['label'] ?? '', ENT_QUOTES) ?>"></div>
+                            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <template data-repeater-template="items">
+                    <div class="form-field"><label>Число</label><input type="number" name="items[__INDEX__][value]" value="0"></div>
+                    <div class="form-field"><label>Суффикс (напр. + или %)</label><input type="text" name="items[__INDEX__][suffix]"></div>
+                    <div class="form-field"><label>Подпись</label><input type="text" name="items[__INDEX__][label]"></div>
+                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                </template>
+                <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="items">+ Добавить счётчик</button></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($type === 'team_list' || $type === 'projects_list'): ?>
+            <div class="form-field">
+                <label for="limit">Сколько записей показывать (0 — все)</label>
+                <input type="number" id="limit" name="limit" min="0" value="<?= (int) ($data['limit'] ?? 0) ?>">
+                <span class="form-hint">Блок выводит опубликованные записи раздела «<?= $type === 'team_list' ? 'Команда' : 'Проекты' ?>» по порядку сортировки.</span>
             </div>
         <?php endif; ?>
 
