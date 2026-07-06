@@ -17,14 +17,10 @@ require __DIR__ . '/../layout/header.php';
             <input type="text" id="site_name" name="site_name" value="<?= htmlspecialchars($settings['site_name'] ?? '', ENT_QUOTES) ?>">
         </div>
 
-        <div class="form-field">
-            <label for="logo_file">Логотип (файл)</label>
-            <input type="file" id="logo_file" name="logo_file" accept="image/*">
-        </div>
-        <div class="form-field">
-            <label for="logo_url">...либо ссылка на логотип</label>
-            <input type="text" id="logo_url" name="logo_url" value="<?= htmlspecialchars($settings['logo_url'] ?? '', ENT_QUOTES) ?>">
-        </div>
+        <?= \App\Core\AdminUi::imageField('logo_url', $settings['logo_url'] ?? '', [
+            'label' => 'Логотип',
+            'file' => 'logo_file',
+        ]) ?>
 
         <div class="form-field">
             <label for="color_primary">Основной цвет</label>
@@ -114,14 +110,11 @@ require __DIR__ . '/../layout/header.php';
 
         <fieldset class="settings-group">
             <legend>Favicon и PWA</legend>
-            <div class="form-field">
-                <label for="favicon_file">Favicon (.svg/.png, файл)</label>
-                <input type="file" id="favicon_file" name="favicon_file" accept="image/png,image/svg+xml">
-            </div>
-            <div class="form-field">
-                <label for="favicon_url">...либо ссылка на favicon</label>
-                <input type="text" id="favicon_url" name="favicon_url" value="<?= htmlspecialchars($settings['favicon_url'] ?? '', ENT_QUOTES) ?>">
-            </div>
+            <?= \App\Core\AdminUi::imageField('favicon_url', $settings['favicon_url'] ?? '', [
+                'label' => 'Favicon (.svg/.png)',
+                'file' => 'favicon_file',
+                'accept' => 'image/png,image/svg+xml',
+            ]) ?>
             <div class="form-field">
                 <label for="pwa_short_name">Короткое имя приложения (до 12 символов)</label>
                 <input type="text" id="pwa_short_name" name="pwa_short_name" maxlength="12" value="<?= htmlspecialchars($settings['pwa_short_name'] ?? '', ENT_QUOTES) ?>">
@@ -138,14 +131,10 @@ require __DIR__ . '/../layout/header.php';
                 <label for="default_meta_description">Meta Description по умолчанию</label>
                 <input type="text" id="default_meta_description" name="default_meta_description" value="<?= htmlspecialchars($settings['default_meta_description'] ?? '', ENT_QUOTES) ?>">
             </div>
-            <div class="form-field">
-                <label for="default_og_image_file">OG:Image по умолчанию (файл)</label>
-                <input type="file" id="default_og_image_file" name="default_og_image_file" accept="image/*">
-            </div>
-            <div class="form-field">
-                <label for="default_og_image">...либо ссылка на OG:Image</label>
-                <input type="text" id="default_og_image" name="default_og_image" value="<?= htmlspecialchars($settings['default_og_image'] ?? '', ENT_QUOTES) ?>">
-            </div>
+            <?= \App\Core\AdminUi::imageField('default_og_image', $settings['default_og_image'] ?? '', [
+                'label' => 'OG:Image по умолчанию',
+                'file' => 'default_og_image_file',
+            ]) ?>
             <span class="form-hint">Ссылки на соцсети (Telegram/YouTube/VK/Instagram) настраиваются в разделе «Шапка сайта».</span>
         </fieldset>
 

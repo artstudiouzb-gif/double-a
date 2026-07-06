@@ -59,11 +59,12 @@ $languages = Language::active();
         <?php endif; ?>
     </div>
 <?php endif; ?>
-<div class="form-card">
-    <?php if ($error): ?><div class="alert alert--error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div><?php endif; ?>
-    <form method="post" action="<?= $action ?>" enctype="multipart/form-data" class="form-grid">
-        <?= Csrf::field() ?>
-
+<?php if ($error): ?><div class="alert alert--error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div><?php endif; ?>
+<form method="post" action="<?= $action ?>" enctype="multipart/form-data">
+    <?= Csrf::field() ?>
+    <div class="entry-grid">
+    <div class="entry-main">
+    <div class="form-card">
         <div data-lang-tabs>
             <div class="lang-tabs">
                 <?php foreach ($languages as $i => $lang): ?>
@@ -125,25 +126,16 @@ $languages = Language::active();
                 </div>
             <?php endforeach; ?>
         </div>
+    </div>
 
-        <hr style="border:none;border-top:1px solid var(--admin-border);margin:6px 0;">
-
-        <div class="form-field">
-            <label for="slug">ЧПУ (slug) — общий для всех языков</label>
-            <input type="text" id="slug" name="slug" value="<?= htmlspecialchars($news['slug'] ?? '', ENT_QUOTES) ?>" placeholder="оставьте пустым для автогенерации">
-        </div>
-
-        <div class="form-field">
-            <label for="image_file">Изображение (файл)</label>
-            <input type="file" id="image_file" name="image_file" accept="image/*">
-        </div>
-        <div class="form-field">
-            <label for="image_url">...либо ссылка / из медиабиблиотеки</label>
-            <div style="display:flex;gap:8px;">
-                <input type="text" id="image_url" name="image_url" value="<?= htmlspecialchars($news['image'] ?? '', ENT_QUOTES) ?>" style="flex:1;">
-                <button type="button" class="btn btn--small" data-media-pick data-media-target="#image_url">Медиабиблиотека</button>
-            </div>
-        </div>
+    <div class="form-card">
+        <h2 style="margin-top:0;">Медиа и отображение</h2>
+        <div class="form-grid">
+        <?= \App\Core\AdminUi::imageField('image_url', $news['image'] ?? '', [
+            'label' => 'Изображение (обложка)',
+            'file' => 'image_file',
+            'hint' => 'Выберите из медиабиблиотеки, вставьте URL или загрузите файл.',
+        ]) ?>
 
         <div class="form-field">
             <label>Фокальная точка обложки (%, для кадрирования на мобильных)</label>
@@ -194,27 +186,39 @@ $languages = Language::active();
             <input type="file" name="news_gallery[]" accept="image/*" multiple>
             <span class="form-hint">Можно выбрать несколько фото. Они сжимаются и конвертируются в WebP автоматически.</span>
         </div>
-
-        <div class="form-field">
-            <label for="status">Статус</label>
-            <select id="status" name="status">
-                <option value="draft" <?= ($news['status'] ?? 'draft') === 'draft' ? 'selected' : '' ?>>Черновик</option>
-                <option value="published" <?= ($news['status'] ?? '') === 'published' ? 'selected' : '' ?>>Опубликовано</option>
-            </select>
         </div>
+    </div>
+    </div>
 
-        <div class="form-field">
-            <label for="published_at">Дата публикации</label>
-            <input type="datetime-local" id="published_at" name="published_at" value="<?= htmlspecialchars($publishedAtValue, ENT_QUOTES) ?>">
+    <aside class="entry-side">
+        <div class="form-card">
+            <h2 style="margin-top:0;">Публикация</h2>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="status">Статус</label>
+                    <select id="status" name="status">
+                        <option value="draft" <?= ($news['status'] ?? 'draft') === 'draft' ? 'selected' : '' ?>>Черновик</option>
+                        <option value="published" <?= ($news['status'] ?? '') === 'published' ? 'selected' : '' ?>>Опубликовано</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="published_at">Дата публикации</label>
+                    <input type="datetime-local" id="published_at" name="published_at" value="<?= htmlspecialchars($publishedAtValue, ENT_QUOTES) ?>">
+                </div>
+                <div class="form-field">
+                    <label for="slug">ЧПУ (slug) — общий для всех языков</label>
+                    <input type="text" id="slug" name="slug" value="<?= htmlspecialchars($news['slug'] ?? '', ENT_QUOTES) ?>" placeholder="оставьте пустым для автогенерации">
+                </div>
+            </div>
+            <div class="form-actions" style="margin-top:18px;">
+                <button type="submit" class="btn btn--primary">Сохранить</button>
+                <a href="/admin/news" class="btn">Отмена</a>
+                <?php if ($isEdit): ?>
+                    <a href="/admin/news/<?= (int) $news['id'] ?>/preview" class="btn" target="_blank" rel="noopener">Предпросмотр ↗</a>
+                <?php endif; ?>
+            </div>
         </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
-            <a href="/admin/news" class="btn">Отмена</a>
-            <?php if ($isEdit): ?>
-                <a href="/admin/news/<?= (int) $news['id'] ?>/preview" class="btn" target="_blank" rel="noopener">Предпросмотр ↗</a>
-            <?php endif; ?>
-        </div>
-    </form>
-</div>
+    </aside>
+    </div>
+</form>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

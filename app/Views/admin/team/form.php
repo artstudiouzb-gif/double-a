@@ -28,14 +28,10 @@ $socials = $member['socials'] ?? [];
             <input type="text" id="position" name="position" value="<?= htmlspecialchars($member['position'] ?? '', ENT_QUOTES) ?>">
         </div>
 
-        <div class="form-field">
-            <label for="photo_file">Фото (файл)</label>
-            <input type="file" id="photo_file" name="photo_file" accept="image/*">
-        </div>
-        <div class="form-field">
-            <label for="photo_url">...либо ссылка на фото</label>
-            <input type="text" id="photo_url" name="photo_url" value="<?= htmlspecialchars($member['photo'] ?? '', ENT_QUOTES) ?>">
-        </div>
+        <?= \App\Core\AdminUi::imageField('photo_url', $member['photo'] ?? '', [
+            'label' => 'Фото сотрудника',
+            'file' => 'photo_file',
+        ]) ?>
 
         <div class="form-field">
             <label for="email">Email</label>

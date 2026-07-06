@@ -34,6 +34,15 @@ final class ContentFields
         $type = (string) $field['field_type'];
         $v = htmlspecialchars(is_scalar($value) ? (string) $value : '', ENT_QUOTES);
 
+        // Изображение: выбор из медиабиблиотеки + превью (единое поле AdminUi).
+        if ($type === 'image') {
+            return AdminUi::imageField(
+                self::inputName($field, $prefix),
+                is_scalar($value) ? (string) $value : '',
+                ['label' => (string) $field['label']]
+            );
+        }
+
         $html = '<div class="form-field"><label for="' . $id . '">' . $label . '</label>';
 
         switch ($type) {

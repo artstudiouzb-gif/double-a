@@ -34,14 +34,10 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
             <textarea id="description" name="description" style="min-height:160px;"><?= htmlspecialchars($project['description'] ?? '', ENT_QUOTES) ?></textarea>
         </div>
 
-        <div class="form-field">
-            <label for="cover_image_file">Обложка (файл)</label>
-            <input type="file" id="cover_image_file" name="cover_image_file" accept="image/*">
-        </div>
-        <div class="form-field">
-            <label for="cover_image_url">...либо ссылка на обложку</label>
-            <input type="text" id="cover_image_url" name="cover_image_url" value="<?= htmlspecialchars($project['cover_image'] ?? '', ENT_QUOTES) ?>">
-        </div>
+        <?= \App\Core\AdminUi::imageField('cover_image_url', $project['cover_image'] ?? '', [
+            'label' => 'Обложка проекта',
+            'file' => 'cover_image_file',
+        ]) ?>
 
         <div class="form-field">
             <label for="status">Статус</label>

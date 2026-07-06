@@ -229,6 +229,62 @@
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
     })();
 
+    // --- Поле изображения с превью (медиабиблиотека / URL / загрузка файла) ---
+    (function () {
+        function setPreview(field, src) {
+            var box = field.querySelector('[data-image-preview]');
+            if (!box) { return; }
+            if (src) {
+                box.innerHTML = '';
+                var img = document.createElement('img');
+                img.src = src; img.alt = ''; img.loading = 'lazy';
+                box.appendChild(img);
+            } else {
+                box.innerHTML = '<span class="image-field__placeholder" aria-hidden="true">'
+                    + '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+                    + '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5 18l5-5 4 4 3-3 2 2"/></svg></span>';
+            }
+        }
+        // URL-инпут (в т.ч. установленный медиабиблиотекой — она шлёт change).
+        document.addEventListener('input', function (e) {
+            var input = e.target.closest('[data-image-input]');
+            if (!input) { return; }
+            var field = input.closest('[data-image-field]');
+            if (field) { setPreview(field, input.value.trim()); }
+        });
+        document.addEventListener('change', function (e) {
+            var input = e.target.closest('[data-image-input]');
+            if (input) {
+                var f = input.closest('[data-image-field]');
+                if (f) { setPreview(f, input.value.trim()); }
+                return;
+            }
+            // Локальное превью выбранного файла (до загрузки на сервер).
+            var file = e.target.closest('[data-image-file]');
+            if (file && file.files && file.files[0]) {
+                var field = file.closest('[data-image-field]');
+                if (field && window.FileReader) {
+                    var reader = new FileReader();
+                    reader.onload = function (ev) { setPreview(field, ev.target.result); };
+                    reader.readAsDataURL(file.files[0]);
+                }
+            }
+        });
+        // Очистка.
+        document.addEventListener('click', function (e) {
+            var clear = e.target.closest('[data-image-clear]');
+            if (!clear) { return; }
+            e.preventDefault();
+            var field = clear.closest('[data-image-field]');
+            if (!field) { return; }
+            var input = field.querySelector('[data-image-input]');
+            var file = field.querySelector('[data-image-file]');
+            if (input) { input.value = ''; }
+            if (file) { file.value = ''; }
+            setPreview(field, '');
+        });
+    })();
+
     // --- Автономный WYSIWYG (задача 75): инициализация на textarea[data-wysiwyg] ---
     if (window.ArtEditor) {
         document.querySelectorAll('textarea[data-wysiwyg]').forEach(function (ta) {

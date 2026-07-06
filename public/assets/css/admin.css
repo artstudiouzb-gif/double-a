@@ -413,3 +413,38 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 @media (max-width: 640px) {
     .data-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
+
+/* ============================================================================
+   Поле изображения с превью (медиабиблиотека)
+   ============================================================================ */
+.image-field__row { display: flex; gap: 14px; align-items: flex-start; }
+.image-field__preview {
+    flex-shrink: 0; width: 96px; height: 96px; border-radius: 10px;
+    border: 1px solid var(--admin-border); background: #fafbfc;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.image-field__preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-field__placeholder { color: #b8bdc7; }
+.image-field__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.image-field__controls { display: flex; gap: 8px; align-items: center; }
+.image-field__controls input[type="text"] { flex: 1; min-width: 0; }
+.image-field__upload { display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 560px) {
+    .image-field__row { flex-direction: column; }
+    .image-field__preview { width: 100%; height: 160px; }
+}
+
+/* ============================================================================
+   Двухколоночная раскладка редактора (в духе Statamic)
+   ============================================================================ */
+.entry-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+.entry-main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.entry-main .form-card { max-width: none; }
+.entry-side { display: flex; flex-direction: column; gap: 20px; position: sticky; top: calc(var(--admin-topbar-h) + 20px); }
+.entry-side .form-card { max-width: none; }
+/* Поля внутри языковых панелей получают вертикальный ритм. */
+.lang-tab-panel.is-active { display: flex; flex-direction: column; gap: 16px; }
+@media (max-width: 900px) {
+    .entry-grid { grid-template-columns: 1fr; }
+    .entry-side { position: static; }
+}
