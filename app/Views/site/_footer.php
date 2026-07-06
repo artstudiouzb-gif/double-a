@@ -23,9 +23,11 @@ if ($privacyPageId > 0) {
     &copy; <?= date('Y') ?> <?= htmlspecialchars($siteName, ENT_QUOTES) ?>
 </div>
 </main>
+<?php if (empty($hideChrome)): // лендинг (группа 6) скрывает футер сайта ?>
 <footer class="site-footer">
     <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($siteName, ENT_QUOTES) ?></p>
 </footer>
+<?php endif; ?>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/frontend.js'), ENT_QUOTES) ?>"></script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/forms.js'), ENT_QUOTES) ?>" defer></script>
 <?= \App\Core\AssetCollector::renderScripts() /* JS блоков — по одному разу */ ?>
@@ -34,6 +36,11 @@ if ($privacyPageId > 0) {
 <script type="text/plain" id="analytics-init"><?= $analyticsInit ?></script>
 <script>window.__consent = {required: <?= $consentRequired ? 'true' : 'false' ?>, privacyUrl: <?= json_encode($privacyUrl, JSON_UNESCAPED_SLASHES) ?>};</script>
 <script src="/assets/js/consent.js" defer></script>
+<?php endif; ?>
+<?php // Глобальный произвольный JS (группа 6, супер-админ). ?>
+<?php $globalJs = Setting::get('custom_js_global', ''); ?>
+<?php if (trim($globalJs) !== ''): ?>
+<script><?= $globalJs ?></script>
 <?php endif; ?>
 </body>
 </html>

@@ -158,6 +158,20 @@ require __DIR__ . '/../layout/header.php';
             <input type="text" id="maintenance_message" name="maintenance_message" value="<?= htmlspecialchars($settings['maintenance_message'] ?? '', ENT_QUOTES) ?>" placeholder="Сайт временно закрыт на техническое обслуживание.">
         </div>
 
+        <fieldset class="settings-group">
+            <legend>Произвольный код сайта (группа 6)</legend>
+            <p class="form-hint">Глобальные CSS/JS для всего сайта вне блоков. Доступно только супер-администратору; подключается один раз на каждой странице.</p>
+            <div class="form-field">
+                <label for="custom_css_global">Глобальный CSS</label>
+                <textarea id="custom_css_global" name="custom_css_global" rows="5" style="font-family:monospace;"><?= htmlspecialchars($settings['custom_css_global'] ?? '', ENT_QUOTES) ?></textarea>
+            </div>
+            <div class="form-field">
+                <label for="custom_js_global">Глобальный JS (без тегов &lt;script&gt;)</label>
+                <textarea id="custom_js_global" name="custom_js_global" rows="5" style="font-family:monospace;"><?= htmlspecialchars($settings['custom_js_global'] ?? '', ENT_QUOTES) ?></textarea>
+                <span class="form-hint">Выполняется в браузере посетителя. Вставляйте только доверенный код.</span>
+            </div>
+        </fieldset>
+
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Сохранить настройки</button>
         </div>

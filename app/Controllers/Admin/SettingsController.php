@@ -71,6 +71,12 @@ final class SettingsController
         Setting::set('maintenance_mode', !empty($_POST['maintenance_mode']) ? '1' : '0');
         Setting::set('maintenance_message', trim((string) ($_POST['maintenance_message'] ?? '')));
 
+        // Глобальный произвольный CSS/JS вне блоков (группа 6). Доступ уже
+        // ограничен супер-администратором (requireSuperAdmin выше) — хранится
+        // как есть (доверенный источник), выводится на фронте один раз.
+        Setting::set('custom_css_global', (string) ($_POST['custom_css_global'] ?? ''));
+        Setting::set('custom_js_global', (string) ($_POST['custom_js_global'] ?? ''));
+
         Flash::success('Настройки сохранены.');
         header('Location: /admin/settings');
         exit;

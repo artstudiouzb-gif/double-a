@@ -242,6 +242,7 @@ final class PageController
             'status' => $status,
             'is_home' => $isHome,
             'layout_type' => $layoutType,
+            'hide_chrome' => !empty($_POST['hide_chrome']), // лендинг (группа 6)
         ];
 
         return [$data, null];

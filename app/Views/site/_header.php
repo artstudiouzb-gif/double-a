@@ -212,6 +212,13 @@ $zones['right'] .= $langHtml . $socialHtml . $ctaHtml . $themeToggle;
 <?= $extraHeadCss ?>
 </style>
 <?php endif; ?>
+<?php // Глобальный произвольный CSS (группа 6, супер-админ). ?>
+<?php $globalCss = Setting::get('custom_css_global', ''); ?>
+<?php if (trim($globalCss) !== ''): ?>
+<style id="global-custom-css">
+<?= $globalCss ?>
+</style>
+<?php endif; ?>
 </head>
 <body<?= !empty($previewNotice) ? ' class="is-preview"' : '' ?>>
 <a href="#main-content" class="skip-link">Перейти к содержимому</a>
@@ -220,6 +227,7 @@ $zones['right'] .= $langHtml . $socialHtml . $ctaHtml . $themeToggle;
     👁 Режим предпросмотра — эта версия не опубликована и закрыта от индексации.
 </div>
 <?php endif; ?>
+<?php if (empty($hideChrome)): // лендинг (группа 6) скрывает шапку сайта ?>
 <header class="site-header site-header--logo-<?= htmlspecialchars($hcfg['logo_position'], ENT_QUOTES) ?>">
     <div class="site-header__inner">
         <div class="site-header__zone site-header__zone--left"><?= $zones['left'] ?></div>
@@ -227,6 +235,7 @@ $zones['right'] .= $langHtml . $socialHtml . $ctaHtml . $themeToggle;
         <div class="site-header__zone site-header__zone--right"><?= $zones['right'] ?></div>
     </div>
 </header>
+<?php endif; ?>
 <main class="site-content" id="main-content">
 <div class="print-only print-header">
     <?php if ($logo !== ''): ?>

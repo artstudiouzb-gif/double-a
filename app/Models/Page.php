@@ -187,8 +187,8 @@ final class Page
             }
 
             $stmt = $pdo->prepare(
-                'INSERT INTO pages (title, slug, meta_title, meta_description, status, is_home, layout_type, created_at)
-                 VALUES (:title, :slug, :meta_title, :meta_description, :status, :is_home, :layout_type, NOW())'
+                'INSERT INTO pages (title, slug, meta_title, meta_description, status, is_home, layout_type, hide_chrome, created_at)
+                 VALUES (:title, :slug, :meta_title, :meta_description, :status, :is_home, :layout_type, :hide_chrome, NOW())'
             );
             $stmt->execute([
                 ':title' => $data['title'],
@@ -198,6 +198,7 @@ final class Page
                 ':status' => $data['status'],
                 ':is_home' => !empty($data['is_home']) ? 1 : 0,
                 ':layout_type' => $data['layout_type'] ?? 'no_sidebar',
+                ':hide_chrome' => !empty($data['hide_chrome']) ? 1 : 0,
             ]);
             $id = (int) $pdo->lastInsertId();
 
@@ -223,7 +224,7 @@ final class Page
             $stmt = $pdo->prepare(
                 'UPDATE pages SET title = :title, slug = :slug, meta_title = :meta_title,
                  meta_description = :meta_description, status = :status, is_home = :is_home,
-                 layout_type = :layout_type WHERE id = :id'
+                 layout_type = :layout_type, hide_chrome = :hide_chrome WHERE id = :id'
             );
             $stmt->execute([
                 ':title' => $data['title'],
@@ -233,6 +234,7 @@ final class Page
                 ':status' => $data['status'],
                 ':is_home' => !empty($data['is_home']) ? 1 : 0,
                 ':layout_type' => $data['layout_type'] ?? 'no_sidebar',
+                ':hide_chrome' => !empty($data['hide_chrome']) ? 1 : 0,
                 ':id' => $id,
             ]);
 

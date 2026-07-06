@@ -125,6 +125,11 @@ foreach ($blocks as $b) {
             <label for="is_home">Сделать главной страницей сайта</label>
         </div>
 
+        <div class="form-field form-field--checkbox">
+            <input type="checkbox" id="hide_chrome" name="hide_chrome" value="1" <?= !empty($page['hide_chrome']) ? 'checked' : '' ?>>
+            <label for="hide_chrome">Лендинг: скрыть шапку и футер сайта</label>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Сохранить</button>
             <a href="/admin/pages" class="btn">Отмена</a>

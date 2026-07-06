@@ -9,6 +9,7 @@
 $metaTitle = $page['meta_title'] ?: $page['title'];
 $metaDescription = $page['meta_description'] ?? '';
 $extraHeadCss = $blockCss;
+$hideChrome = !empty($page['hide_chrome']); // лендинг (группа 6)
 require __DIR__ . '/_header.php';
 
 $hasSidebar = $sidebar !== null && trim($sidebar['html']) !== '';
