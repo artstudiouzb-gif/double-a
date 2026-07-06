@@ -135,8 +135,16 @@ $blockTypeLabels = [
         <p class="form-hint">На этом языке блоков пока нет.</p>
     <?php endif; ?>
 
+    <?php if (!empty($blocks)): ?>
+        <p class="form-hint">Перетаскивайте блоки за значок ⠿ для изменения порядка (сохраняется автоматически).</p>
+    <?php endif; ?>
+    <div class="block-list" data-block-sortable
+         data-page-id="<?= (int) $page['id'] ?>"
+         data-block-lang="<?= htmlspecialchars($blockLang, ENT_QUOTES) ?>"
+         data-csrf="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES) ?>">
     <?php foreach ($blocks as $index => $block): ?>
-        <div class="block-list-item">
+        <div class="block-list-item" draggable="true" data-block-id="<?= (int) $block['id'] ?>">
+            <span class="block-list-item__handle" title="Перетащить" aria-hidden="true">⠿</span>
             <div class="block-list-item__meta">
                 <strong><?= htmlspecialchars($block['title'] ?: ('Блок #' . $block['id']), ENT_QUOTES) ?></strong>
                 <span class="block-list-item__type"><?= htmlspecialchars($blockTypeLabels[$block['type']] ?? $block['type'], ENT_QUOTES) ?></span>
@@ -160,6 +168,35 @@ $blockTypeLabels = [
             </div>
         </div>
     <?php endforeach; ?>
+    </div>
+
+    <?php $snippets = \App\Models\BlockSnippet::all(); ?>
+    <div class="form-card" style="margin-top:16px;">
+        <h3 style="margin-top:0;">Шаблоны блоков</h3>
+        <div class="snippet-tools">
+            <form method="post" action="/admin/pages/<?= (int) $page['id'] ?>/snippets/save" class="snippet-tools__row">
+                <?= Csrf::field() ?>
+                <input type="hidden" name="block_lang" value="<?= htmlspecialchars($blockLang, ENT_QUOTES) ?>">
+                <input type="text" name="snippet_name" placeholder="Название шаблона" required>
+                <button type="submit" class="btn btn--small">Сохранить блоки как шаблон</button>
+            </form>
+            <?php if (!empty($snippets)): ?>
+                <form method="post" action="/admin/pages/<?= (int) $page['id'] ?>/snippets/insert" class="snippet-tools__row">
+                    <?= Csrf::field() ?>
+                    <input type="hidden" name="block_lang" value="<?= htmlspecialchars($blockLang, ENT_QUOTES) ?>">
+                    <select name="snippet_id" required>
+                        <option value="">— выберите шаблон —</option>
+                        <?php foreach ($snippets as $s): ?>
+                            <option value="<?= (int) $s['id'] ?>"><?= htmlspecialchars((string) $s['name'], ENT_QUOTES) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="submit" class="btn btn--small">Вставить шаблон</button>
+                </form>
+            <?php else: ?>
+                <p class="form-hint">Пока нет сохранённых шаблонов.</p>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <div class="form-card" style="margin-top:20px;">
         <form method="post" action="/admin/pages/<?= (int) $page['id'] ?>/blocks/add" class="form-grid">

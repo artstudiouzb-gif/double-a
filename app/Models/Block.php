@@ -88,6 +88,39 @@ final class Block
         $stmt->execute([':id' => $id]);
     }
 
+    /**
+     * Устанавливает порядок блоков по заданному списку id (drag-and-drop,
+     * задача 134). Учитываются только блоки, реально принадлежащие странице
+     * и языку; посторонние id игнорируются.
+     *
+     * @param array<int, int> $orderedIds
+     */
+    public static function reorder(int $pageId, string $lang, array $orderedIds): void
+    {
+        $valid = [];
+        foreach (self::forPage($pageId, $lang) as $block) {
+            $valid[(int) $block['id']] = true;
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare('UPDATE blocks SET sort_order = :order WHERE id = :id AND page_id = :pid AND lang = :lang');
+            $order = 1;
+            foreach ($orderedIds as $id) {
+                $id = (int) $id;
+                if (!isset($valid[$id])) {
+                    continue;
+                }
+                $stmt->execute([':order' => $order++, ':id' => $id, ':pid' => $pageId, ':lang' => $lang]);
+            }
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
     public static function moveUp(int $id, int $pageId, string $lang): void
     {
         self::swap($id, $pageId, $lang, 'up');

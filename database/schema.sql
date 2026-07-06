@@ -399,6 +399,16 @@ CREATE TABLE IF NOT EXISTS social_posts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- Библиотека шаблонов блоков (сниппеты, этап 16.1)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS block_snippets (
+    id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(190) NOT NULL,
+    blocks_json LONGTEXT NOT NULL,
+    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- Применённые миграции (для CLI database/migrate.php)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS migrations (
@@ -418,7 +428,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_05_mail_queue.sql'),
     ('2026_07_05_security_block11.sql'),
     ('2026_07_05_news_media.sql'),
-    ('2026_07_05_social_posts.sql')
+    ('2026_07_05_social_posts.sql'),
+    ('2026_07_06_block_snippets.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -132,6 +132,37 @@ final class BlockController
         exit;
     }
 
+    /** AJAX-сохранение нового порядка блоков (drag-and-drop, задача 134). */
+    public function reorder(): void
+    {
+        Auth::requireLogin();
+        header('Content-Type: application/json; charset=UTF-8');
+
+        if (!Csrf::verify($_POST['csrf_token'] ?? null)) {
+            http_response_code(419);
+            echo json_encode(['ok' => false, 'error' => 'CSRF']);
+            return;
+        }
+
+        $pageId = (int) ($_POST['page_id'] ?? 0);
+        $lang = (string) ($_POST['block_lang'] ?? Language::defaultCode());
+        if (!Language::isActive($lang)) {
+            $lang = Language::defaultCode();
+        }
+        $order = array_map('intval', (array) ($_POST['order'] ?? []));
+
+        if ($pageId <= 0 || $order === []) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'bad params']);
+            return;
+        }
+
+        Block::reorder($pageId, $lang, $order);
+        \App\Core\Cache::forgetPrefix('page:' . $pageId);
+
+        echo json_encode(['ok' => true]);
+    }
+
     public function move(array $params): void
     {
         Auth::requireLogin();

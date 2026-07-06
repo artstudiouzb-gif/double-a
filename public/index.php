@@ -118,6 +118,12 @@ $router->get('/admin/blocks/{id}/edit', [AdminBlockController::class, 'edit']);
 $router->post('/admin/blocks/{id}/edit', [AdminBlockController::class, 'update']);
 $router->post('/admin/blocks/{id}/delete', [AdminBlockController::class, 'destroy']);
 $router->post('/admin/blocks/{id}/move', [AdminBlockController::class, 'move']);
+$router->post('/admin/blocks/reorder', [AdminBlockController::class, 'reorder']);
+
+// --- Admin: шаблоны блоков (сниппеты, задача 133) ---
+$router->post('/admin/pages/{id}/snippets/save', [\App\Controllers\Admin\SnippetController::class, 'save']);
+$router->post('/admin/pages/{id}/snippets/insert', [\App\Controllers\Admin\SnippetController::class, 'insert']);
+$router->post('/admin/snippets/{id}/delete', [\App\Controllers\Admin\SnippetController::class, 'destroy']);
 
 // --- Admin: проекты ---
 $router->get('/admin/projects', [AdminProjectController::class, 'index']);

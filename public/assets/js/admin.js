@@ -235,6 +235,55 @@
         });
     }
 
+    // --- Drag-and-drop сортировка блоков (задача 134, нативный HTML5 DnD) ---
+    document.querySelectorAll('[data-block-sortable]').forEach(function (list) {
+        var dragged = null;
+
+        list.querySelectorAll('.block-list-item').forEach(function (item) {
+            item.addEventListener('dragstart', function (e) {
+                dragged = item;
+                item.classList.add('is-dragging');
+                try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); } catch (err) {}
+            });
+            item.addEventListener('dragend', function () {
+                item.classList.remove('is-dragging');
+                persist();
+            });
+        });
+
+        list.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            if (!dragged) { return; }
+            var after = null;
+            var items = Array.prototype.slice.call(list.querySelectorAll('.block-list-item:not(.is-dragging)'));
+            for (var i = 0; i < items.length; i++) {
+                var box = items[i].getBoundingClientRect();
+                if (e.clientY < box.top + box.height / 2) { after = items[i]; break; }
+            }
+            if (after == null) { list.appendChild(dragged); }
+            else { list.insertBefore(dragged, after); }
+        });
+
+        function persist() {
+            var order = Array.prototype.map.call(
+                list.querySelectorAll('.block-list-item'),
+                function (el) { return el.getAttribute('data-block-id'); }
+            );
+            var body = new URLSearchParams();
+            body.append('csrf_token', list.getAttribute('data-csrf'));
+            body.append('page_id', list.getAttribute('data-page-id'));
+            body.append('block_lang', list.getAttribute('data-block-lang'));
+            order.forEach(function (id) { body.append('order[]', id); });
+
+            fetch('/admin/blocks/reorder', {
+                method: 'POST', body: body, credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(function (r) { return r.json(); })
+              .then(function (res) { if (!res.ok) { alert('Не удалось сохранить порядок.'); } })
+              .catch(function () { alert('Сетевая ошибка при сохранении порядка.'); });
+        }
+    });
+
     // Языковые вкладки: переключение панелей внутри одной группы [data-lang-tabs]
     document.querySelectorAll('[data-lang-tabs]').forEach(function (group) {
         const buttons = group.querySelectorAll('.lang-tab-btn');
