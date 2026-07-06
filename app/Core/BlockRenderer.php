@@ -22,6 +22,7 @@ final class BlockRenderer
         'slider' => ['slides' => []],
         'gallery' => ['title' => '', 'images' => []],
         'form' => ['form_id' => null],
+        'columns' => ['columns' => 2, 'gap' => 'medium'],
     ];
 
     public static function defaultsFor(string $type): array
@@ -47,14 +48,24 @@ final class BlockRenderer
         $data = array_merge(self::defaultsFor($type), $data);
         $data = self::enrichData($type, $data);
 
-        $templateFile = dirname(__DIR__, 2) . '/templates/blocks/' . $type . '.php';
-        $html = is_file($templateFile)
-            ? self::renderTemplate($templateFile, $data, $blockId)
-            : '<!-- Неизвестный тип блока: ' . htmlspecialchars($type, ENT_QUOTES) . ' -->';
+        // Блок «columns» (группа 4.1): рендерим вложенные блоки, сгруппированные
+        // по колонкам. Дочерние блоки — обычные блоки со своими scoped-стилями.
+        $childrenCss = '';
+        if ($type === 'columns') {
+            [$html, $childrenCss] = self::renderColumns($block, $data);
+        } else {
+            $templateFile = dirname(__DIR__, 2) . '/templates/blocks/' . $type . '.php';
+            $html = is_file($templateFile)
+                ? self::renderTemplate($templateFile, $data, $blockId)
+                : '<!-- Неизвестный тип блока: ' . htmlspecialchars($type, ENT_QUOTES) . ' -->';
+        }
 
         $scopedCss = '';
         if (!empty($block['custom_css'])) {
             $scopedCss = CssScoper::scope((string) $block['custom_css'], '#block-' . $blockId);
+        }
+        if ($childrenCss !== '') {
+            $scopedCss = $scopedCss !== '' ? $scopedCss . "\n" . $childrenCss : $childrenCss;
         }
 
         // Дизайн-система: пресет отступов и опция анимации появления.
@@ -104,6 +115,70 @@ final class BlockRenderer
             'css' => implode("\n\n", $cssParts),
             'assets' => array_keys($assets),
         ];
+    }
+
+    /**
+     * Рендер блока «columns»: дочерние блоки группируются по колонкам и
+     * рендерятся рекурсивно обычным render() (переиспользование). Вложение
+     * columns-в-columns запрещено (такие дети пропускаются).
+     *
+     * @param array<string,mixed> $block
+     * @param array<string,mixed> $data
+     * @return array{0:string,1:string} [html, css дочерних блоков]
+     */
+    private static function renderColumns(array $block, array $data): array
+    {
+        $count = (int) ($data['columns'] ?? 2);
+        if ($count < 2 || $count > 4) {
+            $count = 2;
+        }
+        $gap = (string) ($data['gap'] ?? 'medium');
+        if (!in_array($gap, ['small', 'medium', 'large'], true)) {
+            $gap = 'medium';
+        }
+
+        // Дочерние блоки доступны только при наличии реального id (в рендере из БД).
+        $children = [];
+        if (!empty($block['id']) && class_exists(\App\Models\Block::class)) {
+            $children = \App\Models\Block::childrenOf((int) $block['id']);
+        }
+
+        // Группируем по колонкам 0..count-1.
+        $byColumn = array_fill(0, $count, []);
+        foreach ($children as $child) {
+            $col = (int) ($child['column_index'] ?? 0);
+            if ($col < 0 || $col >= $count) {
+                $col = 0;
+            }
+            // Защита от вложенности columns-в-columns.
+            if ((string) $child['type'] === 'columns') {
+                continue;
+            }
+            $byColumn[$col][] = $child;
+        }
+
+        $cssParts = [];
+        $colsHtml = '';
+        for ($i = 0; $i < $count; $i++) {
+            $inner = '';
+            foreach ($byColumn[$i] as $child) {
+                $rendered = self::render($child);
+                $inner .= $rendered['html'];
+                if ($rendered['css'] !== '') {
+                    $cssParts[] = $rendered['css'];
+                }
+            }
+            $colsHtml .= '<div class="cms-columns__col">' . $inner . '</div>';
+        }
+
+        $html = sprintf(
+            '<div class="cms-columns cms-columns--%d cms-columns--gap-%s">%s</div>',
+            $count,
+            htmlspecialchars($gap, ENT_QUOTES),
+            $colsHtml
+        );
+
+        return [$html, implode("\n", $cssParts)];
     }
 
     private static function enrichData(string $type, array $data): array

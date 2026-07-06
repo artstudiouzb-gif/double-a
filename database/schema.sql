@@ -151,8 +151,10 @@ CREATE TABLE IF NOT EXISTS page_translations (
 CREATE TABLE IF NOT EXISTS blocks (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     page_id         INT UNSIGNED NOT NULL,
+    parent_block_id INT UNSIGNED NULL COMMENT 'родительский блок columns (группа 4.1); NULL = верхний уровень',
+    column_index    INT NOT NULL DEFAULT 0 COMMENT 'номер колонки внутри родителя columns',
     lang            VARCHAR(8) NOT NULL DEFAULT '' COMMENT 'код языка стека блоков',
-    type            VARCHAR(60) NOT NULL COMMENT 'text, slider, advantages, cta, gallery, form, html',
+    type            VARCHAR(60) NOT NULL COMMENT 'text, slider, advantages, cta, gallery, form, html, columns, testimonials, counters, team_list, projects_list',
     title           VARCHAR(255) NULL COMMENT 'внутреннее название блока для админки',
     data            JSON NOT NULL COMMENT 'структурированные данные блока',
     custom_css      TEXT NULL COMMENT 'CSS блока, изолируется при рендере через #block-{id}',
@@ -160,7 +162,9 @@ CREATE TABLE IF NOT EXISTS blocks (
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY idx_blocks_page (page_id, lang, sort_order),
-    CONSTRAINT fk_blocks_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
+    KEY idx_blocks_parent (parent_block_id, column_index, sort_order),
+    CONSTRAINT fk_blocks_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
+    CONSTRAINT fk_blocks_parent FOREIGN KEY (parent_block_id) REFERENCES blocks(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
@@ -529,7 +533,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_06_block_snippets.sql'),
     ('2026_07_06_webhooks.sql'),
     ('2026_07_06_content_types.sql'),
-    ('2026_07_06_block_revisions.sql')
+    ('2026_07_06_block_revisions.sql'),
+    ('2026_07_06_block_columns.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

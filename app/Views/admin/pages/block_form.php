@@ -201,6 +201,26 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             </div>
         <?php endif; ?>
 
+        <?php if ($type === 'columns'): ?>
+            <div class="form-field">
+                <label for="columns">Количество колонок</label>
+                <select id="columns" name="columns">
+                    <?php foreach ([2, 3, 4] as $n): ?>
+                        <option value="<?= $n ?>" <?= (int) ($data['columns'] ?? 2) === $n ? 'selected' : '' ?>><?= $n ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="gap">Промежуток между колонками</label>
+                <select id="gap" name="gap">
+                    <?php foreach (['small' => 'Малый', 'medium' => 'Средний', 'large' => 'Большой'] as $gv => $gl): ?>
+                        <option value="<?= $gv ?>" <?= (string) ($data['gap'] ?? 'medium') === $gv ? 'selected' : '' ?>><?= $gl ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <span class="form-hint">Наполнение колонок настраивается на странице: кнопка «+ блок» в каждой колонке.</span>
+            </div>
+        <?php endif; ?>
+
         <?php $spacing = $data['_spacing'] ?? 'premium'; ?>
         <div class="form-field">
             <label for="spacing">Вертикальные отступы («воздух»)</label>

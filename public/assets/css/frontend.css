@@ -360,3 +360,15 @@ summary:focus-visible {
     background: #b45309; color: #fff; padding: 8px 16px; font-weight: 600; font-size: 14px;
 }
 body.is-preview { outline: 3px solid #b45309; outline-offset: -3px; }
+
+/* Блок «Колонки» (группа 4.1) */
+.cms-columns { display: grid; }
+.cms-columns--2 { grid-template-columns: repeat(2, 1fr); }
+.cms-columns--3 { grid-template-columns: repeat(3, 1fr); }
+.cms-columns--4 { grid-template-columns: repeat(4, 1fr); }
+.cms-columns--gap-small { gap: 12px; }
+.cms-columns--gap-medium { gap: 28px; }
+.cms-columns--gap-large { gap: 48px; }
+/* Вложенные блоки не добавляют собственный вертикальный «воздух». */
+.cms-columns__col > .cms-block { padding-top: 0; padding-bottom: 0; }
+@media (max-width: 720px) { .cms-columns--2, .cms-columns--3, .cms-columns--4 { grid-template-columns: 1fr; } }

@@ -27,7 +27,16 @@ $blockTypeLabels = [
     'slider' => 'Слайдер',
     'gallery' => 'Галерея',
     'form' => 'Форма',
+    'columns' => 'Колонки',
 ];
+
+// Дочерние блоки колонок (группа 4.1): подгружаем детей каждого columns-блока.
+$columnsChildren = [];
+foreach ($blocks as $b) {
+    if ($b['type'] === 'columns') {
+        $columnsChildren[(int) $b['id']] = \App\Models\Block::childrenOf((int) $b['id']);
+    }
+}
 ?>
 <div class="form-card">
     <?php if ($error): ?><div class="alert alert--error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div><?php endif; ?>
@@ -171,6 +180,48 @@ $blockTypeLabels = [
                 </form>
             </div>
         </div>
+        <?php if ($block['type'] === 'columns'):
+            $cdata = json_decode((string) $block['data'], true) ?: [];
+            $colCount = (int) ($cdata['columns'] ?? 2);
+            if ($colCount < 2 || $colCount > 4) { $colCount = 2; }
+            $kids = $columnsChildren[(int) $block['id']] ?? [];
+        ?>
+        <div class="columns-editor" style="margin:4px 0 16px 32px;">
+            <div class="columns-editor__grid columns-editor__grid--<?= $colCount ?>">
+                <?php for ($ci = 0; $ci < $colCount; $ci++): ?>
+                    <div class="columns-editor__col">
+                        <div class="columns-editor__col-title">Колонка <?= $ci + 1 ?></div>
+                        <?php foreach ($kids as $kid): if ((int) $kid['column_index'] !== $ci) { continue; } ?>
+                            <div class="columns-editor__child">
+                                <span><?= htmlspecialchars($kid['title'] ?: ($blockTypeLabels[$kid['type']] ?? $kid['type']), ENT_QUOTES) ?></span>
+                                <span class="columns-editor__child-actions">
+                                    <a class="btn btn--small" href="/admin/blocks/<?= (int) $kid['id'] ?>/edit">✎</a>
+                                    <form method="post" action="/admin/blocks/<?= (int) $kid['id'] ?>/delete" data-confirm="Удалить вложенный блок?">
+                                        <?= Csrf::field() ?><button class="btn btn--small btn--danger">×</button>
+                                    </form>
+                                </span>
+                            </div>
+                        <?php endforeach; ?>
+                        <form method="post" action="/admin/pages/<?= (int) $page['id'] ?>/blocks/add" class="columns-editor__add">
+                            <?= Csrf::field() ?>
+                            <input type="hidden" name="block_lang" value="<?= htmlspecialchars($blockLang, ENT_QUOTES) ?>">
+                            <input type="hidden" name="parent_block_id" value="<?= (int) $block['id'] ?>">
+                            <input type="hidden" name="column_index" value="<?= $ci ?>">
+                            <select name="type" aria-label="Тип вложенного блока">
+                                <?php foreach ($blockTypeLabels as $t => $lbl):
+                                    if ($t === 'columns') { continue; } // без columns-в-columns
+                                    if ($t === 'html' && !\App\Core\Auth::isSuperAdmin()) { continue; }
+                                ?>
+                                    <option value="<?= htmlspecialchars($t, ENT_QUOTES) ?>"><?= htmlspecialchars($lbl, ENT_QUOTES) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <button class="btn btn--small">+ блок</button>
+                        </form>
+                    </div>
+                <?php endfor; ?>
+            </div>
+        </div>
+        <?php endif; ?>
     <?php endforeach; ?>
     </div>
 

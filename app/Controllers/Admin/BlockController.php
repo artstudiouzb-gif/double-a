@@ -17,7 +17,7 @@ use App\Models\Page;
 
 final class BlockController
 {
-    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form'];
+    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns'];
 
     public function store(array $params): void
     {
@@ -51,8 +51,39 @@ final class BlockController
             exit;
         }
 
+        // Вложенность в колонки (группа 4.1): блок можно добавить внутрь блока
+        // columns, передав parent_block_id + column_index.
+        $parentBlockId = null;
+        $columnIndex = 0;
+        $redirectTo = '/admin/pages/' . $pageId . '/edit?block_lang=' . urlencode($lang);
+        if (!empty($_POST['parent_block_id'])) {
+            $parent = Block::findById((int) $_POST['parent_block_id']);
+            if (!$parent || (int) $parent['page_id'] !== $pageId || (string) $parent['type'] !== 'columns') {
+                Flash::error('Некорректный родительский блок для колонки.');
+                header('Location: ' . $redirectTo);
+                exit;
+            }
+            // Запрет columns-в-columns.
+            if ($type === 'columns') {
+                Flash::error('Блок «Колонки» нельзя вкладывать в колонки.');
+                header('Location: ' . $redirectTo);
+                exit;
+            }
+            $parentBlockId = (int) $parent['id'];
+            $columnIndex = max(0, (int) ($_POST['column_index'] ?? 0));
+        }
+
         $title = trim((string) ($_POST['title'] ?? ''));
-        $blockId = Block::create($pageId, $lang, $type, $title !== '' ? $title : null, \App\Core\BlockRenderer::defaultsFor($type), '');
+        $blockId = Block::create(
+            $pageId,
+            $lang,
+            $type,
+            $title !== '' ? $title : null,
+            \App\Core\BlockRenderer::defaultsFor($type),
+            '',
+            $parentBlockId,
+            $columnIndex
+        );
         \App\Core\Cache::forgetPrefix('page:' . $pageId);
 
         Flash::success('Блок добавлен. Заполните его содержимое.');
@@ -348,6 +379,14 @@ final class BlockController
             case 'form':
                 $formId = (int) ($_POST['form_id'] ?? 0);
                 return ['form_id' => $formId > 0 ? $formId : null];
+            case 'columns':
+                $cols = (int) ($_POST['columns'] ?? 2);
+                if ($cols < 2 || $cols > 4) {
+                    $cols = 2;
+                }
+                $gap = in_array($_POST['gap'] ?? 'medium', ['small', 'medium', 'large'], true)
+                    ? (string) $_POST['gap'] : 'medium';
+                return ['columns' => $cols, 'gap' => $gap];
             default:
                 return [];
         }
