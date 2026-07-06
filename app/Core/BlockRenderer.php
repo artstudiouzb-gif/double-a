@@ -27,6 +27,7 @@ final class BlockRenderer
         'counters' => ['title' => '', 'items' => []],
         'team_list' => ['title' => '', 'limit' => 0],
         'projects_list' => ['title' => '', 'limit' => 3],
+        'faq' => ['title' => '', 'items' => []],
     ];
 
     public static function defaultsFor(string $type): array
