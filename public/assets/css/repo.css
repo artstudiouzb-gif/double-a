@@ -1,0 +1,151 @@
+/* Портал защищённого файлового хранилища — самодостаточные стили (без внешних
+   зависимостей). Нейтральный «государственный» вид, светлая тема. */
+:root {
+    --repo-accent: #1f4b8e;
+    --repo-accent-dark: #163a70;
+    --repo-bg: #eef1f5;
+    --repo-surface: #ffffff;
+    --repo-border: #d6dce4;
+    --repo-text: #1c2531;
+    --repo-muted: #66707c;
+    --repo-danger: #b3261e;
+    --repo-ok: #1c7c3b;
+    --repo-radius: 8px;
+    --repo-shadow: 0 1px 3px rgba(20, 33, 51, .08), 0 6px 18px rgba(20, 33, 51, .06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--repo-bg);
+    color: var(--repo-text);
+    line-height: 1.5;
+    font-size: 15px;
+}
+
+a { color: var(--repo-accent); }
+
+.repo-topbar {
+    background: var(--repo-accent);
+    color: #fff;
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--repo-shadow);
+}
+.repo-topbar__brand { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 17px; }
+.repo-topbar__brand svg { flex: none; }
+.repo-topbar nav { display: flex; align-items: center; gap: 8px; }
+.repo-topbar nav a,
+.repo-topbar nav button {
+    color: #fff;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 6px;
+    padding: 7px 14px;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
+.repo-topbar nav a:hover,
+.repo-topbar nav button:hover { background: rgba(255, 255, 255, .14); }
+.repo-topbar__user { opacity: .9; font-size: 14px; margin-right: 4px; }
+
+.repo-main { max-width: 1080px; margin: 0 auto; padding: 28px 24px 64px; }
+
+.repo-page-title { margin: 4px 0 20px; font-size: 24px; font-weight: 700; }
+
+.repo-card {
+    background: var(--repo-surface);
+    border: 1px solid var(--repo-border);
+    border-radius: var(--repo-radius);
+    box-shadow: var(--repo-shadow);
+    padding: 20px 22px;
+    margin-bottom: 22px;
+}
+
+.repo-toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.repo-toolbar .repo-field { flex: 1 1 220px; }
+.repo-field label { display: block; font-size: 13px; color: var(--repo-muted); margin-bottom: 5px; font-weight: 600; }
+.repo-field input,
+.repo-field select,
+.repo-field textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--repo-border);
+    border-radius: 6px;
+    font: inherit;
+    background: #fff;
+    color: var(--repo-text);
+}
+.repo-field input:focus,
+.repo-field select:focus,
+.repo-field textarea:focus { outline: 2px solid var(--repo-accent); outline-offset: 0; border-color: var(--repo-accent); }
+
+.repo-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--repo-accent); color: #fff;
+    border: 1px solid var(--repo-accent); border-radius: 6px;
+    padding: 9px 18px; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+}
+.repo-btn:hover { background: var(--repo-accent-dark); }
+.repo-btn--ghost { background: transparent; color: var(--repo-accent); }
+.repo-btn--ghost:hover { background: #eaf0f9; }
+.repo-btn--danger { background: transparent; color: var(--repo-danger); border-color: #e3b7b4; }
+.repo-btn--danger:hover { background: #fbeceb; }
+.repo-btn--sm { padding: 6px 12px; font-size: 13px; }
+
+.repo-table { width: 100%; border-collapse: collapse; }
+.repo-table th, .repo-table td { text-align: left; padding: 12px 12px; border-bottom: 1px solid var(--repo-border); vertical-align: middle; }
+.repo-table th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--repo-muted); }
+.repo-table tr:last-child td { border-bottom: none; }
+.repo-file-title { font-weight: 600; }
+.repo-file-desc { color: var(--repo-muted); font-size: 13px; margin-top: 2px; }
+.repo-meta { color: var(--repo-muted); font-size: 13px; white-space: nowrap; }
+
+.repo-badge {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    background: #eaf0f9; color: var(--repo-accent); font-size: 12px; font-weight: 600;
+}
+.repo-badge--muted { background: #eef0f3; color: var(--repo-muted); }
+.repo-badge--ok { background: #e6f4ea; color: var(--repo-ok); }
+.repo-badge--off { background: #fbeceb; color: var(--repo-danger); }
+
+.repo-empty { text-align: center; color: var(--repo-muted); padding: 40px 12px; }
+
+.repo-alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 18px; font-size: 14px; }
+.repo-alert--success { background: #e6f4ea; color: var(--repo-ok); border: 1px solid #b7dfc3; }
+.repo-alert--error { background: #fbeceb; color: var(--repo-danger); border: 1px solid #edc3c0; }
+
+/* Экран входа */
+.repo-auth {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+    background: linear-gradient(135deg, #1f4b8e 0%, #163a70 100%);
+}
+.repo-auth__card {
+    background: #fff; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.22);
+    width: 100%; max-width: 400px; padding: 34px 32px;
+}
+.repo-auth__brand { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; font-size: 18px; font-weight: 700; color: var(--repo-accent); }
+.repo-auth__sub { color: var(--repo-muted); font-size: 14px; margin: 0 0 22px; }
+.repo-auth .repo-field { margin-bottom: 16px; }
+.repo-auth .repo-btn { width: 100%; justify-content: center; }
+.repo-auth__foot { margin-top: 18px; text-align: center; font-size: 13px; color: var(--repo-muted); }
+
+.repo-qr { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+.repo-qr__code { background: #fff; padding: 10px; border: 1px solid var(--repo-border); border-radius: 8px; }
+.repo-secret { font-family: ui-monospace, monospace; background: #f2f4f7; padding: 6px 10px; border-radius: 6px; display: inline-block; letter-spacing: .06em; }
+
+@media (max-width: 640px) {
+    .repo-topbar { padding: 0 14px; }
+    .repo-topbar__user { display: none; }
+    .repo-main { padding: 20px 14px 48px; }
+    .repo-table thead { display: none; }
+    .repo-table, .repo-table tbody, .repo-table tr, .repo-table td { display: block; width: 100%; }
+    .repo-table tr { border: 1px solid var(--repo-border); border-radius: 8px; margin-bottom: 12px; padding: 6px 4px; }
+    .repo-table td { border-bottom: none; padding: 6px 12px; }
+}

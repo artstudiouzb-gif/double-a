@@ -31,6 +31,7 @@ $navIcon = static function (string $name): string {
         'webhooks' => '<path d="M13 3L4 14h7l-1 7 9-11h-7z"/>',
         'settings' => '<circle cx="12" cy="12" r="3"/><path d="M4 12a8 8 0 0 1 .2-1.8L2 8.5l2 3.5M20 12a8 8 0 0 0-.2-1.8"/><path d="M12 2v3M12 19v3M4.2 6.2l2.1 2.1M17.7 15.7l2.1 2.1M2 12h3M19 12h3M6.3 17.7l-2.1 2.1M19.8 6.2l-2.1 2.1"/>',
         'profile' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+        'repository' => '<path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/>',
     ];
     $body = $p[$name] ?? '<circle cx="12" cy="12" r="9"/>';
 
@@ -76,6 +77,7 @@ if ($navIsSuper) {
         'settings' => ['/admin/settings', 'Настройки'],
     ];
     $navUsersGroup = ['users' => ['/admin/users', 'Пользователи']];
+    $navTools['repository'] = ['/admin/repository', 'Хранилище'];
 }
 
 $navGroups = [
