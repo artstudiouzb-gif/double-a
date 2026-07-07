@@ -626,3 +626,18 @@ h1, h2 { letter-spacing: -.015em; }
 .block-banner__text { font-size: 1.1rem; margin: 0 0 24px; opacity: .95; }
 .block-banner__button { display: inline-block; padding: 13px 32px; background: var(--color-accent, #e63946); color: #fff; text-decoration: none; font-weight: 600; border-radius: var(--btn-radius, 10px); box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .15s; }
 .block-banner__button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* --- Стиль карточек и положение сайдбара (настройки дизайна) --- */
+.content-card, .news-card, .site-search-results__item, .block-partners__item {
+    box-shadow: var(--card-shadow, none);
+}
+/* Плоские карточки — опираемся на обводку, тень убрана. */
+body.design-cards-flat .content-card,
+body.design-cards-flat .news-card,
+body.design-cards-flat .site-search-results__item,
+body.design-cards-flat .block-partners__item { border: 1px solid var(--border-color); }
+
+/* Плавающий сайдбар — липнет при прокрутке; неподвижный — обычный поток. */
+body.design-sidebar-floating .layout__sidebar { position: sticky; top: 20px; align-self: start; }
+body.design-header-sticky.design-sidebar-floating .layout__sidebar { top: calc(var(--sticky-offset, 76px)); }
+@media (max-width: 860px) { body.design-sidebar-floating .layout__sidebar { position: static; } }

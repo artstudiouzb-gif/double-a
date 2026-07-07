@@ -54,6 +54,20 @@ final class DesignSettings
             'choices' => ['square' => 'Прямые', 'rounded' => 'Скруглённые', 'pill' => 'Капсула'],
             'default' => 'rounded',
         ],
+        'card_style' => [
+            'label' => 'Стиль карточек',
+            'hint' => 'Тень и глубина карточек контента.',
+            'group' => 'Общие',
+            'choices' => ['flat' => 'Плоские', 'soft' => 'Мягкая тень', 'elevated' => 'Приподнятые'],
+            'default' => 'soft',
+        ],
+        'sidebar_position' => [
+            'label' => 'Боковая колонка при прокрутке',
+            'hint' => 'Поведение сайдбара страниц с боковой колонкой.',
+            'group' => 'Общие',
+            'choices' => ['floating' => 'Плавающая', 'fixed' => 'Неподвижная'],
+            'default' => 'floating',
+        ],
         'catalog_layout' => [
             'label' => 'Шаблон списка разделов',
             'hint' => 'Как выводятся карточки в каталоге (Документы/Вакансии/Тендеры).',
@@ -84,22 +98,22 @@ final class DesignSettings
         'classic' => [
             'label' => 'Классический',
             'desc' => 'Строгий официальный стиль, умеренные отступы.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on'],
         ],
         'modern' => [
             'label' => 'Современный',
             'desc' => 'Крупные скругления, воздух, акцентная шапка.',
-            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on'],
+            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on'],
         ],
         'minimal' => [
             'label' => 'Минимал',
             'desc' => 'Прямые углы, максимум воздуха, список в каталоге.',
-            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off'],
+            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off'],
         ],
         'compact' => [
             'label' => 'Компактный',
             'desc' => 'Плотная сетка, маленькие карточки — много данных.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on'],
         ],
     ];
 
@@ -156,15 +170,21 @@ final class DesignSettings
         $gap = ['xs' => '8px', 'sm' => '16px', 'md' => '24px', 'lg' => '32px'][$v['card_gap']] ?? '24px';
         $section = ['compact' => '28px', 'standard' => '46px', 'spacious' => '72px'][$v['density']] ?? '46px';
         $btn = ['square' => '0px', 'rounded' => '10px', 'pill' => '999px'][$v['button']] ?? '10px';
+        $shadow = [
+            'flat' => 'none',
+            'soft' => '0 1px 3px rgba(16,24,40,.06), 0 6px 18px rgba(16,24,40,.05)',
+            'elevated' => '0 10px 30px rgba(16,24,40,.12)',
+        ][$v['card_style'] ?? 'soft'] ?? 'none';
 
         return sprintf(
-            ':root{--container-max:%s;--radius:%s;--radius-sm:calc(%s * .6);--card-gap:%s;--section-pad:%s;--btn-radius:%s;}',
+            ':root{--container-max:%s;--radius:%s;--radius-sm:calc(%s * .6);--card-gap:%s;--section-pad:%s;--btn-radius:%s;--card-shadow:%s;}',
             $container,
             $radius,
             $radius,
             $gap,
             $section,
-            $btn
+            $btn,
+            $shadow
         );
     }
 
@@ -172,9 +192,11 @@ final class DesignSettings
     public static function bodyClasses(array $v): string
     {
         return trim(sprintf(
-            'design-catalog-%s design-header-%s%s',
+            'design-catalog-%s design-header-%s design-sidebar-%s design-cards-%s%s',
             preg_replace('/[^a-z_]/', '', $v['catalog_layout']),
             preg_replace('/[^a-z]/', '', $v['header_style']),
+            preg_replace('/[^a-z]/', '', $v['sidebar_position'] ?? 'floating'),
+            preg_replace('/[^a-z]/', '', $v['card_style'] ?? 'soft'),
             $v['header_sticky'] === 'on' ? ' design-header-sticky' : ''
         ));
     }
