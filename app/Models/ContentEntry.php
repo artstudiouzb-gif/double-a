@@ -28,6 +28,60 @@ final class ContentEntry
         return $stmt->fetchAll();
     }
 
+    /**
+     * Опубликованные записи типа с поиском/сортировкой/пагинацией (фронтенд).
+     * Поиск — по заголовку и JSON-значениям полей (data). Сортировка:
+     * new (новые), old (старые), title (по алфавиту).
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function forTypePublic(int $typeId, string $q = '', string $sort = 'new', int $limit = 12, int $offset = 0): array
+    {
+        [$where, $params] = self::publicWhere($typeId, $q);
+        $order = match ($sort) {
+            'old' => 'created_at ASC',
+            'title' => 'title ASC',
+            default => 'created_at DESC',
+        };
+        $sql = "SELECT * FROM content_entries WHERE {$where} ORDER BY {$order}, id DESC LIMIT :lim OFFSET :off";
+        $stmt = Database::pdo()->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue(':lim', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':off', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public static function countTypePublic(int $typeId, string $q = ''): int
+    {
+        [$where, $params] = self::publicWhere($typeId, $q);
+        $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM content_entries WHERE {$where}");
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}
+     */
+    private static function publicWhere(int $typeId, string $q): array
+    {
+        $where = "type_id = :t AND status = 'published' AND deleted_at IS NULL";
+        $params = [':t' => (string) $typeId];
+        $q = trim($q);
+        if ($q !== '') {
+            $like = '%' . str_replace(['%', '_'], ['\%', '\_'], $q) . '%';
+            $where .= ' AND (title LIKE :q1 OR data LIKE :q2)';
+            $params[':q1'] = $like;
+            $params[':q2'] = $like;
+        }
+
+        return [$where, $params];
+    }
+
     public static function findById(int $id): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM content_entries WHERE id = :id LIMIT 1');

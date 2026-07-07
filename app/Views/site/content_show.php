@@ -22,8 +22,12 @@ foreach ($fields as $f) {
 require __DIR__ . '/_header.php';
 ?>
 <article class="content-detail">
-    <nav class="content-detail__crumbs">
-        <a href="<?= htmlspecialchars(Locale::url('catalog/' . $type['slug']), ENT_QUOTES) ?>">← <?= htmlspecialchars((string) $type['name'], ENT_QUOTES) ?></a>
+    <nav class="content-crumbs" aria-label="Хлебные крошки">
+        <a href="<?= htmlspecialchars(Locale::url('/'), ENT_QUOTES) ?>">Главная</a>
+        <span>/</span>
+        <a href="<?= htmlspecialchars(Locale::url('catalog/' . $type['slug']), ENT_QUOTES) ?>"><?= htmlspecialchars((string) $type['name'], ENT_QUOTES) ?></a>
+        <span>/</span>
+        <span><?= htmlspecialchars((string) $entry['title'], ENT_QUOTES) ?></span>
     </nav>
     <h1 class="content-detail__title"><?= htmlspecialchars((string) $entry['title'], ENT_QUOTES) ?></h1>
     <time class="content-detail__date"><?= htmlspecialchars(date('d.m.Y', strtotime((string) $entry['created_at'])), ENT_QUOTES) ?></time>

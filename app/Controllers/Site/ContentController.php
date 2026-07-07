@@ -27,16 +27,48 @@ final class ContentController
 
         $lang = Locale::current();
         $fields = ContentType::fields((int) $type['id']);
+
+        $perPage = 12;
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $sort = in_array($_GET['sort'] ?? '', ['new', 'old', 'title'], true) ? (string) $_GET['sort'] : 'new';
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+
+        $total = ContentEntry::countTypePublic((int) $type['id'], $q);
+        $pages = max(1, (int) ceil($total / $perPage));
+        $page = min($page, $pages);
+        $offset = ($page - 1) * $perPage;
+
+        // Тип с дедлайном (вакансии/тендеры) — помечаем просроченные как «архив».
+        $deadlineField = null;
+        foreach ($fields as $f) {
+            if ($f['field_type'] === 'date' && in_array($f['name'], ['deadline', 'end_date'], true)) {
+                $deadlineField = $f['name'];
+                break;
+            }
+        }
+
         $entries = [];
-        foreach (ContentEntry::forType((int) $type['id'], 'published') as $entry) {
+        foreach (ContentEntry::forTypePublic((int) $type['id'], $q, $sort, $perPage, $offset) as $entry) {
             $entry['data'] = json_decode((string) $entry['data'], true) ?: [];
-            $entries[] = $this->localize($entry, $type, $lang);
+            $entry = $this->localize($entry, $type, $lang);
+            $entry['is_archived'] = false;
+            if ($deadlineField !== null && !empty($entry['data'][$deadlineField])) {
+                $ts = strtotime((string) $entry['data'][$deadlineField]);
+                $entry['is_archived'] = $ts !== false && $ts < strtotime('today');
+            }
+            $entries[] = $entry;
         }
 
         View::render('site/content_index', [
             'type' => $type,
             'fields' => $fields,
             'entries' => $entries,
+            'q' => $q,
+            'sort' => $sort,
+            'page' => $page,
+            'pages' => $pages,
+            'total' => $total,
+            'hasDeadline' => $deadlineField !== null,
         ]);
     }
 
