@@ -25,7 +25,7 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             <input type="text" id="title" name="title" value="<?= htmlspecialchars($block['title'] ?? '', ENT_QUOTES) ?>">
         </div>
 
-        <?php if (in_array($type, ['text', 'cta', 'advantages', 'gallery', 'testimonials', 'counters', 'team_list', 'projects_list', 'faq'], true)): ?>
+        <?php if (in_array($type, ['text', 'cta', 'advantages', 'gallery', 'testimonials', 'counters', 'team_list', 'projects_list', 'news_latest', 'faq'], true)): ?>
             <div class="form-field">
                 <label for="title_field">Заголовок, показываемый на сайте</label>
                 <input type="text" id="title_field" name="title_field" value="<?= htmlspecialchars($data['title'] ?? '', ENT_QUOTES) ?>">
@@ -278,11 +278,17 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             </div>
         <?php endif; ?>
 
-        <?php if ($type === 'team_list' || $type === 'projects_list'): ?>
+        <?php if ($type === 'team_list' || $type === 'projects_list' || $type === 'news_latest'): ?>
             <div class="form-field">
-                <label for="limit">Сколько записей показывать (0 — все)</label>
+                <label for="limit">Сколько записей показывать<?= $type === 'news_latest' ? ' (0 — 3 по умолчанию)' : ' (0 — все)' ?></label>
                 <input type="number" id="limit" name="limit" min="0" value="<?= (int) ($data['limit'] ?? 0) ?>">
-                <span class="form-hint">Блок выводит опубликованные записи раздела «<?= $type === 'team_list' ? 'Команда' : 'Проекты' ?>» по порядку сортировки.</span>
+                <span class="form-hint">
+                    <?php if ($type === 'news_latest'): ?>
+                        Блок выводит последние опубликованные новости (лента для главной страницы).
+                    <?php else: ?>
+                        Блок выводит опубликованные записи раздела «<?= $type === 'team_list' ? 'Команда' : 'Проекты' ?>» по порядку сортировки.
+                    <?php endif; ?>
+                </span>
             </div>
         <?php endif; ?>
 

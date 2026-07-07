@@ -501,3 +501,20 @@ body.is-preview { outline: 3px solid #b45309; outline-offset: -3px; }
 .content-pager__link { min-width: 40px; text-align: center; padding: 8px 12px; border: 1px solid var(--border-color, #d5d9de); border-radius: 8px; text-decoration: none; color: var(--color-primary, #1a1a1a); }
 .content-pager__link:hover { border-color: var(--color-accent, #e63946); color: var(--color-accent, #e63946); }
 .content-pager__link.is-current { background: var(--color-accent, #e63946); color: #fff; border-color: var(--color-accent, #e63946); font-weight: 700; }
+
+/* --- Блок «Последние новости» (для главной и любых страниц) --- */
+.block-news__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.block-news__title { margin: 0; }
+.block-news__all { color: var(--color-accent, #e63946); text-decoration: none; font-weight: 600; white-space: nowrap; }
+.block-news__empty { color: var(--text-muted); }
+.block-news__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
+.news-card { border: 1px solid var(--border-color, #e3e6ea); border-radius: 10px; overflow: hidden; background: var(--surface, #fff); transition: box-shadow .15s ease, transform .15s ease; }
+.news-card:hover { box-shadow: 0 8px 26px rgba(0,0,0,.08); transform: translateY(-2px); }
+.news-card__link { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; }
+.news-card__cover { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #f0f2f5; }
+.news-card__cover img { width: 100%; height: 100%; object-fit: cover; }
+.news-card__body { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; }
+.news-card__date { color: var(--text-muted); font-size: .82rem; }
+.news-card__title { font-weight: 600; font-size: 1.08rem; color: var(--color-primary, #1a1a1a); line-height: 1.35; }
+.news-card:hover .news-card__title { color: var(--color-accent, #e63946); }
+.news-card__excerpt { color: var(--text-muted); font-size: .92rem; line-height: 1.5; }

@@ -17,7 +17,7 @@ use App\Models\Page;
 
 final class BlockController
 {
-    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns', 'testimonials', 'counters', 'team_list', 'projects_list', 'faq'];
+    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns', 'testimonials', 'counters', 'team_list', 'projects_list', 'news_latest', 'faq'];
 
     public function store(array $params): void
     {
@@ -462,6 +462,7 @@ final class BlockController
                 ];
             case 'team_list':
             case 'projects_list':
+            case 'news_latest':
                 return [
                     'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
                     'limit' => max(0, (int) ($_POST['limit'] ?? 0)),

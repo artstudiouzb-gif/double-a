@@ -27,6 +27,7 @@ final class BlockRenderer
         'counters' => ['title' => '', 'items' => []],
         'team_list' => ['title' => '', 'limit' => 0],
         'projects_list' => ['title' => '', 'limit' => 3],
+        'news_latest' => ['title' => 'Последние новости', 'limit' => 3],
         'faq' => ['title' => '', 'items' => []],
     ];
 
@@ -221,6 +222,29 @@ final class BlockRenderer
             $items = \App\Models\Project::published();
             $limit = (int) ($data['limit'] ?? 0);
             $data['projects'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
+        }
+
+        // Блок «Последние новости»: локализованная лента для главной/любой
+        // страницы. limit 0 -> 3 (защита от вывода всех новостей блоком).
+        if ($type === 'news_latest') {
+            $limit = (int) ($data['limit'] ?? 3);
+            if ($limit <= 0) {
+                $limit = 3;
+            }
+            $lang = Locale::current();
+            $items = [];
+            foreach (\App\Models\News::published($limit, 0, $lang) as $row) {
+                $items[] = [
+                    'title' => (string) $row['title'],
+                    'slug' => (string) $row['slug'],
+                    'published_at' => (string) ($row['published_at'] ?? ''),
+                    'excerpt' => (string) ($row['excerpt'] ?? ''),
+                    'cover' => \App\Models\News::getCoverImage($row),
+                    'url' => Locale::url('news/' . $row['slug'], $lang),
+                ];
+            }
+            $data['news'] = $items;
+            $data['all_url'] = Locale::url('news', $lang);
         }
 
         return $data;
