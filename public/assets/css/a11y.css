@@ -41,7 +41,11 @@ html[data-a11y="1"] p, html[data-a11y="1"] li, html[data-a11y="1"] td { font-siz
 html[data-a11y="1"][data-a11y-images="off"] .site-content img,
 html[data-a11y="1"][data-a11y-images="off"] .site-content picture,
 html[data-a11y="1"][data-a11y-images="off"] .site-content svg,
-html[data-a11y="1"][data-a11y-images="off"] .site-content video { display: none !important; }
+html[data-a11y="1"][data-a11y-images="off"] .site-content video,
+html[data-a11y="1"][data-a11y-images="off"] .repo-main img,
+html[data-a11y="1"][data-a11y-images="off"] .repo-main picture,
+html[data-a11y="1"][data-a11y-images="off"] .repo-main svg,
+html[data-a11y="1"][data-a11y-images="off"] .repo-main video { display: none !important; }
 
 /* Упрощаем раскладку — одна колонка, скрываем декоративные хром-элементы. */
 html[data-a11y="1"] .site-social,
