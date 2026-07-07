@@ -19,6 +19,13 @@ AssetCollector::requireJs('news');
 
 require __DIR__ . '/_header.php';
 
+$crumbs = [
+    ['label' => 'Главная', 'url' => Locale::url('/')],
+    ['label' => 'Новости', 'url' => Locale::url('news')],
+    ['label' => (string) $news['title']],
+];
+require __DIR__ . '/_crumbs.php';
+
 // Динамический выбор шаблона по типу отображения (задача 67).
 $layout = News::normalizeLayout($news['layout_type'] ?? 'standard');
 $typeTemplate = __DIR__ . '/news/_type_' . $layout . '.php';

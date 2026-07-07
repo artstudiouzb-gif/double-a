@@ -12,6 +12,15 @@ $extraHeadCss = $blockCss;
 $hideChrome = !empty($page['hide_chrome']); // лендинг (группа 6)
 require __DIR__ . '/_header.php';
 
+// Хлебные крошки для обычных страниц (не главная, не лендинг).
+if (empty($page['is_home']) && !$hideChrome) {
+    $crumbs = [
+        ['label' => 'Главная', 'url' => \App\Core\Locale::url('/')],
+        ['label' => (string) ($page['title'] ?? '')],
+    ];
+    require __DIR__ . '/_crumbs.php';
+}
+
 $hasSidebar = $sidebar !== null && trim($sidebar['html']) !== '';
 ?>
 <?php if ($hasSidebar): ?>

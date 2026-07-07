@@ -12,6 +12,12 @@ $metaTitle = 'Новости';
 $metaDescription = '';
 AssetCollector::requireJs('news'); // скелетоны + fallback обложек
 require __DIR__ . '/_header.php';
+
+$crumbs = [
+    ['label' => 'Главная', 'url' => Locale::url('/')],
+    ['label' => 'Новости'],
+];
+require __DIR__ . '/_crumbs.php';
 ?>
 <div class="news-list">
     <h1>Новости</h1>
