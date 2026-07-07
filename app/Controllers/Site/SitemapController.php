@@ -57,6 +57,33 @@ final class SitemapController
             }
         }
 
+        // Публичные пользовательские типы контента: страница раздела + записи.
+        $types = Database::pdo()->query(
+            'SELECT id, slug FROM content_types WHERE is_public = 1'
+        )->fetchAll();
+        foreach ($types as $type) {
+            foreach ($languages as $lang) {
+                $urls[] = [
+                    'loc' => $base . $prefix((string) $lang['code']) . '/catalog/' . $type['slug'],
+                    'priority' => '0.7',
+                ];
+            }
+            $stmt = Database::pdo()->prepare(
+                "SELECT slug, updated_at FROM content_entries
+                 WHERE type_id = :t AND status = 'published' AND deleted_at IS NULL"
+            );
+            $stmt->execute([':t' => (int) $type['id']]);
+            foreach ($stmt->fetchAll() as $entry) {
+                foreach ($languages as $lang) {
+                    $urls[] = [
+                        'loc' => $base . $prefix((string) $lang['code']) . '/catalog/' . $type['slug'] . '/' . $entry['slug'],
+                        'lastmod' => substr((string) $entry['updated_at'], 0, 10),
+                        'priority' => '0.6',
+                    ];
+                }
+            }
+        }
+
         header('Content-Type: application/xml; charset=UTF-8');
         echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
@@ -81,6 +108,8 @@ final class SitemapController
         echo "User-agent: *\n";
         echo "Disallow: /admin\n";
         echo "Disallow: /install\n";
+        echo "Disallow: /repo\n";
+        echo "Disallow: /search\n";
         echo "Disallow: /download.php\n";
         echo "Allow: /\n\n";
         echo 'Sitemap: ' . $base . "/sitemap.xml\n";
