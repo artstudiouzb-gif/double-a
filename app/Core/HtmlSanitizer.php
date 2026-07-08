@@ -33,8 +33,38 @@ final class HtmlSanitizer
         'th' => ['colspan', 'rowspan', 'scope'],
     ];
 
-    public static function sanitize(string $html): string
+    /**
+     * Узкий текстовый профиль для кастомных полей конструктора контента:
+     * только разметка текста (без div/img/таблиц/style/class).
+     */
+    private const TEXT_TAGS = [
+        'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's',
+        'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'a',
+    ];
+
+    private const TEXT_ATTRS = [
+        '*' => [],
+        'a' => ['href', 'target', 'rel'],
+    ];
+
+    /**
+     * Очистка контента кастомных полей (типы контента, этап 16.4): остаётся
+     * только безопасная разметка текста; script/iframe, обработчики on*,
+     * javascript:-ссылки и все атрибуты вне allowlist вырезаются.
+     */
+    public static function sanitizeText(string $html): string
     {
+        return self::sanitize($html, self::TEXT_TAGS, self::TEXT_ATTRS);
+    }
+
+    /**
+     * @param array<int, string>|null $allowedTags
+     * @param array<string, array<int, string>>|null $allowedAttrs
+     */
+    public static function sanitize(string $html, ?array $allowedTags = null, ?array $allowedAttrs = null): string
+    {
+        $allowedTags ??= self::ALLOWED_TAGS;
+        $allowedAttrs ??= self::ALLOWED_ATTRS;
         if (trim($html) === '') {
             return '';
         }
@@ -60,7 +90,7 @@ final class HtmlSanitizer
             return '';
         }
 
-        self::cleanNode($root);
+        self::cleanNode($root, $allowedTags, $allowedAttrs);
 
         $out = '';
         foreach (iterator_to_array($root->childNodes) as $child) {
@@ -70,22 +100,31 @@ final class HtmlSanitizer
         return trim($out);
     }
 
-    private static function cleanNode(\DOMNode $node): void
+    /**
+     * @param array<int, string> $allowedTags
+     * @param array<string, array<int, string>> $allowedAttrs
+     */
+    private static function cleanNode(\DOMNode $node, array $allowedTags, array $allowedAttrs): void
     {
         // Обходим копию списка детей — узлы будут удаляться на месте.
         foreach (iterator_to_array($node->childNodes) as $child) {
             if ($child instanceof \DOMElement) {
                 $tag = strtolower($child->nodeName);
 
-                if (!in_array($tag, self::ALLOWED_TAGS, true)) {
-                    // Неразрешённый тег: разворачиваем его содержимое наружу
-                    // (сохраняем текст), сам тег удаляем.
-                    self::unwrap($child);
+                if (!in_array($tag, $allowedTags, true)) {
+                    // script/style удаляем ЦЕЛИКОМ — их содержимое это код,
+                    // а не контент. Прочие неразрешённые теги (iframe и т.п.)
+                    // разворачиваем, сохраняя видимый текст.
+                    if (in_array($tag, ['script', 'style'], true)) {
+                        $child->parentNode?->removeChild($child);
+                    } else {
+                        self::unwrap($child);
+                    }
                     continue;
                 }
 
-                self::cleanAttributes($child, $tag);
-                self::cleanNode($child);
+                self::cleanAttributes($child, $tag, $allowedAttrs);
+                self::cleanNode($child, $allowedTags, $allowedAttrs);
             } elseif ($child instanceof \DOMComment) {
                 $child->parentNode?->removeChild($child);
             }
@@ -93,11 +132,14 @@ final class HtmlSanitizer
         }
     }
 
-    private static function cleanAttributes(\DOMElement $el, string $tag): void
+    /**
+     * @param array<string, array<int, string>> $allowedAttrs
+     */
+    private static function cleanAttributes(\DOMElement $el, string $tag, array $allowedAttrs): void
     {
         $allowed = array_merge(
-            self::ALLOWED_ATTRS['*'],
-            self::ALLOWED_ATTRS[$tag] ?? []
+            $allowedAttrs['*'] ?? [],
+            $allowedAttrs[$tag] ?? []
         );
 
         foreach (iterator_to_array($el->attributes ?? []) as $attr) {

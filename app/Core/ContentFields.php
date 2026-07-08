@@ -91,6 +91,14 @@ final class ContentFields
 
         switch ($type) {
             case 'textarea':
+                // С разметкой — строгая очистка allowlist-санитайзером
+                // (script/iframe/on*/javascript: вырезаются, остаётся только
+                // безопасное форматирование текста). Простой текст — как раньше;
+                // «тег» распознаём только по <буква...>, чтобы «5 < 7» и «<2>»
+                // не считались разметкой.
+                if (preg_match('/<[a-zA-Z][^>]*>/', $scalar) === 1) {
+                    return HtmlSanitizer::sanitizeText($scalar);
+                }
                 return nl2br(htmlspecialchars($scalar, ENT_QUOTES));
             case 'date':
                 $ts = strtotime($scalar);

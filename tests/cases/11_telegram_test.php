@@ -36,8 +36,9 @@ test('Telegram: троттлинг глушит повтор WARNING, но не 
         'telegram' => ['bot_token' => 'T', 'chat_id' => '1', 'chat_id_security' => '2', 'min_level' => 'WARNING'],
     ]);
 
-    // Уникализируем сообщение, чтобы не задеть флаги из прошлых прогонов.
-    $u = bin2hex(random_bytes(3));
+    // Уникализируем сообщение БУКВАМИ: сигнатура троттлинга маскирует цифры,
+    // поэтому цифровой hex-суффикс мог совпасть с флагом прошлого прогона.
+    $u = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 8);
     TelegramNotifier::send('WARNING', "warn $u");
     TelegramNotifier::send('WARNING', "warn $u"); // повтор — заглушен троттлингом
     $warnCount = count($sent);
