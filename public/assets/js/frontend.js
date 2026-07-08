@@ -1,6 +1,22 @@
 (function () {
     'use strict';
 
+    // Бургер-меню (режим «Бургер-меню» в настройках дизайна): открывает и
+    // закрывает главное меню на мобильных; Esc закрывает.
+    var burger = document.querySelector('[data-mobile-menu-toggle]');
+    if (burger) {
+        burger.addEventListener('click', function () {
+            var open = document.body.classList.toggle('mobile-menu-open');
+            burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && document.body.classList.contains('mobile-menu-open')) {
+                document.body.classList.remove('mobile-menu-open');
+                burger.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
     // Выпадающий поиск (режим «Выпадающий» в настройках дизайна): кнопка-лупа
     // открывает панель поиска сверху; закрытие по ×, Esc или клику вне формы.
     var searchToggle = document.querySelector('[data-search-toggle]');

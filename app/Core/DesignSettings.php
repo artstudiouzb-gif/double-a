@@ -110,6 +110,20 @@ final class DesignSettings
             'choices' => ['minimal' => 'Минимальный', 'columns' => 'Колонками'],
             'default' => 'columns',
         ],
+        'mobile_menu' => [
+            'label' => 'Меню на мобильных',
+            'hint' => 'Как показывать главное меню на телефонах.',
+            'group' => 'Мобильная версия',
+            'choices' => ['burger' => 'Бургер-меню', 'wrap' => 'В строку (перенос)'],
+            'default' => 'burger',
+        ],
+        'mobile_header' => [
+            'label' => 'Мобильная шапка',
+            'hint' => 'Поведение шапки на телефонах при прокрутке.',
+            'group' => 'Мобильная версия',
+            'choices' => ['fixed' => 'Фиксированная', 'static' => 'Обычная'],
+            'default' => 'fixed',
+        ],
     ];
 
     /**
@@ -119,22 +133,22 @@ final class DesignSettings
         'classic' => [
             'label' => 'Классический',
             'desc' => 'Строгий официальный стиль, умеренные отступы.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'plain', 'footer_style' => 'columns'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'plain', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed'],
         ],
         'modern' => [
             'label' => 'Современный',
             'desc' => 'Крупные скругления, воздух, акцентная шапка.',
-            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns'],
+            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed'],
         ],
         'minimal' => [
             'label' => 'Минимал',
             'desc' => 'Прямые углы, максимум воздуха, список в каталоге.',
-            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off', 'search_type' => 'overlay', 'detail_layout' => 'plain', 'footer_style' => 'minimal'],
+            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off', 'search_type' => 'overlay', 'detail_layout' => 'plain', 'footer_style' => 'minimal', 'mobile_menu' => 'burger', 'mobile_header' => 'static'],
         ],
         'compact' => [
             'label' => 'Компактный',
             'desc' => 'Плотная сетка, маленькие карточки — много данных.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'sidebar', 'footer_style' => 'columns'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed'],
         ],
     ];
 
@@ -213,7 +227,7 @@ final class DesignSettings
     public static function bodyClasses(array $v): string
     {
         return trim(sprintf(
-            'design-catalog-%s design-header-%s design-sidebar-%s design-cards-%s design-search-%s design-detail-%s design-footer-%s%s',
+            'design-catalog-%s design-header-%s design-sidebar-%s design-cards-%s design-search-%s design-detail-%s design-footer-%s design-mmenu-%s design-mheader-%s%s',
             preg_replace('/[^a-z_]/', '', $v['catalog_layout']),
             preg_replace('/[^a-z]/', '', $v['header_style']),
             preg_replace('/[^a-z]/', '', $v['sidebar_position'] ?? 'floating'),
@@ -221,6 +235,8 @@ final class DesignSettings
             preg_replace('/[^a-z]/', '', $v['search_type'] ?? 'inline'),
             preg_replace('/[^a-z]/', '', $v['detail_layout'] ?? 'plain'),
             preg_replace('/[^a-z]/', '', $v['footer_style'] ?? 'columns'),
+            preg_replace('/[^a-z]/', '', $v['mobile_menu'] ?? 'burger'),
+            preg_replace('/[^a-z]/', '', $v['mobile_header'] ?? 'fixed'),
             $v['header_sticky'] === 'on' ? ' design-header-sticky' : ''
         ));
     }

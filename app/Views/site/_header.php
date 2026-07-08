@@ -169,8 +169,14 @@ $searchHtml = '<form class="site-search" method="get" action="' . $searchAction 
 $designVals = \App\Core\DesignSettings::current();
 $designBodyClass = \App\Core\DesignSettings::bodyClasses($designVals);
 
+// --- Бургер для мобильного меню ---
+$burgerHtml = $menuHtml !== ''
+    ? '<button type="button" class="site-burger" data-mobile-menu-toggle aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>'
+    : '';
+
 // --- Раскладка по зонам ---
 $zones = ['left' => '', 'center' => '', 'right' => ''];
+$zones['left'] .= $burgerHtml;
 $zones[$hcfg['logo_position']] .= $logoHtml;
 $zones[$hcfg['menu_position']] .= $menuHtml;
 // Утилиты (язык, соцсети, CTA, тема) — в правую зону.
