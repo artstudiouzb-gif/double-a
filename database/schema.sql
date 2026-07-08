@@ -361,6 +361,7 @@ CREATE TABLE IF NOT EXISTS mail_queue (
     body            LONGTEXT NOT NULL,
     status          ENUM('pending', 'sent', 'failed') NOT NULL DEFAULT 'pending',
     attempts        INT UNSIGNED NOT NULL DEFAULT 0,
+    locked_until    DATETIME NULL,
     last_error      VARCHAR(500) NULL,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sent_at         DATETIME NULL,
@@ -415,6 +416,7 @@ CREATE TABLE IF NOT EXISTS social_posts (
     network     ENUM('facebook','linkedin','instagram') NOT NULL,
     status      ENUM('pending','sent','failed') NOT NULL DEFAULT 'pending',
     attempts    INT UNSIGNED NOT NULL DEFAULT 0,
+    locked_until DATETIME NULL,
     remote_id   VARCHAR(190) NULL COMMENT 'id опубликованного поста в сети',
     last_error  VARCHAR(500) NULL,
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -444,6 +446,7 @@ CREATE TABLE IF NOT EXISTS webhook_deliveries (
     payload_json  LONGTEXT     NOT NULL,
     status        ENUM('pending','sent','failed') NOT NULL DEFAULT 'pending',
     attempts      INT UNSIGNED NOT NULL DEFAULT 0,
+    locked_until  DATETIME     NULL,
     response_code INT          NULL,
     last_error    VARCHAR(500) NULL,
     created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -739,7 +742,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_redirects.sql'),
     ('2026_07_08_events_calendar.sql'),
     ('2026_07_08_photo_albums.sql'),
-    ('2026_07_08_subscribers.sql')
+    ('2026_07_08_subscribers.sql'),
+    ('2026_07_08_queue_locks.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

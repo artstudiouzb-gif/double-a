@@ -202,6 +202,58 @@ final class Uploader
      *              name-1600.webp (desktop, если исходник шире),
      *              name-800.webp  (mobile).
      */
+    /** Жёсткий предел разрешения для декодирования GD (~40 Мп). */
+    private const MAX_IMAGE_PIXELS = 40_000_000;
+
+    /** Запас памяти, который оставляем процессу после декодирования (байт). */
+    private const MEMORY_HEADROOM = 16 * 1024 * 1024;
+
+    /**
+     * Переводит ini-значение (например «256M», «1G», «-1») в байты.
+     * Чистая функция для Memory Limit Guard.
+     */
+    public static function parseIniBytes(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '' || $value === '-1') {
+            return PHP_INT_MAX; // без лимита
+        }
+        $unit = strtolower(substr($value, -1));
+        $num = (int) $value;
+
+        return match ($unit) {
+            'g' => $num * 1024 * 1024 * 1024,
+            'm' => $num * 1024 * 1024,
+            'k' => $num * 1024,
+            default => (int) $value,
+        };
+    }
+
+    /**
+     * Оценка памяти на декодирование картинки в GD: ~5 байт на пиксель
+     * (truecolor RGBA + накладные расходы структуры).
+     */
+    public static function estimateImageMemory(int $width, int $height): int
+    {
+        return $width * $height * 5;
+    }
+
+    /**
+     * Memory Limit Guard (getimagesize до декодирования): можно ли безопасно
+     * создать GD-ресурс такого разрешения при заданных лимите и текущем
+     * потреблении. Отдельные аргументы — для тестируемости без ini_set.
+     */
+    public static function imageDecodable(int $width, int $height, ?int $memoryLimit = null, ?int $memoryUsed = null): bool
+    {
+        if ($width < 1 || $height < 1 || $width * $height > self::MAX_IMAGE_PIXELS) {
+            return false;
+        }
+        $limit = $memoryLimit ?? self::parseIniBytes((string) ini_get('memory_limit'));
+        $used = $memoryUsed ?? memory_get_usage(true);
+
+        return self::estimateImageMemory($width, $height) <= $limit - $used - self::MEMORY_HEADROOM;
+    }
+
     public static function optimizeImage(string $path): void
     {
         if (!extension_loaded('gd')) {
@@ -215,6 +267,19 @@ final class Uploader
             }
             [$width, $height] = $info;
             $type = $info[2];
+
+            // Memory Limit Guard: фото экстремального разрешения (например,
+            // 8000×6000 прямо с камеры) не декодируем — иначе Fatal Error
+            // уронит запрос. Оригинал остаётся как есть, без WebP-версий.
+            if (!self::imageDecodable((int) $width, (int) $height)) {
+                Logger::warning('Image optimize пропущен: разрешение слишком велико для памяти', [
+                    'file' => basename($path),
+                    'width' => $width,
+                    'height' => $height,
+                    'memory_limit' => (string) ini_get('memory_limit'),
+                ]);
+                return;
+            }
 
             $src = match ($type) {
                 IMAGETYPE_JPEG => @imagecreatefromjpeg($path),

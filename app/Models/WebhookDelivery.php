@@ -34,15 +34,9 @@ final class WebhookDelivery
     /** @return array<int, array<string, mixed>> */
     public static function pendingBatch(int $limit = 20): array
     {
-        $stmt = Database::pdo()->prepare(
-            "SELECT * FROM webhook_deliveries WHERE status = 'pending' AND attempts < :max
-             ORDER BY created_at ASC LIMIT :limit"
-        );
-        $stmt->bindValue(':max', self::MAX_ATTEMPTS, PDO::PARAM_INT);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
+        // Гонко-безопасная выборка: FOR UPDATE SKIP LOCKED + аренда строк,
+        // чтобы параллельные воркеры не дублировали обработку (QueueClaim).
+        return \App\Core\QueueClaim::batch('webhook_deliveries', self::MAX_ATTEMPTS, $limit);
     }
 
     public static function markSent(int $id, int $responseCode): void

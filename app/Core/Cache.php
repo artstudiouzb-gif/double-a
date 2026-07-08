@@ -54,7 +54,16 @@ final class Cache
         @file_put_contents($path, serialize($value), LOCK_EX);
     }
 
+    /** Анти-stampede: сколько раз и с каким шагом ждать чужую генерацию. */
+    private const LOCK_WAIT_ATTEMPTS = 30;
+    private const LOCK_WAIT_MICROSECONDS = 100_000; // суммарно ~3 секунды
+
     /**
+     * Ленивая генерация с защитой от cache stampede: после сброса кэша
+     * значение генерирует только первый пришедший поток (flock на lock-файле),
+     * остальные одновременные запросы ждут готовый кэш (usleep) вместо того,
+     * чтобы лавиной нагружать MySQL и CssScoper.
+     *
      * @param callable():mixed $callback
      */
     public static function remember(string $key, callable $callback): mixed
@@ -63,10 +72,48 @@ final class Cache
         if ($cached !== null) {
             return $cached;
         }
-        $value = $callback();
-        self::put($key, $value);
 
-        return $value;
+        $lockPath = self::pathFor($key) . '.lock';
+        $dir = dirname($lockPath);
+        if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
+            return $callback(); // ФС недоступна — работаем без кэша
+        }
+        $lock = @fopen($lockPath, 'c');
+        if ($lock === false) {
+            return $callback();
+        }
+
+        try {
+            if (flock($lock, LOCK_EX | LOCK_NB)) {
+                // Мы — генератор. Перепроверка: кэш мог появиться, пока брали lock.
+                $cached = self::get($key);
+                if ($cached !== null) {
+                    return $cached;
+                }
+                $value = $callback();
+                self::put($key, $value);
+
+                return $value;
+            }
+
+            // Генерирует другой поток — ждём готовый кэш.
+            for ($i = 0; $i < self::LOCK_WAIT_ATTEMPTS; $i++) {
+                usleep(self::LOCK_WAIT_MICROSECONDS);
+                $cached = self::get($key);
+                if ($cached !== null) {
+                    return $cached;
+                }
+            }
+
+            // Генератор завис/упал — не блокируем посетителя, считаем сами.
+            $value = $callback();
+            self::put($key, $value);
+
+            return $value;
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
     }
 
     public static function forget(string $key): void

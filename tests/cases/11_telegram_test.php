@@ -64,7 +64,9 @@ test('Telegram: SECURITY уходит в отдельный чат при chat_i
         'app' => ['timezone' => 'UTC', 'env' => 'testing', 'debug' => true, 'url' => 'http://localhost'],
         'telegram' => ['bot_token' => 'T', 'chat_id' => 'GENERAL', 'chat_id_security' => 'SECCHAT', 'min_level' => 'WARNING'],
     ]);
-    TelegramNotifier::send('SECURITY', 'sec ' . bin2hex(random_bytes(3)));
+    // throttle=0: случайный hex иногда состоит из одних цифр, а сигнатура
+    // троттлинга маскирует цифры — без этого тест изредка флакует.
+    TelegramNotifier::send('SECURITY', 'sec ' . bin2hex(random_bytes(3)), ['throttle' => 0]);
     assert_same('SECCHAT', $chats[0] ?? '');
     TelegramNotifier::setTransport(null);
 });
