@@ -60,6 +60,7 @@ ArtStudio CMS — чистый PHP 8.2+ / MySQL(MariaDB), без Composer. Ни�
 */5 * * * * php /path/to/app/Console/social_worker.php   >> /path/to/storage/logs/social_worker.log 2>&1
 0 3 * * *  php /path/to/app/Console/backup_worker.php    >> /path/to/storage/logs/backup_worker.log 2>&1
 30 3 * * * php /path/to/app/Console/gdpr_cleanup.php     >> /path/to/storage/logs/gdpr_cleanup.log 2>&1
+0 9 * * 1  php /path/to/app/Console/digest_worker.php    >> /path/to/storage/logs/digest_worker.log 2>&1
 ```
 
 `/health` возвращает `degraded` и шлёт алерт, если воркер перестал запускаться.

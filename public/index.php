@@ -194,6 +194,8 @@ $router->post('/admin/trash/{type}/{id}/force-delete', [\App\Controllers\Admin\T
 
 // --- Admin: пользователи (только супер-администратор) ---
 $router->get('/admin/audit', [\App\Controllers\Admin\AuditController::class, 'index']);
+$router->get('/admin/subscribers', [\App\Controllers\Admin\SubscriberController::class, 'index']);
+$router->post('/admin/subscribers/{id}/delete', [\App\Controllers\Admin\SubscriberController::class, 'destroy']);
 $router->get('/admin/albums', [\App\Controllers\Admin\AlbumController::class, 'index']);
 $router->post('/admin/albums/create', [\App\Controllers\Admin\AlbumController::class, 'store']);
 $router->get('/admin/albums/{id}/edit', [\App\Controllers\Admin\AlbumController::class, 'edit']);
@@ -299,6 +301,8 @@ $router->get('/search', [\App\Controllers\Site\SearchController::class, 'index']
 $router->get('/calendar', [\App\Controllers\Site\CalendarController::class, 'index']);
 $router->get('/albums', [\App\Controllers\Site\AlbumController::class, 'index']);
 $router->get('/albums/{slug}', [\App\Controllers\Site\AlbumController::class, 'show']);
+$router->post('/subscribe', [\App\Controllers\Site\SubscribeController::class, 'subscribe']);
+$router->get('/unsubscribe', [\App\Controllers\Site\SubscribeController::class, 'unsubscribe']);
 $router->get('/catalog/{type}', [\App\Controllers\Site\ContentController::class, 'index']);
 $router->get('/catalog/{type}/{slug}', [\App\Controllers\Site\ContentController::class, 'show']);
 $router->post('/forms/{slug}/submit', [SiteFormController::class, 'submit']);

@@ -756,3 +756,11 @@ body.design-header-dark .site-burger, body.design-header-accent .site-burger { c
 .album-photo img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; display: block; transition: opacity .15s ease; }
 .album-photo a:hover img { opacity: .85; }
 .album-photo figcaption { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+/* --- Блок подписки на дайджест --- */
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.subscribe-block { max-width: 620px; margin: 0 auto; text-align: center; padding: 34px 22px; border: 1px solid var(--border, #e5e7eb); border-radius: var(--radius, 12px); background: color-mix(in srgb, var(--color-primary, #1f4b8e) 5%, transparent); }
+.subscribe-block__title { margin: 0 0 8px; }
+.subscribe-block__text { margin: 0 0 18px; color: var(--text-muted); }
+.subscribe-block__form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.subscribe-block__form input[type=email] { flex: 1 1 260px; max-width: 340px; padding: 11px 14px; border: 1px solid var(--border, #e5e7eb); border-radius: 10px; font: inherit; }

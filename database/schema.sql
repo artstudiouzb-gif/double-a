@@ -520,6 +520,18 @@ CREATE TABLE IF NOT EXISTS photo_album_images (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- Подписчики email-дайджеста новостей
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS subscribers (
+    id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email      VARCHAR(190) NOT NULL,
+    token      VARCHAR(64) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_subscribers_email (email),
+    UNIQUE KEY uniq_subscribers_token (token)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- Конструктор произвольных типов контента (этап 16.4)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS content_types (
@@ -726,7 +738,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_audit_log.sql'),
     ('2026_07_08_redirects.sql'),
     ('2026_07_08_events_calendar.sql'),
-    ('2026_07_08_photo_albums.sql')
+    ('2026_07_08_photo_albums.sql'),
+    ('2026_07_08_subscribers.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

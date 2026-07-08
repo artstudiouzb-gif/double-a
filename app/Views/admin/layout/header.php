@@ -84,6 +84,7 @@ if ($navIsSuper) {
         'users' => ['/admin/users', 'Пользователи'],
         'audit' => ['/admin/audit', 'Журнал действий'],
     ];
+    $navTools['subscribers'] = ['/admin/subscribers', 'Подписчики'];
     $navTools['repository'] = ['/admin/repository', 'Хранилище'];
 }
 

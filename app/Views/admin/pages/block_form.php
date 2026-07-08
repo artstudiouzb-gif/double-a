@@ -25,7 +25,7 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             <input type="text" id="title" name="title" value="<?= htmlspecialchars($block['title'] ?? '', ENT_QUOTES) ?>">
         </div>
 
-        <?php if (in_array($type, ['text', 'cta', 'advantages', 'gallery', 'testimonials', 'counters', 'team_list', 'projects_list', 'news_latest', 'partners', 'banner', 'faq'], true)): ?>
+        <?php if (in_array($type, ['text', 'cta', 'advantages', 'gallery', 'testimonials', 'counters', 'team_list', 'projects_list', 'news_latest', 'partners', 'banner', 'faq', 'subscribe'], true)): ?>
             <div class="form-field">
                 <label for="title_field">Заголовок, показываемый на сайте</label>
                 <input type="text" id="title_field" name="title_field" value="<?= htmlspecialchars($data['title'] ?? '', ENT_QUOTES) ?>">
@@ -329,6 +329,18 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 </template>
                 <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="items">+ Добавить логотип</button></div>
             </div>
+        <?php endif; ?>
+
+        <?php if ($type === 'subscribe'): ?>
+            <div class="form-field">
+                <label for="sub_text">Текст под заголовком</label>
+                <input type="text" id="sub_text" name="text" value="<?= htmlspecialchars($data['text'] ?? '', ENT_QUOTES) ?>">
+            </div>
+            <div class="form-field">
+                <label for="sub_btn">Текст кнопки</label>
+                <input type="text" id="sub_btn" name="button_text" value="<?= htmlspecialchars($data['button_text'] ?? '', ENT_QUOTES) ?>" placeholder="Подписаться">
+            </div>
+            <p class="form-hint">Адреса попадают в раздел «Подписчики»; рассылку раз в неделю отправляет digest_worker (cron).</p>
         <?php endif; ?>
 
         <?php if ($type === 'faq'): ?>

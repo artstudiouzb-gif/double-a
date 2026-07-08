@@ -30,6 +30,7 @@ final class BlockRenderer
         'news_latest' => ['title' => 'Последние новости', 'limit' => 3],
         'partners' => ['title' => 'Партнёры', 'items' => []],
         'banner' => ['title' => '', 'text' => '', 'image' => '', 'button_text' => '', 'button_url' => ''],
+        'subscribe' => ['title' => 'Подписка на новости', 'text' => 'Получайте дайджест новостей на почту раз в неделю.', 'button_text' => 'Подписаться'],
         'faq' => ['title' => '', 'items' => []],
     ];
 
