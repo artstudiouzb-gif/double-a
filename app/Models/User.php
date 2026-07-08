@@ -83,6 +83,13 @@ final class User
         $stmt->execute([':phone' => $phone, ':id' => $id]);
     }
 
+    /** chat_id Telegram-бота для кодов входа; null — отвязать. */
+    public static function updateTelegramChatId(int $id, ?int $chatId): void
+    {
+        $stmt = Database::pdo()->prepare('UPDATE users SET telegram_chat_id = :cid WHERE id = :id');
+        $stmt->execute([':cid' => $chatId, ':id' => $id]);
+    }
+
     public static function touchLastLogin(int $id): void
     {
         $stmt = Database::pdo()->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');

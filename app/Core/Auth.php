@@ -43,11 +43,10 @@ final class Auth
 
         session_regenerate_id(true);
 
-        $phone = trim((string) ($user['phone'] ?? ''));
-        if (!TelegramGateway::isConfigured() || $phone === '') {
-            // Шлюз не настроен либо у пользователя не указан телефон — входим
-            // по паролю. Фиксируем в security-логе, чтобы это было видно.
-            Logger::security('Вход без кода подтверждения (Telegram-шлюз не настроен или нет телефона)', [
+        if (!self::hasCodeChannel($user)) {
+            // Ни бот, ни шлюз не доступны этому пользователю — входим по
+            // паролю. Фиксируем в security-логе, чтобы это было видно.
+            Logger::security('Вход без кода подтверждения (Telegram-доставка не настроена)', [
                 'user' => (string) $user['username'],
                 'ip' => $ip,
             ]);
@@ -69,14 +68,33 @@ final class Auth
     }
 
     /**
+     * Доступен ли пользователю хоть один канал доставки кода: бесплатный
+     * бот (telegram_chat_id) или платный шлюз Verification Codes (телефон).
+     */
+    private static function hasCodeChannel(array $user): bool
+    {
+        if (TelegramBot::isConfigured() && (int) ($user['telegram_chat_id'] ?? 0) > 0) {
+            return true;
+        }
+
+        return TelegramGateway::isConfigured() && trim((string) ($user['phone'] ?? '')) !== '';
+    }
+
+    /**
      * Генерирует одноразовый код, сохраняет его хэш в сессии и отправляет в
-     * Telegram. Используется при входе и при повторной отправке.
+     * Telegram. Приоритет — бесплатный бот; иначе платный шлюз (канал
+     * Verification Codes). Используется при входе и при повторной отправке.
      */
     private static function sendLoginCode(array $user): bool
     {
         $code = (string) random_int(100000, 999999);
         $_SESSION['pending_code_hash'] = hash('sha256', $code);
         $_SESSION['pending_code_expires'] = time() + self::CODE_TTL;
+
+        $chatId = (int) ($user['telegram_chat_id'] ?? 0);
+        if (TelegramBot::isConfigured() && $chatId > 0) {
+            return TelegramBot::sendLoginCode($chatId, $code);
+        }
 
         return TelegramGateway::sendCode((string) $user['phone'], $code);
     }
@@ -96,7 +114,7 @@ final class Auth
         }
 
         $user = User::findById((int) $userId);
-        if (!$user || trim((string) ($user['phone'] ?? '')) === '') {
+        if (!$user || !self::hasCodeChannel($user)) {
             return false;
         }
 

@@ -76,7 +76,12 @@ require __DIR__ . '/../layout/header.php';
         <fieldset class="settings-group">
             <legend>Вход в панель: код через Telegram</legend>
             <div class="form-field">
-                <label for="telegram_gateway_token">Токен Telegram Gateway API</label>
+                <label for="telegram_bot_token">Токен Telegram-бота (бесплатно, рекомендуется)</label>
+                <input type="text" id="telegram_bot_token" name="telegram_bot_token" value="<?= htmlspecialchars($settings['telegram_bot_token'] ?? '', ENT_QUOTES) ?>" autocomplete="off" spellcheck="false">
+                <span class="form-hint">Создайте бота у <strong>@BotFather</strong> в Telegram (команда <code>/newbot</code>) и вставьте токен. Каждый администратор затем привязывает свой Telegram в «Профиле» — коды входа приходят от бота бесплатно.</span>
+            </div>
+            <div class="form-field">
+                <label for="telegram_gateway_token">Токен Telegram Gateway API (платный, резервный)</label>
                 <input type="text" id="telegram_gateway_token" name="telegram_gateway_token" value="<?= htmlspecialchars($settings['telegram_gateway_token'] ?? '', ENT_QUOTES) ?>" autocomplete="off" spellcheck="false">
                 <span class="form-hint">Получите токен в кабинете <code>gateway.telegram.org</code>. Когда токен указан и у администратора заполнен телефон, вход подтверждается 6-значным кодом, который приходит в Telegram от официального канала <strong>Verification&nbsp;Codes</strong> (t.me/VerificationCodes). Если поле пустое — вход только по паролю.</span>
             </div>

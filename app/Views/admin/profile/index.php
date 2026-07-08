@@ -53,7 +53,35 @@ function ua_short(?string $ua): string
 </div>
 
 <div class="form-card" style="margin-top:24px;">
-    <h2 style="margin-top:0;">Подтверждение входа через Telegram</h2>
+    <h2 style="margin-top:0;">Код входа через Telegram-бота (бесплатно)</h2>
+    <?php if (!($botConfigured ?? false)): ?>
+        <p class="form-hint">Бот не настроен. Супер-администратор может создать бота у @BotFather (бесплатно) и указать токен в «Настройках».</p>
+    <?php elseif ($botLinked ?? false): ?>
+        <p><span class="badge badge--success">Привязан</span> Коды входа приходят вам в Telegram от бота.</p>
+        <form method="post" action="/admin/profile/telegram/unlink" class="form-grid" style="max-width:480px;">
+            <?= Csrf::field() ?>
+            <div class="form-field">
+                <label for="tg_password">Подтвердите паролем, чтобы отвязать</label>
+                <input type="password" id="tg_password" name="password" autocomplete="current-password" required>
+            </div>
+            <div class="form-actions"><button type="submit" class="btn btn--danger">Отвязать Telegram</button></div>
+        </form>
+    <?php else: ?>
+        <p class="form-hint">Привяжите свой Telegram — и коды входа будут приходить от бота бесплатно (без QR-кодов и секретов на экране):</p>
+        <ol style="margin:0 0 14px 18px;line-height:1.8;">
+            <li>Откройте бота<?php if (!empty($botUsername)): ?> <a href="https://t.me/<?= htmlspecialchars($botUsername, ENT_QUOTES) ?>" target="_blank" rel="noopener">@<?= htmlspecialchars($botUsername, ENT_QUOTES) ?></a><?php endif; ?> и нажмите <strong>Start</strong>.</li>
+            <li>Отправьте боту код: <code style="font-size:15px;padding:3px 8px;background:var(--admin-accent-soft,#eef0fe);border-radius:6px;"><?= htmlspecialchars((string) ($linkCode ?? ''), ENT_QUOTES) ?></code></li>
+            <li>Нажмите кнопку ниже.</li>
+        </ol>
+        <form method="post" action="/admin/profile/telegram/link">
+            <?= Csrf::field() ?>
+            <button type="submit" class="btn btn--primary">Проверить привязку</button>
+        </form>
+    <?php endif; ?>
+</div>
+
+<div class="form-card" style="margin-top:24px;">
+    <h2 style="margin-top:0;">Резервный канал: телефон (платный шлюз)</h2>
     <p class="form-hint">Код входа приходит в Telegram от официального канала
        <strong>Verification&nbsp;Codes</strong> (t.me/VerificationCodes) на номер, привязанный к вашему
        Telegram-аккаунту. Без телефона вход выполняется только по паролю.</p>

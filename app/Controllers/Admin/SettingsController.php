@@ -19,7 +19,7 @@ final class SettingsController
         'site_name', 'color_primary', 'color_accent', 'font_family',
         'contact_phone', 'contact_email', 'contact_address',
         'font_url', 'font_face_name', 'default_meta_description',
-        'telegram_gateway_token',
+        'telegram_gateway_token', 'telegram_bot_token',
     ];
 
     public function index(): void

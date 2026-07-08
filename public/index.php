@@ -84,6 +84,8 @@ $router->post('/admin/reset', [\App\Controllers\Admin\PasswordResetController::c
 $router->get('/admin/profile', [\App\Controllers\Admin\ProfileController::class, 'index']);
 $router->post('/admin/profile/password', [\App\Controllers\Admin\ProfileController::class, 'changePassword']);
 $router->post('/admin/profile/phone', [\App\Controllers\Admin\ProfileController::class, 'updatePhone']);
+$router->post('/admin/profile/telegram/link', [\App\Controllers\Admin\ProfileController::class, 'linkTelegram']);
+$router->post('/admin/profile/telegram/unlink', [\App\Controllers\Admin\ProfileController::class, 'unlinkTelegram']);
 $router->post('/admin/profile/sessions/revoke-others', [\App\Controllers\Admin\ProfileController::class, 'revokeOthers']);
 $router->post('/admin/profile/sessions/{id}/revoke', [\App\Controllers\Admin\ProfileController::class, 'revokeSession']);
 
