@@ -526,3 +526,34 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 .art-editor__area th, .art-editor__area td { border: 1px solid var(--admin-border-strong, #d5d9e0); padding: 6px 10px; min-width: 40px; }
 .art-editor__area th { background: #f2f4f8; }
 .art-editor__area img { max-width: 100%; height: auto; }
+
+/* Превью палитр: две цветовые плашки (основной + акцент) */
+.design-card__preview--palette-gov_blue::before,
+.design-card__preview--palette-classic_red::before,
+.design-card__preview--palette-emerald::before,
+.design-card__preview--palette-graphite::before,
+.design-card__preview--palette-violet::before,
+.design-card__preview--palette-custom::before { background: none; }
+.design-card__preview--palette-gov_blue { background: linear-gradient(90deg, #1f4b8e 60%, #0f766e 60%); }
+.design-card__preview--palette-classic_red { background: linear-gradient(90deg, #1a1a1a 60%, #e63946 60%); }
+.design-card__preview--palette-emerald { background: linear-gradient(90deg, #14532d 60%, #059669 60%); }
+.design-card__preview--palette-graphite { background: linear-gradient(90deg, #111827 60%, #374151 60%); }
+.design-card__preview--palette-violet { background: linear-gradient(90deg, #312e81 60%, #6d28d9 60%); }
+.design-card__preview--palette-custom { background: repeating-conic-gradient(#e8eaf0 0 25%, #f7f8fa 0 50%) 0 0 / 16px 16px; }
+
+/* Превью шрифтов: образец «Аа» нужным стеком */
+.design-card__preview--font_style-inter::before,
+.design-card__preview--font_style-system::before,
+.design-card__preview--font_style-serif::before,
+.design-card__preview--font_style-custom::before { background: none; }
+.design-card__preview--font_style-inter::after,
+.design-card__preview--font_style-system::after,
+.design-card__preview--font_style-serif::after,
+.design-card__preview--font_style-custom::after {
+    content: 'Аа'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: #1c2531;
+}
+.design-card__preview--font_style-inter::after { font-family: 'Inter', system-ui, sans-serif; }
+.design-card__preview--font_style-system::after { font-family: system-ui, Arial, sans-serif; }
+.design-card__preview--font_style-serif::after { font-family: Georgia, 'Times New Roman', serif; }
+.design-card__preview--font_style-custom::after { content: 'Аа?'; font-family: inherit; color: #66707c; }

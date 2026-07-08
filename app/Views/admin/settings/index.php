@@ -22,6 +22,7 @@ require __DIR__ . '/../layout/header.php';
             'file' => 'logo_file',
         ]) ?>
 
+        <p class="form-hint">Готовые цветовые палитры и шрифтовые пресеты — в разделе <a href="/admin/design">«Дизайн»</a>. Поля ниже — ручные значения (используются при выборе «Свои цвета»/«Свой шрифт»).</p>
         <div class="form-field">
             <label for="color_primary">Основной цвет</label>
             <input type="text" id="color_primary" name="color_primary" value="<?= htmlspecialchars($settings['color_primary'] ?? '#1a1a1a', ENT_QUOTES) ?>">

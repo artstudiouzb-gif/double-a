@@ -18,7 +18,42 @@ final class DesignSettings
      * Опции точной настройки: ключ => [label, hint, choices[value=>label], default].
      * Каждая опция рендерится в админке набором карточек-переключателей.
      */
+    /**
+     * Готовые палитры: значение опции palette => [подпись, основной, акцент].
+     * 'custom' сохраняет цвета, заданные вручную в «Настройках».
+     */
+    public const PALETTES = [
+        'gov_blue' => ['Гос-синий', '#1f4b8e', '#0f766e'],
+        'classic_red' => ['Классика', '#1a1a1a', '#e63946'],
+        'emerald' => ['Изумруд', '#14532d', '#059669'],
+        'graphite' => ['Графит', '#111827', '#374151'],
+        'violet' => ['Индиго', '#312e81', '#6d28d9'],
+        'custom' => ['Свои цвета', '', ''],
+    ];
+
+    /** Шрифтовые пресеты: значение опции font_style => [подпись, CSS-стек]. */
+    public const FONTS = [
+        'inter' => ['Inter', "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"],
+        'system' => ['Системный', "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif"],
+        'serif' => ['С засечками', "Georgia, 'Times New Roman', serif"],
+        'custom' => ['Свой шрифт', ''],
+    ];
+
     public const OPTIONS = [
+        'palette' => [
+            'label' => 'Цветовая палитра',
+            'hint' => 'Основной и акцентный цвета сайта. «Свои цвета» — значения из «Настроек».',
+            'group' => 'Цвета и шрифт',
+            'choices' => ['gov_blue' => 'Гос-синий', 'classic_red' => 'Классика', 'emerald' => 'Изумруд', 'graphite' => 'Графит', 'violet' => 'Индиго', 'custom' => 'Свои цвета'],
+            'default' => 'custom',
+        ],
+        'font_style' => [
+            'label' => 'Шрифт сайта',
+            'hint' => '«Свой шрифт» — значение из «Настроек» (включая локальный @font-face).',
+            'group' => 'Цвета и шрифт',
+            'choices' => ['inter' => 'Inter', 'system' => 'Системный', 'serif' => 'С засечками', 'custom' => 'Свой шрифт'],
+            'default' => 'custom',
+        ],
         'container' => [
             'label' => 'Ширина контейнера',
             'hint' => 'Максимальная ширина основного содержимого.',
@@ -133,22 +168,22 @@ final class DesignSettings
         'classic' => [
             'label' => 'Классический',
             'desc' => 'Строгий официальный стиль, умеренные отступы.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'plain', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'plain', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'gov_blue', 'font_style' => 'system'],
         ],
         'modern' => [
             'label' => 'Современный',
             'desc' => 'Крупные скругления, воздух, акцентная шапка.',
-            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed'],
+            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'violet', 'font_style' => 'inter'],
         ],
         'minimal' => [
             'label' => 'Минимал',
             'desc' => 'Прямые углы, максимум воздуха, список в каталоге.',
-            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off', 'search_type' => 'overlay', 'detail_layout' => 'plain', 'footer_style' => 'minimal', 'mobile_menu' => 'burger', 'mobile_header' => 'static'],
+            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off', 'search_type' => 'overlay', 'detail_layout' => 'plain', 'footer_style' => 'minimal', 'mobile_menu' => 'burger', 'mobile_header' => 'static', 'palette' => 'graphite', 'font_style' => 'serif'],
         ],
         'compact' => [
             'label' => 'Компактный',
             'desc' => 'Плотная сетка, маленькие карточки — много данных.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'classic_red', 'font_style' => 'system'],
         ],
     ];
 
@@ -179,6 +214,19 @@ final class DesignSettings
         foreach (self::OPTIONS as $key => $opt) {
             $val = self::sanitize($key, (string) ($input[$key] ?? ''));
             Setting::set('design_' . $key, (string) $val);
+        }
+
+        // Материализация палитры/шрифта в реальные настройки сайта
+        // (color_primary/color_accent/font_family, их читает фронтенд).
+        // 'custom' ничего не трогает — остаются значения из «Настроек».
+        $palette = (string) Setting::get('design_palette', 'custom');
+        if ($palette !== 'custom' && isset(self::PALETTES[$palette])) {
+            Setting::set('color_primary', self::PALETTES[$palette][1]);
+            Setting::set('color_accent', self::PALETTES[$palette][2]);
+        }
+        $font = (string) Setting::get('design_font_style', 'custom');
+        if ($font !== 'custom' && isset(self::FONTS[$font])) {
+            Setting::set('font_family', self::FONTS[$font][1]);
         }
     }
 
