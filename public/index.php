@@ -208,6 +208,7 @@ $router->post('/admin/redirects/create', [\App\Controllers\Admin\RedirectControl
 $router->post('/admin/redirects/import', [\App\Controllers\Admin\RedirectController::class, 'import']);
 $router->post('/admin/redirects/{id}/toggle', [\App\Controllers\Admin\RedirectController::class, 'toggle']);
 $router->post('/admin/redirects/{id}/delete', [\App\Controllers\Admin\RedirectController::class, 'destroy']);
+$router->post('/admin/redirects/404/{id}/delete', [\App\Controllers\Admin\RedirectController::class, 'dismissNotFound']);
 $router->get('/admin/users', [\App\Controllers\Admin\UserController::class, 'index']);
 $router->post('/admin/users/create', [\App\Controllers\Admin\UserController::class, 'store']);
 $router->post('/admin/users/{id}/delete', [\App\Controllers\Admin\UserController::class, 'destroy']);
@@ -303,6 +304,8 @@ $router->get('/albums', [\App\Controllers\Site\AlbumController::class, 'index'])
 $router->get('/albums/{slug}', [\App\Controllers\Site\AlbumController::class, 'show']);
 $router->post('/subscribe', [\App\Controllers\Site\SubscribeController::class, 'subscribe']);
 $router->get('/unsubscribe', [\App\Controllers\Site\SubscribeController::class, 'unsubscribe']);
+$router->get('/opendata', [\App\Controllers\Site\OpenDataController::class, 'index']);
+$router->get('/opendata/{dataset}', [\App\Controllers\Site\OpenDataController::class, 'dataset']);
 $router->get('/catalog/{type}', [\App\Controllers\Site\ContentController::class, 'index']);
 $router->get('/catalog/{type}/{slug}', [\App\Controllers\Site\ContentController::class, 'show']);
 $router->post('/forms/{slug}/submit', [SiteFormController::class, 'submit']);

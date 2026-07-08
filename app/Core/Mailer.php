@@ -29,9 +29,19 @@ final class Mailer
      * Отправляет письмо. Возвращает true при успехе. Не бросает исключения
      * наружу — ошибки логируются, чтобы отправка не ломала пользовательский сценарий.
      */
+    /** Точный текст последней SMTP-ошибки (например «550 SPF check failed»). */
+    private ?string $lastError = null;
+
+    public function lastError(): ?string
+    {
+        return $this->lastError;
+    }
+
     public function send(string $toEmail, string $subject, string $body, ?string $toName = null): bool
     {
+        $this->lastError = null;
         if (trim((string) ($this->config['host'] ?? '')) === '') {
+            $this->lastError = 'SMTP host не настроен';
             return false;
         }
 
@@ -63,6 +73,9 @@ final class Mailer
 
             return true;
         } catch (\Throwable $e) {
+            // Сохраняем точный ответ SMTP-сервера (видно причину блокировки:
+            // SPF, greylisting и т.п.) — mail_worker пишет его в last_error.
+            $this->lastError = $e->getMessage();
             Logger::error('SMTP send failed: ' . $e->getMessage());
             return false;
         } finally {

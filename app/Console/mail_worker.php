@@ -59,7 +59,9 @@ foreach ($batch as $item) {
         MailQueue::markSent($id);
         $sent++;
     } else {
-        MailQueue::markFailed($id, 'SMTP send returned false');
+        // Точный ответ SMTP-сервера (например «550 SPF check failed») —
+        // сразу видно, почему провайдер отклоняет письма.
+        MailQueue::markFailed($id, $mailer->lastError() ?? 'SMTP send returned false');
         $failed++;
     }
 }

@@ -2,6 +2,12 @@
 
 use App\Core\Locale;
 
+// 404-трекер: этот шаблон — единственная общая точка всех 404 (роутер,
+// страницы, новости, каталог). Запись не мешает отдаче страницы.
+if (class_exists(\App\Models\NotFoundLog::class) && \App\Core\Database::isConnected()) {
+    \App\Models\NotFoundLog::record();
+}
+
 $lang = class_exists(Locale::class) ? Locale::current() : 'ru';
 $messages = [
     'ru' => ['Страница не найдена', 'Запрашиваемая страница не существует или была удалена.', 'На главную'],

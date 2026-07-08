@@ -19,7 +19,12 @@ final class RedirectController
     public function index(): void
     {
         Auth::requireSuperAdmin();
-        View::render('admin/redirects/index', ['items' => Redirect::all()]);
+        View::render('admin/redirects/index', [
+            'items' => Redirect::all(),
+            'notFound' => \App\Models\NotFoundLog::top(50),
+            // Быстрое создание из 404-трекера: ?from= предзаполняет форму.
+            'prefillFrom' => (string) ($_GET['from'] ?? ''),
+        ]);
     }
 
     public function store(): void
@@ -27,12 +32,18 @@ final class RedirectController
         Auth::requireSuperAdmin();
         Csrf::verifyRequest();
 
+        $from = (string) ($_POST['from_path'] ?? '');
         $ok = Redirect::create(
-            (string) ($_POST['from_path'] ?? ''),
+            $from,
             (string) ($_POST['to_url'] ?? ''),
             (int) ($_POST['code'] ?? 301)
         );
         if ($ok) {
+            // Путь закрыт редиректом — убираем его из 404-трекера.
+            $normalized = Redirect::normalizePath($from);
+            if ($normalized !== null) {
+                \App\Models\NotFoundLog::deleteByPath($normalized);
+            }
             Flash::success('Редирект добавлен.');
         } else {
             Flash::error('Не удалось добавить: проверьте адреса (путь «откуда» должен начинаться с «/», не может быть корнем или /admin; такой путь мог быть добавлен ранее).');
@@ -71,6 +82,17 @@ final class RedirectController
 
         Redirect::delete((int) $params['id']);
         Flash::success('Редирект удалён.');
+        $this->back();
+    }
+
+    /** Скрыть запись 404-трекера (не создавая редирект). */
+    public function dismissNotFound(array $params): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+
+        \App\Models\NotFoundLog::delete((int) $params['id']);
+        Flash::success('Запись убрана из списка 404.');
         $this->back();
     }
 

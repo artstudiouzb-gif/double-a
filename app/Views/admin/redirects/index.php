@@ -7,6 +7,8 @@ $activeNav = 'redirects';
 require __DIR__ . '/../layout/header.php';
 
 /** @var array $items */
+/** @var array $notFound */
+/** @var string $prefillFrom */
 ?>
 <p class="form-hint">301/302-редиректы сохраняют посетителей и SEO-вес при переезде со старого сайта: старый адрес автоматически ведёт на новый. Совпадение — по пути (query-строка переносится). Редирект срабатывает раньше страниц, поэтому им можно переопределить и существующий адрес.</p>
 
@@ -16,7 +18,7 @@ require __DIR__ . '/../layout/header.php';
         <?= Csrf::field() ?>
         <div class="form-field">
             <label for="from_path">Старый адрес (откуда)</label>
-            <input type="text" id="from_path" name="from_path" placeholder="/old-page или https://asdr.gov.uz/old-page" required>
+            <input type="text" id="from_path" name="from_path" value="<?= htmlspecialchars($prefillFrom ?? '', ENT_QUOTES) ?>" placeholder="/old-page или https://asdr.gov.uz/old-page" required>
             <span class="form-hint">Можно вставить полный URL старого сайта — возьмётся только путь.</span>
         </div>
         <div class="form-field">
@@ -89,4 +91,36 @@ require __DIR__ . '/../layout/header.php';
         </tbody>
     </table>
 <?php endif; ?>
+<section style="margin-top:28px;">
+    <h2>Недавние 404 (кандидаты в редиректы)</h2>
+    <p class="form-hint">Пути, по которым посетители получили «страница не найдена». Записи с внешним источником перехода — вверху: это живые старые ссылки, их стоит закрыть 301-редиректом. Статика и следы сканеров не учитываются; записи старше 90 дней удаляются автоматически.</p>
+    <?php if (empty($notFound)): ?>
+        <p class="form-hint">Пока пусто — значит, битых входящих ссылок не замечено.</p>
+    <?php else: ?>
+        <table class="data-table">
+            <thead>
+                <tr><th>Путь</th><th>Обращений</th><th>Внешний источник</th><th>Последний раз</th><th></th></tr>
+            </thead>
+            <tbody>
+                <?php foreach ($notFound as $nf): ?>
+                    <tr>
+                        <td><code style="font-size:12px;"><?= htmlspecialchars((string) $nf['path'], ENT_QUOTES) ?></code></td>
+                        <td><?= (int) $nf['hits'] ?></td>
+                        <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            <?= $nf['last_referer'] !== null ? htmlspecialchars((string) $nf['last_referer'], ENT_QUOTES) : '—' ?>
+                        </td>
+                        <td style="white-space:nowrap;"><?= htmlspecialchars((string) $nf['last_hit_at'], ENT_QUOTES) ?></td>
+                        <td class="data-table__actions" style="white-space:nowrap;">
+                            <a class="btn btn--small btn--primary" href="/admin/redirects?from=<?= urlencode((string) $nf['path']) ?>#from_path">Создать 301</a>
+                            <form method="post" action="/admin/redirects/404/<?= (int) $nf['id'] ?>/delete" style="display:inline;">
+                                <?= Csrf::field() ?>
+                                <button type="submit" class="btn btn--small">Скрыть</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</section>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

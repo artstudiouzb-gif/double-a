@@ -37,6 +37,12 @@ try {
         Logger::info('Очистка журнала действий: удалены старые записи', ['removed' => $auditRemoved]);
     }
 
+    // 404-трекер: путь без обращений 90 дней уже не актуален.
+    $nfRemoved = \App\Models\NotFoundLog::purgeOlderThan(90);
+    if ($nfRemoved > 0) {
+        Logger::info('Очистка 404-трекера: удалены неактуальные пути', ['removed' => $nfRemoved]);
+    }
+
     $days = (int) Setting::get('pii_retention_days', '0');
     if ($days <= 0) {
         fwrite(STDOUT, 'Срок хранения ПДн не задан (0) — очистка заявок отключена.' . PHP_EOL);

@@ -535,6 +535,20 @@ CREATE TABLE IF NOT EXISTS subscribers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- 404-трекер: кандидаты в 301-редиректы (страница «Редиректы»)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS not_found_log (
+    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    path         VARCHAR(255) NOT NULL,
+    hits         INT UNSIGNED NOT NULL DEFAULT 1,
+    last_referer VARCHAR(500) NULL,
+    first_hit_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_hit_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_not_found_path (path),
+    KEY idx_not_found_hits (hits)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- Конструктор произвольных типов контента (этап 16.4)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS content_types (
@@ -743,7 +757,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_events_calendar.sql'),
     ('2026_07_08_photo_albums.sql'),
     ('2026_07_08_subscribers.sql'),
-    ('2026_07_08_queue_locks.sql')
+    ('2026_07_08_queue_locks.sql'),
+    ('2026_07_08_not_found_log.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;
