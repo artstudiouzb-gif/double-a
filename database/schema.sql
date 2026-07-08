@@ -579,6 +579,21 @@ JOIN (
 ) f ON f.slug = t.slug
 WHERE NOT EXISTS (SELECT 1 FROM content_type_fields x WHERE x.type_id = t.id);
 
+-- Календарь мероприятий: тип «Мероприятия» (страница /calendar)
+INSERT IGNORE INTO content_types (slug, name, description, has_translations, is_public, created_at) VALUES
+    ('meropriyatiya', 'Мероприятия', 'Календарь событий и мероприятий организации', 1, 1, NOW());
+
+INSERT INTO content_type_fields (type_id, name, label, field_type, required, sort_order, created_at)
+SELECT t.id, f.name, f.label, f.field_type, f.required, f.sort_order, NOW()
+FROM content_types t
+JOIN (
+    SELECT 'meropriyatiya' AS slug, 'event_date' AS name, 'Дата проведения' AS label, 'date' AS field_type, 1 AS required, 0 AS sort_order
+    UNION ALL SELECT 'meropriyatiya', 'event_time', 'Время',            'text',     0, 1
+    UNION ALL SELECT 'meropriyatiya', 'location',   'Место проведения', 'text',     0, 2
+    UNION ALL SELECT 'meropriyatiya', 'summary',    'Описание',         'textarea', 0, 3
+) f ON f.slug = t.slug
+WHERE NOT EXISTS (SELECT 1 FROM content_type_fields x WHERE x.type_id = t.id);
+
 -- ---------------------------------------------------------------------------
 -- Защищённое файловое хранилище (репозиторий) с собственной авторизацией
 -- ---------------------------------------------------------------------------
@@ -684,7 +699,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_telegram_gateway_2fa.sql'),
     ('2026_07_08_telegram_bot_login.sql'),
     ('2026_07_08_audit_log.sql'),
-    ('2026_07_08_redirects.sql')
+    ('2026_07_08_redirects.sql'),
+    ('2026_07_08_events_calendar.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

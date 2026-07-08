@@ -289,6 +289,7 @@ $router->get('/news', [SiteNewsController::class, 'index']);
 $router->get('/news/rss.xml', [SiteNewsController::class, 'feed']);
 $router->get('/news/{slug}', [SiteNewsController::class, 'show']);
 $router->get('/search', [\App\Controllers\Site\SearchController::class, 'index']);
+$router->get('/calendar', [\App\Controllers\Site\CalendarController::class, 'index']);
 $router->get('/catalog/{type}', [\App\Controllers\Site\ContentController::class, 'index']);
 $router->get('/catalog/{type}/{slug}', [\App\Controllers\Site\ContentController::class, 'show']);
 $router->post('/forms/{slug}/submit', [SiteFormController::class, 'submit']);

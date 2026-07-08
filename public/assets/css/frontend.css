@@ -718,3 +718,26 @@ body.design-header-dark .site-burger, body.design-header-accent .site-burger { c
     body.design-mheader-fixed.design-header-dark .site-header { background: #14161c; }
     body.design-mheader-static .site-header { position: relative; }
 }
+
+/* --- Календарь мероприятий --- */
+.calendar__nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 14px; }
+.calendar__label { font-size: 20px; }
+.calendar__scroll { overflow-x: auto; }
+.calendar { width: 100%; min-width: 640px; border-collapse: collapse; table-layout: fixed; }
+.calendar th { padding: 8px 6px; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; border-bottom: 2px solid var(--border, #e5e7eb); }
+.calendar__cell { vertical-align: top; height: 92px; padding: 6px; border: 1px solid var(--border, #e5e7eb); }
+.calendar__cell--empty { background: color-mix(in srgb, var(--border, #e5e7eb) 22%, transparent); }
+.calendar__cell--today { outline: 2px solid var(--color-primary, #1f4b8e); outline-offset: -2px; }
+.calendar__cell--has-events { background: color-mix(in srgb, var(--color-primary, #1f4b8e) 6%, transparent); }
+.calendar__day { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.calendar__event { display: block; font-size: 12px; line-height: 1.35; padding: 3px 6px; margin-bottom: 3px; border-radius: 6px; background: var(--color-primary, #1f4b8e); color: #fff; text-decoration: none; overflow: hidden; }
+.calendar__event:hover { opacity: .88; }
+.calendar__list { margin-top: 26px; }
+.calendar__list ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.calendar__list li { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; padding: 10px 14px; border: 1px solid var(--border, #e5e7eb); border-radius: 10px; }
+.calendar__list time { font-weight: 600; color: var(--color-primary, #1f4b8e); }
+.calendar__time, .calendar__location { color: var(--text-muted); font-size: 14px; }
+@media (max-width: 640px) {
+    .calendar__cell { height: 72px; padding: 4px; }
+    .calendar__event { font-size: 11px; padding: 2px 4px; }
+}
