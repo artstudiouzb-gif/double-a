@@ -39,6 +39,29 @@ final class Router
             $path = '/';
         }
 
+        // Менеджер редиректов: старые URL (переезд с прежнего сайта) уводим на
+        // новые адреса до сопоставления маршрутов — работает и для «занятых»
+        // путей. Только GET/HEAD, панель не редиректится.
+        if (in_array(strtoupper($method), ['GET', 'HEAD'], true)
+            && !str_starts_with($path, '/admin')
+            && Database::isConnected()) {
+            try {
+                $redirect = \App\Models\Redirect::findByPath($path);
+                if ($redirect !== null) {
+                    \App\Models\Redirect::recordHit((int) $redirect['id']);
+                    $target = \App\Models\Redirect::buildTarget(
+                        (string) $redirect['to_url'],
+                        (string) ($_SERVER['QUERY_STRING'] ?? '')
+                    );
+                    http_response_code((int) $redirect['code'] === 302 ? 302 : 301);
+                    header('Location: ' . $target);
+                    return;
+                }
+            } catch (\Throwable) {
+                // Таблицы может не быть до применения миграции — не мешаем сайту.
+            }
+        }
+
         $path = $this->resolveLocale($path);
 
         foreach ($this->routes as $route) {

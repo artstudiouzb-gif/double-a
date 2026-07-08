@@ -194,6 +194,11 @@ $router->post('/admin/trash/{type}/{id}/force-delete', [\App\Controllers\Admin\T
 
 // --- Admin: пользователи (только супер-администратор) ---
 $router->get('/admin/audit', [\App\Controllers\Admin\AuditController::class, 'index']);
+$router->get('/admin/redirects', [\App\Controllers\Admin\RedirectController::class, 'index']);
+$router->post('/admin/redirects/create', [\App\Controllers\Admin\RedirectController::class, 'store']);
+$router->post('/admin/redirects/import', [\App\Controllers\Admin\RedirectController::class, 'import']);
+$router->post('/admin/redirects/{id}/toggle', [\App\Controllers\Admin\RedirectController::class, 'toggle']);
+$router->post('/admin/redirects/{id}/delete', [\App\Controllers\Admin\RedirectController::class, 'destroy']);
 $router->get('/admin/users', [\App\Controllers\Admin\UserController::class, 'index']);
 $router->post('/admin/users/create', [\App\Controllers\Admin\UserController::class, 'store']);
 $router->post('/admin/users/{id}/delete', [\App\Controllers\Admin\UserController::class, 'destroy']);

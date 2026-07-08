@@ -76,6 +76,7 @@ if ($navIsSuper) {
         'content_types' => ['/admin/content-types', 'Типы контента'],
         'social' => ['/admin/social', 'Соцсети'],
         'webhooks' => ['/admin/webhooks', 'Вебхуки'],
+        'redirects' => ['/admin/redirects', 'Редиректы'],
         'settings' => ['/admin/settings', 'Настройки'],
     ];
     $navUsersGroup = [
