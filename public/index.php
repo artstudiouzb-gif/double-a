@@ -218,6 +218,7 @@ $router->post('/admin/design', [\App\Controllers\Admin\DesignController::class, 
 $router->post('/admin/design/preset', [\App\Controllers\Admin\DesignController::class, 'applyPreset']);
 $router->post('/admin/design/preset/save', [\App\Controllers\Admin\DesignController::class, 'savePreset']);
 $router->post('/admin/design/preset/delete', [\App\Controllers\Admin\DesignController::class, 'deletePreset']);
+$router->get('/admin/design/preview', [\App\Controllers\Admin\DesignController::class, 'preview']);
 
 // --- Admin: настройки дизайна ---
 $router->get('/admin/settings', [SettingsController::class, 'index']);

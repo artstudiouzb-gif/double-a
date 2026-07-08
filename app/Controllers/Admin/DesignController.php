@@ -30,6 +30,40 @@ final class DesignController
         ]);
     }
 
+    /**
+     * Живое превью: рендерит главную страницу сайта с «примеренными»
+     * значениями дизайна из query-строки, ничего не сохраняя. Открывается
+     * в iframe панели «Дизайн»; доступно только супер-администратору.
+     */
+    public function preview(): void
+    {
+        Auth::requireSuperAdmin();
+
+        // Примеряем каждую валидную опцию поверх сохранённых значений.
+        foreach (DesignSettings::OPTIONS as $key => $opt) {
+            if (!isset($_GET[$key])) {
+                continue;
+            }
+            $val = DesignSettings::sanitize($key, (string) $_GET[$key]);
+            if ($val !== null) {
+                Setting::overrideInMemory('design_' . $key, $val);
+            }
+        }
+
+        // Палитра/шрифт материализуются тоже только в памяти.
+        $palette = Setting::get('design_palette', 'custom');
+        if ($palette !== 'custom' && isset(DesignSettings::PALETTES[$palette])) {
+            Setting::overrideInMemory('color_primary', DesignSettings::PALETTES[$palette][1]);
+            Setting::overrideInMemory('color_accent', DesignSettings::PALETTES[$palette][2]);
+        }
+        $font = Setting::get('design_font_style', 'custom');
+        if ($font !== 'custom' && isset(DesignSettings::FONTS[$font])) {
+            Setting::overrideInMemory('font_family', DesignSettings::FONTS[$font][1]);
+        }
+
+        (new \App\Controllers\Site\PageController())->home();
+    }
+
     /** Сохранить текущие настройки как собственную конфигурацию. */
     public function savePreset(): void
     {

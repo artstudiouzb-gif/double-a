@@ -74,6 +74,21 @@ foreach ($options as $key => $opt) {
     </form>
 </section>
 
+<section class="design-section">
+    <h2 class="design-section__title">Живое превью</h2>
+    <div class="design-preview">
+        <div class="design-preview__bar">
+            <button type="button" class="btn btn--small is-active" data-pv-width="100%">Десктоп</button>
+            <button type="button" class="btn btn--small" data-pv-width="768px">Планшет</button>
+            <button type="button" class="btn btn--small" data-pv-width="390px">Телефон</button>
+            <span class="form-hint" style="margin-left:auto;">Обновляется при выборе опций ниже — до сохранения.</span>
+        </div>
+        <div class="design-preview__stage">
+            <iframe class="design-preview__frame" data-design-preview src="/admin/design/preview" title="Превью сайта" loading="lazy"></iframe>
+        </div>
+    </div>
+</section>
+
 <form method="post" action="/admin/design" class="design-fine">
     <?= Csrf::field() ?>
     <?php foreach ($grouped as $groupName => $groupOpts): ?>
@@ -103,4 +118,37 @@ foreach ($options as $key => $opt) {
         <button type="submit" class="btn btn--primary">Сохранить настройки дизайна</button>
     </div>
 </form>
+
+<script>
+(function () {
+    'use strict';
+    var frame = document.querySelector('[data-design-preview]');
+    if (!frame) { return; }
+
+    // Пересобираем src превью из выбранных радио-опций (с дебаунсом).
+    var timer = null;
+    function refresh() {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            var params = new URLSearchParams();
+            document.querySelectorAll('.design-fine input[type=radio]:checked').forEach(function (r) {
+                params.set(r.name, r.value);
+            });
+            frame.src = '/admin/design/preview?' + params.toString();
+        }, 250);
+    }
+    document.querySelectorAll('.design-fine input[type=radio]').forEach(function (r) {
+        r.addEventListener('change', refresh);
+    });
+
+    // Переключатель ширины (десктоп/планшет/телефон).
+    document.querySelectorAll('[data-pv-width]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('[data-pv-width]').forEach(function (b) { b.classList.remove('is-active'); });
+            btn.classList.add('is-active');
+            frame.style.width = btn.getAttribute('data-pv-width');
+        });
+    });
+})();
+</script>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

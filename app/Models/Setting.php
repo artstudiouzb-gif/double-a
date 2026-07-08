@@ -39,4 +39,15 @@ final class Setting
         $stmt->execute([':key' => $key, ':value' => $value]);
         self::$cache = null;
     }
+
+    /**
+     * Переопределяет значение ТОЛЬКО в памяти текущего запроса (в БД не
+     * пишется). Используется живым превью настроек дизайна: страница
+     * рендерится с «примеренными» значениями без их сохранения.
+     */
+    public static function overrideInMemory(string $key, string $value): void
+    {
+        self::all(); // прогреваем кэш
+        self::$cache[$key] = $value;
+    }
 }
