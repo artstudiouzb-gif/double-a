@@ -576,3 +576,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .newsdetail-gallery__slide { transition: none; }
     .newsdetail-photos__item, .adjnews, .relnews-card { transition: none; }
 }
+
+/* Детальная новость — фолбэки, когда поля не заполнены в админке. */
+.newsdetail-head--full { grid-template-columns: 1fr; }
+.newsdetail-head--full .newsdetail-head__info { max-width: 760px; }
+.newsdetail-body--no-left { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); }
+@media (max-width: 760px) { .newsdetail-body--no-left { grid-template-columns: 1fr; } }
+.newsdetail-share--inline { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--gov-border); display: flex; align-items: center; gap: 18px; }
+.newsdetail-share--inline .newsdetail-share__title { margin: 0; }
