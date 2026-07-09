@@ -37,7 +37,7 @@ final class CalendarController
             'type' => $type,
             'weeks' => CalendarGrid::build($year, $month),
             'byDate' => $byDate,
-            'label' => CalendarGrid::label($year, $month),
+            'calLabel' => CalendarGrid::label($year, $month),
             'prevMonth' => CalendarGrid::shiftMonth($year, $month, -1),
             'nextMonth' => CalendarGrid::shiftMonth($year, $month, 1),
             'today' => date('Y-m-d'),

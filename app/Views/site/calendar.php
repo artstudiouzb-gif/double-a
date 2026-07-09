@@ -6,7 +6,7 @@ use App\Core\Locale;
 /** @var array $type */
 /** @var array $weeks */
 /** @var array $byDate */
-/** @var string $label */
+/** @var string $calLabel (не $label — его затирает _header.php) */
 /** @var string $prevMonth */
 /** @var string $nextMonth */
 /** @var string $today */
@@ -34,12 +34,12 @@ $entryUrl = static fn (array $e): string => Locale::url('catalog/' . $type['slug
 
     <div class="calendar__nav">
         <a class="btn btn--small" href="<?= htmlspecialchars($calUrl . '?m=' . $prevMonth, ENT_QUOTES) ?>">← Предыдущий</a>
-        <strong class="calendar__label"><?= htmlspecialchars($label, ENT_QUOTES) ?></strong>
+        <strong class="calendar__label"><?= htmlspecialchars($calLabel, ENT_QUOTES) ?></strong>
         <a class="btn btn--small" href="<?= htmlspecialchars($calUrl . '?m=' . $nextMonth, ENT_QUOTES) ?>">Следующий →</a>
     </div>
 
     <div class="calendar__scroll">
-        <table class="calendar" aria-label="Календарь на <?= htmlspecialchars($label, ENT_QUOTES) ?>">
+        <table class="calendar" aria-label="Календарь на <?= htmlspecialchars($calLabel, ENT_QUOTES) ?>">
             <thead>
                 <tr>
                     <?php foreach (CalendarGrid::WEEKDAYS as $wd): ?>
