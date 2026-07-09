@@ -238,7 +238,9 @@ $zones['right'] .= $searchHtml . $langHtml . $socialHtml . $ctaHtml . $themeTogg
 :root {
     --color-primary: <?= htmlspecialchars($primaryColor, ENT_QUOTES) ?>;
     --color-accent: <?= htmlspecialchars($accentColor, ENT_QUOTES) ?>;
-    --font-family: <?= htmlspecialchars($font, ENT_QUOTES) ?>;
+    <?php // Внутри <style> HTML-экранирование ломает кавычки ('Inter' -> &#039;Inter&#039;).
+          // Санитизация под CSS: только буквы/цифры/пробел/запятая/дефис/одинарные кавычки. ?>
+    --font-family: <?= preg_replace("/[^a-zA-Z0-9 ,'\\-]/", '', (string) $font) ?: 'system-ui, sans-serif' ?>;
 }
 <?php // Тема-билдер: переменные дизайна (ширина, скругления, отступы, кнопки). ?>
 <?= \App\Core\DesignSettings::cssVariables($designVals) ?>

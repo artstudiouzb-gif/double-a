@@ -764,3 +764,208 @@ body.design-header-dark .site-burger, body.design-header-accent .site-burger { c
 .subscribe-block__text { margin: 0 0 18px; color: var(--text-muted); }
 .subscribe-block__form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .subscribe-block__form input[type=email] { flex: 1 1 260px; max-width: 340px; padding: 11px 14px; border: 1px solid var(--border, #e5e7eb); border-radius: 10px; font: inherit; }
+
+/* ============================================================
+   DESIGN 2.0 — качественный дефолтный облик (слой поверх базы).
+   Всё выводится из --color-primary/--color-accent через color-mix,
+   поэтому работает с любой палитрой тема-билдера.
+   ============================================================ */
+:root {
+    --ink: color-mix(in srgb, var(--color-primary, #1f4b8e) 88%, #0b1020);
+    --tint-2: color-mix(in srgb, var(--color-primary, #1f4b8e) 3%, var(--bg-primary));
+    --tint-6: color-mix(in srgb, var(--color-primary, #1f4b8e) 7%, var(--bg-primary));
+    --shadow-primary: 0 14px 40px color-mix(in srgb, var(--color-primary, #1f4b8e) 16%, transparent);
+}
+html { scroll-behavior: smooth; }
+::selection { background: color-mix(in srgb, var(--color-primary, #1f4b8e) 82%, #000); color: #fff; }
+h1, h2, h3 { letter-spacing: -.022em; line-height: 1.18; }
+p { line-height: 1.65; }
+
+/* --- Шапка: глубина, аккуратные ссылки меню --- */
+.site-header { position: relative; z-index: 40; }
+body.design-header-accent .site-header {
+    background:
+        radial-gradient(900px 300px at 85% -80%, color-mix(in srgb, var(--color-accent, #5b52e5) 32%, transparent), transparent 70%),
+        linear-gradient(120deg, var(--ink) 0%, color-mix(in srgb, var(--color-primary, #1f4b8e) 84%, #000) 100%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .07) inset, 0 10px 30px rgba(8, 12, 34, .25);
+}
+body.design-header-dark .site-header { box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 10px 30px rgba(0,0,0,.35); }
+.site-menu__link {
+    position: relative; padding: 8px 2px; border-radius: 6px;
+    transition: opacity .15s ease;
+}
+.site-menu__link::after {
+    content: ''; position: absolute; left: 0; right: 100%; bottom: 2px; height: 2px;
+    background: currentColor; opacity: .85; transition: right .22s ease;
+}
+.site-menu__link:hover::after, .site-menu__link:focus-visible::after { right: 0; }
+.site-lang-switcher__item { padding: 4px 8px; border-radius: 8px; transition: background .15s ease; }
+.site-lang-switcher__item:hover { background: rgba(255, 255, 255, .12); }
+
+/* --- Hero: первый CTA-блок страницы превращается в полотно --- */
+.site-content > section.cms-block--cta:first-of-type .block-cta,
+.page-blocks > section.cms-block--cta:first-of-type .block-cta {
+    position: relative; overflow: hidden; isolation: isolate;
+    padding: clamp(56px, 9vw, 120px) clamp(24px, 6vw, 80px);
+    border-radius: var(--radius, 16px);
+    color: #fff;
+    background:
+        radial-gradient(720px 340px at 12% -30%, color-mix(in srgb, var(--color-accent, #5b52e5) 55%, transparent), transparent 62%),
+        radial-gradient(900px 420px at 105% 130%, color-mix(in srgb, var(--color-accent, #5b52e5) 38%, transparent), transparent 60%),
+        linear-gradient(118deg, var(--ink) 0%, color-mix(in srgb, var(--color-primary, #1f4b8e) 88%, #000) 58%, color-mix(in srgb, var(--color-primary, #1f4b8e) 60%, var(--color-accent, #5b52e5)) 100%);
+    box-shadow: var(--shadow-primary);
+}
+/* Тонкая декоративная сетка поверх градиента. */
+.site-content > section.cms-block--cta:first-of-type .block-cta::before,
+.page-blocks > section.cms-block--cta:first-of-type .block-cta::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(760px 400px at 50% 0%, #000 30%, transparent 78%);
+}
+.site-content > section.cms-block--cta:first-of-type .block-cta h2,
+.page-blocks > section.cms-block--cta:first-of-type .block-cta h2 {
+    color: #fff; font-size: clamp(2rem, 4.6vw, 3.4rem); margin: 0 0 14px; text-wrap: balance;
+}
+.site-content > section.cms-block--cta:first-of-type .block-cta p,
+.page-blocks > section.cms-block--cta:first-of-type .block-cta p {
+    color: rgba(255, 255, 255, .82); font-size: clamp(1.02rem, 1.6vw, 1.22rem);
+    max-width: 640px; margin: 0 auto;
+}
+.site-content > section.cms-block--cta:first-of-type .block-cta .block-cta__button,
+.page-blocks > section.cms-block--cta:first-of-type .block-cta .block-cta__button {
+    margin-top: 26px; padding: 15px 36px; font-size: 1.02rem;
+    background: #fff; color: var(--ink);
+    box-shadow: 0 10px 26px rgba(5, 10, 30, .35);
+}
+.site-content > section.cms-block--cta:first-of-type .block-cta .block-cta__button:hover,
+.page-blocks > section.cms-block--cta:first-of-type .block-cta .block-cta__button:hover {
+    transform: translateY(-2px); box-shadow: 0 16px 34px rgba(5, 10, 30, .4);
+}
+
+/* --- Кнопки: единый характер --- */
+.block-cta__button, .block-banner__button, .subscribe-block__form .btn--primary,
+.content-detail__download, .site-search__submit {
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.block-cta__button:hover { transform: translateY(-1px); box-shadow: 0 10px 24px color-mix(in srgb, var(--color-accent, #5b52e5) 35%, transparent); }
+
+/* --- Карточки-разделы (CTA в колонках): акцентная кромка и стрелка --- */
+.cms-columns__col .cms-block--cta .block-cta {
+    position: relative; overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: linear-gradient(180deg, var(--tint-2), var(--bg-primary) 55%);
+}
+.cms-columns__col .cms-block--cta .block-cta::before {
+    content: ''; position: absolute; left: 0; top: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--color-primary, #1f4b8e), var(--color-accent, #5b52e5));
+    transform: scaleX(0); transform-origin: left; transition: transform .25s ease;
+}
+.cms-columns__col .cms-block--cta .block-cta:hover::before { transform: scaleX(1); }
+.cms-columns__col .cms-block--cta .block-cta h2 { color: var(--ink); }
+.cms-columns__col .cms-block--cta .block-cta .block-cta__button {
+    margin-top: auto; padding: 10px 20px; font-size: .95rem;
+    background: color-mix(in srgb, var(--color-primary, #1f4b8e) 9%, transparent);
+    color: var(--color-primary, #1f4b8e);
+    box-shadow: none;
+}
+.cms-columns__col .cms-block--cta .block-cta .block-cta__button::after {
+    content: ' →'; transition: transform .15s ease; display: inline-block; margin-left: 4px;
+}
+.cms-columns__col .cms-block--cta .block-cta:hover .block-cta__button {
+    background: var(--color-primary, #1f4b8e); color: #fff;
+}
+.cms-columns__col .cms-block--cta .block-cta:hover .block-cta__button::after { transform: translateX(3px); }
+
+/* --- Заголовки лент (новости и др.): линия-акцент --- */
+.block-news__head { align-items: baseline; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 26px; position: relative; }
+.block-news__head::after {
+    content: ''; position: absolute; left: 0; bottom: -1px; width: 64px; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--color-primary, #1f4b8e), var(--color-accent, #5b52e5));
+}
+.block-news__title { font-size: clamp(1.5rem, 2.6vw, 2rem); margin: 0; }
+.block-news__all { font-weight: 600; }
+
+/* --- Карточки новостей: плейсхолдер обложки, дата-чип --- */
+.news-card { border-radius: var(--radius, 14px); }
+.news-card__cover--empty {
+    display: block; aspect-ratio: 16 / 9; position: relative;
+    background:
+        radial-gradient(240px 130px at 80% -20%, color-mix(in srgb, var(--color-accent, #5b52e5) 35%, transparent), transparent 70%),
+        linear-gradient(125deg, var(--tint-6), color-mix(in srgb, var(--color-primary, #1f4b8e) 22%, var(--bg-primary)));
+}
+.news-card__cover--empty::after {
+    /* Орнамент без эмодзи (нет «тофу» на системах без emoji-шрифта). */
+    content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(color-mix(in srgb, var(--color-primary, #1f4b8e) 26%, transparent) 1.5px, transparent 1.5px);
+    background-size: 18px 18px;
+    mask-image: linear-gradient(115deg, #000 20%, transparent 75%);
+}
+.news-card__date {
+    display: inline-block; width: max-content; padding: 3px 10px; border-radius: 999px;
+    background: color-mix(in srgb, var(--color-primary, #1f4b8e) 8%, transparent);
+    color: var(--color-primary, #1f4b8e); font-weight: 600; font-size: .78rem;
+}
+.news-card:hover { box-shadow: var(--shadow-primary); transform: translateY(-4px); }
+
+/* --- Футер: глубокий, структурный --- */
+.site-footer--columns {
+    background:
+        radial-gradient(700px 260px at 90% -60%, color-mix(in srgb, var(--color-accent, #5b52e5) 24%, transparent), transparent 70%),
+        linear-gradient(120deg, var(--ink), color-mix(in srgb, var(--color-primary, #1f4b8e) 80%, #000));
+    color: rgba(255, 255, 255, .88);
+    border-top: 3px solid var(--color-accent, #5b52e5);
+}
+.site-footer--columns a { color: rgba(255, 255, 255, .82); text-decoration: none; transition: color .15s ease; }
+.site-footer--columns a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.site-footer--columns .site-footer__inner { padding: clamp(40px, 5vw, 64px) 20px; gap: clamp(24px, 4vw, 56px); }
+.site-footer--columns .site-footer__name { color: #fff; font-size: 1.3rem; font-weight: 700; }
+.site-footer--columns .site-footer__heading {
+    color: #fff; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem; opacity: .85;
+    padding-bottom: 10px; margin-bottom: 14px; position: relative;
+}
+.site-footer--columns .site-footer__heading::after {
+    content: ''; position: absolute; left: 0; bottom: 0; width: 36px; height: 2px; border-radius: 2px;
+    background: var(--color-accent, #5b52e5);
+}
+.site-footer--columns .site-footer__line { margin: 0 0 8px; color: rgba(255, 255, 255, .72); }
+.site-footer--columns .site-footer__col--menu ul { columns: 2; column-gap: 28px; margin: 0; padding: 0; list-style: none; }
+.site-footer--columns .site-footer__col--menu li { margin-bottom: 10px; break-inside: avoid; }
+.site-footer--columns .site-footer__bottom {
+    border-top: 1px solid rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .55);
+    padding: 18px 20px;
+}
+.site-footer__social-link {
+    display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255, 255, 255, .1); font-weight: 700;
+    transition: background .15s ease, transform .15s ease;
+}
+.site-footer__social-link:hover { background: var(--color-accent, #5b52e5); transform: translateY(-2px); text-decoration: none !important; }
+@media (max-width: 720px) {
+    .site-footer--columns .site-footer__col--menu ul { columns: 1; }
+}
+
+/* --- Каталог/контент: карточки и хлебные крошки --- */
+.content-crumbs { font-size: .88rem; color: var(--text-muted); }
+.content-list__head h1 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); margin-bottom: 6px; }
+.content-list__lead { color: var(--text-muted); max-width: 640px; }
+.content-card:hover { box-shadow: var(--shadow-primary); }
+
+/* --- Блок подписки: в тон герою --- */
+.subscribe-block {
+    border: 0; color: #fff;
+    background:
+        radial-gradient(420px 200px at 85% -40%, color-mix(in srgb, var(--color-accent, #5b52e5) 45%, transparent), transparent 70%),
+        linear-gradient(120deg, var(--ink), color-mix(in srgb, var(--color-primary, #1f4b8e) 82%, #000));
+    box-shadow: var(--shadow-primary);
+}
+.subscribe-block__text { color: rgba(255, 255, 255, .8); }
+.subscribe-block__form input[type=email] { border: 0; }
+
+/* --- Тёмная тема: полутона подстраиваются --- */
+:root[data-theme="dark"] {
+    --tint-2: color-mix(in srgb, var(--color-primary, #1f4b8e) 10%, var(--bg-primary));
+    --tint-6: color-mix(in srgb, var(--color-primary, #1f4b8e) 16%, var(--bg-primary));
+}

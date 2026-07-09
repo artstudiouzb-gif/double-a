@@ -57,6 +57,7 @@ $footerSocial = $hcfg['social_buttons'] ?? [];
                 </ul>
             </nav>
         <?php endif; ?>
+        <?php if (!empty($footerSocial) || $privacyUrl !== ''): // пустую колонку не показываем ?>
         <div class="site-footer__col site-footer__col--contact">
             <div class="site-footer__heading">Связь</div>
             <?php if (!empty($footerSocial)): ?>
@@ -68,6 +69,7 @@ $footerSocial = $hcfg['social_buttons'] ?? [];
             <?php endif; ?>
             <?php if ($privacyUrl !== ''): ?><p class="site-footer__line"><a href="<?= htmlspecialchars($privacyUrl, ENT_QUOTES) ?>">Политика конфиденциальности</a></p><?php endif; ?>
         </div>
+        <?php endif; ?>
     </div>
     <div class="site-footer__bottom">&copy; <?= date('Y') ?> <?= htmlspecialchars($siteName, ENT_QUOTES) ?></div>
 </footer>
