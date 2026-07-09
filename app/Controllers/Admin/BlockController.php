@@ -17,7 +17,7 @@ use App\Models\Page;
 
 final class BlockController
 {
-    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns', 'testimonials', 'counters', 'team_list', 'projects_list', 'news_latest', 'partners', 'banner', 'faq', 'subscribe', 'contact_cards'];
+    private const TYPES = ['text', 'html', 'cta', 'advantages', 'slider', 'gallery', 'form', 'columns', 'testimonials', 'counters', 'team_list', 'projects_list', 'news_latest', 'partners', 'banner', 'faq', 'subscribe', 'contact_cards', 'hero', 'categories_grid', 'media_materials'];
 
     public function store(array $params): void
     {
@@ -541,6 +541,69 @@ final class BlockController
                         'lines' => $lines,
                         'link_url' => trim((string) ($item['link_url'] ?? '')),
                         'link_text' => trim((string) ($item['link_text'] ?? '')),
+                    ];
+                }
+                return [
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'items' => $items,
+                ];
+            case 'hero':
+                $heroUrl = trim((string) ($_POST['button_url'] ?? ''));
+                if ($heroUrl !== '' && !\App\Core\UrlGuard::isSafeLink($heroUrl)) {
+                    $heroUrl = '';
+                }
+                return [
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'subtitle' => TextProcessor::typographPlain(trim((string) ($_POST['subtitle'] ?? '')), $locale),
+                    'image' => trim((string) ($_POST['image'] ?? '')),
+                    'button_text' => trim((string) ($_POST['button_text'] ?? '')),
+                    'button_url' => $heroUrl,
+                ];
+            case 'categories_grid':
+                $items = [];
+                foreach ((array) ($_POST['items'] ?? []) as $item) {
+                    $label = trim((string) ($item['label'] ?? ''));
+                    if ($label === '') {
+                        continue;
+                    }
+                    $url = trim((string) ($item['url'] ?? ''));
+                    if ($url !== '' && !\App\Core\UrlGuard::isSafeLink($url)) {
+                        $url = '';
+                    }
+                    $iconSvg = trim((string) ($item['icon_svg'] ?? ''));
+                    if ($iconSvg !== '') {
+                        $iconSvg = \App\Core\Uploader::sanitizeSvgString($iconSvg);
+                    }
+                    $items[] = [
+                        'icon_svg' => $iconSvg,
+                        'label' => TextProcessor::typographPlain($label, $locale),
+                        'url' => $url,
+                    ];
+                }
+                return [
+                    'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'items' => $items,
+                ];
+            case 'media_materials':
+                $items = [];
+                foreach ((array) ($_POST['items'] ?? []) as $item) {
+                    $label = trim((string) ($item['label'] ?? ''));
+                    if ($label === '') {
+                        continue;
+                    }
+                    $url = trim((string) ($item['url'] ?? ''));
+                    if ($url !== '' && !\App\Core\UrlGuard::isSafeLink($url)) {
+                        $url = '';
+                    }
+                    $iconSvg = trim((string) ($item['icon_svg'] ?? ''));
+                    if ($iconSvg !== '') {
+                        $iconSvg = \App\Core\Uploader::sanitizeSvgString($iconSvg);
+                    }
+                    $items[] = [
+                        'icon_svg' => $iconSvg,
+                        'label' => TextProcessor::typographPlain($label, $locale),
+                        'action' => TextProcessor::typographPlain(trim((string) ($item['action'] ?? '')), $locale),
+                        'url' => $url,
                     ];
                 }
                 return [
