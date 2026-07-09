@@ -31,10 +31,19 @@ final class HeaderController
             ];
         }
 
+        // Конструктор: порядок элементов по зонам (скрытые поля с CSV,
+        // заполняемые drag-and-drop в админке).
+        $elements = [];
+        foreach (['left', 'center', 'right'] as $zone) {
+            $raw = (string) ($_POST['elements'][$zone] ?? '');
+            $elements[$zone] = array_values(array_filter(array_map('trim', explode(',', $raw))));
+        }
+
         HeaderConfig::save([
             'layout' => $_POST['layout'] ?? 'stacked',
             'logo_position' => $_POST['logo_position'] ?? 'left',
             'menu_position' => $_POST['menu_position'] ?? 'right',
+            'elements' => $elements,
             'language_switcher' => [
                 'enabled' => !empty($_POST['ls_enabled']),
                 'format' => $_POST['ls_format'] ?? 'code',

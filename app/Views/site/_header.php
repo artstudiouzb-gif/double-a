@@ -205,11 +205,30 @@ $navAlign = $layout === 'centered' ? 'center'
     : (in_array($hcfg['menu_position'], ['left', 'center', 'right'], true) ? $hcfg['menu_position'] : 'left');
 
 // --- Раскладка по зонам верхнего ряда ---
+// Конструктор: элементы-«кирпичики» расставляются по зонам согласно
+// header_config.elements. Логотип и бургер размещаются отдельно.
+$fragments = [
+    'search' => $searchHtml,
+    'language' => $langHtml,
+    'social' => $socialHtml,
+    'button' => $ctaHtml,
+    'theme' => $themeToggle,
+    'a11y' => $a11yToggle,
+    'divider' => '<span class="site-header__divider" aria-hidden="true"></span>',
+];
+$composed = ['left' => '', 'center' => '', 'right' => ''];
+foreach (['left', 'center', 'right'] as $zone) {
+    foreach ($hcfg['elements'][$zone] ?? [] as $el) {
+        $composed[$zone] .= $fragments[$el] ?? '';
+    }
+}
+
 $zones = ['left' => '', 'center' => '', 'right' => ''];
 $zones['left'] .= $burgerHtml;
 $zones[$logoPos] .= $logoHtml;
-// Утилиты (поиск, язык, соцсети, CTA, тема, версия для слабовидящих) — справа.
-$zones['right'] .= $searchHtml . $langHtml . $socialHtml . $ctaHtml . $themeToggle . $a11yToggle;
+$zones['left'] .= $composed['left'];
+$zones['center'] .= $composed['center'];
+$zones['right'] .= $composed['right'];
 
 // Размещение меню зависит от макета:
 //  - inline: внутрь центральной зоны верхнего ряда;

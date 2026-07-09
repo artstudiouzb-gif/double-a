@@ -17,10 +17,34 @@ final class HeaderConfig
     /** Доступные макеты шапки (десктоп + мобильный). */
     public const LAYOUTS = ['stacked', 'inline', 'centered', 'drawer'];
 
+    /**
+     * Элементы-«кирпичики» верхнего ряда шапки для конструктора (расставляются
+     * по зонам left/center/right). Логотип и меню размещаются отдельно
+     * (logo_position и layout соответственно). value => подпись для админки.
+     */
+    public const ELEMENTS = [
+        'search' => 'Поиск',
+        'language' => 'Переключатель языков',
+        'social' => 'Соцсети',
+        'button' => 'Кнопка (CTA)',
+        'theme' => 'Тёмная тема',
+        'a11y' => 'Версия для слабовидящих',
+        'divider' => 'Разделитель',
+    ];
+
+    /** Элементы, которые можно повторять в зонах (визуальные). Прочие — уникальны. */
+    private const REPEATABLE = ['divider'];
+
     public const DEFAULTS = [
         'layout' => 'stacked',                // stacked | inline | centered | drawer
         'logo_position' => 'left',            // left | center
         'menu_position' => 'right',           // left | center | right
+        // Конструктор: раскладка элементов по зонам верхнего ряда.
+        'elements' => [
+            'left' => [],
+            'center' => [],
+            'right' => ['search', 'language', 'theme', 'a11y'],
+        ],
         'language_switcher' => [
             'enabled' => true,
             'format' => 'code',               // code | name | flag
@@ -69,6 +93,32 @@ final class HeaderConfig
 
         $result['menu_position'] = in_array($config['menu_position'] ?? '', ['left', 'center', 'right'], true)
             ? $config['menu_position'] : self::DEFAULTS['menu_position'];
+
+        // Конструктор: раскладка элементов по зонам. Оставляем только известные
+        // типы; неповторяемые элементы (поиск, языки и т.п.) — по одному на всю
+        // шапку (первое вхождение выигрывает), разделители можно повторять.
+        if (isset($config['elements']) && is_array($config['elements'])) {
+            $seen = [];
+            $zones = ['left' => [], 'center' => [], 'right' => []];
+            foreach (array_keys($zones) as $zone) {
+                foreach ((array) ($config['elements'][$zone] ?? []) as $el) {
+                    $el = (string) $el;
+                    if (!isset(self::ELEMENTS[$el])) {
+                        continue;
+                    }
+                    if (!in_array($el, self::REPEATABLE, true)) {
+                        if (isset($seen[$el])) {
+                            continue;
+                        }
+                        $seen[$el] = true;
+                    }
+                    $zones[$zone][] = $el;
+                }
+            }
+            $result['elements'] = $zones;
+        } else {
+            $result['elements'] = self::DEFAULTS['elements'];
+        }
 
         $ls = (array) ($config['language_switcher'] ?? []);
         $result['language_switcher'] = [

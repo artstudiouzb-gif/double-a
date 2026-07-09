@@ -39,7 +39,56 @@ $networks = ['telegram' => 'Telegram', 'instagram' => 'Instagram', 'facebook' =>
         </div>
 
         <div class="header-builder__group">
-            <h3>Расположение</h3>
+            <h3>Конструктор: элементы по зонам</h3>
+            <p class="form-hint" style="margin-top:0;">
+                Перетаскивайте элементы между палитрой и зонами (Слева / Центр / Справа).
+                Логотип и меню размещаются отдельно (ниже). «Разделитель» можно добавлять
+                несколько раз. Порядок в зоне задаётся перетаскиванием.
+            </p>
+            <?php
+            $elements = \App\Core\HeaderConfig::ELEMENTS;
+            $placed = $config['elements'];
+            // Иконки-подсказки для чипов (мелкие эмодзи-нейтральные метки не нужны — текст).
+            $renderChip = function (string $type) use ($elements): string {
+                $label = $elements[$type] ?? $type;
+                return '<span class="hdr-chip" draggable="true" data-el="' . htmlspecialchars($type, ENT_QUOTES) . '">'
+                    . '<span class="hdr-chip__grip" aria-hidden="true">⠿</span>'
+                    . htmlspecialchars($label, ENT_QUOTES)
+                    . '<button type="button" class="hdr-chip__remove" aria-label="Убрать" title="Убрать">&times;</button>'
+                    . '</span>';
+            };
+            // В палитре — неиспользованные (неповторяемые) типы + разделитель (источник).
+            $used = array_merge($placed['left'], $placed['center'], $placed['right']);
+            ?>
+            <div class="hdr-builder" data-hdr-builder data-labels="<?= htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>">
+                <div class="hdr-builder__palette">
+                    <div class="hdr-builder__palette-label">Доступные элементы</div>
+                    <div class="hdr-builder__dropzone hdr-builder__dropzone--palette" data-hdr-zone="palette">
+                        <?php foreach ($elements as $type => $label): ?>
+                            <?php if ($type === 'divider' || !in_array($type, $used, true)): ?>
+                                <?= $renderChip($type) ?>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <div class="hdr-builder__zones">
+                    <?php foreach (['left' => 'Слева', 'center' => 'Центр', 'right' => 'Справа'] as $zone => $zoneLabel): ?>
+                        <div class="hdr-builder__zone">
+                            <div class="hdr-builder__zone-label"><?= $zoneLabel ?></div>
+                            <div class="hdr-builder__dropzone" data-hdr-zone="<?= $zone ?>">
+                                <?php foreach ($placed[$zone] as $type): ?>
+                                    <?= $renderChip($type) ?>
+                                <?php endforeach; ?>
+                            </div>
+                            <input type="hidden" name="elements[<?= $zone ?>]" data-hdr-input="<?= $zone ?>" value="<?= htmlspecialchars(implode(',', $placed[$zone]), ENT_QUOTES) ?>">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-builder__group">
+            <h3>Расположение логотипа и меню</h3>
             <div class="form-field">
                 <label for="logo_position">Логотип</label>
                 <select id="logo_position" name="logo_position">

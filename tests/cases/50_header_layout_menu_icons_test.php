@@ -19,6 +19,22 @@ test('HeaderConfig: макет валидируется, мусор → stacked'
     }
 });
 
+test('HeaderConfig: конструктор зон — мусор отброшен, дубли уникальны, разделитель повторяем', function () {
+    $cfg = HeaderConfig::normalize(['elements' => [
+        'left' => ['search', 'нечто', 'divider'],
+        'center' => ['search', 'divider'],          // повторный search выкидывается, divider остаётся
+        'right' => ['language', 'theme', 'a11y', 'language'],
+    ]]);
+
+    assert_same(['search', 'divider'], $cfg['elements']['left'], 'мусор убран, search+divider на месте');
+    assert_same(['divider'], $cfg['elements']['center'], 'повторный search убран, divider повторяем');
+    assert_same(['language', 'theme', 'a11y'], $cfg['elements']['right'], 'повторный language убран');
+
+    // Пустой конфиг → дефолтная раскладка.
+    $def = HeaderConfig::normalize([]);
+    assert_same(['search', 'language', 'theme', 'a11y'], $def['elements']['right']);
+});
+
 test('MenuItem: SVG-иконка санируется при сохранении, разделитель сохраняется (БД)', function () {
     ensure_test_db();
     $pdo = Database::pdo();
