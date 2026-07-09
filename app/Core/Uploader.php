@@ -254,6 +254,18 @@ final class Uploader
         return self::estimateImageMemory($width, $height) <= $limit - $used - self::MEMORY_HEADROOM;
     }
 
+    /** Качество WebP из настроек производительности (40–95, по умолчанию 82). */
+    private static function webpQuality(): int
+    {
+        try {
+            $q = (int) \App\Models\Setting::get('perf_webp_quality', '82');
+        } catch (\Throwable) {
+            $q = 82;
+        }
+
+        return max(40, min(95, $q));
+    }
+
     public static function optimizeImage(string $path): void
     {
         if (!extension_loaded('gd')) {
@@ -297,9 +309,10 @@ final class Uploader
             }
 
             $base = preg_replace('/\.[^.]+$/', '', $path) ?? $path;
+            $quality = self::webpQuality();
 
             // WebP полного размера.
-            @imagewebp($src, $base . '.webp', 82);
+            @imagewebp($src, $base . '.webp', $quality);
 
             // Адаптивные размеры.
             foreach ([1600, 800] as $targetWidth) {
@@ -313,7 +326,7 @@ final class Uploader
                     imagesavealpha($resized, true);
                 }
                 imagecopyresampled($resized, $src, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
-                @imagewebp($resized, $base . '-' . $targetWidth . '.webp', 82);
+                @imagewebp($resized, $base . '-' . $targetWidth . '.webp', $quality);
                 imagedestroy($resized);
             }
 

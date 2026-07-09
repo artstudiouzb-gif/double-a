@@ -29,6 +29,21 @@ final class Cache
         return self::dir() . $sub . '/' . $file . '.cache';
     }
 
+    /**
+     * Чтение с учётом TTL: если $ttl > 0 и файл старше — считаем промахом.
+     */
+    private static function getFresh(string $key, int $ttl): mixed
+    {
+        if ($ttl > 0) {
+            $path = self::pathFor($key);
+            if (is_file($path) && (time() - (int) @filemtime($path)) > $ttl) {
+                return null;
+            }
+        }
+
+        return self::get($key);
+    }
+
     public static function get(string $key): mixed
     {
         $path = self::pathFor($key);
@@ -65,10 +80,12 @@ final class Cache
      * чтобы лавиной нагружать MySQL и CssScoper.
      *
      * @param callable():mixed $callback
+     * @param int $ttl если > 0 — максимальный возраст записи в секундах (по
+     *                 истечении кэш считается устаревшим и пересобирается).
      */
-    public static function remember(string $key, callable $callback): mixed
+    public static function remember(string $key, callable $callback, int $ttl = 0): mixed
     {
-        $cached = self::get($key);
+        $cached = self::getFresh($key, $ttl);
         if ($cached !== null) {
             return $cached;
         }
@@ -86,7 +103,7 @@ final class Cache
         try {
             if (flock($lock, LOCK_EX | LOCK_NB)) {
                 // Мы — генератор. Перепроверка: кэш мог появиться, пока брали lock.
-                $cached = self::get($key);
+                $cached = self::getFresh($key, $ttl);
                 if ($cached !== null) {
                     return $cached;
                 }

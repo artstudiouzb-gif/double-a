@@ -14,6 +14,7 @@ final class Asset
 {
     /** @var array<string,string> */
     private static array $cache = [];
+    private static ?string $cdnBase = null;
 
     public static function url(string $path): string
     {
@@ -36,6 +37,26 @@ final class Asset
             }
         }
 
+        // CDN-префикс из настроек производительности (пусто — отдаём с этого же
+        // домена). Применяется к версионированному URL статики.
+        $cdn = self::cdnBase();
+        if ($cdn !== '') {
+            $out = $cdn . $out;
+        }
+
         return self::$cache[$path] = $out;
+    }
+
+    private static function cdnBase(): string
+    {
+        if (self::$cdnBase === null) {
+            try {
+                self::$cdnBase = rtrim((string) \App\Models\Setting::get('perf_cdn_url', ''), '/');
+            } catch (\Throwable) {
+                self::$cdnBase = '';
+            }
+        }
+
+        return self::$cdnBase;
     }
 }

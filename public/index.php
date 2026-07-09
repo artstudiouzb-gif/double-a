@@ -182,6 +182,11 @@ $router->post('/admin/header', [AdminHeaderController::class, 'update']);
 $router->get('/admin/footer', [\App\Controllers\Admin\FooterController::class, 'index']);
 $router->post('/admin/footer', [\App\Controllers\Admin\FooterController::class, 'update']);
 
+// --- Admin: производительность ---
+$router->get('/admin/performance', [\App\Controllers\Admin\PerformanceController::class, 'index']);
+$router->post('/admin/performance', [\App\Controllers\Admin\PerformanceController::class, 'update']);
+$router->post('/admin/performance/clear-cache', [\App\Controllers\Admin\PerformanceController::class, 'clearCache']);
+
 // --- Admin: боковые виджеты ---
 $router->get('/admin/widgets', [AdminWidgetController::class, 'index']);
 $router->get('/admin/widgets/create', [AdminWidgetController::class, 'create']);

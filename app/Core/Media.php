@@ -28,6 +28,16 @@ final class Media
             return '';
         }
 
+        // Глобальный тумблер ленивой загрузки (Производительность). Отключение
+        // делает все картинки «eager» (например, для специфичных лендингов).
+        try {
+            if (\App\Models\Setting::get('perf_lazy_load', '1') !== '1') {
+                $lazy = false;
+            }
+        } catch (\Throwable) {
+            // БД недоступна — оставляем как передано.
+        }
+
         $altAttr = htmlspecialchars($alt, ENT_QUOTES);
         $classAttr = $imgClass !== '' ? ' class="' . htmlspecialchars($imgClass, ENT_QUOTES) . '"' : '';
         $loadingAttr = $lazy ? ' loading="lazy" decoding="async"' : '';

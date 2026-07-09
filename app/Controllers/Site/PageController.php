@@ -45,14 +45,18 @@ final class PageController
     private function renderPage(array $page, string $lang): void
     {
         // Скомпилированные блоки (HTML + scoped CSS) кэшируются на диск и
-        // сбрасываются при изменении страницы/блоков в админке.
-        $rendered = \App\Core\Cache::remember(
-            'page:' . (int) $page['id'] . ':' . $lang,
-            static function () use ($page, $lang): array {
-                $blocks = Block::forPageLocalized((int) $page['id'], $lang);
-                return BlockRenderer::renderPage($blocks);
-            }
-        );
+        // сбрасываются при изменении страницы/блоков в админке. Кэш и его TTL
+        // управляются в разделе «Производительность».
+        $build = static function () use ($page, $lang): array {
+            $blocks = Block::forPageLocalized((int) $page['id'], $lang);
+            return BlockRenderer::renderPage($blocks);
+        };
+        if (\App\Models\Setting::get('perf_page_cache', '1') === '1') {
+            $ttl = max(0, (int) \App\Models\Setting::get('perf_cache_ttl', '0'));
+            $rendered = \App\Core\Cache::remember('page:' . (int) $page['id'] . ':' . $lang, $build, $ttl);
+        } else {
+            $rendered = $build();
+        }
 
         // Ассеты блоков регистрируются и на попадании в кэш, и при промахе.
         foreach ($rendered['assets'] ?? [] as $assetType) {

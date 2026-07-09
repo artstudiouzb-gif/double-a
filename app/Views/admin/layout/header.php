@@ -25,6 +25,7 @@ $navIcon = static function (string $name): string {
         'widgets' => '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
         'header' => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',
         'footer' => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 15h18"/>',
+        'performance' => '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
         'languages' => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
         'users' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
         'content_types' => '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
@@ -80,6 +81,7 @@ if ($navIsSuper) {
         'social' => ['/admin/social', 'Соцсети'],
         'webhooks' => ['/admin/webhooks', 'Вебхуки'],
         'redirects' => ['/admin/redirects', 'Редиректы'],
+        'performance' => ['/admin/performance', 'Производительность'],
         'settings' => ['/admin/settings', 'Настройки'],
     ];
     $navUsersGroup = [
