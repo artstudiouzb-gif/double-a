@@ -89,6 +89,17 @@ $footerSocial = $hcfg['social_buttons'] ?? [];
 <script>window.__consent = {required: <?= $consentRequired ? 'true' : 'false' ?>, privacyUrl: <?= json_encode($privacyUrl, JSON_UNESCAPED_SLASHES) ?>};</script>
 <script src="/assets/js/consent.js" defer></script>
 <?php endif; ?>
+<?php // Schema.org: карточка организации — только на главной (JSON-LD валиден в body). ?>
+<?php if (\App\Core\Locale::path() === '/'): ?>
+<?= \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::organization(
+    $siteName,
+    rtrim((string) \App\Core\Config::get('app.url', ''), '/') ?: '/',
+    Setting::get('contact_phone', ''),
+    Setting::get('contact_email', ''),
+    Setting::get('contact_address', ''),
+    $logo !== '' ? rtrim((string) \App\Core\Config::get('app.url', ''), '/') . $logo : ''
+)) . "\n" ?>
+<?php endif; ?>
 <?php // Глобальный произвольный JS (группа 6, супер-админ). ?>
 <?php $globalJs = Setting::get('custom_js_global', ''); ?>
 <?php if (trim($globalJs) !== ''): ?>

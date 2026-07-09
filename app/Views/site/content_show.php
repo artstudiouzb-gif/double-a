@@ -72,4 +72,23 @@ require __DIR__ . '/_header.php';
         <?php endif; ?>
     </div>
 </article>
+<?php // Schema.org: хлебные крошки; для мероприятий — карточка события. ?>
+<?php
+$schemaBase = rtrim((string) \App\Core\Config::get('app.url', ''), '/');
+$schemaUrl = static fn (string $p): string => $schemaBase . \App\Core\Locale::url($p);
+echo \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::breadcrumbs([
+    ['Главная', $schemaUrl('/')],
+    [(string) $type['name'], $schemaUrl('catalog/' . $type['slug'])],
+    [(string) $entry['title'], ''],
+])), "\n";
+if ((string) $type['slug'] === 'meropriyatiya') {
+    echo \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::event(
+        (string) $entry['title'],
+        $schemaUrl('catalog/' . $type['slug'] . '/' . $entry['slug']),
+        (string) ($entry['data']['event_date'] ?? ''),
+        (string) ($entry['data']['location'] ?? ''),
+        strip_tags((string) ($entry['data']['summary'] ?? ''))
+    )), "\n";
+}
+?>
 <?php require __DIR__ . '/_footer.php'; ?>

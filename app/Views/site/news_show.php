@@ -35,4 +35,14 @@ if (!is_file($typeTemplate)) {
 require $typeTemplate;
 ?>
 <p class="news-single__back"><a href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>">&larr; Все новости</a></p>
+<?php // Schema.org: карточка новости для поисковиков. ?>
+<?php $schemaBase = rtrim((string) \App\Core\Config::get('app.url', ''), '/'); ?>
+<?= \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::newsArticle(
+    (string) $news['title'],
+    $schemaBase . Locale::url('news/' . $news['slug']),
+    (string) ($news['published_at'] ?? ''),
+    (string) ($news['excerpt'] ?? ''),
+    $ogImage !== '' ? $schemaBase . $ogImage : '',
+    \App\Models\Setting::get('site_name', '')
+)) . "\n" ?>
 <?php require __DIR__ . '/_footer.php'; ?>

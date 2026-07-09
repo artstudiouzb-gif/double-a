@@ -199,6 +199,11 @@ $zones['right'] .= $searchHtml . $langHtml . $socialHtml . $ctaHtml . $themeTogg
 <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES) ?>">
 <?php endif; ?>
 <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES) ?>">
+<?php // hreflang: текущий путь на каждом активном языке + x-default (основной язык). ?>
+<?php foreach (\App\Models\Language::active() as $hrefLang): ?>
+<link rel="alternate" hreflang="<?= htmlspecialchars((string) $hrefLang['code'], ENT_QUOTES) ?>" href="<?= htmlspecialchars($appUrl . Locale::url(Locale::path(), (string) $hrefLang['code']), ENT_QUOTES) ?>">
+<?php endforeach; ?>
+<link rel="alternate" hreflang="x-default" href="<?= htmlspecialchars($appUrl . Locale::url(Locale::path(), \App\Models\Language::defaultCode()), ENT_QUOTES) ?>">
 <link rel="alternate" type="application/rss+xml" title="<?= htmlspecialchars($siteName . ' — Новости', ENT_QUOTES) ?>" href="<?= htmlspecialchars(Locale::url('news/rss.xml', $currentLang), ENT_QUOTES) ?>">
 <meta property="og:site_name" content="<?= htmlspecialchars($siteName, ENT_QUOTES) ?>">
 <meta property="og:type" content="<?= htmlspecialchars($ogType, ENT_QUOTES) ?>">

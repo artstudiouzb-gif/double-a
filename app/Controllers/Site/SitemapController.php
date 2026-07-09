@@ -22,11 +22,13 @@ final class SitemapController
 
         $urls = [];
 
-        // Главная + раздел новостей на каждом языке.
+        // Главная + постоянные разделы (новости, календарь, альбомы) на каждом языке.
         foreach ($languages as $lang) {
             $p = $prefix((string) $lang['code']);
             $urls[] = ['loc' => $base . ($p === '' ? '/' : $p), 'priority' => '1.0'];
             $urls[] = ['loc' => $base . $p . '/news', 'priority' => '0.7'];
+            $urls[] = ['loc' => $base . $p . '/calendar', 'priority' => '0.6'];
+            $urls[] = ['loc' => $base . $p . '/albums', 'priority' => '0.5'];
         }
 
         // Опубликованные страницы (не главные, не удалённые).
@@ -82,6 +84,24 @@ final class SitemapController
                     ];
                 }
             }
+        }
+
+        // Опубликованные фотоальбомы.
+        try {
+            $albums = Database::pdo()->query(
+                'SELECT slug, created_at FROM photo_albums WHERE is_published = 1'
+            )->fetchAll();
+            foreach ($albums as $album) {
+                foreach ($languages as $lang) {
+                    $urls[] = [
+                        'loc' => $base . $prefix((string) $lang['code']) . '/albums/' . $album['slug'],
+                        'lastmod' => substr((string) $album['created_at'], 0, 10),
+                        'priority' => '0.5',
+                    ];
+                }
+            }
+        } catch (\Throwable) {
+            // Таблицы может не быть до применения миграции — sitemap не ломаем.
         }
 
         header('Content-Type: application/xml; charset=UTF-8');
