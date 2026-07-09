@@ -210,6 +210,19 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .imgcard__title { font-family: 'PT Serif', serif; font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
 .imgcard__more { text-transform: uppercase; font-size: 12px; letter-spacing: .06em; font-weight: 700; color: rgba(255,255,255,.9); }
 
+/* Карусель проектов. */
+.section-head__tools { display: flex; align-items: center; gap: 16px; }
+.carousel-nav { display: inline-flex; gap: 8px; }
+.carousel-nav__btn { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gov-border); background: var(--gov-surface); color: var(--gov-navy); font-size: 22px; line-height: 1; cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease; }
+.carousel-nav__btn:hover { background: var(--gov-navy); color: #fff; border-color: var(--gov-navy); }
+.carousel-nav__btn[disabled] { opacity: .35; cursor: default; }
+.carousel-nav__btn[disabled]:hover { background: var(--gov-surface); color: var(--gov-navy); border-color: var(--gov-border); }
+.imgcards-grid--carousel { display: flex; grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
+.imgcards-grid--carousel::-webkit-scrollbar { display: none; }
+.imgcards-grid--carousel .imgcard { flex: 0 0 calc((100% - 60px) / 4); scroll-snap-align: start; }
+@media (max-width: 1000px) { .imgcards-grid--carousel .imgcard { flex: 0 0 calc((100% - 20px) / 2); } }
+@media (max-width: 560px) { .imgcards-grid--carousel .imgcard { flex: 0 0 85%; } }
+
 /* Медиа-галерея — карточки с play и длительностью. */
 .mediagallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 @media (max-width: 1000px) { .mediagallery-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -257,3 +270,28 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .footer-subscribe button { border: 0; background: var(--gov-teal); color: #fff; padding: 0 18px; border-radius: 0 8px 8px 0; cursor: pointer; font-size: 18px; }
 .footer-subscribe button:hover { background: color-mix(in srgb, var(--gov-teal) 85%, #000); }
 .site-footer--columns .site-footer__col--subscribe .site-footer__line { color: rgba(255,255,255,.72); }
+
+/* --- Блочные опции: независимые отступы, фон секции, полноширинная подложка --- */
+/* Переменные --block-pad-top/bottom переопределяют пресет отступов. */
+.cms-block { padding-top: var(--block-pad-top, var(--section-pad, var(--space-premium))); padding-bottom: var(--block-pad-bottom, var(--section-pad, var(--space-premium))); }
+.cms-block--space-none { padding-top: var(--block-pad-top, 0); padding-bottom: var(--block-pad-bottom, 0); }
+.cms-block--space-small { padding-top: var(--block-pad-top, var(--space-small)); padding-bottom: var(--block-pad-bottom, var(--space-small)); }
+.cms-block--space-premium { padding-top: var(--block-pad-top, var(--space-premium)); padding-bottom: var(--block-pad-bottom, var(--space-premium)); }
+.cms-block--space-max { padding-top: var(--block-pad-top, var(--space-max)); padding-bottom: var(--block-pad-bottom, var(--space-max)); }
+
+/* Фон секции. По умолчанию красит только область контейнера; при --fullwidth
+   подложка растягивается на всю ширину экрана через ::before. */
+.cms-block--bg { position: relative; z-index: 0; }
+.cms-block--bg-light { background: var(--gov-surface); }
+.cms-block--bg-tint { background: color-mix(in srgb, var(--gov-navy) 5%, var(--gov-bg)); }
+.cms-block--bg-navy { background: var(--gov-navy); color: rgba(255,255,255,.9); }
+.cms-block--bg-navy h1, .cms-block--bg-navy h2, .cms-block--bg-navy h3, .cms-block--bg-navy .section-head__title { color: #fff; }
+.cms-block--bg-navy .section-head__all { color: #fff; }
+
+.cms-block--fullwidth { background: transparent !important; }
+.cms-block--fullwidth::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: calc(50% - 50vw); width: 100vw; z-index: -1;
+}
+.cms-block--fullwidth.cms-block--bg-light::before { background: var(--gov-surface); }
+.cms-block--fullwidth.cms-block--bg-tint::before { background: color-mix(in srgb, var(--gov-navy) 5%, var(--gov-bg)); }
+.cms-block--fullwidth.cms-block--bg-navy::before { background: var(--gov-navy); }

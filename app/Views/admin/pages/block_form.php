@@ -516,6 +516,38 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             </select>
             <span class="form-hint">Адаптивные отступы через CSS clamp() — масштабируются под ширину экрана.</span>
         </div>
+
+        <?php
+        // Фон секции + полноширинная подложка + независимые отступы сверху/снизу.
+        $bg = $data['_bg'] ?? 'none';
+        $fullwidth = !empty($data['_fullwidth']);
+        $padTop = $data['_pad_top'] ?? 'default';
+        $padBottom = $data['_pad_bottom'] ?? 'default';
+        $bgOpts = ['none' => 'Нет', 'light' => 'Светлый', 'tint' => 'Лёгкий акцент', 'navy' => 'Тёмный (navy)'];
+        $padOpts = ['default' => 'По умолчанию', 'none' => 'Нет', 'small' => 'Малый', 'medium' => 'Средний', 'large' => 'Большой'];
+        ?>
+        <div class="form-field">
+            <label for="bg">Фон секции</label>
+            <select id="bg" name="bg">
+                <?php foreach ($bgOpts as $v => $l): ?><option value="<?= $v ?>" <?= $bg === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-field form-field--checkbox">
+            <input type="checkbox" id="fullwidth" name="fullwidth" value="1" <?= $fullwidth ? 'checked' : '' ?>>
+            <label for="fullwidth">Фон во всю ширину экрана (контент остаётся по центру)</label>
+        </div>
+        <div class="form-field">
+            <label for="pad_top">Отступ сверху</label>
+            <select id="pad_top" name="pad_top">
+                <?php foreach ($padOpts as $v => $l): ?><option value="<?= $v ?>" <?= $padTop === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="pad_bottom">Отступ снизу</label>
+            <select id="pad_bottom" name="pad_bottom">
+                <?php foreach ($padOpts as $v => $l): ?><option value="<?= $v ?>" <?= $padBottom === $v ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
+            </select>
+        </div>
         <?php
         // Тип анимации появления (группа 4.2). Обратная совместимость: старое
         // булево _reveal=true трактуем как {enabled:true, type:'fade'}.

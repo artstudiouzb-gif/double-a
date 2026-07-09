@@ -154,3 +154,26 @@
         tabs.forEach(function (t) { t.addEventListener('click', function () { apply(t.getAttribute('data-media-tab')); }); });
         apply('video');
     });
+
+    // Карусель проектов: прокрутка трека кнопками ‹ ›.
+    document.querySelectorAll('[data-carousel]').forEach(function (root) {
+        var track = root.querySelector('[data-carousel-track]');
+        var prev = root.querySelector('[data-carousel-prev]');
+        var next = root.querySelector('[data-carousel-next]');
+        if (!track || !prev || !next) { return; }
+        var step = function () {
+            var card = track.querySelector('.imgcard');
+            var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '20') || 20;
+            return card ? card.getBoundingClientRect().width + gap : track.clientWidth;
+        };
+        var sync = function () {
+            var max = track.scrollWidth - track.clientWidth - 1;
+            prev.disabled = track.scrollLeft <= 0;
+            next.disabled = track.scrollLeft >= max;
+        };
+        prev.addEventListener('click', function () { track.scrollBy({ left: -step() * 2, behavior: 'smooth' }); });
+        next.addEventListener('click', function () { track.scrollBy({ left: step() * 2, behavior: 'smooth' }); });
+        track.addEventListener('scroll', sync, { passive: true });
+        window.addEventListener('resize', sync);
+        sync();
+    });

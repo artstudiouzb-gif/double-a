@@ -142,6 +142,15 @@ final class BlockController
             ? ['enabled' => true, 'type' => $revealType]
             : ['enabled' => false, 'type' => 'fade'];
 
+        // Фон секции и её ширина (полноширинная подложка), а также независимые
+        // отступы сверху/снизу — общие оформительские опции для любого блока.
+        $data['_bg'] = in_array($_POST['bg'] ?? 'none', ['none', 'light', 'tint', 'navy'], true)
+            ? $_POST['bg'] : 'none';
+        $data['_fullwidth'] = !empty($_POST['fullwidth']);
+        $padOptions = ['default', 'none', 'small', 'medium', 'large'];
+        $data['_pad_top'] = in_array($_POST['pad_top'] ?? 'default', $padOptions, true) ? $_POST['pad_top'] : 'default';
+        $data['_pad_bottom'] = in_array($_POST['pad_bottom'] ?? 'default', $padOptions, true) ? $_POST['pad_bottom'] : 'default';
+
         // История версий (группа 5.1): снимаем текущее состояние ПЕРЕД перезаписью.
         BlockRevision::snapshot(
             (int) $block['id'],

@@ -109,13 +109,40 @@ final class BlockRenderer
             ? ' data-reveal data-reveal-type="' . htmlspecialchars($revealType, ENT_QUOTES) . '"'
             : '';
 
+        // Фон секции, полноширинная подложка и независимые отступы сверху/снизу.
+        $bg = (string) ($data['_bg'] ?? 'none');
+        if (!in_array($bg, ['none', 'light', 'tint', 'navy'], true)) {
+            $bg = 'none';
+        }
+        $fullwidth = !empty($data['_fullwidth']);
+        $padMap = ['none' => '0', 'small' => 'var(--space-small)', 'medium' => 'var(--space-premium)', 'large' => 'var(--space-max)'];
+        $extraClass = '';
+        if ($bg !== 'none') {
+            $extraClass .= ' cms-block--bg cms-block--bg-' . $bg;
+        }
+        if ($fullwidth) {
+            $extraClass .= ' cms-block--fullwidth';
+        }
+        $styleVars = '';
+        $padTop = (string) ($data['_pad_top'] ?? 'default');
+        $padBottom = (string) ($data['_pad_bottom'] ?? 'default');
+        if (isset($padMap[$padTop])) {
+            $styleVars .= '--block-pad-top:' . $padMap[$padTop] . ';';
+        }
+        if (isset($padMap[$padBottom])) {
+            $styleVars .= '--block-pad-bottom:' . $padMap[$padBottom] . ';';
+        }
+        $styleAttr = $styleVars !== '' ? ' style="' . $styleVars . '"' : '';
+
         $wrapped = sprintf(
-            '<section id="block-%d" class="cms-block cms-block--%s cms-block--space-%s" data-block-type="%s"%s>%s</section>',
+            '<section id="block-%d" class="cms-block cms-block--%s cms-block--space-%s%s" data-block-type="%s"%s%s>%s</section>',
             $blockId,
             htmlspecialchars($type, ENT_QUOTES),
             htmlspecialchars($spacing, ENT_QUOTES),
+            $extraClass,
             htmlspecialchars($type, ENT_QUOTES),
             $reveal,
+            $styleAttr,
             $html
         );
 
