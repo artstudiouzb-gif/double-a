@@ -283,4 +283,76 @@ final class News
         $stmt = Database::pdo()->prepare('UPDATE news SET deleted_at = NOW() WHERE id = :id');
         $stmt->execute([':id' => $id]);
     }
+
+    /** Дополнительные поля детальной страницы (эскиз): бейдж, тезисы, мероприятие, документы. */
+    public static function updateExtras(int $id, array $data): void
+    {
+        $stmt = Database::pdo()->prepare(
+            'UPDATE news SET badge = :badge, press_release_url = :press_release_url,
+             key_points = :key_points, event_meta = :event_meta, docs = :docs,
+             source_note = :source_note WHERE id = :id'
+        );
+        $stmt->execute([
+            ':badge' => ($data['badge'] ?? '') !== '' ? $data['badge'] : null,
+            ':press_release_url' => ($data['press_release_url'] ?? '') !== '' ? $data['press_release_url'] : null,
+            ':key_points' => ($data['key_points'] ?? '') !== '' ? $data['key_points'] : null,
+            ':event_meta' => ($data['event_meta'] ?? '') !== '' ? $data['event_meta'] : null,
+            ':docs' => !empty($data['docs']) ? json_encode($data['docs'], JSON_UNESCAPED_UNICODE) : null,
+            ':source_note' => ($data['source_note'] ?? '') !== '' ? $data['source_note'] : null,
+            ':id' => $id,
+        ]);
+    }
+
+    /** Счётчик просмотров детальной страницы (без учёта повторов — простая метрика). */
+    public static function incrementViews(int $id): void
+    {
+        Database::pdo()->prepare('UPDATE news SET views = views + 1 WHERE id = :id')
+            ->execute([':id' => $id]);
+    }
+
+    /**
+     * Соседние опубликованные новости по дате публикации (для «предыдущая/следующая»).
+     *
+     * @return array{prev: ?array, next: ?array}
+     */
+    public static function adjacent(array $news, ?string $lang = null): array
+    {
+        $pub = (string) ($news['published_at'] ?? '');
+        $id = (int) $news['id'];
+        $pick = static function (string $op, string $order) use ($pub, $id): ?array {
+            $stmt = Database::pdo()->prepare(
+                "SELECT * FROM news WHERE status = 'published' AND deleted_at IS NULL
+                 AND (published_at {$op} :pub OR (published_at = :pub2 AND id {$op} :id))
+                 ORDER BY published_at {$order}, id {$order} LIMIT 1"
+            );
+            $stmt->execute([':pub' => $pub, ':pub2' => $pub, ':id' => $id]);
+            $row = $stmt->fetch();
+            return $row ?: null;
+        };
+        $prev = $pick('<', 'DESC');
+        $next = $pick('>', 'ASC');
+        if ($lang !== null) {
+            $prev = $prev ? self::localize($prev, $lang) : null;
+            $next = $next ? self::localize($next, $lang) : null;
+        }
+
+        return ['prev' => $prev, 'next' => $next];
+    }
+
+    /** Похожие новости: последние опубликованные, исключая текущую. */
+    public static function related(int $excludeId, int $limit = 4, ?string $lang = null): array
+    {
+        $limit = max(1, min(12, $limit));
+        $stmt = Database::pdo()->prepare(
+            "SELECT * FROM news WHERE status = 'published' AND deleted_at IS NULL AND id <> :id
+             ORDER BY published_at DESC, id DESC LIMIT {$limit}"
+        );
+        $stmt->execute([':id' => $excludeId]);
+        $rows = $stmt->fetchAll() ?: [];
+        if ($lang !== null) {
+            $rows = array_map(static fn (array $r): array => self::localize($r, $lang), $rows);
+        }
+
+        return $rows;
+    }
 }

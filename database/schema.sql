@@ -46,9 +46,16 @@ CREATE TABLE IF NOT EXISTS news (
     title           VARCHAR(255) NOT NULL,
     slug            VARCHAR(255) NOT NULL,
     excerpt         TEXT NULL,
+    badge           VARCHAR(100) NULL COMMENT 'бейдж категории детальной страницы',
     content         LONGTEXT NULL,
     image           VARCHAR(255) NULL,
     video_url       VARCHAR(255) NULL,
+    press_release_url VARCHAR(255) NULL,
+    key_points      TEXT NULL COMMENT 'ключевые тезисы, по одному на строку',
+    event_meta      TEXT NULL COMMENT 'карточка «О мероприятии», по строке на пункт',
+    docs            TEXT NULL COMMENT 'JSON-список документов [{title, meta, url}]',
+    source_note     VARCHAR(255) NULL COMMENT 'подпись источника (пресс-служба)',
+    views           INT UNSIGNED NOT NULL DEFAULT 0,
     layout_type     ENUM('standard','gallery','video','side_image') NOT NULL DEFAULT 'standard',
     focal_x         TINYINT UNSIGNED NULL COMMENT 'фокальная точка обложки X, %',
     focal_y         TINYINT UNSIGNED NULL COMMENT 'фокальная точка обложки Y, %',
@@ -761,7 +768,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_subscribers.sql'),
     ('2026_07_08_queue_locks.sql'),
     ('2026_07_08_not_found_log.sql'),
-    ('2026_07_09_menu_icons_dividers.sql')
+    ('2026_07_09_menu_icons_dividers.sql'),
+    ('2026_07_09_news_detail_extras.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

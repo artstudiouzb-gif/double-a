@@ -306,6 +306,7 @@ $router->get('/robots.txt', [\App\Controllers\Site\SitemapController::class, 'ro
 $router->get('/', [SitePageController::class, 'home']);
 $router->get('/news', [SiteNewsController::class, 'index']);
 $router->get('/news/rss.xml', [SiteNewsController::class, 'feed']);
+$router->get('/news/{slug}/photos.zip', [SiteNewsController::class, 'photosZip']);
 $router->get('/news/{slug}', [SiteNewsController::class, 'show']);
 $router->get('/search', [\App\Controllers\Site\SearchController::class, 'index']);
 $router->get('/calendar', [\App\Controllers\Site\CalendarController::class, 'index']);

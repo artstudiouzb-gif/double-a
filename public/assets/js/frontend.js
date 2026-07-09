@@ -177,3 +177,48 @@
         window.addEventListener('resize', sync);
         sync();
     });
+
+    // Детальная новость: слайдер медиа-модуля (главное фото + миниатюры + счётчик).
+    document.querySelectorAll('[data-ndgallery]').forEach(function (root) {
+        var slides = root.querySelectorAll('.newsdetail-gallery__slide');
+        if (slides.length < 2) { return; }
+        var thumbs = root.querySelectorAll('[data-ndg-thumb]');
+        var counter = root.querySelector('[data-ndg-current]');
+        var idx = 0;
+        var show = function (i) {
+            idx = (i + slides.length) % slides.length;
+            slides.forEach(function (s, n) { s.classList.toggle('is-active', n === idx); });
+            thumbs.forEach(function (t, n) { t.classList.toggle('is-active', n === idx); });
+            if (counter) { counter.textContent = String(idx + 1); }
+        };
+        var prev = root.querySelector('[data-ndg-prev]');
+        var next = root.querySelector('[data-ndg-next]');
+        if (prev) { prev.addEventListener('click', function () { show(idx - 1); }); }
+        if (next) { next.addEventListener('click', function () { show(idx + 1); }); }
+        thumbs.forEach(function (t, n) { t.addEventListener('click', function () { show(n); }); });
+        root.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft') { show(idx - 1); }
+            if (e.key === 'ArrowRight') { show(idx + 1); }
+        });
+    });
+
+    // «Скопировать ссылку» в блоке «Поделиться».
+    document.querySelectorAll('[data-copy-link]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var url = btn.getAttribute('data-copy-link');
+            var done = function () {
+                btn.classList.add('is-copied');
+                var prevLabel = btn.getAttribute('aria-label');
+                btn.setAttribute('aria-label', 'Ссылка скопирована');
+                setTimeout(function () { btn.classList.remove('is-copied'); btn.setAttribute('aria-label', prevLabel); }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done);
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = url; document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); done(); } catch (e) {}
+                document.body.removeChild(ta);
+            }
+        });
+    });
