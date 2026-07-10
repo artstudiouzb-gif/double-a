@@ -57,6 +57,9 @@ final class SettingsController
         Setting::set('form_consent_enabled', !empty($_POST['form_consent_enabled']) ? '1' : '0');
         Setting::set('form_consent_text', mb_substr(trim((string) ($_POST['form_consent_text'] ?? '')), 0, 500));
 
+        // Капча на публичных формах (включена по умолчанию).
+        Setting::set('captcha_enabled', !empty($_POST['captcha_enabled']) ? '1' : '0');
+
         // --- Webpush-уведомления о новостях ---
         Setting::set('webpush_enabled', !empty($_POST['webpush_enabled']) ? '1' : '0');
         if (!empty($_POST['webpush_enabled'])) {

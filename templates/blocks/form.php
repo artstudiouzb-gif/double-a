@@ -44,6 +44,9 @@ $form = $data['form'] ?? null;
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
+            <?php if (\App\Core\Captcha::isEnabled()): ?>
+                <?= \App\Core\Captcha::field('captcha-' . (int) $blockId) ?>
+            <?php endif; ?>
             <?php
             // Согласие на обработку персональных данных (глобальная настройка).
             $consentOn = \App\Models\Setting::get('form_consent_enabled', '0') === '1';

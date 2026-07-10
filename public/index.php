@@ -315,6 +315,7 @@ $router->get('/calendar', [\App\Controllers\Site\CalendarController::class, 'ind
 $router->get('/albums', [\App\Controllers\Site\AlbumController::class, 'index']);
 $router->get('/albums/{slug}', [\App\Controllers\Site\AlbumController::class, 'show']);
 $router->post('/subscribe', [\App\Controllers\Site\SubscribeController::class, 'subscribe']);
+$router->get('/captcha.png', [\App\Controllers\Site\CaptchaController::class, 'image']);
 $router->get('/push/key', [\App\Controllers\Site\PushController::class, 'key']);
 $router->post('/push/subscribe', [\App\Controllers\Site\PushController::class, 'subscribe']);
 $router->post('/push/unsubscribe', [\App\Controllers\Site\PushController::class, 'unsubscribe']);

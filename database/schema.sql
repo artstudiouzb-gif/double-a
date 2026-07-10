@@ -739,11 +739,6 @@ CREATE TABLE IF NOT EXISTS migrations (
     UNIQUE KEY uq_migrations_filename (filename)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Этот schema.sql уже содержит структуру всех существующих миграций, поэтому
--- для свежей установки помечаем их как применённые — database/migrate.php не
--- будет пытаться накатить их повторно. (Старые установки, созданные на схеме
--- этапов 1–2, накатят их через migrate.php.)
-
 -- Webpush: подписки браузеров и очередь уведомлений о новостях.
 CREATE TABLE IF NOT EXISTS webpush_subscriptions (
     id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -765,6 +760,11 @@ CREATE TABLE IF NOT EXISTS webpush_queue (
     sent_at    DATETIME NULL,
     UNIQUE KEY uniq_webpush_queue_news (news_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Этот schema.sql уже содержит структуру всех существующих миграций, поэтому
+-- для свежей установки помечаем их как применённые — database/migrate.php не
+-- будет пытаться накатить их повторно. (Старые установки, созданные на схеме
+-- этапов 1–2, накатят их через migrate.php.)
 
 INSERT INTO migrations (filename) VALUES
     ('2026_07_05_block5_multilang_header_widgets.sql'),

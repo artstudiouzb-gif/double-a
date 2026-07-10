@@ -43,6 +43,11 @@ final class FormController
             $this->success($successMessage);
         }
 
+        // Капча (одноразовый код из сессии; выключается в «Настройках»).
+        if (\App\Core\Captcha::isEnabled() && !\App\Core\Captcha::verify($_POST['_captcha'] ?? null)) {
+            $this->fail('Неверный код с картинки. Попробуйте ещё раз.', ['_captcha' => 'Код не совпал или устарел.']);
+        }
+
         // Согласие на обработку персональных данных (если включено глобально).
         if (\App\Models\Setting::get('form_consent_enabled', '0') === '1' && empty($_POST['_consent'])) {
             $this->fail('Подтвердите согласие на обработку персональных данных.', ['_consent' => 'Требуется согласие.']);

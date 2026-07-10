@@ -990,3 +990,11 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .push-optin:hover { border-color: var(--gov-teal); background: rgba(23,153,155,.15); }
 .push-optin.is-on { border-color: var(--gov-teal); background: var(--gov-teal); }
 .push-optin[disabled] { opacity: .6; cursor: default; }
+
+/* ===== Капча публичных форм ===== */
+.captcha-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.captcha-row__img { border: 1px solid var(--gov-border); border-radius: 10px; background: var(--gov-bg); }
+.captcha-row__refresh { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--gov-border); border-radius: 10px; background: var(--gov-surface); color: var(--gov-navy); font-size: 1.2rem; cursor: pointer; }
+.captcha-row__refresh:hover { border-color: var(--gov-teal); color: var(--gov-teal-text); }
+.captcha-row input { width: 130px; height: 46px; padding: 0 14px; border: 1px solid var(--gov-border); border-radius: 10px; background: var(--gov-surface); color: var(--gov-navy); font: inherit; letter-spacing: .2em; text-transform: uppercase; }
+.captcha-row input:focus-visible { outline: 2px solid var(--gov-teal); outline-offset: 1px; }

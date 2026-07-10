@@ -58,6 +58,22 @@ final class PageController
             $rendered = $build();
         }
 
+        // Кэш страниц общий для всех посетителей, а CSRF-токен и метка времени
+        // honeypot — сессионные: подставляем живые значения при каждой отдаче,
+        // иначе формы у второго посетителя падают с 419.
+        if (!empty($rendered['html']) && str_contains((string) $rendered['html'], 'name="csrf_token"')) {
+            $rendered['html'] = preg_replace(
+                '/(name="csrf_token" value=")[^"]*(")/',
+                '${1}' . htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES) . '${2}',
+                (string) $rendered['html']
+            );
+            $rendered['html'] = preg_replace(
+                '/(name="hp_ts" value=")[^"]*(")/',
+                '${1}' . time() . '${2}',
+                (string) $rendered['html']
+            );
+        }
+
         // Ассеты блоков регистрируются и на попадании в кэш, и при промахе.
         foreach ($rendered['assets'] ?? [] as $assetType) {
             \App\Core\AssetCollector::requireJs($assetType);

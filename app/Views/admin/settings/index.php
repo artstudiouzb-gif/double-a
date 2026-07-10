@@ -150,6 +150,10 @@ require __DIR__ . '/../layout/header.php';
                 <input type="text" id="form_consent_text" name="form_consent_text" maxlength="500" value="<?= htmlspecialchars($settings['form_consent_text'] ?? 'Я согласен на обработку персональных данных', ENT_QUOTES) ?>">
                 <span class="form-hint">Ссылка на «Политику конфиденциальности» добавляется автоматически, если страница выбрана выше.</span>
             </div>
+            <div class="form-field form-field--checkbox">
+                <input type="checkbox" id="captcha_enabled" name="captcha_enabled" value="1" <?= ($settings['captcha_enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
+                <label for="captcha_enabled">Капча на публичных формах (код с картинки, без внешних сервисов)</label>
+            </div>
         </fieldset>
 
         <fieldset class="settings-group">
