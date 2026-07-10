@@ -708,3 +708,17 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 .fb-card__tools { display: inline-flex; gap: 4px; }
 .fb-move { width: 30px; height: 30px; border: 1px solid var(--admin-border, #e1e3e8); border-radius: 8px; background: #f7f9fc; color: #173a63; cursor: pointer; font-size: 14px; line-height: 1; }
 .fb-move:hover { background: #173a63; color: #fff; border-color: #173a63; }
+
+/* --- Панель явного сохранения порядка (перетаскивание блоков/меню) --- */
+/* Копит несохранённые изменения перетаскивания и применяет их по кнопке —
+   вместо прежнего мгновенного автосохранения на каждый drop. */
+.reorder-bar {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+    z-index: 400; display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px 10px 18px; background: #fff;
+    border: 1px solid var(--admin-border, #e1e3e8); border-radius: 12px;
+    box-shadow: 0 12px 34px rgba(19, 42, 92, .22);
+    max-width: calc(100vw - 32px);
+}
+.reorder-bar[hidden] { display: none; }
+.reorder-bar__text { font-size: 14px; font-weight: 600; color: var(--admin-text, #1f2b3d); }

@@ -310,6 +310,62 @@
         });
     }
 
+    // --- Панель явного сохранения порядка ---
+    // Раньше перетаскивание сохранялось мгновенно (AJAX на каждый drop). Теперь
+    // изменения порядка копятся, а применяются только по кнопке «Сохранить» —
+    // при уходе со страницы с несохранёнными правками браузер предупреждает.
+    var ReorderBar = (function () {
+        var bar = null, saveBtn = null, statusEl = null;
+        var pendingSave = null, dirty = false, saving = false, hideTimer = null;
+
+        function build() {
+            bar = document.createElement('div');
+            bar.className = 'reorder-bar';
+            bar.setAttribute('hidden', '');
+            bar.innerHTML = '<span class="reorder-bar__text"></span>'
+                + '<button type="button" class="btn btn--small" data-reorder-cancel>Отменить</button>'
+                + '<button type="button" class="btn btn--small btn--primary" data-reorder-save>Сохранить</button>';
+            document.body.appendChild(bar);
+            statusEl = bar.querySelector('.reorder-bar__text');
+            saveBtn = bar.querySelector('[data-reorder-save]');
+            saveBtn.addEventListener('click', function () {
+                if (!pendingSave || saving) { return; }
+                saving = true; saveBtn.disabled = true;
+                statusEl.textContent = 'Сохранение…';
+                pendingSave(function (ok, msg) {
+                    saving = false; saveBtn.disabled = false;
+                    if (ok) {
+                        dirty = false;
+                        statusEl.textContent = 'Порядок сохранён ✓';
+                        hideTimer = window.setTimeout(function () { bar.setAttribute('hidden', ''); }, 1400);
+                    } else {
+                        statusEl.textContent = msg || 'Не удалось сохранить. Попробуйте ещё раз.';
+                    }
+                });
+            });
+            bar.querySelector('[data-reorder-cancel]').addEventListener('click', function () {
+                // Отмена = вернуться к последнему сохранённому порядку (перезагрузка).
+                dirty = false;
+                window.location.reload();
+            });
+        }
+
+        window.addEventListener('beforeunload', function (e) {
+            if (dirty) { e.preventDefault(); e.returnValue = ''; return ''; }
+        });
+
+        return {
+            markDirty: function (saveFn) {
+                if (!bar) { build(); }
+                if (hideTimer) { window.clearTimeout(hideTimer); hideTimer = null; }
+                pendingSave = saveFn;
+                dirty = true;
+                statusEl.textContent = 'Есть несохранённые изменения порядка';
+                bar.removeAttribute('hidden');
+            }
+        };
+    })();
+
     // --- Drag-and-drop сортировка блоков (задача 134, нативный HTML5 DnD) ---
     document.querySelectorAll('[data-block-sortable]').forEach(function (list) {
         var dragged = null;
@@ -322,7 +378,7 @@
             });
             item.addEventListener('dragend', function () {
                 item.classList.remove('is-dragging');
-                persist();
+                ReorderBar.markDirty(saveOrder);
             });
         });
 
@@ -339,7 +395,7 @@
             else { list.insertBefore(dragged, after); }
         });
 
-        function persist() {
+        function saveOrder(done) {
             var order = Array.prototype.map.call(
                 list.querySelectorAll('.block-list-item'),
                 function (el) { return el.getAttribute('data-block-id'); }
@@ -354,8 +410,8 @@
                 method: 'POST', body: body, credentials: 'same-origin',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             }).then(function (r) { return r.json(); })
-              .then(function (res) { if (!res.ok) { alert('Не удалось сохранить порядок.'); } })
-              .catch(function () { alert('Сетевая ошибка при сохранении порядка.'); });
+              .then(function (res) { done(!!res.ok, res.ok ? '' : 'Не удалось сохранить порядок.'); })
+              .catch(function () { done(false, 'Сетевая ошибка при сохранении порядка.'); });
         }
     });
 
@@ -384,7 +440,7 @@
         root.addEventListener('dragend', function () {
             if (dragged) { dragged.classList.remove('is-dragging'); }
             dragged = null;
-            persist();
+            ReorderBar.markDirty(saveOrder);
         });
 
         // Разрешаем вставку в root и в любой children-список.
@@ -408,7 +464,7 @@
             });
         });
 
-        function persist() {
+        function saveOrder(done) {
             var ids = [];
             var parents = [];
             Array.prototype.forEach.call(root.querySelectorAll(':scope > .menu-node'), function (top) {
@@ -432,8 +488,8 @@
                 method: 'POST', body: body, credentials: 'same-origin',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             }).then(function (r) { return r.json(); })
-              .then(function (res) { if (!res.ok) { alert('Не удалось сохранить меню. Обновите страницу.'); } })
-              .catch(function () { alert('Сетевая ошибка при сохранении меню.'); });
+              .then(function (res) { done(!!res.ok, res.ok ? '' : 'Не удалось сохранить меню. Обновите страницу.'); })
+              .catch(function () { done(false, 'Сетевая ошибка при сохранении меню.'); });
         }
     });
 
