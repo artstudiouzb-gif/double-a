@@ -88,9 +88,27 @@ if ($layout === 'video' && $videoId === null) {
 }
 // Адаптация макета к наполнению: без медиа hero занимает всю ширину,
 // без тезисов левая колонка убирается, «Поделиться» уходит под статью.
+$isPremium = $layout === 'premium';
 $heroSlides = $layout === 'gallery' ? $slides : array_slice($slides, 0, 1);
-$hasMedia = $layout === 'video' || !empty($heroSlides);
+$hasMedia = !$isPremium && ($layout === 'video' || !empty($heroSlides));
 $hasLeft = !empty($keyPoints);
+
+// Оглавление статьи (премиум): собираем из <h2>/<h3> контента и проставляем id.
+$toc = [];
+$contentHtml = (string) $news['content'];
+if ($isPremium) {
+    $n = 0;
+    $contentHtml = (string) preg_replace_callback(
+        '/<h([23])([^>]*)>(.*?)<\/h\1>/su',
+        static function (array $m) use (&$toc, &$n): string {
+            $n++;
+            $id = 'sec-' . $n;
+            $toc[] = ['id' => $id, 'label' => trim(strip_tags($m[3]))];
+            return '<h' . $m[1] . $m[2] . ' id="' . $id . '">' . $m[3] . '</h' . $m[1] . '>';
+        },
+        $contentHtml
+    ) ?: $contentHtml;
+}
 
 $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, $pageUrl): void { ?>
             <div class="newsdetail-share<?= $extraClass ?>">
@@ -105,7 +123,39 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             </div>
 <?php };
 ?>
-<article class="newsdetail">
+<article class="newsdetail<?= $isPremium ? ' newsdetail--premium' : '' ?>">
+    <?php if ($isPremium): ?>
+    <div class="newsdetail-phero"<?= $cover !== '' ? ' style="background-image:url(\'' . htmlspecialchars($cover, ENT_QUOTES) . '\')"' : '' ?>>
+        <span class="newsdetail-phero__overlay"></span>
+        <div class="newsdetail-phero__body">
+            <?php if (!empty($news['badge'])): ?>
+                <span class="newsdetail__badge newsdetail__badge--onDark"><?= htmlspecialchars((string) $news['badge'], ENT_QUOTES) ?></span>
+            <?php endif; ?>
+            <h1 class="newsdetail-phero__title"><?= htmlspecialchars((string) $news['title'], ENT_QUOTES) ?></h1>
+            <?php if (!empty($news['excerpt'])): ?>
+                <p class="newsdetail-phero__lead"><?= htmlspecialchars((string) $news['excerpt'], ENT_QUOTES) ?></p>
+            <?php endif; ?>
+            <div class="newsdetail__meta newsdetail__meta--onDark">
+                <?php if ($dateLong !== ''): ?>
+                    <span class="newsdetail__meta-item"><?= $eventIcons[0] ?><time datetime="<?= htmlspecialchars(substr($date, 0, 10), ENT_QUOTES) ?>"><?= htmlspecialchars($dateLong, ENT_QUOTES) ?></time></span>
+                <?php endif; ?>
+                <span class="newsdetail__meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><?= $readMin ?> мин чтения</span>
+                <?php if ($views > 0): ?>
+                    <span class="newsdetail__meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><?= number_format($views, 0, '', ' ') ?> просмотров</span>
+                <?php endif; ?>
+            </div>
+            <?php if (!empty($news['source_note'])): ?>
+                <p class="newsdetail__source newsdetail__source--onDark"><?= htmlspecialchars((string) $news['source_note'], ENT_QUOTES) ?></p>
+            <?php endif; ?>
+            <?php if ($videoUrl !== ''): ?>
+                <a class="newsdetail-phero__video" href="<?= htmlspecialchars($videoUrl, ENT_QUOTES) ?>" target="_blank" rel="noopener">
+                    <span class="newsdetail-phero__play"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+                    Смотреть видео
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php else: ?>
     <div class="newsdetail-head<?= $hasMedia ? '' : ' newsdetail-head--full' ?><?= $hasMedia && $layout === 'side_image' ? ' newsdetail-head--side' : '' ?>">
         <div class="newsdetail-head__info">
             <?php if (!empty($news['badge'])): ?>
@@ -178,6 +228,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             </div>
         <?php endif; ?>
     </div>
+    <?php endif; ?>
 
     <div class="newsdetail-body<?= $hasLeft ? '' : ' newsdetail-body--no-left' ?>">
         <?php if ($hasLeft): ?>
@@ -195,13 +246,24 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
         <?php endif; ?>
 
         <div class="newsdetail-article">
-            <div class="newsdetail-article__content"><?= $news['content'] ?></div>
+            <div class="newsdetail-article__content"><?= $contentHtml ?></div>
             <?php if (!$hasLeft): ?>
                 <?php $shareBlock(' newsdetail-share--inline'); ?>
             <?php endif; ?>
         </div>
 
         <aside class="newsdetail-side newsdetail-side--right">
+            <?php if ($isPremium && !empty($slides)): ?>
+                <div class="newsdetail-card">
+                    <h2 class="newsdetail-card__title">Галерея</h2>
+                    <div class="newsdetail-sidegallery">
+                        <?php foreach (array_slice($slides, 0, 4) as $i => $s): ?>
+                            <a class="newsdetail-sidegallery__item<?= $i === 0 ? ' newsdetail-sidegallery__item--wide' : '' ?>" href="<?= htmlspecialchars($s['path'], ENT_QUOTES) ?>" target="_blank" rel="noopener" style="background-image:url('<?= htmlspecialchars($s['path'], ENT_QUOTES) ?>')" aria-label="<?= htmlspecialchars($s['alt'] !== '' ? $s['alt'] : 'Фото', ENT_QUOTES) ?>"></a>
+                        <?php endforeach; ?>
+                    </div>
+                    <a class="newsdetail__btn newsdetail__btn--ghost newsdetail-sidegallery__all" href="<?= htmlspecialchars(Locale::url('news/' . $news['slug'] . '/photos.zip', $lang), ENT_QUOTES) ?>">Скачать все фото <?= $dlIcon ?></a>
+                </div>
+            <?php endif; ?>
             <?php if (!empty($eventMeta)): ?>
                 <div class="newsdetail-card">
                     <h2 class="newsdetail-card__title">О мероприятии</h2>
@@ -255,7 +317,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
     <?php
     // Фотогалерея-лента: для видео — все фото (герой занят плеером),
     // для остальных типов — когда фотографий больше одной.
-    $showPhotoStrip = $layout === 'video' ? !empty($slides) : count($slides) > 1;
+    $showPhotoStrip = $isPremium ? false : ($layout === 'video' ? !empty($slides) : count($slides) > 1);
     ?>
     <?php if ($showPhotoStrip): ?>
         <section class="newsdetail-photos">
@@ -291,8 +353,18 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
         </section>
     <?php endif; ?>
 
-    <?php if ($prevNews !== null || $nextNews !== null): ?>
-        <nav class="newsdetail-adjacent" aria-label="Соседние новости">
+    <?php if ($prevNews !== null || $nextNews !== null || ($isPremium && !empty($toc))): ?>
+        <nav class="newsdetail-adjacent<?= $isPremium && !empty($toc) ? ' newsdetail-adjacent--with-toc' : '' ?>" aria-label="Соседние новости">
+            <?php if ($isPremium && !empty($toc)): ?>
+                <div class="newsdetail-toc">
+                    <span class="newsdetail-toc__title">Навигация по статье</span>
+                    <ol class="newsdetail-toc__list">
+                        <?php foreach ($toc as $i => $item): ?>
+                            <li><a href="#<?= htmlspecialchars($item['id'], ENT_QUOTES) ?>"><span class="newsdetail-toc__num"><?= str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) ?></span><?= htmlspecialchars($item['label'], ENT_QUOTES) ?></a></li>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            <?php endif; ?>
             <?php if ($prevNews !== null): ?>
                 <?php $pc = News::getCoverImage($prevNews); ?>
                 <a class="adjnews adjnews--prev" href="<?= htmlspecialchars(Locale::url('news/' . $prevNews['slug'], $lang), ENT_QUOTES) ?>">

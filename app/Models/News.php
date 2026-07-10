@@ -9,7 +9,7 @@ use App\Core\Video;
 
 final class News
 {
-    public const LAYOUTS = ['standard', 'gallery', 'video', 'side_image'];
+    public const LAYOUTS = ['standard', 'gallery', 'video', 'side_image', 'premium'];
 
     public static function normalizeLayout(mixed $layout): string
     {

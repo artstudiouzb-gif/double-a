@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS news (
     docs            TEXT NULL COMMENT 'JSON-список документов [{title, meta, url}]',
     source_note     VARCHAR(255) NULL COMMENT 'подпись источника (пресс-служба)',
     views           INT UNSIGNED NOT NULL DEFAULT 0,
-    layout_type     ENUM('standard','gallery','video','side_image') NOT NULL DEFAULT 'standard',
+    layout_type     ENUM('standard','gallery','video','side_image','premium') NOT NULL DEFAULT 'standard',
     focal_x         TINYINT UNSIGNED NULL COMMENT 'фокальная точка обложки X, %',
     focal_y         TINYINT UNSIGNED NULL COMMENT 'фокальная точка обложки Y, %',
     meta_title      VARCHAR(255) NULL,
@@ -769,7 +769,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_queue_locks.sql'),
     ('2026_07_08_not_found_log.sql'),
     ('2026_07_09_menu_icons_dividers.sql'),
-    ('2026_07_09_news_detail_extras.sql')
+    ('2026_07_09_news_detail_extras.sql'),
+    ('2026_07_09_news_premium_layout.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

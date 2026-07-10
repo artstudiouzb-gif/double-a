@@ -14,7 +14,7 @@ require __DIR__ . '/../layout/header.php';
 /** @var array $gallery */
 $gallery = $gallery ?? [];
 $layout = $news['layout_type'] ?? 'standard';
-$layoutLabels = ['standard' => 'Стандартный', 'gallery' => 'Галерея', 'video' => 'Видео', 'side_image' => 'Изображение сбоку'];
+$layoutLabels = ['standard' => 'Стандартный', 'gallery' => 'Галерея', 'video' => 'Видео', 'side_image' => 'Изображение сбоку', 'premium' => 'Премиум (тёмный hero)'];
 
 $action = $isEdit ? '/admin/news/' . (int) $news['id'] . '/edit' : '/admin/news/create';
 $publishedAtValue = '';
