@@ -758,3 +758,18 @@ body .site-header--transparent:not(.is-scrolled) { backdrop-filter: none; -webki
    опускается ниже высоты шапки, чтобы не подлезать под меню. */
 body:has(.site-header--transparent) .cms-block--hero .block-hero--media .block-hero__inner { padding-top: clamp(120px, 14vw, 170px); }
 body:has(.site-header--transparent) .newsdetail--premium .newsdetail-phero { padding-top: 120px; }
+
+/* --- Компактные утилиты шапки: только иконки --- */
+/* Кнопка для слабовидящих: иконка, текст — в aria-label/title. */
+body .site-header .a11y-toggle span { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+body .site-header .a11y-toggle { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gov-border); padding: 0; }
+body .site-header--transparent:not(.is-scrolled) .a11y-toggle { border-color: rgba(255,255,255,.4); }
+/* Поиск: по умолчанию только иконка-лупа; поле выезжает по клику. */
+body .site-header .site-search { display: none; }
+body .site-header .site-search.is-open { display: inline-flex; animation: hdr-search-in .2s ease; }
+@keyframes hdr-search-in { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { body .site-header .site-search.is-open { animation: none; } }
+body .site-header .site-search-toggle { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gov-border); background: transparent; cursor: pointer; }
+body .site-header--transparent:not(.is-scrolled) .site-search-toggle { border-color: rgba(255,255,255,.4); }
+/* Убираем светлую полосу после topbar в прозрачном режиме: контент стартует без верхнего паддинга. */
+body:has(.site-header--transparent) .site-content { padding-top: 0; }

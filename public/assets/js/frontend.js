@@ -35,6 +35,18 @@
     // открывает панель поиска сверху; закрытие по ×, Esc или клику вне формы.
     var searchToggles = document.querySelectorAll('[data-search-toggle]');
     var searchOverlay = document.querySelector('[data-search-overlay]');
+    if (searchToggles.length && !searchOverlay) {
+        searchToggles.forEach(function (t) {
+            t.addEventListener('click', function () {
+                var wrap = t.parentElement;
+                var form = wrap ? wrap.querySelector('.site-search') : null;
+                if (!form) { return; }
+                var open = form.classList.toggle('is-open');
+                t.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) { var inp = form.querySelector('input'); if (inp) { inp.focus(); } }
+            });
+        });
+    }
     if (searchToggles.length && searchOverlay) {
         var searchInput = searchOverlay.querySelector('[data-search-input]');
         var openSearch = function () {
