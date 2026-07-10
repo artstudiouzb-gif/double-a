@@ -16,8 +16,17 @@ final class NewsController
     public function index(): void
     {
         $lang = Locale::current();
-        $items = News::published(20, 0, $lang);
-        View::render('site/news_index', ['items' => $items]);
+        $perPage = 13; // 1 крупная + 12 в сетке
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $total = News::publishedCount();
+        $pages = max(1, (int) ceil($total / $perPage));
+        $page = min($page, $pages);
+
+        View::render('site/news_index', [
+            'items' => News::published($perPage, ($page - 1) * $perPage, $lang),
+            'page' => $page,
+            'pages' => $pages,
+        ]);
     }
 
     /**

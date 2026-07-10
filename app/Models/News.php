@@ -157,6 +157,14 @@ final class News
         return array_map(static fn (array $row) => self::localize($row, $lang), $rows);
     }
 
+    /** Количество опубликованных новостей (для пагинации). */
+    public static function publishedCount(): int
+    {
+        return (int) Database::pdo()->query(
+            "SELECT COUNT(*) FROM news WHERE status = 'published' AND published_at <= NOW() AND deleted_at IS NULL"
+        )->fetchColumn();
+    }
+
     public static function findById(int $id): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM news WHERE id = :id LIMIT 1');

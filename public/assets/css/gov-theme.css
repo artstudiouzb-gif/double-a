@@ -825,3 +825,51 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
     .site-drawer__panel .site-submenu,
     body.mobile-menu-open .site-submenu { flex-basis: 100%; }
 }
+
+/* ==========================================================================
+   Списочные страницы: «Все новости», «Все проекты».
+   ========================================================================== */
+.listing { display: flex; flex-direction: column; gap: clamp(26px, 3.4vw, 44px); padding-block: clamp(16px, 2.4vw, 30px) clamp(40px, 5vw, 64px); }
+.listing__title { font-size: clamp(1.9rem, 3.4vw, 2.6rem); margin: 0 0 10px; }
+.listing__lead { color: var(--gov-muted); font-size: 1.02rem; line-height: 1.6; max-width: 60ch; margin: 0; }
+
+/* Крупная первая новость. */
+.newslist-lead { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); text-decoration: none; color: var(--gov-ink); background: var(--gov-surface); border: 1px solid var(--gov-border); border-radius: 14px; overflow: hidden; }
+@media (max-width: 900px) { .newslist-lead { grid-template-columns: 1fr; } }
+.newslist-lead__media { display: block; min-height: 300px; background: #24425f center/cover no-repeat; }
+.newslist-lead__media--empty { background: linear-gradient(120deg, color-mix(in srgb, var(--gov-navy) 14%, var(--gov-surface)), var(--gov-surface)); }
+.newslist-lead__body { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: clamp(20px, 3vw, 36px); }
+.newslist__date { color: var(--gov-muted); font-size: .85rem; }
+.newslist-lead__title { font-family: 'PT Serif', serif; font-weight: 700; font-size: clamp(1.3rem, 2.2vw, 1.7rem); color: var(--gov-navy); line-height: 1.25; }
+.newslist-lead__excerpt { color: var(--gov-muted); line-height: 1.6; }
+.newslist-lead:hover .newslist-lead__title { color: var(--gov-teal); }
+
+/* Сетка новостей (переиспользует карточки relnews). */
+.newslist-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+@media (max-width: 1000px) { .newslist-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .newslist-grid { grid-template-columns: 1fr; } }
+.relnews-card__excerpt { color: var(--gov-muted); font-size: .86rem; line-height: 1.5; }
+
+/* Пагинация. */
+.listing-pager { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.listing-pager__item { display: grid; place-items: center; min-width: 44px; height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--gov-border); background: var(--gov-surface); color: var(--gov-navy); font-weight: 700; text-decoration: none; }
+.listing-pager__item:hover { border-color: var(--gov-teal); color: var(--gov-teal-text); }
+.listing-pager__item.is-active { background: var(--gov-navy); border-color: var(--gov-navy); color: #fff; }
+
+/* Сетка проектов. */
+.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+@media (max-width: 1000px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .projects-grid { grid-template-columns: 1fr; } }
+.projects-grid--compact { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1000px) { .projects-grid--compact { grid-template-columns: repeat(2, 1fr); } }
+.imgcard--project { min-height: 300px; }
+.imgcard__desc { color: rgba(255,255,255,.82); font-size: .88rem; line-height: 1.5; }
+
+/* Детальная проекта. */
+.projdetail { display: flex; flex-direction: column; gap: clamp(28px, 4vw, 48px); padding-block: 10px clamp(40px, 5vw, 64px); }
+.projdetail-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(24px, 3.4vw, 48px); align-items: center; }
+@media (max-width: 900px) { .projdetail-head { grid-template-columns: 1fr; } }
+.projdetail-head--no-media { grid-template-columns: 1fr; }
+.projdetail__title { font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.15; margin: 14px 0 0; }
+.projdetail__media { display: block; aspect-ratio: 16/9; border-radius: 14px; background: #24425f center/cover no-repeat; }
+.projdetail__content { max-width: 76ch; }
