@@ -38,6 +38,12 @@ final class HeaderConfig
     /** Стили верхней/утилитарной полосы шапки. */
     public const BAR_STYLES = ['navy', 'light', 'teal'];
 
+    /** Высоты секций шапки. */
+    public const HEIGHTS = ['slim', 'normal', 'tall'];
+
+    /** Разделительные линии секций: во всю ширину / по ширине контейнера / нет. */
+    public const BORDER_MODES = ['full', 'container', 'none'];
+
     /** Элементы, которые можно повторять в зонах (визуальные). Прочие — уникальны
      *  в пределах одной секции (но могут повторяться в разных секциях). */
     private const REPEATABLE = ['divider'];
@@ -80,12 +86,18 @@ final class HeaderConfig
             'enabled' => false,
             'style' => 'navy',                // из BAR_STYLES
             'show_mobile' => false,
+            'height' => 'normal',             // из HEIGHTS
             'zones' => ['left' => [], 'center' => [], 'right' => []],
         ],
+        // Высота основной секции (логотип + утилиты).
+        'middlebar' => ['height' => 'normal'],
         // Pro Max: нижняя полоса (bottom section) — элементы рядом с меню.
         'bottombar' => [
+            'height' => 'normal',
             'zones' => ['left' => [], 'center' => [], 'right' => []],
         ],
+        // Разделительные линии между секциями.
+        'borders' => 'full',
         // Значения для элементов «Телефон» и «E-mail».
         'contacts' => [
             'phone' => '',
@@ -198,21 +210,27 @@ final class HeaderConfig
         ];
 
         // Pro Max: секции top/bottom.
+        $height = static fn (mixed $v): string => in_array($v, self::HEIGHTS, true) ? $v : 'normal';
         $topbar = (array) ($config['topbar'] ?? []);
         $result['topbar'] = [
             'enabled' => !empty($topbar['enabled']),
             'style' => in_array($topbar['style'] ?? '', self::BAR_STYLES, true) ? $topbar['style'] : 'navy',
             'show_mobile' => !empty($topbar['show_mobile']),
+            'height' => $height($topbar['height'] ?? ''),
             'zones' => isset($topbar['zones']) && is_array($topbar['zones'])
                 ? self::normalizeZones($topbar['zones'])
                 : self::DEFAULTS['topbar']['zones'],
         ];
+        $result['middlebar'] = ['height' => $height(((array) ($config['middlebar'] ?? []))['height'] ?? '')];
         $bottombar = (array) ($config['bottombar'] ?? []);
         $result['bottombar'] = [
+            'height' => $height($bottombar['height'] ?? ''),
             'zones' => isset($bottombar['zones']) && is_array($bottombar['zones'])
                 ? self::normalizeZones($bottombar['zones'])
                 : self::DEFAULTS['bottombar']['zones'],
         ];
+        $result['borders'] = in_array($config['borders'] ?? '', self::BORDER_MODES, true)
+            ? $config['borders'] : 'full';
 
         $contacts = (array) ($config['contacts'] ?? []);
         $result['contacts'] = [

@@ -16,7 +16,11 @@ $vBtnText = trim((string) ($data['video_button_text'] ?? ''));
 $vBtnUrl = trim((string) ($data['video_button_url'] ?? ''));
 $hasMedia = $image !== '' || $video !== '';
 ?>
-<div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= $video !== '' ? ' block-hero--video' : '' ?>">
+<?php
+$heroWidth = ($data['width'] ?? 'full') === 'standard' ? 'standard' : 'full';
+$heroHeight = ($data['height'] ?? 'regular') === 'full' ? 'full' : 'regular';
+?>
+<div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= $video !== '' ? ' block-hero--video' : '' ?> block-hero--w-<?= $heroWidth ?> block-hero--h-<?= $heroHeight ?>">
     <?php if ($video !== ''): ?>
         <video class="block-hero__video" autoplay muted loop playsinline <?= $image !== '' ? 'poster="' . htmlspecialchars($image, ENT_QUOTES) . '"' : '' ?> aria-hidden="true">
             <source src="<?= htmlspecialchars($video, ENT_QUOTES) ?>" type="video/mp4">

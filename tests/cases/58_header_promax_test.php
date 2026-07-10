@@ -40,3 +40,28 @@ test('HeaderConfig: sticky и transparent нормализуются в буле
     $off = HeaderConfig::normalize([]);
     assert_true($off['sticky'] === false && $off['transparent'] === false);
 });
+
+test('HeaderConfig: высоты секций и режим линий нормализуются', function () {
+    $cfg = HeaderConfig::normalize([
+        'topbar' => ['height' => 'tall'],
+        'middlebar' => ['height' => 'huge'],
+        'bottombar' => ['height' => 'slim'],
+        'borders' => 'container',
+    ]);
+    assert_same('tall', $cfg['topbar']['height']);
+    assert_same('normal', $cfg['middlebar']['height'], 'неизвестная высота -> normal');
+    assert_same('slim', $cfg['bottombar']['height']);
+    assert_same('container', $cfg['borders']);
+    assert_same('full', HeaderConfig::normalize(['borders' => 'evil'])['borders']);
+});
+
+test('Блок hero: классы ширины и высоты секции', function () {
+    $out = \App\Core\BlockRenderer::render(['id' => 60, 'type' => 'hero', 'custom_css' => null, 'data' => json_encode([
+        'title' => 'T', 'image' => '/uploads/public/x.jpg', 'width' => 'standard', 'height' => 'full',
+    ])])['html'];
+    assert_contains('block-hero--w-standard', $out);
+    assert_contains('block-hero--h-full', $out);
+    $def = \App\Core\BlockRenderer::render(['id' => 61, 'type' => 'hero', 'custom_css' => null, 'data' => json_encode(['title' => 'T'])])['html'];
+    assert_contains('block-hero--w-full', $def);
+    assert_contains('block-hero--h-regular', $def);
+});

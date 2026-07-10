@@ -773,3 +773,29 @@ body .site-header .site-search-toggle { display: grid; place-items: center; widt
 body .site-header--transparent:not(.is-scrolled) .site-search-toggle { border-color: rgba(255,255,255,.4); }
 /* Убираем светлую полосу после topbar в прозрачном режиме: контент стартует без верхнего паддинга. */
 body:has(.site-header--transparent) .site-content { padding-top: 0; }
+
+/* --- Высоты секций шапки --- */
+.site-topbar--h-slim .site-topbar__inner { padding-block: 3px; }
+.site-topbar--h-normal .site-topbar__inner { padding-block: 7px; }
+.site-topbar--h-tall .site-topbar__inner { padding-block: 13px; }
+body .site-header--h-slim .site-header__inner { padding-block: 6px; }
+body .site-header--h-normal .site-header__inner { padding-block: 12px; }
+body .site-header--h-tall .site-header__inner { padding-block: 22px; }
+body .site-header--nav-h-slim .site-menu__link { padding-block: 9px; }
+body .site-header--nav-h-normal .site-menu__link { padding-block: 16px; }
+body .site-header--nav-h-tall .site-menu__link { padding-block: 24px; }
+
+/* --- Разделительные линии секций: full / container / none --- */
+body .site-header--borders-none, body .site-header--borders-none .site-nav { border-top: 0; border-bottom: 0; }
+body:has(.site-header--borders-none) .site-topbar--light { border-bottom: 0; }
+body .site-header--borders-container { border-bottom: 0; }
+body .site-header--borders-container .site-nav { border-top: 0; }
+body .site-header--borders-container .site-header__inner { border-bottom: 1px solid var(--gov-border); }
+body .site-header--borders-container .site-nav .site-nav__inner { border-top: 1px solid var(--gov-border); }
+body .site-header--borders-container.site-header--transparent:not(.is-scrolled) .site-header__inner { border-bottom-color: rgba(255,255,255,.16); }
+body .site-header--borders-container.site-header--transparent:not(.is-scrolled) .site-nav .site-nav__inner { border-top-color: rgba(255,255,255,.16); }
+
+/* --- Hero: ширина и высота секции --- */
+.block-hero--w-standard.block-hero--media { left: auto; width: auto; max-width: var(--container-max); margin-inline: auto; border-radius: var(--radius); overflow: hidden; }
+.block-hero--h-full.block-hero--media { min-height: calc(100dvh - 180px); display: flex; align-items: center; }
+body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-full { min-height: 100dvh; }

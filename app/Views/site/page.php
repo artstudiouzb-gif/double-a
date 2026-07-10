@@ -10,6 +10,8 @@ $metaTitle = $page['meta_title'] ?: $page['title'];
 $metaDescription = $page['meta_description'] ?? '';
 $extraHeadCss = $blockCss;
 $hideChrome = !empty($page['hide_chrome']); // лендинг (группа 6)
+// Флаг страницы «Прозрачная шапка» — активирует режим из конструктора.
+$transparentHeader = !empty($page['transparent_header']);
 require __DIR__ . '/_header.php';
 
 // Хлебные крошки для обычных страниц (не главная, не лендинг).

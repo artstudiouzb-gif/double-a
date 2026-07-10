@@ -59,6 +59,15 @@ $renderZones = function (array $placed, string $inputName) use ($renderChip): st
 };
 
 $labelsJson = htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), ENT_QUOTES);
+
+/** Селектор высоты секции. */
+$heightSelect = function (string $name, string $current): string {
+    $out = '<select name="' . $name . '" class="hb-select" aria-label="Высота секции">';
+    foreach (['slim' => 'Компактная', 'normal' => 'Обычная', 'tall' => 'Высокая'] as $v => $l) {
+        $out .= '<option value="' . $v . '"' . ($current === $v ? ' selected' : '') . '>' . $l . '</option>';
+    }
+    return $out . '</select>';
+};
 ?>
 <div class="form-card">
     <form method="post" action="/admin/header" class="form-grid">
@@ -109,6 +118,14 @@ $labelsJson = htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), E
                     <span class="form-hint">Иконки и разделители пунктов — в разделе «Меню».</span>
                 </div>
             </div>
+            <div class="form-field" style="max-width:340px;">
+                <label for="borders">Разделительные линии секций</label>
+                <select id="borders" name="borders">
+                    <option value="full" <?= ($config['borders'] ?? 'full') === 'full' ? 'selected' : '' ?>>Во всю ширину экрана</option>
+                    <option value="container" <?= ($config['borders'] ?? '') === 'container' ? 'selected' : '' ?>>По ширине контента шапки</option>
+                    <option value="none" <?= ($config['borders'] ?? '') === 'none' ? 'selected' : '' ?>>Без линий</option>
+                </select>
+            </div>
             <div class="hb-behavior">
                 <label class="hb-switch"><input type="checkbox" name="header_sticky" value="1" <?= !empty($config['sticky']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Липкая шапка (следует за прокруткой)</label>
                 <label class="hb-switch"><input type="checkbox" name="header_transparent" value="1" <?= !empty($config['transparent']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Прозрачная шапка (поверх первого экрана)</label>
@@ -151,6 +168,7 @@ $labelsJson = htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), E
                             <option value="teal" <?= ($config['topbar']['style'] ?? '') === 'teal' ? 'selected' : '' ?>>Бирюзовая</option>
                         </select>
                         <label class="hb-switch"><input type="checkbox" name="topbar_mobile" value="1" <?= !empty($config['topbar']['show_mobile']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Показывать на мобильном</label>
+                        <?= $heightSelect('topbar_height', $config['topbar']['height'] ?? 'normal') ?>
                     </span>
                 </header>
                 <?= $renderZones($config['topbar']['zones'] ?? [], 'topbar_zones') ?>
@@ -162,6 +180,7 @@ $labelsJson = htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), E
                     <span class="hb-section__badge hb-section__badge--middle">Middle</span>
                     <span class="hb-section__title">Основная секция (логотип + утилиты)</span>
                     <span class="hb-section__controls">
+                        <?= $heightSelect('middlebar_height', $config['middlebar']['height'] ?? 'normal') ?>
                         <span class="hb-tabs" data-hdr-tabs>
                             <button type="button" class="hb-tabs__tab hdr-tabs__tab is-active" data-hdr-tab="desktop">Десктоп</button>
                             <button type="button" class="hb-tabs__tab hdr-tabs__tab" data-hdr-tab="mobile">Мобильный</button>
@@ -182,7 +201,10 @@ $labelsJson = htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), E
                 <header class="hb-section__head">
                     <span class="hb-section__badge hb-section__badge--bottom">Bottom</span>
                     <span class="hb-section__title">Нижняя полоса (меню + элементы)</span>
-                    <span class="hb-section__controls"><span class="hb-note">Меню занимает полосу автоматически; элементы встают рядом.</span></span>
+                    <span class="hb-section__controls">
+                        <?= $heightSelect('bottombar_height', $config['bottombar']['height'] ?? 'normal') ?>
+                        <span class="hb-note">Меню занимает полосу автоматически; элементы встают рядом.</span>
+                    </span>
                 </header>
                 <?= $renderZones($config['bottombar']['zones'] ?? [], 'bottombar_zones') ?>
             </section>

@@ -67,11 +67,15 @@ final class HeaderController
                 'enabled' => !empty($_POST['topbar_enabled']),
                 'style' => $_POST['topbar_style'] ?? 'navy',
                 'show_mobile' => !empty($_POST['topbar_mobile']),
+                'height' => $_POST['topbar_height'] ?? 'normal',
                 'zones' => $parseZones('topbar_zones'),
             ],
+            'middlebar' => ['height' => $_POST['middlebar_height'] ?? 'normal'],
             'bottombar' => [
+                'height' => $_POST['bottombar_height'] ?? 'normal',
                 'zones' => $parseZones('bottombar_zones'),
             ],
+            'borders' => $_POST['borders'] ?? 'full',
             'contacts' => [
                 'phone' => $_POST['contact_phone'] ?? '',
                 'email' => $_POST['contact_email'] ?? '',

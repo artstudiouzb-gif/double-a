@@ -153,6 +153,10 @@ foreach ($blocks as $b) {
             <input type="checkbox" id="hide_chrome" name="hide_chrome" value="1" <?= !empty($page['hide_chrome']) ? 'checked' : '' ?>>
             <label for="hide_chrome">Лендинг: скрыть шапку и футер сайта</label>
         </div>
+        <div class="form-field form-field--checkbox">
+            <input type="checkbox" id="transparent_header" name="transparent_header" value="1" <?= !empty($page['transparent_header']) ? 'checked' : '' ?>>
+            <label for="transparent_header">Прозрачная шапка на этой странице (нужен full-bleed hero первым блоком; режим включается в конструкторе шапки)</label>
+        </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Сохранить</button>

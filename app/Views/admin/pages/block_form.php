@@ -401,6 +401,18 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
         <?php endif; ?>
 
         <?php if ($type === 'hero'): ?>
+            <div class="form-field"><label for="hero_width">Ширина секции</label>
+                <select id="hero_width" name="hero_width">
+                    <option value="full" <?= ($data['width'] ?? 'full') === 'full' ? 'selected' : '' ?>>Во всю ширину экрана</option>
+                    <option value="standard" <?= ($data['width'] ?? '') === 'standard' ? 'selected' : '' ?>>Стандартная (по контейнеру)</option>
+                </select>
+            </div>
+            <div class="form-field"><label for="hero_height">Высота секции</label>
+                <select id="hero_height" name="hero_height">
+                    <option value="regular" <?= ($data['height'] ?? 'regular') === 'regular' ? 'selected' : '' ?>>Обычная</option>
+                    <option value="full" <?= ($data['height'] ?? '') === 'full' ? 'selected' : '' ?>>Полноэкранная (100vh)</option>
+                </select>
+            </div>
             <div class="form-field">
                 <label for="eyebrow">Надзаголовок (мелкий текст над заголовком)</label>
                 <input type="text" id="eyebrow" name="eyebrow" value="<?= htmlspecialchars($data['eyebrow'] ?? '', ENT_QUOTES) ?>" placeholder="СТРАТЕГИЯ. РЕФОРМЫ. РАЗВИТИЕ.">

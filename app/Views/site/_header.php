@@ -203,6 +203,9 @@ $burgerHtml = $menuHtml !== ''
 // centered — логотип по центру, меню центрировано полосой ниже;
 // inline   — логотип, меню и утилиты в одном ряду;
 // drawer   — меню скрыто за кнопкой, выезжает off-canvas сбоку (все экраны).
+// Прозрачная шапка: глобальный режим применяется только на страницах,
+// где включён флаг «Прозрачная шапка» (переменная $transparentHeader из вью).
+$transparentOn = !empty($hcfg['transparent']) && !empty($transparentHeader ?? null);
 $layout = in_array($hcfg['layout'] ?? 'stacked', HeaderConfig::LAYOUTS, true) ? $hcfg['layout'] : 'stacked';
 // Центрированный макет всегда ставит логотип по центру.
 $logoPos = $layout === 'centered' ? 'center' : $hcfg['logo_position'];
@@ -251,7 +254,8 @@ if (!empty($hcfg['topbar']['enabled'])) {
     }
     $tbStyle = in_array($hcfg['topbar']['style'] ?? 'navy', HeaderConfig::BAR_STYLES, true) ? $hcfg['topbar']['style'] : 'navy';
     $tbMobile = !empty($hcfg['topbar']['show_mobile']) ? ' site-topbar--mobile-on' : '';
-    $topbarHtml = '<div class="site-topbar site-topbar--' . $tbStyle . $tbMobile . '"><div class="site-topbar__inner">' . $tbZones . '</div></div>';
+    $tbHeight = ' site-topbar--h-' . (in_array($hcfg['topbar']['height'] ?? 'normal', HeaderConfig::HEIGHTS, true) ? $hcfg['topbar']['height'] : 'normal');
+    $topbarHtml = '<div class="site-topbar site-topbar--' . $tbStyle . $tbMobile . $tbHeight . '"><div class="site-topbar__inner">' . $tbZones . '</div></div>';
 }
 
 // --- Pro Max: элементы нижней полосы (bottom section, рядом с меню) ---
@@ -439,7 +443,7 @@ if ($inlineMenu !== '') {
     <a href="#" class="a11y-panel__off">Обычная версия</a>
 </div>
 <?= $topbarHtml ?>
-<header class="site-header site-header--layout-<?= htmlspecialchars($layout, ENT_QUOTES) ?> site-header--logo-<?= htmlspecialchars($logoPos, ENT_QUOTES) ?><?= $navBarHtml !== '' ? ' site-header--has-nav' : '' ?><?= $drawerMenu !== '' ? ' site-header--has-drawer' : '' ?><?= !empty($hcfg['sticky']) ? ' site-header--sticky' : '' ?><?= !empty($hcfg['transparent']) ? ' site-header--transparent' : '' ?>"<?= (!empty($hcfg['sticky']) || !empty($hcfg['transparent'])) ? ' data-header-scroll' : '' ?>>
+<header class="site-header site-header--layout-<?= htmlspecialchars($layout, ENT_QUOTES) ?> site-header--logo-<?= htmlspecialchars($logoPos, ENT_QUOTES) ?><?= $navBarHtml !== '' ? ' site-header--has-nav' : '' ?><?= $drawerMenu !== '' ? ' site-header--has-drawer' : '' ?><?= !empty($hcfg['sticky']) ? ' site-header--sticky' : '' ?><?= $transparentOn ? ' site-header--transparent' : '' ?> site-header--h-<?= htmlspecialchars(in_array($hcfg['middlebar']['height'] ?? 'normal', HeaderConfig::HEIGHTS, true) ? $hcfg['middlebar']['height'] : 'normal', ENT_QUOTES) ?> site-header--nav-h-<?= htmlspecialchars(in_array($hcfg['bottombar']['height'] ?? 'normal', HeaderConfig::HEIGHTS, true) ? $hcfg['bottombar']['height'] : 'normal', ENT_QUOTES) ?> site-header--borders-<?= htmlspecialchars(in_array($hcfg['borders'] ?? 'full', HeaderConfig::BORDER_MODES, true) ? $hcfg['borders'] : 'full', ENT_QUOTES) ?>"<?= (!empty($hcfg['sticky']) || $transparentOn) ? ' data-header-scroll' : '' ?>>
     <div class="site-header__inner">
         <div class="site-header__zone site-header__zone--left"><?= $zones['left'] ?></div>
         <div class="site-header__zone site-header__zone--center"><?= $zones['center'] ?></div>

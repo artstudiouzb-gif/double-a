@@ -187,8 +187,8 @@ final class Page
             }
 
             $stmt = $pdo->prepare(
-                'INSERT INTO pages (title, slug, meta_title, meta_description, status, is_home, layout_type, hide_chrome, created_at)
-                 VALUES (:title, :slug, :meta_title, :meta_description, :status, :is_home, :layout_type, :hide_chrome, NOW())'
+                'INSERT INTO pages (title, slug, meta_title, meta_description, status, is_home, layout_type, hide_chrome, transparent_header, created_at)
+                 VALUES (:title, :slug, :meta_title, :meta_description, :status, :is_home, :layout_type, :hide_chrome, :transparent_header, NOW())'
             );
             $stmt->execute([
                 ':title' => $data['title'],
@@ -199,6 +199,7 @@ final class Page
                 ':is_home' => !empty($data['is_home']) ? 1 : 0,
                 ':layout_type' => $data['layout_type'] ?? 'no_sidebar',
                 ':hide_chrome' => !empty($data['hide_chrome']) ? 1 : 0,
+                ':transparent_header' => !empty($data['transparent_header']) ? 1 : 0,
             ]);
             $id = (int) $pdo->lastInsertId();
 
@@ -224,7 +225,8 @@ final class Page
             $stmt = $pdo->prepare(
                 'UPDATE pages SET title = :title, slug = :slug, meta_title = :meta_title,
                  meta_description = :meta_description, status = :status, is_home = :is_home,
-                 layout_type = :layout_type, hide_chrome = :hide_chrome WHERE id = :id'
+                 layout_type = :layout_type, hide_chrome = :hide_chrome,
+                 transparent_header = :transparent_header WHERE id = :id'
             );
             $stmt->execute([
                 ':title' => $data['title'],
@@ -235,6 +237,7 @@ final class Page
                 ':is_home' => !empty($data['is_home']) ? 1 : 0,
                 ':layout_type' => $data['layout_type'] ?? 'no_sidebar',
                 ':hide_chrome' => !empty($data['hide_chrome']) ? 1 : 0,
+                ':transparent_header' => !empty($data['transparent_header']) ? 1 : 0,
                 ':id' => $id,
             ]);
 

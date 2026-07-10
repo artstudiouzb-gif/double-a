@@ -566,6 +566,8 @@ final class BlockController
                 $safe = static fn (string $u): string => ($u !== '' && \App\Core\UrlGuard::isSafeLink($u)) ? $u : '';
                 return [
                     'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
+                    'width' => ($_POST['hero_width'] ?? 'full') === 'standard' ? 'standard' : 'full',
+                    'height' => ($_POST['hero_height'] ?? 'regular') === 'full' ? 'full' : 'regular',
                     'eyebrow' => TextProcessor::typographPlain(trim((string) ($_POST['eyebrow'] ?? '')), $locale),
                     'subtitle' => TextProcessor::typographPlain(trim((string) ($_POST['subtitle'] ?? '')), $locale),
                     'image' => trim((string) ($_POST['image'] ?? '')),

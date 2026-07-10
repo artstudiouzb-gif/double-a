@@ -33,7 +33,7 @@ final class BlockRenderer
         'subscribe' => ['title' => 'Подписка на новости', 'text' => 'Получайте дайджест новостей на почту раз в неделю.', 'button_text' => 'Подписаться'],
         'faq' => ['title' => '', 'items' => []],
         'contact_cards' => ['title' => '', 'items' => []],
-        'hero' => ['title' => '', 'eyebrow' => '', 'subtitle' => '', 'image' => '', 'video_url' => '', 'button_text' => '', 'button_url' => '', 'button2_text' => '', 'button2_url' => '', 'video_button_text' => '', 'video_button_url' => ''],
+        'hero' => ['title' => '', 'eyebrow' => '', 'subtitle' => '', 'image' => '', 'video_url' => '', 'width' => 'full', 'height' => 'regular', 'button_text' => '', 'button_url' => '', 'button2_text' => '', 'button2_url' => '', 'video_button_text' => '', 'video_button_url' => ''],
         'categories_grid' => ['title' => '', 'items' => []],
         'media_materials' => ['title' => '', 'items' => []],
         'cards_grid' => ['title' => '', 'all_text' => '', 'all_url' => '', 'columns' => 5, 'items' => []],

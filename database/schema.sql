@@ -132,7 +132,8 @@ CREATE TABLE IF NOT EXISTS pages (
     status          ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
     is_home         TINYINT(1) NOT NULL DEFAULT 0,
     layout_type     ENUM('no_sidebar', 'left_sidebar', 'right_sidebar') NOT NULL DEFAULT 'no_sidebar',
-    hide_chrome     TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'лендинг: скрыть шапку/футер сайта',
+    hide_chrome     TINYINT(1) NOT NULL DEFAULT 0,
+    transparent_header TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'прозрачная шапка на этой странице' COMMENT 'лендинг: скрыть шапку/футер сайта',
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at      DATETIME NULL COMMENT 'мягкое удаление (корзина)',
@@ -770,7 +771,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_08_not_found_log.sql'),
     ('2026_07_09_menu_icons_dividers.sql'),
     ('2026_07_09_news_detail_extras.sql'),
-    ('2026_07_09_news_premium_layout.sql')
+    ('2026_07_09_news_premium_layout.sql'),
+    ('2026_07_10_pages_transparent_header.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;
