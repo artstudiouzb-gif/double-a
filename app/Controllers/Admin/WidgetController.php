@@ -157,7 +157,7 @@ final class WidgetController
 
     private function collectData(string $type): array
     {
-        return match ($type) {
+        $data = match ($type) {
             'latest_news', 'projects_list', 'team_list' => [
                 'count' => max(1, min(20, (int) ($_POST['count'] ?? 5))),
             ],
@@ -169,5 +169,14 @@ final class WidgetController
             ],
             default => [],
         };
+
+        // Панель оформления (общая для всех типов); нормализация в рендерере.
+        $data['_design'] = \App\Core\WidgetRenderer::normalizeDesign(['_design' => [
+            'style' => (string) ($_POST['design_style'] ?? 'default'),
+            'pad' => (string) ($_POST['design_pad'] ?? 'normal'),
+            'accent' => !empty($_POST['design_accent']),
+        ]]);
+
+        return $data;
     }
 }

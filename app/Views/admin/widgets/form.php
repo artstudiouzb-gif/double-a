@@ -85,6 +85,32 @@ $currentType = $widget['type'] ?? 'latest_news';
             </div>
         <?php endif; ?>
 
+        <?php $design = \App\Core\WidgetRenderer::normalizeDesign($data); ?>
+        <fieldset style="border:1px solid var(--admin-border);border-radius:8px;padding:16px;">
+            <legend style="padding:0 8px;font-weight:600;">Оформление</legend>
+            <div class="form-field">
+                <label for="design_style">Стиль</label>
+                <select id="design_style" name="design_style">
+                    <option value="default" <?= $design['style'] === 'default' ? 'selected' : '' ?>>Стандарт (без фона)</option>
+                    <option value="card" <?= $design['style'] === 'card' ? 'selected' : '' ?>>Карточка (рамка и фон)</option>
+                    <option value="tinted" <?= $design['style'] === 'tinted' ? 'selected' : '' ?>>Подложка (лёгкий фон)</option>
+                    <option value="navy" <?= $design['style'] === 'navy' ? 'selected' : '' ?>>Тёмный (акцентный)</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="design_pad">Внутренние отступы</label>
+                <select id="design_pad" name="design_pad">
+                    <option value="compact" <?= $design['pad'] === 'compact' ? 'selected' : '' ?>>Компактные</option>
+                    <option value="normal" <?= $design['pad'] === 'normal' ? 'selected' : '' ?>>Обычные</option>
+                    <option value="spacious" <?= $design['pad'] === 'spacious' ? 'selected' : '' ?>>Просторные</option>
+                </select>
+            </div>
+            <div class="form-field form-field--checkbox">
+                <input type="checkbox" id="design_accent" name="design_accent" value="1" <?= $design['accent'] ? 'checked' : '' ?>>
+                <label for="design_accent">Акцентная линия под заголовком</label>
+            </div>
+        </fieldset>
+
         <div class="form-field form-field--checkbox">
             <input type="checkbox" id="is_active" name="is_active" value="1" <?= (!$isEdit || !empty($widget['is_active'])) ? 'checked' : '' ?>>
             <label for="is_active">Активен</label>

@@ -972,3 +972,15 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .gcal-list__link { color: var(--gov-navy); font-weight: 600; text-decoration: none; }
 .gcal-list__link:hover { color: var(--gov-teal-text); }
 .gcal-list__loc { color: var(--gov-muted); font-size: .88rem; }
+
+/* ===== Оформление виджетов сайдбара (панель «Оформление» в админке) ===== */
+.widget--style-card { padding: 22px; border: 1px solid var(--gov-border); border-radius: 14px; background: var(--gov-surface); }
+.widget--style-tinted { padding: 22px; border-radius: 14px; background: color-mix(in srgb, var(--gov-navy) 5%, var(--gov-bg)); }
+.widget--style-navy { padding: 22px; border-radius: 14px; background: var(--gov-navy); color: #fff; }
+.widget--style-navy .widget__title, .widget--style-navy a { color: #fff; }
+.widget--style-navy a:hover { color: #cfe6e6; }
+.widget--pad-compact { padding: 14px; }
+.widget--pad-compact:not(.widget--style-card):not(.widget--style-tinted):not(.widget--style-navy) { padding: 0; }
+.widget--pad-spacious.widget--style-card, .widget--pad-spacious.widget--style-tinted, .widget--pad-spacious.widget--style-navy { padding: 32px; }
+.widget--accent .widget__title { padding-bottom: 10px; position: relative; }
+.widget--accent .widget__title::after { content: ''; position: absolute; left: 0; bottom: 0; width: 44px; height: 3px; border-radius: 2px; background: var(--gov-teal); }
