@@ -247,6 +247,28 @@ final class News
         return $row;
     }
 
+    /**
+     * Языки с реальным контентом новости: язык по умолчанию + языки, где
+     * переведён заголовок или текст (roadmap 1.2 — hreflang и переключатель).
+     *
+     * @return string[]
+     */
+    public static function availableLangs(int $id): array
+    {
+        $langs = [Language::defaultCode()];
+
+        $stmt = Database::pdo()->prepare(
+            "SELECT lang FROM news_translations
+             WHERE news_id = :id AND (TRIM(COALESCE(title, '')) <> '' OR TRIM(COALESCE(content, '')) <> '')"
+        );
+        $stmt->execute([':id' => $id]);
+        foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $lang) {
+            $langs[] = (string) $lang;
+        }
+
+        return array_values(array_unique($langs));
+    }
+
     public static function slugExists(string $slug, ?int $excludeId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM news WHERE slug = :slug';

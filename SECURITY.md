@@ -60,9 +60,24 @@
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Cross-Origin-Opener-Policy: same-origin`
 - `X-Permitted-Cross-Domain-Policies: none`
-- `Strict-Transport-Security` — только по HTTPS
-- `Content-Security-Policy` — для `/admin/*` и `/install/*`
-  (`default-src 'self'`, `object-src 'none'`, `frame-ancestors 'self'` и т.д.).
+- `Strict-Transport-Security` — только по HTTPS; директива `preload`
+  включается опцией `security.hsts_preload` в `config.php` (только после
+  месяца стабильного HTTPS — см. hstspreload.org, быстро снять нельзя).
+- `Content-Security-Policy` — на ВСЕХ ответах (v2). Инлайн-скрипты разрешены
+  только по одноразовому nonce (`SecurityHeaders::nonce()`), `unsafe-inline`
+  для скриптов не используется ни на публичной части, ни в панели. Публичная
+  политика добавляет хосты Google Fonts / GA / Метрики только при включённых
+  настройках. Для стилей `unsafe-inline` оставлен осознанно: тема-билдер и
+  блоки используют style-атрибуты, которые nonce не покрывает. Инлайн-скрипты
+  в закэшированных блоках получают nonce при отдаче
+  (`SecurityHeaders::injectScriptNonce`).
+
+## Журнал аутентификации (v2)
+
+События входа пишутся в «Журнал действий» (`audit_log`, метод `AUTH`) с IP:
+`auth/login`, `auth/login.failed`, `auth/login.locked`, `auth/login.pending-2fa`,
+`auth/2fa`, `auth/2fa.failed`, `auth/logout`. Дублируются security-логом в
+Telegram (как и раньше); записи старше 180 дней чистит `gdpr_cleanup`.
 
 ## Аудит SSRF и открытых редиректов (Задача 55)
 

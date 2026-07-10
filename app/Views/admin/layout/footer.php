@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
 /* Мобильный тумблер сайдбара (нативно, без внешних библиотек). */
 (function () {
     var t = document.querySelector('[data-sidebar-toggle]');

@@ -115,15 +115,17 @@ $renderFooterWidget = function (array $col) use ($logo, $siteName, $address, $ph
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/a11y.js'), ENT_QUOTES) ?>" defer></script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/frontend.js'), ENT_QUOTES) ?>"></script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/forms.js'), ENT_QUOTES) ?>" defer></script>
+<?php $cspNonce = \App\Core\SecurityHeaders::nonce(); ?>
 <?php if (\App\Core\WebPush::isEnabled()): ?>
-<script>window.__pushEnabled = true;</script>
+<script nonce="<?= $cspNonce ?>">window.__pushEnabled = true;</script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/push.js'), ENT_QUOTES) ?>" defer></script>
 <?php endif; ?>
 <?= \App\Core\AssetCollector::renderScripts() /* JS блоков — по одному разу */ ?>
 <?php if ($analyticsInit !== ''): ?>
-<?php // Код счётчиков инертен (type text/plain); consent.js активирует его. ?>
-<script type="text/plain" id="analytics-init"><?= $analyticsInit ?></script>
-<script>window.__consent = {required: <?= $consentRequired ? 'true' : 'false' ?>, privacyUrl: <?= json_encode($privacyUrl, JSON_UNESCAPED_SLASHES) ?>};</script>
+<?php // Код счётчиков инертен (type text/plain); consent.js активирует его,
+      // перенося nonce с держателя на создаваемый <script> (CSP). ?>
+<script type="text/plain" id="analytics-init" nonce="<?= $cspNonce ?>"><?= $analyticsInit ?></script>
+<script nonce="<?= $cspNonce ?>">window.__consent = {required: <?= $consentRequired ? 'true' : 'false' ?>, privacyUrl: <?= json_encode($privacyUrl, JSON_UNESCAPED_SLASHES) ?>};</script>
 <script src="/assets/js/consent.js" defer></script>
 <?php endif; ?>
 <?php // Schema.org: карточка организации — только на главной (JSON-LD валиден в body). ?>
@@ -140,7 +142,7 @@ $renderFooterWidget = function (array $col) use ($logo, $siteName, $address, $ph
 <?php // Глобальный произвольный JS (группа 6, супер-админ). ?>
 <?php $globalJs = Setting::get('custom_js_global', ''); ?>
 <?php if (trim($globalJs) !== ''): ?>
-<script><?= $globalJs ?></script>
+<script nonce="<?= $cspNonce ?>"><?= $globalJs ?></script>
 <?php endif; ?>
 </body>
 </html>

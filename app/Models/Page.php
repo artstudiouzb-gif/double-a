@@ -162,6 +162,29 @@ final class Page
         return $row ?: null;
     }
 
+    /**
+     * Языки, на которых страница реально наполнена: язык по умолчанию (базовая
+     * строка) + языки с переводом заголовка или собственным стеком блоков.
+     * Используется переключателем языков и hreflang (roadmap 1.2).
+     *
+     * @return string[]
+     */
+    public static function availableLangs(int $id): array
+    {
+        $langs = [Language::defaultCode()];
+
+        $stmt = Database::pdo()->prepare(
+            "SELECT lang FROM page_translations WHERE page_id = :id AND TRIM(COALESCE(title, '')) <> ''
+             UNION SELECT DISTINCT lang FROM blocks WHERE page_id = :id2"
+        );
+        $stmt->execute([':id' => $id, ':id2' => $id]);
+        foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $lang) {
+            $langs[] = (string) $lang;
+        }
+
+        return array_values(array_unique($langs));
+    }
+
     public static function slugExists(string $slug, ?int $excludeId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM pages WHERE slug = :slug';

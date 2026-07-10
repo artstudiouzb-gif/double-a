@@ -40,6 +40,9 @@ return [
         'login_max_attempts' => 5,
         'login_lockout_minutes' => 15,
         'login_attempts_window_minutes' => 15,
+        // HSTS с preload (hstspreload.org): включать только после месяца
+        // стабильной работы по HTTPS на всех поддоменах — снять быстро нельзя.
+        'hsts_preload' => false,
     ],
     'paths' => [
         'protected_uploads' => __DIR__ . '/../storage/protected_uploads',

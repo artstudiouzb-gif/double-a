@@ -54,8 +54,9 @@ QR-генератора, реализовано на стандартных ра
 **Безопасность** (подробно — в [SECURITY.md](SECURITY.md))
 - Обязательная 2FA (TOTP + backup-коды, вход по коду из Telegram), bcrypt
   cost 12, политика паролей со словарём, управление активными сессиями.
-- CSRF на всех POST, rate limiting, security-заголовки на всех ответах,
-  CSP на админке, SVG-санитайзер, SSRF-guard, проверка реального MIME
+- CSRF на всех POST, rate limiting, security-заголовки и CSP на всех
+  ответах (инлайн-скрипты только по nonce, без `unsafe-inline`),
+  журнал входов с IP, SVG-санитайзер, SSRF-guard, проверка реального MIME
   загрузок, защищённые файлы вне document root.
 
 ## Требования

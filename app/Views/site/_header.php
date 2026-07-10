@@ -120,8 +120,17 @@ if (!empty($menuItems)) {
 }
 
 // --- Переключатель языков ---
+// Если контроллер сообщил языки с реальным контентом сущности — показываем
+// только их; на общих маршрутах (списки, поиск) — все активные языки.
 $langHtml = '';
 $activeLangs = Language::active();
+$contentLangs = \App\Core\Locale::contentLangs();
+if ($contentLangs !== null) {
+    $activeLangs = array_values(array_filter(
+        $activeLangs,
+        static fn (array $l): bool => in_array((string) $l['code'], $contentLangs, true)
+    ));
+}
 if ($hcfg['language_switcher']['enabled'] && count($activeLangs) > 1) {
     $flags = ['ru' => '🇷🇺', 'uz' => '🇺🇿', 'en' => '🇬🇧', 'kk' => '🇰🇿', 'tr' => '🇹🇷', 'de' => '🇩🇪'];
     $format = $hcfg['language_switcher']['format'];
@@ -330,7 +339,7 @@ if ($inlineMenu !== '') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>
+<script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
 /* Применяем сохранённую тему до отрисовки, исключая мигание (FOUC). */
 (function(){try{var t=localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();
 </script>
@@ -342,11 +351,15 @@ if ($inlineMenu !== '') {
 <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES) ?>">
 <?php endif; ?>
 <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES) ?>">
-<?php // hreflang: текущий путь на каждом активном языке + x-default (основной язык). ?>
-<?php foreach (\App\Models\Language::active() as $hrefLang): ?>
+<?php // hreflang: текущий путь на языках, где контент реально существует
+      // ($activeLangs уже отфильтрован по Locale::contentLangs выше),
+      // + x-default (основной язык). Одинокий hreflang не выводим. ?>
+<?php if (count($activeLangs) > 1): ?>
+<?php foreach ($activeLangs as $hrefLang): ?>
 <link rel="alternate" hreflang="<?= htmlspecialchars((string) $hrefLang['code'], ENT_QUOTES) ?>" href="<?= htmlspecialchars($appUrl . Locale::url(Locale::path(), (string) $hrefLang['code']), ENT_QUOTES) ?>">
 <?php endforeach; ?>
 <link rel="alternate" hreflang="x-default" href="<?= htmlspecialchars($appUrl . Locale::url(Locale::path(), \App\Models\Language::defaultCode()), ENT_QUOTES) ?>">
+<?php endif; ?>
 <link rel="alternate" type="application/rss+xml" title="<?= htmlspecialchars($siteName . ' — Новости', ENT_QUOTES) ?>" href="<?= htmlspecialchars(Locale::url('news/rss.xml', $currentLang), ENT_QUOTES) ?>">
 <meta property="og:site_name" content="<?= htmlspecialchars($siteName, ENT_QUOTES) ?>">
 <meta property="og:type" content="<?= htmlspecialchars($ogType, ENT_QUOTES) ?>">

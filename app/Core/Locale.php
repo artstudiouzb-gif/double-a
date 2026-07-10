@@ -14,6 +14,7 @@ final class Locale
 {
     private static ?string $current = null;
     private static string $path = '/';
+    private static ?array $contentLangs = null;
 
     public static function set(string $code): void
     {
@@ -57,6 +58,25 @@ final class Locale
         $code = $code ?? self::current();
 
         return $code === Language::defaultCode() ? '' : '/' . $code;
+    }
+
+    /**
+     * Языки, на которых реально существует контент текущей сущности
+     * (страницы/новости). Устанавливается контроллером; null — маршрут не
+     * привязан к сущности, переключатель и hreflang показывают все активные
+     * языки. Язык по умолчанию присутствует всегда (fallback-контент).
+     *
+     * @param string[]|null $codes
+     */
+    public static function setContentLangs(?array $codes): void
+    {
+        self::$contentLangs = $codes === null ? null : array_values(array_unique($codes));
+    }
+
+    /** @return string[]|null */
+    public static function contentLangs(): ?array
+    {
+        return self::$contentLangs;
     }
 
     /**

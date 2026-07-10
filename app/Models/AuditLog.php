@@ -50,6 +50,31 @@ final class AuditLog
     }
 
     /**
+     * Событие аутентификации (roadmap v2, раздел «Безопасность»): вход,
+     * неверный пароль, 2FA, выход. Пишется отдельно от record(), потому что
+     * маршруты /admin/login центральным журналом сознательно пропускаются.
+     * Метод в журнале — 'AUTH', путь — 'auth/<событие>'.
+     */
+    public static function auth(string $event, ?int $userId, string $username): void
+    {
+        try {
+            $stmt = Database::pdo()->prepare(
+                'INSERT INTO audit_log (user_id, username, method, path, ip, created_at)
+                 VALUES (:uid, :username, :method, :path, :ip, NOW())'
+            );
+            $stmt->execute([
+                ':uid' => $userId,
+                ':username' => mb_substr($username, 0, 100),
+                ':method' => 'AUTH',
+                ':path' => mb_substr('auth/' . $event, 0, 255),
+                ':ip' => mb_substr((string) ($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45),
+            ]);
+        } catch (\Throwable $e) {
+            error_log('Audit auth log failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Поиск с фильтрами и пагинацией.
      *
      * @param array{user_id?: int, q?: string, from?: string, to?: string} $filters

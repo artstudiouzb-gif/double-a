@@ -147,6 +147,8 @@ final class NewsController
         }
 
         News::incrementViews((int) $news['id']);
+        // hreflang и переключатель — только языки с переводом этой новости.
+        Locale::setContentLangs(News::availableLangs((int) $news['id']));
         $adjacent = News::adjacent($news, $lang);
 
         View::render('site/news_show', [

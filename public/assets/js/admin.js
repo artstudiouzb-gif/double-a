@@ -613,3 +613,22 @@
         }
     });
 })();
+
+/* Делегированные обработчики вместо инлайн-атрибутов (CSP без 'unsafe-inline'). */
+(function () {
+    'use strict';
+    // Селект с автоотправкой формы (фильтры списков новостей/страниц/проектов).
+    document.addEventListener('change', function (e) {
+        var el = e.target;
+        if (el.matches && el.matches('select[data-auto-submit]') && el.form) {
+            el.form.submit();
+            return;
+        }
+        // Селект типа виджета показывает поля выбранного типа.
+        if (el.matches && el.matches('select[data-widget-type-select]')) {
+            document.querySelectorAll('[data-wtype]').forEach(function (block) {
+                block.style.display = block.getAttribute('data-wtype') === el.value ? 'flex' : 'none';
+            });
+        }
+    });
+})();

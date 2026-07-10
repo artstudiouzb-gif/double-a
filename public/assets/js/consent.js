@@ -21,6 +21,9 @@
         if (!holder || holder.dataset.done === '1') { return; }
         holder.dataset.done = '1';
         var s = document.createElement('script');
+        // CSP: создаваемый инлайн-скрипт наследует nonce держателя, иначе
+        // политика script-src его заблокирует.
+        if (holder.nonce) { s.nonce = holder.nonce; }
         s.text = holder.textContent || '';
         document.head.appendChild(s);
     }

@@ -49,7 +49,7 @@ $qs = static function (array $overrides) use ($q, $sort): string {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
             <input type="search" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES) ?>" placeholder="Поиск в разделе" aria-label="Поиск в разделе">
         </div>
-        <select class="catlist-toolbar__sort" name="sort" onchange="this.form.submit()" aria-label="Сортировка">
+        <select class="catlist-toolbar__sort" name="sort" data-auto-submit aria-label="Сортировка">
             <option value="new" <?= $sort === 'new' ? 'selected' : '' ?>>Сначала новые</option>
             <option value="old" <?= $sort === 'old' ? 'selected' : '' ?>>Сначала старые</option>
             <option value="title" <?= $sort === 'title' ? 'selected' : '' ?>>По алфавиту</option>

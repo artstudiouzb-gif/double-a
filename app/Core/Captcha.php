@@ -131,8 +131,8 @@ final class Captcha
             . '<label for="' . htmlspecialchars($inputId, ENT_QUOTES) . '">Код с картинки</label>'
             . '<div class="captcha-row">'
             . '<img class="captcha-row__img" src="/captcha.png?ts=' . time() . '" width="190" height="62" alt="Защитный код">'
-            . '<button type="button" class="captcha-row__refresh" aria-label="Обновить код"'
-            . ' onclick="var i=this.parentNode.querySelector(\'img\');i.src=\'/captcha.png?ts=\'+Date.now();">&#8635;</button>'
+            // Без инлайн-обработчика (CSP): клик обрабатывает frontend.js по data-атрибуту.
+            . '<button type="button" class="captcha-row__refresh" data-captcha-refresh aria-label="Обновить код">&#8635;</button>'
             . '<input type="text" id="' . htmlspecialchars($inputId, ENT_QUOTES) . '" name="_captcha" inputmode="latin"'
             . ' autocomplete="off" spellcheck="false" maxlength="5" required aria-describedby="' . htmlspecialchars($inputId, ENT_QUOTES) . '-hint">'
             . '</div>'

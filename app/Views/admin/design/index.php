@@ -154,7 +154,7 @@ foreach ($options as $key => $opt) {
     </div>
 </form>
 
-<script>
+<script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
 (function () {
     'use strict';
     var frame = document.querySelector('[data-design-preview]');

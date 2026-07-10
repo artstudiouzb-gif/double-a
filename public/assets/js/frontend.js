@@ -254,3 +254,19 @@
         offset();
         apply();
     })();
+
+    // Делегированные обработчики вместо инлайн-атрибутов (CSP без 'unsafe-inline'):
+    // [data-auto-submit] — селект отправляет свою форму; [data-captcha-refresh] —
+    // кнопка обновляет картинку капчи рядом с собой.
+    document.addEventListener('change', function (e) {
+        var el = e.target;
+        if (el && el.matches && el.matches('select[data-auto-submit]') && el.form) {
+            el.form.submit();
+        }
+    });
+    document.addEventListener('click', function (e) {
+        var btn = e.target && e.target.closest ? e.target.closest('[data-captcha-refresh]') : null;
+        if (!btn) { return; }
+        var img = btn.parentNode.querySelector('img');
+        if (img) { img.src = '/captcha.png?ts=' + Date.now(); }
+    });

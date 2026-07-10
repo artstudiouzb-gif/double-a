@@ -44,6 +44,10 @@ final class PageController
 
     private function renderPage(array $page, string $lang): void
     {
+        // Переключатель языков и hreflang показывают только языки, на которых
+        // страница реально наполнена (перевод или собственный стек блоков).
+        Locale::setContentLangs(Page::availableLangs((int) $page['id']));
+
         // Скомпилированные блоки (HTML + scoped CSS) кэшируются на диск и
         // сбрасываются при изменении страницы/блоков в админке. Кэш и его TTL
         // управляются в разделе «Производительность».
@@ -74,6 +78,11 @@ final class PageController
             );
         }
 
+        // CSP: инлайн-скрипты в HTML блоков (доверенный контент супер-админа;
+        // для editor их режет санитайзер) получают nonce текущего запроса —
+        // кэш общий, а nonce одноразовый.
+        $rendered['html'] = \App\Core\SecurityHeaders::injectScriptNonce((string) $rendered['html']);
+
         // Ассеты блоков регистрируются и на попадании в кэш, и при промахе.
         foreach ($rendered['assets'] ?? [] as $assetType) {
             \App\Core\AssetCollector::requireJs($assetType);
@@ -85,6 +94,10 @@ final class PageController
             $sidebar = ['position' => 'left', 'html' => Widget::renderSidebar('left', $lang)];
         } elseif ($layoutType === 'right_sidebar') {
             $sidebar = ['position' => 'right', 'html' => Widget::renderSidebar('right', $lang)];
+        }
+        if ($sidebar !== null) {
+            // Виджет «произвольный HTML» супер-админа тоже может нести <script>.
+            $sidebar['html'] = \App\Core\SecurityHeaders::injectScriptNonce((string) $sidebar['html']);
         }
 
         View::render('site/page', [

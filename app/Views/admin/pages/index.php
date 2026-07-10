@@ -19,12 +19,12 @@ $langs = Language::active();
 </div>
 
 <form method="get" action="/admin/pages" class="list-filters">
-    <select name="status" onchange="this.form.submit()">
+    <select name="status" data-auto-submit>
         <option value="">Все статусы</option>
         <option value="published" <?= $filterStatus === 'published' ? 'selected' : '' ?>>Опубликованные</option>
         <option value="draft" <?= $filterStatus === 'draft' ? 'selected' : '' ?>>Черновики</option>
     </select>
-    <select name="lang" onchange="this.form.submit()">
+    <select name="lang" data-auto-submit>
         <option value="">Все языки</option>
         <?php foreach ($langs as $l): ?>
             <option value="<?= htmlspecialchars($l['code'], ENT_QUOTES) ?>" <?= $filterLang === $l['code'] ? 'selected' : '' ?>>

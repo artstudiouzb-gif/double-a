@@ -39,11 +39,15 @@ final class AuthController
 
         $result = Auth::attemptLogin($username, $password);
 
+        // Разрез аутентификации в «Журнале действий» (метод AUTH): успех,
+        // ожидание 2FA, блокировка и неверные учётные данные — с IP.
         switch ($result['status']) {
             case 'ok':
+                \App\Models\AuditLog::auth('login', (int) ($_SESSION['user_id'] ?? 0) ?: null, $username);
                 header('Location: /admin');
                 exit;
             case 'needs_code':
+                \App\Models\AuditLog::auth('login.pending-2fa', (int) ($_SESSION['pending_user_id'] ?? 0) ?: null, $username);
                 header('Location: /admin/login/2fa');
                 exit;
             case 'send_failed':
@@ -52,12 +56,14 @@ final class AuthController
                 ]);
                 return;
             case 'locked':
+                \App\Models\AuditLog::auth('login.locked', null, $username);
                 $minutes = (int) ceil(($result['retry_after'] ?? 0) / 60);
                 View::render('admin/auth/login', [
                     'error' => "Слишком много попыток входа. Повторите через {$minutes} мин.",
                 ]);
                 return;
             default:
+                \App\Models\AuditLog::auth('login.failed', null, $username);
                 View::render('admin/auth/login', ['error' => 'Неверный логин или пароль.']);
         }
     }
@@ -82,11 +88,14 @@ final class AuthController
         }
 
         $code = trim((string) ($_POST['code'] ?? ''));
+        $pendingId = (int) ($_SESSION['pending_user_id'] ?? 0) ?: null;
 
         if (Auth::completeTwoFactor($code)) {
+            \App\Models\AuditLog::auth('2fa', (int) ($_SESSION['user_id'] ?? 0) ?: null, (string) ($_SESSION['username'] ?? ''));
             header('Location: /admin');
             exit;
         }
+        \App\Models\AuditLog::auth('2fa.failed', $pendingId, '');
 
         // Просроченный/сброшенный pending уводит на логин, неверный код — ошибка.
         if (empty($_SESSION['pending_user_id'])) {
@@ -119,6 +128,7 @@ final class AuthController
     public function logout(): void
     {
         Csrf::verifyRequest();
+        \App\Models\AuditLog::auth('logout', (int) ($_SESSION['user_id'] ?? 0) ?: null, (string) ($_SESSION['username'] ?? ''));
         Auth::logout();
         header('Location: /admin/login');
         exit;

@@ -26,7 +26,7 @@ $currentType = $widget['type'] ?? 'latest_news';
             <?php if ($isEdit): ?>
                 <input type="text" value="<?= htmlspecialchars(Widget::TYPE_LABELS[$currentType] ?? $currentType, ENT_QUOTES) ?>" disabled>
             <?php else: ?>
-                <select id="type" name="type" onchange="document.querySelectorAll('[data-wtype]').forEach(function(el){el.style.display=el.getAttribute('data-wtype')===this.value?'flex':'none';}.bind(this));">
+                <select id="type" name="type" data-widget-type-select>
                     <?php foreach (Widget::TYPE_LABELS as $val => $label): ?>
                         <option value="<?= $val ?>"><?= htmlspecialchars($label, ENT_QUOTES) ?></option>
                     <?php endforeach; ?>
