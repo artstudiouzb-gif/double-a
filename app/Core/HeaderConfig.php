@@ -46,6 +46,12 @@ final class HeaderConfig
         'layout' => 'stacked',                // stacked | inline | centered | drawer
         'logo_position' => 'left',            // left | center
         'menu_position' => 'right',           // left | center | right
+        // Поведение шапки: липкая (следует за прокруткой) и прозрачная
+        // (накладывается на первый экран, при прокрутке становится сплошной).
+        'sticky' => false,
+        'transparent' => false,
+        // Светлый (белый) вариант логотипа для прозрачной шапки.
+        'logo_light' => '',
         // Конструктор: раскладка элементов по зонам верхнего ряда (десктоп).
         'elements' => [
             'left' => [],
@@ -155,6 +161,10 @@ final class HeaderConfig
 
         $result['menu_position'] = in_array($config['menu_position'] ?? '', ['left', 'center', 'right'], true)
             ? $config['menu_position'] : self::DEFAULTS['menu_position'];
+
+        $result['sticky'] = !empty($config['sticky']);
+        $result['transparent'] = !empty($config['transparent']);
+        $result['logo_light'] = trim((string) ($config['logo_light'] ?? ''));
 
         // Конструктор: раскладки элементов по зонам для десктопа и мобильного.
         $result['elements'] = isset($config['elements']) && is_array($config['elements'])

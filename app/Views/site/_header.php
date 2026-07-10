@@ -57,7 +57,12 @@ $currentLang = Locale::current();
 // --- Логотип ---
 $logoHtml = '<a href="' . htmlspecialchars(Locale::url('/', $currentLang), ENT_QUOTES) . '" class="site-header__logo">';
 if ($logo !== '') {
-    $logoHtml .= '<img src="' . htmlspecialchars($logo, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
+    $logoHtml .= '<img class="site-header__logo-std" src="' . htmlspecialchars($logo, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
+    // Светлый вариант логотипа для прозрачной шапки (задаётся в конструкторе).
+    $logoLight = trim((string) (\App\Core\HeaderConfig::get()['logo_light'] ?? ''));
+    if ($logoLight !== '') {
+        $logoHtml .= '<img class="site-header__logo-light" src="' . htmlspecialchars($logoLight, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
+    }
 } else {
     $logoHtml .= '<span>' . htmlspecialchars($siteName, ENT_QUOTES) . '</span>';
 }
@@ -434,7 +439,7 @@ if ($inlineMenu !== '') {
     <a href="#" class="a11y-panel__off">Обычная версия</a>
 </div>
 <?= $topbarHtml ?>
-<header class="site-header site-header--layout-<?= htmlspecialchars($layout, ENT_QUOTES) ?> site-header--logo-<?= htmlspecialchars($logoPos, ENT_QUOTES) ?><?= $navBarHtml !== '' ? ' site-header--has-nav' : '' ?><?= $drawerMenu !== '' ? ' site-header--has-drawer' : '' ?>">
+<header class="site-header site-header--layout-<?= htmlspecialchars($layout, ENT_QUOTES) ?> site-header--logo-<?= htmlspecialchars($logoPos, ENT_QUOTES) ?><?= $navBarHtml !== '' ? ' site-header--has-nav' : '' ?><?= $drawerMenu !== '' ? ' site-header--has-drawer' : '' ?><?= !empty($hcfg['sticky']) ? ' site-header--sticky' : '' ?><?= !empty($hcfg['transparent']) ? ' site-header--transparent' : '' ?>"<?= (!empty($hcfg['sticky']) || !empty($hcfg['transparent'])) ? ' data-header-scroll' : '' ?>>
     <div class="site-header__inner">
         <div class="site-header__zone site-header__zone--left"><?= $zones['left'] ?></div>
         <div class="site-header__zone site-header__zone--center"><?= $zones['center'] ?></div>

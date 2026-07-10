@@ -33,3 +33,10 @@ test('HeaderConfig Pro Max: элемент может повторяться в 
     assert_same(['language'], $cfg['topbar']['zones']['right']);
     assert_same(['language', 'search'], $cfg['elements']['right'], 'уникальность — в пределах секции');
 });
+
+test('HeaderConfig: sticky и transparent нормализуются в булевы', function () {
+    $cfg = HeaderConfig::normalize(['sticky' => '1', 'transparent' => 'yes']);
+    assert_true($cfg['sticky'] === true && $cfg['transparent'] === true);
+    $off = HeaderConfig::normalize([]);
+    assert_true($off['sticky'] === false && $off['transparent'] === false);
+});

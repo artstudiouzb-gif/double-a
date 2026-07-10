@@ -713,3 +713,48 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .site-nav__extra--right { margin-left: auto; }
 .site-nav__extra--center { margin: 0 auto; }
 .site-nav__extra .site-search input { max-width: 160px; }
+
+/* --- Поведение шапки: липкая и прозрачная (Pro Max; body-префикс перебивает
+   легаси-режимы design-header-* из старой дизайн-системы) --- */
+body .site-header--sticky { position: sticky; top: 0; z-index: 200; }
+body .site-header--sticky.is-scrolled { box-shadow: 0 8px 28px rgba(11,26,48,.14); }
+
+/* Прозрачная шапка: накладывается на первый экран; текст/иконки белые.
+   При прокрутке (is-scrolled) возвращается сплошной фон и цвета темы. */
+body .site-header--transparent:not(.is-scrolled) { background: transparent; border-bottom-color: rgba(255,255,255,.18); box-shadow: none; }
+/* Прозрачная шапка накладывается на первый экран (absolute), а в связке
+   с «липкой» после прокрутки переключается в fixed со сплошным фоном. */
+body .site-header.site-header--transparent { position: absolute; left: 0; right: 0; top: var(--hdr-top, 0px); z-index: 200; }
+.site-topbar { position: relative; z-index: 210; }
+body .site-header.site-header--transparent.site-header--sticky.is-scrolled { position: fixed; top: 0 !important; animation: hdr-slide-down .25s ease; }
+@keyframes hdr-slide-down { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { body .site-header.site-header--transparent.site-header--sticky.is-scrolled { animation: none; } }
+body:has(.site-header--transparent) .site-content { margin-top: 0; }
+body .site-header--transparent.is-scrolled { background: var(--gov-surface); }
+body .site-header--transparent:not(.is-scrolled) .site-header__logo,
+body .site-header--transparent:not(.is-scrolled) .site-header__logo span,
+body .site-header--transparent:not(.is-scrolled) .site-menu__link,
+body .site-header--transparent:not(.is-scrolled) .site-lang-switcher__item,
+body .site-header--transparent:not(.is-scrolled) .a11y-toggle,
+body .site-header--transparent:not(.is-scrolled) .site-theme-toggle,
+body .site-header--transparent:not(.is-scrolled) .site-search-toggle,
+body .site-header--transparent:not(.is-scrolled) .hdr-contact { color: #fff; }
+/* Отдельный (светлый) логотип для прозрачного режима. */
+.site-header__logo-light { display: none; }
+body .site-header--transparent:not(.is-scrolled) .site-header__logo-light { display: block; }
+body .site-header--transparent:not(.is-scrolled) .site-header__logo img.site-header__logo-std { display: none; }
+.site-header--transparent:not(.is-scrolled) .site-header__logo:not(:has(img))::before { background: #fff; }
+.site-header--transparent:not(.is-scrolled) .site-menu__link:hover,
+.site-header--transparent:not(.is-scrolled) .site-menu__link:focus-visible { color: #9fe3e4; }
+body .site-header--transparent:not(.is-scrolled) .site-nav { border-top-color: rgba(255,255,255,.16); background: transparent; }
+.site-header--transparent:not(.is-scrolled) .site-search input { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; }
+.site-header--transparent:not(.is-scrolled) .site-search input::placeholder { color: rgba(255,255,255,.6); }
+body .site-header--transparent { transition: background .25s ease, box-shadow .25s ease; }
+/* Прозрачная поверх контента: первый блок страницы должен быть full-bleed hero;
+   для обычных страниц режим автоматически даёт сплошную шапку после прокрутки. */
+/* Отключаем легаси-блюр старой дизайн-системы в прозрачном режиме. */
+body .site-header--transparent:not(.is-scrolled) { backdrop-filter: none; -webkit-backdrop-filter: none; }
+/* Компенсация под прозрачной шапкой: контент первого full-bleed hero
+   опускается ниже высоты шапки, чтобы не подлезать под меню. */
+body:has(.site-header--transparent) .cms-block--hero .block-hero--media .block-hero__inner { padding-top: clamp(120px, 14vw, 170px); }
+body:has(.site-header--transparent) .newsdetail--premium .newsdetail-phero { padding-top: 120px; }

@@ -46,6 +46,9 @@ final class HeaderController
             'layout' => $_POST['layout'] ?? 'stacked',
             'logo_position' => $_POST['logo_position'] ?? 'left',
             'menu_position' => $_POST['menu_position'] ?? 'right',
+            'sticky' => !empty($_POST['header_sticky']),
+            'transparent' => !empty($_POST['header_transparent']),
+            'logo_light' => $_POST['logo_light'] ?? '',
             'elements' => $parseZones('elements'),
             'elements_mobile' => $parseZones('elements_mobile'),
             'language_switcher' => [

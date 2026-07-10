@@ -222,3 +222,23 @@
             }
         });
     });
+
+    // Липкая/прозрачная шапка: класс is-scrolled после небольшой прокрутки.
+    (function () {
+        var hdr = document.querySelector('[data-header-scroll]');
+        if (!hdr) { return; }
+        // Прозрачная шапка стартует сразу под верхней полосой (если есть).
+        var topbar = document.querySelector('.site-topbar');
+        var offset = function () {
+            if (topbar && hdr.classList.contains('site-header--transparent')) {
+                hdr.style.setProperty('--hdr-top', topbar.offsetHeight + 'px');
+            }
+        };
+        var apply = function () {
+            hdr.classList.toggle('is-scrolled', window.scrollY > 12);
+        };
+        window.addEventListener('scroll', apply, { passive: true });
+        window.addEventListener('resize', offset);
+        offset();
+        apply();
+    })();

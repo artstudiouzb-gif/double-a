@@ -109,6 +109,16 @@ $labelsJson = htmlspecialchars(json_encode($elements, JSON_UNESCAPED_UNICODE), E
                     <span class="form-hint">Иконки и разделители пунктов — в разделе «Меню».</span>
                 </div>
             </div>
+            <div class="hb-behavior">
+                <label class="hb-switch"><input type="checkbox" name="header_sticky" value="1" <?= !empty($config['sticky']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Липкая шапка (следует за прокруткой)</label>
+                <label class="hb-switch"><input type="checkbox" name="header_transparent" value="1" <?= !empty($config['transparent']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Прозрачная шапка (поверх первого экрана)</label>
+                <span class="form-hint">Прозрачная шапка эффектна с полноэкранным hero (фото/видео). При прокрутке она становится сплошной; вместе с «липкой» — классическое поведение премиальных сайтов. В прозрачном режиме элементы и логотип автоматически белые.</span>
+                <div class="form-field" style="margin-top:10px;">
+                    <label for="logo_light">Светлый логотип для прозрачной шапки (URL, необязательно)</label>
+                    <input type="text" id="logo_light" name="logo_light" value="<?= htmlspecialchars($config['logo_light'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/logo-white.svg">
+                    <span class="form-hint">Если основной логотип — картинка, здесь задаётся его белая версия. Эмблема-звезда без картинки перекрашивается автоматически.</span>
+                </div>
+            </div>
         </div>
 
         <div class="header-builder__group">
