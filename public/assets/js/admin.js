@@ -17,6 +17,7 @@
             wrapper.className = 'repeater-row';
             wrapper.innerHTML = html;
             container.appendChild(wrapper);
+            if (window.__enhanceIconFields) { window.__enhanceIconFields(wrapper); }
             return;
         }
 
@@ -249,8 +250,11 @@
         }
         function close() { modal.hidden = true; currentCallback = null; }
 
-        // Публичный API для редактора: выбор изображения с колбэком.
-        window.MediaPicker = { pick: function (cb) { open(null, cb); } };
+        // Публичный API для редактора: выбор изображения/SVG с колбэком.
+        window.MediaPicker = {
+            pick: function (cb) { open(null, cb, 'image'); },
+            pickSvg: function (cb) { open(null, cb, 'svg'); }
+        };
 
         document.addEventListener('click', function (e) {
             var btn = e.target.closest('[data-media-pick]');
@@ -258,6 +262,47 @@
             if (e.target.closest('[data-media-close]') || e.target === modal) { close(); }
         });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
+    })();
+
+    // --- Поля SVG-иконок: код вручную ИЛИ выбор файла из медиабиблиотеки ---
+    // К каждому textarea иконки добавляется панель с кнопкой «Выбрать из медиа»:
+    // выбранный SVG-файл подгружается и вставляется как код (инлайн). Так поле
+    // остаётся единым (icon_svg), а на сохранении код санитайзится сервером.
+    (function () {
+        function enhance(ta) {
+            if (ta.getAttribute('data-icon-enhanced')) { return; }
+            ta.setAttribute('data-icon-enhanced', '1');
+            var bar = document.createElement('div');
+            bar.className = 'icon-field__tools';
+            var pick = document.createElement('button');
+            pick.type = 'button'; pick.className = 'btn btn--small'; pick.textContent = 'Выбрать SVG из медиа';
+            var clear = document.createElement('button');
+            clear.type = 'button'; clear.className = 'btn btn--small'; clear.textContent = 'Очистить';
+            bar.appendChild(pick); bar.appendChild(clear);
+            ta.insertAdjacentElement('afterend', bar);
+
+            pick.addEventListener('click', function () {
+                if (!window.MediaPicker) { return; }
+                window.MediaPicker.pickSvg(function (url) {
+                    fetch(url, { credentials: 'same-origin' })
+                        .then(function (r) { return r.text(); })
+                        .then(function (txt) {
+                            ta.value = txt.trim();
+                            ta.dispatchEvent(new Event('input', { bubbles: true }));
+                        })
+                        .catch(function () { window.alert('Не удалось загрузить SVG-файл.'); });
+                });
+            });
+            clear.addEventListener('click', function () {
+                ta.value = '';
+                ta.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        }
+        function enhanceIn(root) {
+            (root || document).querySelectorAll('textarea[name$="[icon_svg]"], textarea[name="icon_svg"]').forEach(enhance);
+        }
+        window.__enhanceIconFields = enhanceIn;
+        enhanceIn(document);
     })();
 
     // --- Живое значение ползунков прозрачности (overlay/подложка hero и др.) ---

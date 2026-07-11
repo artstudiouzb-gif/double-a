@@ -725,3 +725,6 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 }
 .reorder-bar[hidden] { display: none; }
 .reorder-bar__text { font-size: 14px; font-weight: 600; color: var(--admin-text, #1f2b3d); }
+
+/* Панель под полем SVG-иконки: выбрать файл из медиа / очистить. */
+.icon-field__tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
