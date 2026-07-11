@@ -58,6 +58,11 @@ final class HeaderConfig
         'transparent' => false,
         // Светлый (белый) вариант логотипа для прозрачной шапки.
         'logo_light' => '',
+        // Логотип для конкретного языка (код => URL). Переопределяет общий
+        // логотип (Настройки → Логотип) на страницах этого языка.
+        'logo_by_lang' => [],
+        // Светлый логотип для конкретного языка (прозрачная шапка).
+        'logo_light_by_lang' => [],
         // Конструктор: раскладка элементов по зонам верхнего ряда (десктоп).
         'elements' => [
             'left' => [],
@@ -138,6 +143,41 @@ final class HeaderConfig
      * @param array<string, mixed> $raw
      * @return array{left: list<string>, center: list<string>, right: list<string>}
      */
+    /**
+     * Карта «код языка => URL логотипа». Оставляем только активные языки и
+     * непустые значения. Ключи фильтруем по формату кода языка.
+     *
+     * @return array<string,string>
+     */
+    private static function normalizeLangMap(mixed $raw): array
+    {
+        if (!is_array($raw)) {
+            return [];
+        }
+        $active = [];
+        try {
+            $active = \App\Models\Language::activeCodes();
+        } catch (\Throwable $e) {
+            // Таблица языков недоступна — не фильтруем по активности.
+        }
+        $map = [];
+        foreach ($raw as $code => $url) {
+            $code = strtolower(trim((string) $code));
+            if ($code === '' || !preg_match('/^[a-z]{2}(-[a-z]{2})?$/', $code)) {
+                continue;
+            }
+            if ($active !== [] && !in_array($code, $active, true)) {
+                continue;
+            }
+            $url = trim((string) $url);
+            if ($url !== '') {
+                $map[$code] = $url;
+            }
+        }
+
+        return $map;
+    }
+
     private static function normalizeZones(array $raw): array
     {
         $seen = [];
@@ -177,6 +217,8 @@ final class HeaderConfig
         $result['sticky'] = !empty($config['sticky']);
         $result['transparent'] = !empty($config['transparent']);
         $result['logo_light'] = trim((string) ($config['logo_light'] ?? ''));
+        $result['logo_by_lang'] = self::normalizeLangMap($config['logo_by_lang'] ?? null);
+        $result['logo_light_by_lang'] = self::normalizeLangMap($config['logo_light_by_lang'] ?? null);
 
         // Конструктор: раскладки элементов по зонам для десктопа и мобильного.
         $result['elements'] = isset($config['elements']) && is_array($config['elements'])

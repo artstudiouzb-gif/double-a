@@ -261,17 +261,9 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
         <?php endif; ?>
 
         <?php if ($type === 'counters'): ?>
-            <div class="form-field-row" style="display:flex;gap:16px;flex-wrap:wrap;">
-                <div class="form-field">
-                    <label for="card_bg">Цвет карточки (фон)</label>
-                    <input type="color" id="card_bg" name="card_bg" value="<?= htmlspecialchars(($data['card_bg'] ?? '') !== '' ? $data['card_bg'] : '#ffffff', ENT_QUOTES) ?>">
-                    <label style="margin-top:6px;display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" name="card_bg_off" value="1" <?= ($data['card_bg'] ?? '') === '' ? 'checked' : '' ?> style="width:auto;"> По умолчанию (белая)</label>
-                </div>
-                <div class="form-field">
-                    <label for="text_color">Цвет текста и цифр</label>
-                    <input type="color" id="text_color" name="text_color" value="<?= htmlspecialchars(($data['text_color'] ?? '') !== '' ? $data['text_color'] : '#173a63', ENT_QUOTES) ?>">
-                    <label style="margin-top:6px;display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" name="text_color_off" value="1" <?= ($data['text_color'] ?? '') === '' ? 'checked' : '' ?> style="width:auto;"> По умолчанию (тёмно-синий)</label>
-                </div>
+            <div class="colorfield-row">
+                <?= \App\Core\AdminUi::colorField('card_bg', $data['card_bg'] ?? '', 'Цвет карточки (фон)', '#ffffff', 'По умолчанию (белая)') ?>
+                <?= \App\Core\AdminUi::colorField('text_color', $data['text_color'] ?? '', 'Цвет текста и цифр', '#173a63', 'По умолчанию (тёмно-синий)') ?>
             </div>
             <span class="form-hint" style="display:block;margin:-6px 0 14px;">Оставьте «по умолчанию», чтобы карточка была белой с тёмным текстом. Для тёмной карточки выберите тёмный фон и светлый текст.</span>
             <div>
@@ -495,17 +487,9 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                     <option value="right" <?= $tp === 'right' ? 'selected' : '' ?>>Справа</option>
                 </select>
             </div>
-            <div class="form-field-row" style="display:flex;gap:16px;flex-wrap:wrap;">
-                <div class="form-field">
-                    <label for="text_color">Цвет текста</label>
-                    <input type="color" id="text_color" name="text_color" value="<?= htmlspecialchars(($data['text_color'] ?? '') !== '' ? $data['text_color'] : '#ffffff', ENT_QUOTES) ?>">
-                    <label style="margin-top:6px;display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" name="text_color_off" value="1" <?= ($data['text_color'] ?? '') === '' ? 'checked' : '' ?> style="width:auto;"> Авто (белый на фото, тёмный без фона)</label>
-                </div>
-                <div class="form-field">
-                    <label for="button_color">Цвет кнопок</label>
-                    <input type="color" id="button_color" name="button_color" value="<?= htmlspecialchars(($data['button_color'] ?? '') !== '' ? $data['button_color'] : '#173a63', ENT_QUOTES) ?>">
-                    <label style="margin-top:6px;display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" name="button_color_off" value="1" <?= ($data['button_color'] ?? '') === '' ? 'checked' : '' ?> style="width:auto;"> По умолчанию</label>
-                </div>
+            <div class="colorfield-row">
+                <?= \App\Core\AdminUi::colorField('text_color', $data['text_color'] ?? '', 'Цвет текста', '#ffffff', 'Авто (белый на фото, тёмный без фона)') ?>
+                <?= \App\Core\AdminUi::colorField('button_color', $data['button_color'] ?? '', 'Цвет кнопок', '#173a63', 'По умолчанию') ?>
             </div>
             <div class="form-field">
                 <label class="hb-switch"><input type="checkbox" name="panel_enabled" value="1" <?= !empty($data['panel_enabled']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Подложка под текстом</label>

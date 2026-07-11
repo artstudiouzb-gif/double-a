@@ -141,6 +141,29 @@ $heightSelect = function (string $name, string $current): string {
                     ]) ?>
                 </div>
             </div>
+
+            <?php $hdrLangs = \App\Models\Language::active(); ?>
+            <?php if (count($hdrLangs) > 1): ?>
+                <div class="hb-behavior" style="margin-top:14px;">
+                    <label class="form-label" style="font-weight:700;">Логотип для каждого языка (необязательно)</label>
+                    <span class="form-hint">Свой логотип на страницах конкретного языка. Пусто — берётся общий логотип из <a href="/admin/settings#logo">Настроек</a>. Поддерживается SVG/PNG. Светлый вариант — для прозрачной шапки.</span>
+                    <?php foreach ($hdrLangs as $hlang): $hc = htmlspecialchars((string) $hlang['code'], ENT_QUOTES); ?>
+                        <div class="hb-langlogo" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--admin-border);">
+                            <div class="hb-langlogo__name" style="font-weight:600; margin-bottom:8px;"><?= htmlspecialchars((string) $hlang['name'], ENT_QUOTES) ?> <span style="color:var(--admin-muted); font-weight:400;">(<?= $hc ?>)</span></div>
+                            <div class="hb-inline-fields">
+                                <?= \App\Core\AdminUi::imageField('logo_lang_' . $hc, (string) ($config['logo_by_lang'][$hlang['code']] ?? ''), [
+                                    'label' => 'Логотип',
+                                    'file' => 'logo_lang_' . $hc . '_file',
+                                ]) ?>
+                                <?= \App\Core\AdminUi::imageField('logo_light_lang_' . $hc, (string) ($config['logo_light_by_lang'][$hlang['code']] ?? ''), [
+                                    'label' => 'Светлый логотип (для прозрачной шапки)',
+                                    'file' => 'logo_light_lang_' . $hc . '_file',
+                                ]) ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="header-builder__group">

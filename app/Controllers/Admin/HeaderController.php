@@ -44,12 +44,38 @@ final class HeaderController
         };
 
         // Светлый логотип: URL из поля, загрузка файла или ранее сохранённое.
+        $current = HeaderConfig::get();
         $logoLight = ImageField::resolve(
             'logo_light_file',
             'logo_light',
-            (string) (HeaderConfig::get()['logo_light'] ?? ''),
+            (string) ($current['logo_light'] ?? ''),
             Auth::id()
         );
+
+        // Логотипы для каждого языка (основной + светлый), по активным языкам.
+        $logoByLang = [];
+        $logoLightByLang = [];
+        foreach (\App\Models\Language::active() as $lng) {
+            $code = (string) $lng['code'];
+            $main = ImageField::resolve(
+                'logo_lang_' . $code . '_file',
+                'logo_lang_' . $code,
+                (string) ($current['logo_by_lang'][$code] ?? ''),
+                Auth::id()
+            );
+            if (trim((string) $main) !== '') {
+                $logoByLang[$code] = trim((string) $main);
+            }
+            $light = ImageField::resolve(
+                'logo_light_lang_' . $code . '_file',
+                'logo_light_lang_' . $code,
+                (string) ($current['logo_light_by_lang'][$code] ?? ''),
+                Auth::id()
+            );
+            if (trim((string) $light) !== '') {
+                $logoLightByLang[$code] = trim((string) $light);
+            }
+        }
 
         HeaderConfig::save([
             'layout' => $_POST['layout'] ?? 'stacked',
@@ -58,6 +84,8 @@ final class HeaderController
             'sticky' => !empty($_POST['header_sticky']),
             'transparent' => !empty($_POST['header_transparent']),
             'logo_light' => $logoLight ?? '',
+            'logo_by_lang' => $logoByLang,
+            'logo_light_by_lang' => $logoLightByLang,
             'elements' => $parseZones('elements'),
             'elements_mobile' => $parseZones('elements_mobile'),
             'language_switcher' => [

@@ -14,7 +14,13 @@ use App\Models\Setting;
 /** @var string $ogType */
 
 $siteName = Setting::get('site_name', 'ArtStudio');
-$logo = Setting::get('logo_url', '');
+// Логотип: переопределение на текущий язык (Шапка → логотип для языка),
+// иначе общий логотип из Настроек.
+$hcfgAll = \App\Core\HeaderConfig::get();
+$logo = trim((string) ($hcfgAll['logo_by_lang'][\App\Core\Locale::current()] ?? ''));
+if ($logo === '') {
+    $logo = (string) Setting::get('logo_url', '');
+}
 // Гос-тема (по утверждённым эскизам): navy #173a63 + бирюзовый #17999b,
 // типографика PT Serif (заголовки) / PT Sans (текст) — см. gov-theme.css.
 $primaryColor = Setting::get('color_primary', '#173a63');
@@ -58,8 +64,12 @@ $currentLang = Locale::current();
 $logoHtml = '<a href="' . htmlspecialchars(Locale::url('/', $currentLang), ENT_QUOTES) . '" class="site-header__logo">';
 if ($logo !== '') {
     $logoHtml .= '<img class="site-header__logo-std" src="' . htmlspecialchars($logo, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
-    // Светлый вариант логотипа для прозрачной шапки (задаётся в конструкторе).
-    $logoLight = trim((string) (\App\Core\HeaderConfig::get()['logo_light'] ?? ''));
+    // Светлый вариант логотипа для прозрачной шапки (задаётся в конструкторе):
+    // сначала — для текущего языка, иначе — общий.
+    $logoLight = trim((string) ($hcfgAll['logo_light_by_lang'][$currentLang] ?? ''));
+    if ($logoLight === '') {
+        $logoLight = trim((string) ($hcfgAll['logo_light'] ?? ''));
+    }
     if ($logoLight !== '') {
         $logoHtml .= '<img class="site-header__logo-light" src="' . htmlspecialchars($logoLight, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
     }
