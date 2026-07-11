@@ -97,7 +97,7 @@ final class WordPressImporter
                             continue;
                         }
                         $tm = self::mapPost($tPost);
-                        $tContent = self::rewriteImages($tm['content'], self::transferAll($tm['content'], $base, $authorId, $out));
+                        $tContent = self::stripResponsiveAttrs(self::rewriteImages($tm['content'], self::transferAll($tm['content'], $base, $authorId, $out)));
                         NewsTranslation::upsert($newsId, (string) $artCode, [
                             'title' => $tm['title'],
                             'excerpt' => $tm['excerpt'],
@@ -129,7 +129,7 @@ final class WordPressImporter
     private static function createFromPost(array $mapped, string $status, ?int $authorId, string $base, array &$out): int
     {
         $map = self::transferAll($mapped['content'], $base, $authorId, $out);
-        $content = self::rewriteImages($mapped['content'], $map);
+        $content = self::stripResponsiveAttrs(self::rewriteImages($mapped['content'], $map));
         $galleryPaths = array_values($map);
 
         $cover = '';
@@ -178,14 +178,16 @@ final class WordPressImporter
     {
         $map = [];
         foreach (self::extractImageUrls($html) as $src) {
-            $abs = self::absoluteUrl($src, $base);
-            if (!str_starts_with($abs, $base)) {
+            // Нормализуем (снимаем Photon-CDN и query) — так внутренние картинки,
+            // завёрнутые в i0.wp.com, распознаются как «свои» и тянутся в оригинале.
+            $abs = self::normalizeImageUrl(self::absoluteUrl($src, $base));
+            if ($base !== '' && !str_starts_with($abs, $base)) {
                 continue; // внешние картинки не тянем
             }
             $cached = isset(self::$imageCache[$abs]);
             $newUrl = self::transferImage($abs, $authorId);
             if ($newUrl !== null) {
-                $map[$src] = $newUrl;
+                $map[$src] = $newUrl; // ключ — исходный src из HTML (для точной замены)
                 if (!$cached) {
                     $out['images']++;
                 }
@@ -275,6 +277,34 @@ final class WordPressImporter
         return strtr($html, $map);
     }
 
+    /**
+     * Нормализует URL картинки к оригиналу на исходном домене:
+     * — снимает обёртку Jetpack Photon (i0-3.wp.com/<домен>/…);
+     * — отбрасывает query (?resize=…&ssl=1&w=…), возвращая полноразмерный файл.
+     */
+    public static function normalizeImageUrl(string $url): string
+    {
+        $url = (string) preg_replace('#^(https?:)?//i[0-9]\.wp\.com/#i', 'https://', $url);
+        $url = (string) preg_replace('/\?.*$/', '', $url);
+
+        return $url;
+    }
+
+    /**
+     * Убирает адаптивные атрибуты srcset/sizes (после переноса они указывают на
+     * старый CDN и после отключения исходного сайта «протухнут»). Браузер
+     * откатится на переписанный src.
+     */
+    public static function stripResponsiveAttrs(string $html): string
+    {
+        $html = (string) preg_replace('/\s+srcset\s*=\s*"[^"]*"/i', '', $html);
+        $html = (string) preg_replace("/\s+srcset\s*=\s*'[^']*'/i", '', $html);
+        $html = (string) preg_replace('/\s+sizes\s*=\s*"[^"]*"/i', '', $html);
+        $html = (string) preg_replace("/\s+sizes\s*=\s*'[^']*'/i", '', $html);
+
+        return $html;
+    }
+
     /** Абсолютизирует ссылку картинки (protocol-relative / относительная). */
     public static function absoluteUrl(string $src, string $base): string
     {
@@ -298,6 +328,16 @@ final class WordPressImporter
      */
     private static function transferImage(string $url, ?int $uploadedBy): ?string
     {
+        return self::importImage($url, $uploadedBy);
+    }
+
+    /**
+     * Переносит картинку в медиабиблиотеку: сначала из локальной папки
+     * wp-content/uploads (если задана $uploadsDir), иначе скачивает по URL.
+     * Возвращает публичный URL или null. Кэшируется по исходному URL.
+     */
+    public static function importImage(string $url, ?int $uploadedBy, ?string $uploadsDir = null): ?string
+    {
         if (isset(self::$imageCache[$url])) {
             return self::$imageCache[$url];
         }
@@ -306,8 +346,17 @@ final class WordPressImporter
             if ($tmp === false) {
                 return null;
             }
-            $ok = self::download($url, $tmp);
-            if (!$ok) {
+            $got = false;
+            if ($uploadsDir !== null) {
+                $local = self::resolveLocal($url, $uploadsDir);
+                if ($local !== null && is_file($local)) {
+                    $got = @copy($local, $tmp); // копия: оригинал в папке не трогаем
+                }
+            }
+            if (!$got) {
+                $got = self::download($url, $tmp);
+            }
+            if (!$got) {
                 @unlink($tmp);
                 return null;
             }
@@ -359,6 +408,23 @@ final class WordPressImporter
         fclose($fh);
 
         return $ok !== false && $status >= 200 && $status < 300 && filesize($dest) > 0;
+    }
+
+    /** Сопоставляет URL картинки локальному файлу в папке wp-content/uploads. */
+    private static function resolveLocal(string $url, string $uploadsDir): ?string
+    {
+        $path = (string) parse_url($url, PHP_URL_PATH);
+        if ($path === '') {
+            return null;
+        }
+        if (preg_match('#/uploads/(.+)$#', $path, $m)) {
+            $rel = $m[1];
+        } else {
+            $rel = ltrim($path, '/');
+        }
+        $rel = str_replace('..', '', rawurldecode($rel));
+
+        return rtrim($uploadsDir, '/') . '/' . ltrim($rel, '/');
     }
 
     private static function extFromMime(string $mime): ?string

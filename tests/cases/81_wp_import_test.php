@@ -38,6 +38,20 @@ test('extractImageUrls находит все картинки, rewriteImages з�
     assert_true(!str_contains($rewritten, 'https://o/b.png'), 'вторая заменена');
 });
 
+test('normalizeImageUrl снимает Jetpack Photon и query, возвращая оригинал', function () {
+    $src = 'https://i0.wp.com/asdr.gov.uz/wp-content/uploads/2026/07/2.jpg?resize=351%2C234&#038;ssl=1';
+    assert_same('https://asdr.gov.uz/wp-content/uploads/2026/07/2.jpg', WordPressImporter::normalizeImageUrl($src), 'Photon-обёртка и query сняты');
+    $clean = 'https://asdr.gov.uz/wp-content/uploads/2026/07/1-scaled.jpg';
+    assert_same($clean, WordPressImporter::normalizeImageUrl($clean), 'чистый URL не изменяется');
+});
+
+test('stripResponsiveAttrs убирает srcset/sizes', function () {
+    $html = '<img src="/a.jpg" srcset="a 300w, b 1024w" sizes="(max-width: 351px) 100vw, 351px">';
+    $out = WordPressImporter::stripResponsiveAttrs($html);
+    assert_true(!str_contains($out, 'srcset') && !str_contains($out, 'sizes'), 'srcset и sizes удалены');
+    assert_true(str_contains($out, 'src="/a.jpg"'), 'основной src сохранён');
+});
+
 test('absoluteUrl абсолютизирует относительные и protocol-relative ссылки', function () {
     $base = 'https://old.example';
     assert_same('https://old.example/x/y.jpg', WordPressImporter::absoluteUrl('/x/y.jpg', $base), 'относительная от корня');

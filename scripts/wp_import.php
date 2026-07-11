@@ -28,8 +28,8 @@ use App\Core\Database;
 use App\Core\WordPressImporter;
 
 $args = array_slice($argv, 1);
-$base = '';
-$opts = ['status' => 'draft', 'limit' => 0, 'dryRun' => false, 'authorId' => null, 'langs' => []];
+$source = '';   // URL сайта ИЛИ путь к файлу экспорта .xml
+$opts = ['status' => 'draft', 'limit' => 0, 'dryRun' => false, 'authorId' => null, 'langs' => [], 'uploadsDir' => null];
 
 for ($i = 0; $i < count($args); $i++) {
     $a = $args[$i];
@@ -44,15 +44,19 @@ for ($i = 0; $i < count($args); $i++) {
         if ($wp !== '' && $art !== '') {
             $opts['langs'][$wp] = $art;
         }
+    } elseif ($a === '--uploads' && isset($args[$i + 1])) {
+        $opts['uploadsDir'] = $args[++$i];
     } elseif ($a === '--dry-run') {
         $opts['dryRun'] = true;
-    } elseif (str_starts_with($a, 'http')) {
-        $base = rtrim($a, '/');
+    } elseif (str_starts_with($a, 'http') || is_file($a) || str_ends_with(strtolower($a), '.xml')) {
+        $source = $a;
     }
 }
 
-if ($base === '') {
-    fwrite(STDERR, "Укажите адрес старого сайта, напр.:\n  php scripts/wp_import.php https://asdr.gov.uz --limit 20\n");
+if ($source === '') {
+    fwrite(STDERR, "Укажите адрес сайта ИЛИ файл экспорта .xml, напр.:\n"
+        . "  php scripts/wp_import.php https://asdr.gov.uz --lang uz:uz --lang ru:ru --limit 20\n"
+        . "  php scripts/wp_import.php export.xml --lang uz:uz --lang ru:ru --uploads /path/wp-content/uploads\n");
     exit(2);
 }
 
@@ -67,8 +71,12 @@ if ($opts['authorId'] === null) {
     }
 }
 
-echo "Импорт из {$base} (статус: {$opts['status']}" . ($opts['dryRun'] ? ', dry-run' : '') . ")…\n";
-$r = WordPressImporter::importAll($base, $opts);
+$isFile = !str_starts_with($source, 'http');
+echo 'Импорт из ' . ($isFile ? "файла {$source}" : rtrim($source, '/'))
+    . " (статус: {$opts['status']}" . ($opts['dryRun'] ? ', dry-run' : '') . ")…\n";
+$r = $isFile
+    ? \App\Core\WordPressWxrImporter::importFile($source, $opts)
+    : WordPressImporter::importAll(rtrim($source, '/'), $opts);
 
 echo "\n────────────────────────────────────────\n";
 echo "Импортировано новостей: {$r['imported']}\n";
