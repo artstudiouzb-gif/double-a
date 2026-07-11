@@ -14,6 +14,9 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
+// Глобальные помощники шаблонов (t() — перевод интерфейса).
+require __DIR__ . '/helpers.php';
+
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\ErrorHandler;

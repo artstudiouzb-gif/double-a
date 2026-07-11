@@ -47,23 +47,23 @@ $qs = static function (array $overrides) use ($q, $sort): string {
     <form class="catlist-toolbar" method="get" action="<?= htmlspecialchars($baseUrl, ENT_QUOTES) ?>" role="search">
         <div class="catlist-toolbar__search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="search" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES) ?>" placeholder="Поиск в разделе" aria-label="Поиск в разделе">
+            <input type="search" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES) ?>" placeholder="<?= htmlspecialchars(t('Поиск в разделе'), ENT_QUOTES) ?>" aria-label="<?= htmlspecialchars(t('Поиск в разделе'), ENT_QUOTES) ?>">
         </div>
         <select class="catlist-toolbar__sort" name="sort" data-auto-submit aria-label="Сортировка">
             <option value="new" <?= $sort === 'new' ? 'selected' : '' ?>>Сначала новые</option>
             <option value="old" <?= $sort === 'old' ? 'selected' : '' ?>>Сначала старые</option>
-            <option value="title" <?= $sort === 'title' ? 'selected' : '' ?>>По алфавиту</option>
+            <option value="title" <?= $sort === 'title' ? 'selected' : '' ?>><?= htmlspecialchars(t('По алфавиту'), ENT_QUOTES) ?></option>
         </select>
-        <button class="catlist-toolbar__btn" type="submit">Найти</button>
-        <?php if ($q !== ''): ?><a class="catlist-toolbar__reset" href="<?= htmlspecialchars($baseUrl, ENT_QUOTES) ?>">Сбросить ↺</a><?php endif; ?>
+        <button class="catlist-toolbar__btn" type="submit"><?= htmlspecialchars(t('Найти'), ENT_QUOTES) ?></button>
+        <?php if ($q !== ''): ?><a class="catlist-toolbar__reset" href="<?= htmlspecialchars($baseUrl, ENT_QUOTES) ?>"><?= htmlspecialchars(t('Сбросить'), ENT_QUOTES) ?> ↺</a><?php endif; ?>
     </form>
 
     <?php if (empty($entries)): ?>
         <p class="listing__empty">
-            <?= $q !== '' ? 'По вашему запросу ничего не найдено.' : 'В этом разделе пока нет опубликованных записей.' ?>
+            <?= $q !== '' ? t('По вашему запросу ничего не найдено.') : t('В этом разделе пока нет опубликованных записей.') ?>
         </p>
     <?php else: ?>
-        <p class="catlist-count">Найдено: <b><?= (int) $total ?></b></p>
+        <p class="catlist-count"><?= htmlspecialchars(t('Найдено:'), ENT_QUOTES) ?> <b><?= (int) $total ?></b></p>
         <div class="catlist<?= $isEvents ? ' catlist--events' : '' ?>">
             <?php foreach ($entries as $entry): ?>
                 <?php $url = Locale::url('catalog/' . $type['slug'] . '/' . $entry['slug']); ?>
@@ -111,7 +111,7 @@ $qs = static function (array $overrides) use ($q, $sort): string {
                                     <?php break; ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
-                            <a class="catcard__more" href="<?= htmlspecialchars($url, ENT_QUOTES) ?>">Подробнее →</a>
+                            <a class="catcard__more" href="<?= htmlspecialchars($url, ENT_QUOTES) ?>"><?= htmlspecialchars(t('Подробнее'), ENT_QUOTES) ?> →</a>
                         </div>
                     </div>
                 </article>

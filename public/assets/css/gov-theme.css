@@ -176,6 +176,13 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
     background-size: cover; background-position: center;
 }
+/* Фоновое видео — полностью незаметное: не кликается и без нативных контролов. */
+.block-hero__video { pointer-events: none; }
+.block-hero__video::-webkit-media-controls,
+.block-hero__video::-webkit-media-controls-enclosure,
+.block-hero__video::-webkit-media-controls-panel,
+.block-hero__video::-webkit-media-controls-start-playback-button,
+.block-hero__video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; opacity: 0; }
 .block-hero__scrim {
     position: absolute; inset: 0;
     background: linear-gradient(90deg, rgba(11,26,48,.92) 0%, rgba(11,26,48,.7) 38%, rgba(11,26,48,.25) 70%, rgba(11,26,48,.15) 100%);
@@ -822,10 +829,12 @@ body .site-header--transparent:not(.is-scrolled) .a11y-toggle,
 body .site-header--transparent:not(.is-scrolled) .site-theme-toggle,
 body .site-header--transparent:not(.is-scrolled) .site-search-toggle,
 body .site-header--transparent:not(.is-scrolled) .hdr-contact { color: #fff; }
-/* Отдельный (светлый) логотип для прозрачного режима. */
+/* Отдельный (светлый) логотип для прозрачного режима.
+   Стандартный логотип прячем ТОЛЬКО когда реально задан светлый вариант —
+   иначе (например, загружен один SVG-логотип) он остаётся видимым. */
 .site-header__logo-light { display: none; }
 body .site-header--transparent:not(.is-scrolled) .site-header__logo-light { display: block; }
-body .site-header--transparent:not(.is-scrolled) .site-header__logo img.site-header__logo-std { display: none; }
+body .site-header--transparent:not(.is-scrolled) .site-header__logo:has(.site-header__logo-light) img.site-header__logo-std { display: none; }
 .site-header--transparent:not(.is-scrolled) .site-header__logo:not(:has(img))::before { background: #fff; }
 .site-header--transparent:not(.is-scrolled) .site-menu__link:hover,
 .site-header--transparent:not(.is-scrolled) .site-menu__link:focus-visible { color: #9fe3e4; }

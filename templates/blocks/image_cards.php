@@ -13,7 +13,7 @@ $items = $data['items'] ?? [];
             <?php if ($allText !== '' && $allUrl !== ''): ?><a class="section-head__all" href="<?= htmlspecialchars($allUrl, ENT_QUOTES) ?>"><?= htmlspecialchars($allText, ENT_QUOTES) ?> →</a><?php endif; ?>
             <?php if ($carousel): ?>
                 <span class="carousel-nav">
-                    <button type="button" class="carousel-nav__btn" data-carousel-prev aria-label="Назад">‹</button>
+                    <button type="button" class="carousel-nav__btn" data-carousel-prev aria-label="<?= htmlspecialchars(t('Назад'), ENT_QUOTES) ?>">‹</button>
                     <button type="button" class="carousel-nav__btn" data-carousel-next aria-label="Вперёд">›</button>
                 </span>
             <?php endif; ?>
@@ -34,7 +34,7 @@ $items = $data['items'] ?? [];
                     <span class="imgcard__overlay"></span>
                     <span class="imgcard__body">
                         <span class="imgcard__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
-                        <?php if ($url !== ''): ?><span class="imgcard__more">Подробнее →</span><?php endif; ?>
+                        <?php if ($url !== ''): ?><span class="imgcard__more"><?= htmlspecialchars(t('Подробнее'), ENT_QUOTES) ?> →</span><?php endif; ?>
                     </span>
                 </<?= $tag ?>>
             <?php endforeach; ?>

@@ -72,7 +72,7 @@ $form = $data['form'] ?? null;
                     </label>
                 </div>
             <?php endif; ?>
-            <button type="submit" class="block-form__submit">Отправить</button>
+            <button type="submit" class="block-form__submit"><?= htmlspecialchars(t('Отправить'), ENT_QUOTES) ?></button>
         </form>
     <?php endif; ?>
 </div>

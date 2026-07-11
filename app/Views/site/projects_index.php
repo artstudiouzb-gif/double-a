@@ -8,18 +8,18 @@ $metaDescription = 'Проекты и инициативы Агентства.';
 require __DIR__ . '/_header.php';
 
 $crumbs = [
-    ['label' => 'Главная', 'url' => Locale::url('/')],
-    ['label' => 'Проекты'],
+    ['label' => t('Главная'), 'url' => Locale::url('/')],
+    ['label' => t('Проекты')],
 ];
 require __DIR__ . '/_crumbs.php';
 ?>
 <div class="listing">
     <div class="listing__head">
-        <h1 class="listing__title">Проекты и инициативы</h1>
-        <p class="listing__lead">Стратегические проекты, которые Агентство реализует для устойчивого развития страны.</p>
+        <h1 class="listing__title"><?= htmlspecialchars(t('Проекты и инициативы'), ENT_QUOTES) ?></h1>
+        <p class="listing__lead"><?= htmlspecialchars(t('Стратегические проекты, которые Агентство реализует для устойчивого развития страны.'), ENT_QUOTES) ?></p>
     </div>
     <?php if (empty($items)): ?>
-        <p class="listing__empty">Проекты ещё не опубликованы.</p>
+        <p class="listing__empty"><?= htmlspecialchars(t('Проекты ещё не опубликованы.'), ENT_QUOTES) ?></p>
     <?php else: ?>
         <div class="projects-grid">
             <?php foreach ($items as $item): ?>
@@ -32,7 +32,7 @@ require __DIR__ . '/_crumbs.php';
                         <?php if (!empty($item['description'])): ?>
                             <span class="imgcard__desc"><?= htmlspecialchars(mb_substr(strip_tags((string) $item['description']), 0, 120), ENT_QUOTES) ?></span>
                         <?php endif; ?>
-                        <span class="imgcard__more">Подробнее →</span>
+                        <span class="imgcard__more"><?= htmlspecialchars(t('Подробнее'), ENT_QUOTES) ?> →</span>
                     </span>
                 </a>
             <?php endforeach; ?>

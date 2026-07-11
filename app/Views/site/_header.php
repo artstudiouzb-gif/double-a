@@ -194,7 +194,7 @@ $a11yToggle = '<button type="button" class="a11y-toggle" aria-label="Верси�
 $searchAction = htmlspecialchars(Locale::url('search', $currentLang), ENT_QUOTES);
 $searchIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>';
 $searchHtml = '<form class="site-search" method="get" action="' . $searchAction . '" role="search">'
-    . '<input type="search" name="q" placeholder="Поиск" aria-label="Поиск по сайту">'
+    . '<input type="search" name="q" placeholder="' . htmlspecialchars(t('Поиск'), ENT_QUOTES) . '" aria-label="' . htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) . '">'
     . '<button type="submit" aria-label="Найти">' . $searchIcon . '</button></form>'
     . '<button type="button" class="site-search-toggle" aria-label="Открыть поиск" aria-expanded="false" data-search-toggle>' . $searchIcon . '</button>';
 
@@ -493,7 +493,7 @@ if ($inlineMenu !== '') {
 <?php endif; ?>
 <div class="site-search-overlay" data-search-overlay hidden>
     <form class="site-search-overlay__form" method="get" action="<?= $searchAction ?>" role="search">
-        <input type="search" name="q" placeholder="Введите запрос…" aria-label="Поиск по сайту" data-search-input>
+        <input type="search" name="q" placeholder="<?= htmlspecialchars(t('Введите запрос…'), ENT_QUOTES) ?>" aria-label="<?= htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) ?>" data-search-input>
         <button type="submit" class="site-search-overlay__submit">Найти</button>
         <button type="button" class="site-search-overlay__close" aria-label="Закрыть поиск" data-search-close>&times;</button>
     </form>

@@ -9,7 +9,7 @@ $lang = \App\Core\Locale::current();
     <?php if ($title !== ''): ?>
         <div class="block-news__head">
             <h2 class="block-news__title"><?= htmlspecialchars($title, ENT_QUOTES) ?></h2>
-            <a class="block-news__all" href="<?= htmlspecialchars($allUrl, ENT_QUOTES) ?>">Все новости →</a>
+            <a class="block-news__all" href="<?= htmlspecialchars($allUrl, ENT_QUOTES) ?>"><?= htmlspecialchars(t('Все новости'), ENT_QUOTES) ?> →</a>
         </div>
     <?php endif; ?>
     <?php if (empty($news)): ?>

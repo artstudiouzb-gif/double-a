@@ -25,6 +25,8 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
+require APP_ROOT . '/app/Core/helpers.php';
+
 \App\Core\Config::set([
     'app' => ['env' => 'testing', 'debug' => true, 'url' => 'http://localhost', 'timezone' => 'UTC'],
     'paths' => [

@@ -112,7 +112,7 @@ if ($isPremium) {
 
 $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, $pageUrl): void { ?>
             <div class="newsdetail-share<?= $extraClass ?>">
-                <h2 class="newsdetail-share__title">Поделиться</h2>
+                <h2 class="newsdetail-share__title"><?= htmlspecialchars(t('Поделиться'), ENT_QUOTES) ?></h2>
                 <div class="newsdetail-share__row">
                     <a class="newsdetail-share__btn" href="https://t.me/share/url?url=<?= $shareUrl ?>&text=<?= $shareTitle ?>" target="_blank" rel="noopener" aria-label="Поделиться в Telegram"><svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M21.9 4.6 19 19.3c-.2 1-.8 1.2-1.6.8l-4.5-3.3-2.2 2.1c-.2.2-.4.4-.9.4l.3-4.6 8.4-7.6c.4-.3-.1-.5-.6-.2L7.6 13.4l-4.5-1.4c-1-.3-1-1 .2-1.4l17.3-6.7c.8-.3 1.5.2 1.3 1.3z"/></svg></a>
                     <a class="newsdetail-share__btn" href="https://www.facebook.com/sharer/sharer.php?u=<?= $shareUrl ?>" target="_blank" rel="noopener" aria-label="Поделиться в Facebook"><svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
@@ -150,7 +150,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             <?php if ($videoUrl !== ''): ?>
                 <a class="newsdetail-phero__video" href="<?= htmlspecialchars($videoUrl, ENT_QUOTES) ?>" target="_blank" rel="noopener">
                     <span class="newsdetail-phero__play"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5.5v13l11-6.5z"/></svg></span>
-                    Смотреть видео
+                    <?= htmlspecialchars(t('Смотреть видео'), ENT_QUOTES) ?>
                 </a>
             <?php endif; ?>
         </div>
@@ -182,12 +182,12 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
                     <?php if ($videoUrl !== ''): ?>
                         <a class="newsdetail__btn newsdetail__btn--primary" href="<?= htmlspecialchars($videoUrl, ENT_QUOTES) ?>" target="_blank" rel="noopener">
                             <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5.5v13l11-6.5z"/></svg>
-                            Смотреть видео
+                            <?= htmlspecialchars(t('Смотреть видео'), ENT_QUOTES) ?>
                         </a>
                     <?php endif; ?>
                     <?php if ($pressUrl !== ''): ?>
                         <a class="newsdetail__btn newsdetail__btn--ghost" href="<?= htmlspecialchars($pressUrl, ENT_QUOTES) ?>" download>
-                            Скачать пресс-релиз <?= $dlIcon ?>
+                            <?= htmlspecialchars(t('Скачать пресс-релиз'), ENT_QUOTES) ?> <?= $dlIcon ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -203,7 +203,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             <div class="newsdetail-media">
                 <div class="news-video newsdetail-video skeleton" data-youtube="<?= htmlspecialchars($videoId, ENT_QUOTES) ?>" data-embed="<?= htmlspecialchars($embed, ENT_QUOTES) ?>">
                     <img class="news-video__thumb" src="<?= htmlspecialchars($cover !== '' ? $cover : $thumb, ENT_QUOTES) ?>" data-fallback="<?= htmlspecialchars($fallback, ENT_QUOTES) ?>" alt="<?= htmlspecialchars((string) $news['title'], ENT_QUOTES) ?>" loading="eager" decoding="async">
-                    <button type="button" class="news-video__play" aria-label="Смотреть видео"></button>
+                    <button type="button" class="news-video__play" aria-label="<?= htmlspecialchars(t('Смотреть видео'), ENT_QUOTES) ?>"></button>
                 </div>
             </div>
         <?php elseif (!empty($heroSlides)): ?>
@@ -234,7 +234,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
         <?php if ($hasLeft): ?>
         <aside class="newsdetail-side">
             <div class="newsdetail-card">
-                <h2 class="newsdetail-card__title">Ключевые тезисы</h2>
+                <h2 class="newsdetail-card__title"><?= htmlspecialchars(t('Ключевые тезисы'), ENT_QUOTES) ?></h2>
                 <ul class="newsdetail-points">
                     <?php foreach ($keyPoints as $point): ?>
                         <li class="newsdetail-points__item"><span class="newsdetail-points__icon"><?= $pointIcon ?></span><?= htmlspecialchars($point, ENT_QUOTES) ?></li>
@@ -255,18 +255,18 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
         <aside class="newsdetail-side newsdetail-side--right">
             <?php if ($isPremium && !empty($slides)): ?>
                 <div class="newsdetail-card">
-                    <h2 class="newsdetail-card__title">Галерея</h2>
+                    <h2 class="newsdetail-card__title"><?= htmlspecialchars(t('Галерея'), ENT_QUOTES) ?></h2>
                     <div class="newsdetail-sidegallery">
                         <?php foreach (array_slice($slides, 0, 4) as $i => $s): ?>
                             <a class="newsdetail-sidegallery__item<?= $i === 0 ? ' newsdetail-sidegallery__item--wide' : '' ?>" href="<?= htmlspecialchars($s['path'], ENT_QUOTES) ?>" target="_blank" rel="noopener" style="background-image:url('<?= htmlspecialchars($s['path'], ENT_QUOTES) ?>')" aria-label="<?= htmlspecialchars($s['alt'] !== '' ? $s['alt'] : 'Фото', ENT_QUOTES) ?>"></a>
                         <?php endforeach; ?>
                     </div>
-                    <a class="newsdetail__btn newsdetail__btn--ghost newsdetail-sidegallery__all" href="<?= htmlspecialchars(Locale::url('news/' . $news['slug'] . '/photos.zip', $lang), ENT_QUOTES) ?>">Скачать все фото <?= $dlIcon ?></a>
+                    <a class="newsdetail__btn newsdetail__btn--ghost newsdetail-sidegallery__all" href="<?= htmlspecialchars(Locale::url('news/' . $news['slug'] . '/photos.zip', $lang), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Скачать все фото'), ENT_QUOTES) ?> <?= $dlIcon ?></a>
                 </div>
             <?php endif; ?>
             <?php if (!empty($eventMeta)): ?>
                 <div class="newsdetail-card">
-                    <h2 class="newsdetail-card__title">О мероприятии</h2>
+                    <h2 class="newsdetail-card__title"><?= htmlspecialchars(t('О мероприятии'), ENT_QUOTES) ?></h2>
                     <ul class="newsdetail-event">
                         <?php foreach ($eventMeta as $i => $line): ?>
                             <li class="newsdetail-event__item"><span class="newsdetail-event__icon"><?= $eventIcons[$i % count($eventIcons)] ?></span><?= htmlspecialchars($line, ENT_QUOTES) ?></li>
@@ -276,7 +276,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             <?php endif; ?>
             <?php if (!empty($docs)): ?>
                 <div class="newsdetail-card">
-                    <h2 class="newsdetail-card__title">Документы</h2>
+                    <h2 class="newsdetail-card__title"><?= htmlspecialchars(t('Документы'), ENT_QUOTES) ?></h2>
                     <div class="newsdetail-docs">
                         <?php foreach ($docs as $doc): ?>
                             <?php $du = trim((string) ($doc['url'] ?? '')); ?>
@@ -293,8 +293,8 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
                 </div>
             <?php endif; ?>
             <div class="newsdetail-subscribe">
-                <h2 class="newsdetail-subscribe__title">Подпишитесь на новости Агентства</h2>
-                <p class="newsdetail-subscribe__text">Получайте самые важные новости и аналитические материалы на почту.</p>
+                <h2 class="newsdetail-subscribe__title"><?= htmlspecialchars(t('Подпишитесь на новости Агентства'), ENT_QUOTES) ?></h2>
+                <p class="newsdetail-subscribe__text"><?= htmlspecialchars(t('Получайте самые важные новости и аналитические материалы на почту.'), ENT_QUOTES) ?></p>
                 <form class="newsdetail-subscribe__form" method="post" action="<?= htmlspecialchars(Locale::url('subscribe'), ENT_QUOTES) ?>">
                     <?= \App\Core\Csrf::field() ?>
                     <input type="text" name="website" value="" style="position:absolute;left:-9999px" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -322,7 +322,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
     <?php if ($showPhotoStrip): ?>
         <section class="newsdetail-photos">
             <div class="section-head">
-                <h2 class="section-head__title">Фотогалерея</h2>
+                <h2 class="section-head__title"><?= htmlspecialchars(t('Фотогалерея'), ENT_QUOTES) ?></h2>
                 <a class="newsdetail__btn newsdetail__btn--ghost" href="<?= htmlspecialchars(Locale::url('news/' . $news['slug'] . '/photos.zip', $lang), ENT_QUOTES) ?>">Скачать все фото <?= $dlIcon ?></a>
             </div>
             <div class="newsdetail-photos__grid">
@@ -337,7 +337,7 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
         <section class="newsdetail-related">
             <div class="section-head">
                 <h2 class="section-head__title">Другие новости по теме</h2>
-                <a class="section-head__all" href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>">Все новости →</a>
+                <a class="section-head__all" href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Все новости'), ENT_QUOTES) ?> →</a>
             </div>
             <div class="newsdetail-related__grid">
                 <?php foreach ($related as $item): ?>

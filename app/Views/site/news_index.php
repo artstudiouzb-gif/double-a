@@ -21,8 +21,8 @@ AssetCollector::requireJs('news');
 require __DIR__ . '/_header.php';
 
 $crumbs = [
-    ['label' => 'Главная', 'url' => Locale::url('/')],
-    ['label' => 'Новости'],
+    ['label' => t('Главная'), 'url' => Locale::url('/')],
+    ['label' => t('Новости')],
 ];
 require __DIR__ . '/_crumbs.php';
 
@@ -36,13 +36,13 @@ $pageUrl = static fn (int $p): string => Locale::url('news')
 ?>
 <div class="listing">
     <div class="listing__head">
-        <h1 class="listing__title">Новости и аналитика</h1>
-        <p class="listing__lead">Официальные сообщения, события и аналитические материалы Агентства.</p>
+        <h1 class="listing__title"><?= htmlspecialchars(t('Новости и аналитика'), ENT_QUOTES) ?></h1>
+        <p class="listing__lead"><?= htmlspecialchars(t('Официальные сообщения, события и аналитические материалы Агентства.'), ENT_QUOTES) ?></p>
     </div>
 
     <?php if ($badges !== []): ?>
-        <nav class="listing-filter" aria-label="Рубрики">
-            <a class="listing-filter__item<?= $badge === '' ? ' is-active' : '' ?>" href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>">Все материалы</a>
+        <nav class="listing-filter" aria-label="<?= htmlspecialchars(t('Рубрики'), ENT_QUOTES) ?>">
+            <a class="listing-filter__item<?= $badge === '' ? ' is-active' : '' ?>" href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Все материалы'), ENT_QUOTES) ?></a>
             <?php foreach ($badges as $b): ?>
                 <a class="listing-filter__item<?= $b === $badge ? ' is-active' : '' ?>" href="<?= htmlspecialchars(Locale::url('news') . '?badge=' . rawurlencode($b), ENT_QUOTES) ?>"><?= htmlspecialchars($b, ENT_QUOTES) ?></a>
             <?php endforeach; ?>
@@ -50,7 +50,7 @@ $pageUrl = static fn (int $p): string => Locale::url('news')
     <?php endif; ?>
 
     <?php if (empty($items)): ?>
-        <p class="listing__empty">Пока нет опубликованных новостей.</p>
+        <p class="listing__empty"><?= htmlspecialchars(t('Пока нет опубликованных новостей.'), ENT_QUOTES) ?></p>
     <?php else: ?>
         <?php if ($featured !== null): ?>
             <?php $fc = News::getCoverImage($featured); ?>
@@ -61,7 +61,7 @@ $pageUrl = static fn (int $p): string => Locale::url('news')
                     <?php if (!empty($featured['published_at'])): ?><time class="newslist__date"><?= htmlspecialchars($fmt((string) $featured['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                     <span class="newslist-lead__title"><?= htmlspecialchars((string) $featured['title'], ENT_QUOTES) ?></span>
                     <?php if (!empty($featured['excerpt'])): ?><span class="newslist-lead__excerpt"><?= htmlspecialchars(mb_substr(strip_tags((string) $featured['excerpt']), 0, 200), ENT_QUOTES) ?></span><?php endif; ?>
-                    <span class="newsfeat__more">Читать далее →</span>
+                    <span class="newsfeat__more"><?= htmlspecialchars(t('Читать далее'), ENT_QUOTES) ?> →</span>
                 </span>
             </a>
         <?php endif; ?>
@@ -80,7 +80,7 @@ $pageUrl = static fn (int $p): string => Locale::url('news')
         </div>
 
         <?php if ($pages > 1): ?>
-            <nav class="listing-pager" aria-label="Страницы">
+            <nav class="listing-pager" aria-label="<?= htmlspecialchars(t('Страницы'), ENT_QUOTES) ?>">
                 <?php for ($i = 1; $i <= $pages; $i++): ?>
                     <?php if ($i === $page): ?>
                         <span class="listing-pager__item is-active" aria-current="page"><?= $i ?></span>

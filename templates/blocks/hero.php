@@ -66,7 +66,9 @@ $heroHeight = ($data['height'] ?? 'regular') === 'full' ? 'full' : 'regular';
 ?>
 <div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= $heroBg !== '' ? ' block-hero--bgcolor' : '' ?><?= ($bgType === 'video' || $bgType === 'youtube') ? ' block-hero--video' : '' ?> block-hero--w-<?= $heroWidth ?> block-hero--h-<?= $heroHeight ?> block-hero--pos-<?= $textPos ?>"<?= $heroRootStyle !== '' ? ' style="' . $heroRootStyle . '"' : '' ?>>
     <?php if ($bgType === 'video' && $videoFile !== ''): ?>
-        <video class="block-hero__video" autoplay muted loop playsinline <?= $image !== '' ? 'poster="' . htmlspecialchars($image, ENT_QUOTES) . '"' : '' ?> aria-hidden="true">
+        <video class="block-hero__video" autoplay muted loop playsinline preload="auto"
+               disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback noplaybackrate"
+               tabindex="-1" <?= $image !== '' ? 'poster="' . htmlspecialchars($image, ENT_QUOTES) . '"' : '' ?> aria-hidden="true">
             <source src="<?= htmlspecialchars($videoFile, ENT_QUOTES) ?>" type="video/mp4">
         </video>
     <?php elseif ($bgType === 'youtube' && $youtubeId !== null): ?>

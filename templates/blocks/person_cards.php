@@ -33,7 +33,7 @@ $items = $data['items'] ?? [];
                     <span class="person-card__body">
                         <?php if ($name !== ''): ?><span class="person-card__name"><?= htmlspecialchars($name, ENT_QUOTES) ?></span><?php endif; ?>
                         <?php if (!empty($item['role'])): ?><span class="person-card__role"><?= htmlspecialchars((string) $item['role'], ENT_QUOTES) ?></span><?php endif; ?>
-                        <?php if ($url !== ''): ?><a class="person-card__more" href="<?= htmlspecialchars($url, ENT_QUOTES) ?>">Подробнее →</a><?php endif; ?>
+                        <?php if ($url !== ''): ?><a class="person-card__more" href="<?= htmlspecialchars($url, ENT_QUOTES) ?>"><?= htmlspecialchars(t('Подробнее'), ENT_QUOTES) ?> →</a><?php endif; ?>
                     </span>
                 </div>
             <?php endforeach; ?>

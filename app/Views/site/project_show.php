@@ -45,7 +45,7 @@ $others = array_values(array_filter(Project::published(), fn (array $p) => (int)
                         <span class="imgcard__overlay"></span>
                         <span class="imgcard__body">
                             <span class="imgcard__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
-                            <span class="imgcard__more">Подробнее →</span>
+                            <span class="imgcard__more"><?= htmlspecialchars(t('Подробнее'), ENT_QUOTES) ?> →</span>
                         </span>
                     </a>
                 <?php endforeach; ?>

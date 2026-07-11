@@ -63,7 +63,7 @@ $renderFooterWidget = function (array $col) use ($logo, $siteName, $address, $ph
             if ($address !== '') { $h .= '<p class="site-footer__line">' . htmlspecialchars($address, ENT_QUOTES) . '</p>'; }
             if ($phone !== '') { $h .= '<p class="site-footer__line"><a href="tel:' . htmlspecialchars(preg_replace('/[^0-9+]/', '', $phone) ?? '', ENT_QUOTES) . '">' . htmlspecialchars($phone, ENT_QUOTES) . '</a></p>'; }
             if ($email !== '') { $h .= '<p class="site-footer__line"><a href="mailto:' . htmlspecialchars($email, ENT_QUOTES) . '">' . htmlspecialchars($email, ENT_QUOTES) . '</a></p>'; }
-            if ($privacyUrl !== '') { $h .= '<p class="site-footer__line"><a href="' . htmlspecialchars($privacyUrl, ENT_QUOTES) . '">Политика конфиденциальности</a></p>'; }
+            if ($privacyUrl !== '') { $h .= '<p class="site-footer__line"><a href="' . htmlspecialchars($privacyUrl, ENT_QUOTES) . '">' . htmlspecialchars(t('Политика конфиденциальности'), ENT_QUOTES) . '</a></p>'; }
             return $h;
         case 'social':
             if (empty($footerSocial)) { return ''; }
@@ -75,13 +75,13 @@ $renderFooterWidget = function (array $col) use ($logo, $siteName, $address, $ph
         case 'subscribe':
             // Форма подписки в подвале (постит в /subscribe, как и блок).
             $ts = (string) time();
-            return '<p class="site-footer__line">Будьте в курсе наших новостей и аналитических материалов.</p>'
+            return '<p class="site-footer__line">' . htmlspecialchars(t('Будьте в курсе наших новостей и аналитических материалов.'), ENT_QUOTES) . '</p>'
                 . '<form class="footer-subscribe" method="post" action="/subscribe">'
                 . \App\Core\Csrf::field()
                 . '<div style="position:absolute;left:-9999px;" aria-hidden="true"><input type="text" name="hp_website" tabindex="-1" autocomplete="off"></div>'
                 . '<input type="hidden" name="hp_ts" value="' . htmlspecialchars($ts, ENT_QUOTES) . '">'
-                . '<input type="email" name="email" placeholder="Ваш e-mail" aria-label="E-mail" required>'
-                . '<button type="submit" aria-label="Подписаться">&rarr;</button>'
+                . '<input type="email" name="email" placeholder="' . htmlspecialchars(t('Ваш e-mail'), ENT_QUOTES) . '" aria-label="E-mail" required>'
+                . '<button type="submit" aria-label="' . htmlspecialchars(t('Подписаться'), ENT_QUOTES) . '">&rarr;</button>'
                 . '</form>'
                 . '<div data-push-optin></div>'; // сюда push.js добавляет кнопку уведомлений
         case 'text':
