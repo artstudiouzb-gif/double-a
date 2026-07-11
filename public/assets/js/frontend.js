@@ -161,7 +161,11 @@
         var cards = gallery.querySelectorAll('[data-media-kind]');
         var apply = function (kind) {
             cards.forEach(function (c) { c.style.display = c.getAttribute('data-media-kind') === kind ? '' : 'none'; });
-            tabs.forEach(function (t) { t.classList.toggle('is-active', t.getAttribute('data-media-tab') === kind); });
+            tabs.forEach(function (t) {
+                var on = t.getAttribute('data-media-tab') === kind;
+                t.classList.toggle('is-active', on);
+                t.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
         };
         tabs.forEach(function (t) { t.addEventListener('click', function () { apply(t.getAttribute('data-media-tab')); }); });
         apply('video');

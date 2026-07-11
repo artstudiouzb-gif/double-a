@@ -17,9 +17,9 @@ $showTabs = $hasVideo && $hasPhoto;
     <div class="section-head">
         <?php if ($title !== ''): ?><h2 class="section-head__title"><?= htmlspecialchars($title, ENT_QUOTES) ?></h2><?php endif; ?>
         <?php if ($showTabs): ?>
-            <div class="media-tabs" role="tablist">
-                <button type="button" class="media-tabs__tab is-active" data-media-tab="video">Видео</button>
-                <button type="button" class="media-tabs__tab" data-media-tab="photo">Фото</button>
+            <div class="media-tabs" role="group" aria-label="Фильтр медиа">
+                <button type="button" class="media-tabs__tab is-active" data-media-tab="video" aria-pressed="true">Видео</button>
+                <button type="button" class="media-tabs__tab" data-media-tab="photo" aria-pressed="false">Фото</button>
             </div>
         <?php endif; ?>
         <?php if ($allText !== '' && $allUrl !== ''): ?><a class="section-head__all" href="<?= htmlspecialchars($allUrl, ENT_QUOTES) ?>"><?= htmlspecialchars($allText, ENT_QUOTES) ?> →</a><?php endif; ?>

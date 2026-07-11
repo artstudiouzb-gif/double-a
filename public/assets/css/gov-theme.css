@@ -12,7 +12,7 @@
     --gov-navy: var(--color-primary, #173a63);
     --gov-teal: var(--color-accent, #17999b);
     --gov-ink: #1f2b3d;
-    --gov-muted: #6b7789;
+    --gov-muted: #667182; /* WCAG AA: ≥4.5:1 на светло-сером фоне секций */
     /* Цвет заголовков/акцентного текста: тёмно-синий на светлой теме, светлый
        на тёмной (чтобы навигационные заголовки карточек не пропадали). */
     --gov-title: var(--gov-navy);
@@ -99,7 +99,14 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 
 /* --- Хлебные крошки --- */
 .crumbs, .content-crumbs { color: var(--gov-muted); font-size: .9rem; }
-.crumbs a, .content-crumbs a { color: var(--gov-teal); }
+.crumbs a, .content-crumbs a { color: var(--gov-teal-text); }
+
+/* Заливная CTA-кнопка шапки: слегка затемняем акцент, чтобы белый текст
+   давал контраст ≥4.5:1 (WCAG AA). Общий акцент/бренд при этом не меняется. */
+.site-cta--filled,
+.site-search-page__form button[type="submit"] { background: color-mix(in srgb, var(--gov-teal) 85%, #000); }
+/* Ссылки-действия на белом фоне карточек контактов: тёмный teal для контраста. */
+.contact-card__link { color: var(--gov-teal-text); }
 
 /* --- Кнопки --- */
 .block-hero__button, .block-cta a, .content-detail__download, .site-search__submit,
@@ -521,7 +528,7 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 .bio-quote__author { color: rgba(255,255,255,.75); font-size: .9rem; }
 
 /* --- Доступность (WCAG, гос-требования): фокус-кольца, контраст, touch-цели --- */
-:root { --gov-teal-text: #12807f; } /* teal для мелкого текста: контраст ≥4.5:1 на светлом фоне */
+:root { --gov-teal-text: #117978; } /* teal для мелкого текста: ≥4.5:1 на белом, светло-сером и бирюзовом тинте бейджей */
 :root[data-theme="dark"] { --gov-teal-text: #3fc1c0; }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
     outline: 3px solid var(--gov-teal); outline-offset: 2px; border-radius: 4px;
@@ -719,7 +726,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 900px) { .block-banner--light { grid-template-columns: 1fr; } .block-banner--light .block-banner__photo { display: none; } }
 .block-banner--light .block-banner__inner { padding: clamp(20px, 4vw, 48px) 0; text-align: left; }
 .block-banner--light .block-banner__title { color: var(--gov-title); font-size: clamp(1.9rem, 3.4vw, 2.7rem); line-height: 1.15; margin: 0 0 16px; }
-.block-banner--light .block-banner__text { color: var(--gov-muted); font-size: 1.02rem; line-height: 1.6; max-width: 46ch; margin: 0 0 22px; }
+.block-banner--light .block-banner__text { color: var(--gov-muted); opacity: 1; font-size: 1.02rem; line-height: 1.6; max-width: 46ch; margin: 0 0 22px; }
 .block-banner--light .block-banner__button { display: inline-block; padding: 13px 26px; background: var(--gov-navy); color: #fff; border-radius: var(--btn-radius, 8px); font-weight: 700; text-decoration: none; }
 .block-banner__photo { position: relative; height: 100%; min-height: 320px; background: center/cover no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%); mask-image: linear-gradient(90deg, transparent 0, #000 22%); }
 
