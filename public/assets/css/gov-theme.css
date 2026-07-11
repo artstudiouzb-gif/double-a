@@ -204,6 +204,14 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
     width: 100vw; height: 56.25vw; min-height: 100%; min-width: 177.78vh; border: 0;
 }
 
+/* Hero со своим цветом фона (без фото): текст и элементы — светлые, как на
+   медиа-hero, чтобы читались на цветном градиенте. */
+.block-hero--bgcolor { position: relative; }
+.block-hero--bgcolor .block-hero__title { color: var(--hero-text, #fff); }
+.block-hero--bgcolor .block-hero__subtitle { color: var(--hero-text, rgba(255,255,255,.85)); }
+.block-hero--bgcolor .content-crumbs--on-hero a,
+.block-hero--bgcolor .content-crumbs--on-hero span { color: rgba(255,255,255,.82); }
+
 /* Позиция текста в hero: слева (по умолчанию), по центру, справа. */
 .block-hero--pos-center .block-hero__text { margin-inline: auto; text-align: center; }
 .block-hero--pos-center .block-hero__eyebrow { justify-content: center; }

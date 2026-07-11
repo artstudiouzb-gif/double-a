@@ -605,6 +605,7 @@ final class BlockController
                     'text_position' => in_array($_POST['text_position'] ?? 'left', ['left', 'center', 'right'], true) ? $_POST['text_position'] : 'left',
                     'text_color' => empty($_POST['text_color_off']) ? self::hexOrEmpty($_POST['text_color'] ?? '') : '',
                     'button_color' => empty($_POST['button_color_off']) ? self::hexOrEmpty($_POST['button_color'] ?? '') : '',
+                    'bg_color' => empty($_POST['bg_color_off']) ? self::hexOrEmpty($_POST['bg_color'] ?? '') : '',
                     'panel_enabled' => !empty($_POST['panel_enabled']),
                     'panel_color' => $hexColor(trim((string) ($_POST['panel_color'] ?? '')), '#0b1a30'),
                     'panel_opacity' => $pct($_POST['panel_opacity'] ?? null, 40),

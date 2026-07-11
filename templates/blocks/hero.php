@@ -41,6 +41,19 @@ $textStyle = ($panelOn ? 'background: rgba(' . $hex2rgb($panelColor) . ', ' . $p
     . ($heroText !== '' ? '--hero-text:' . $heroText . ';' : '')
     . ($heroBtn !== '' ? '--hero-btn:' . $heroBtn . ';' : '');
 
+// Свой цвет фона под текстом (для hero без фото/видео): полупрозрачный
+// градиент выбранного цвета, не зависящий от светлой/тёмной темы. Отдаётся
+// на корень hero — под медиа он не виден (там работает overlay), а на hero
+// без медиа заменяет фон темы, который иначе менялся при переключении режима.
+$heroBg = preg_match('/^#[0-9a-f]{6}$/i', (string) ($data['bg_color'] ?? '')) ? $data['bg_color'] : '';
+$heroRootStyle = '';
+if ($heroBg !== '') {
+    $rgb = $hex2rgb($heroBg);
+    // Направление градиента — от стороны с текстом к прозрачному краю.
+    $dir = $textPos === 'right' ? '270deg' : ($textPos === 'center' ? '180deg' : '90deg');
+    $heroRootStyle = 'background: linear-gradient(' . $dir . ', rgba(' . $rgb . ',.96) 0%, rgba(' . $rgb . ',.92) 42%, rgba(' . $rgb . ',.55) 72%, rgba(' . $rgb . ',.12) 100%);';
+}
+
 $btnText = trim((string) ($data['button_text'] ?? ''));
 $btnUrl = trim((string) ($data['button_url'] ?? ''));
 $btn2Text = trim((string) ($data['button2_text'] ?? ''));
@@ -51,7 +64,7 @@ $vBtnUrl = trim((string) ($data['video_button_url'] ?? ''));
 $heroWidth = ($data['width'] ?? 'full') === 'standard' ? 'standard' : 'full';
 $heroHeight = ($data['height'] ?? 'regular') === 'full' ? 'full' : 'regular';
 ?>
-<div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= ($bgType === 'video' || $bgType === 'youtube') ? ' block-hero--video' : '' ?> block-hero--w-<?= $heroWidth ?> block-hero--h-<?= $heroHeight ?> block-hero--pos-<?= $textPos ?>">
+<div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= $heroBg !== '' ? ' block-hero--bgcolor' : '' ?><?= ($bgType === 'video' || $bgType === 'youtube') ? ' block-hero--video' : '' ?> block-hero--w-<?= $heroWidth ?> block-hero--h-<?= $heroHeight ?> block-hero--pos-<?= $textPos ?>"<?= $heroRootStyle !== '' ? ' style="' . $heroRootStyle . '"' : '' ?>>
     <?php if ($bgType === 'video' && $videoFile !== ''): ?>
         <video class="block-hero__video" autoplay muted loop playsinline <?= $image !== '' ? 'poster="' . htmlspecialchars($image, ENT_QUOTES) . '"' : '' ?> aria-hidden="true">
             <source src="<?= htmlspecialchars($videoFile, ENT_QUOTES) ?>" type="video/mp4">

@@ -483,6 +483,10 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 <input type="range" min="0" max="100" id="overlay_opacity" name="overlay_opacity" value="<?= (int) ($data['overlay_opacity'] ?? 55) ?>" data-range-input="overlay_opacity">
                 <span class="form-hint">0% — фон виден полностью, 100% — сплошная заливка. Помогает читаемости текста.</span>
             </div>
+            <div class="colorfield-row">
+                <?= \App\Core\AdminUi::colorField('bg_color', $data['bg_color'] ?? '', 'Цвет фона под текстом (градиент)', '#0b1a30', 'Нет (по теме)') ?>
+            </div>
+            <span class="form-hint" style="display:block;margin:-6px 0 14px;">Полупрозрачный градиент выбранного цвета под текстом — не зависит от светлой/тёмной темы. Полезно для героя без фото: иначе фон берётся из темы (светло-серый / тёмно-синий).</span>
             <div class="form-field"><label for="text_position">Положение текста</label>
                 <select id="text_position" name="text_position">
                     <?php $tp = $data['text_position'] ?? 'left'; ?>
