@@ -1,0 +1,109 @@
+# ArtStudio CMS — заметки для Claude
+
+Цель файла: быстрый старт без перечитывания всей ветки. Здесь — карта проекта,
+договорённости и команды. Обновляй при заметных изменениях архитектуры.
+
+## Что это
+Госсайт «Агентство стратегического развития…», боевой адрес **asr.artstudio.uz**.
+Собственная CMS: **чистый PHP 8.2+, без Composer**, MySQL/MariaDB. Свой
+автозагрузчик (`app/Core/bootstrap.php`), свой роутер (`public/index.php`),
+свой тест-раннер. Деплой — shared-хостинг (cPanel), поэтому: никаких внешних
+зависимостей времени выполнения, всё работает на голом PHP+cURL.
+
+## Договорённости с владельцем (важно)
+- Работать **автономно**, не переспрашивать по мелочам; решения объяснять кратко.
+- **Не всё делать буквально**: если просьба спорна — сначала коротко объяснить,
+  почему стоит/не стоит, потом делать.
+- **Ветка разработки** задаётся в промпте задачи (сейчас
+  `claude/session-continuation-dn4d6m`). Пушить только туда:
+  `git push -u origin <branch>` с ретраями (2s,4s,8s,16s) при сетевых ошибках.
+- **PR не создавать**, пока явно не попросят.
+- **Не переводить админку** (интерфейс админки — по-русски). Переводится только
+  публичная часть (RU=ключ, UZ-словарь) и контент (per-language в БД).
+- Коммиты — по-русски, осмысленные. Трейлеры коммита:
+  `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>` и
+  `Claude-Session: <url текущей сессии>`.
+- **Никогда** не писать идентификатор модели в коммиты/PR/код/артефакты — только в чат.
+- **Не хардкодить бренд-акцент** `--gov-teal` (он настраивается в админке через
+  `--color-accent`). Для затемнений использовать `color-mix`, не фикс-цвет.
+
+## Как запустить (локальный стенд в этом контейнере)
+Контейнер эфемерный: после паузы БД и PHP-сервер отваливаются — поднимать заново.
+```bash
+sudo service mariadb start                     # или: mysqld_safe &
+php -S 127.0.0.1:8000 -t public                # dev-сервер
+```
+Базы: `artstudio_cms` (демо-контент), `artstudio_test` (для тестов). Доступ
+root@127.0.0.1 без пароля. Если админ-пароль неизвестен — сбросить в БД
+(`users.password_hash`, `password_hash()`), логин `admin`.
+
+## Проверки (вместо ручного клика)
+```bash
+# Логические тесты (275): без TEST_DB_* — только unit; с ними — ещё БД+миграции
+TEST_DB_HOST=127.0.0.1 TEST_DB_DATABASE=artstudio_test TEST_DB_USERNAME=root TEST_DB_PASSWORD= php tests/run.php
+
+# Smoke-обход всего сайта (HTTP+PHP-фаталы), RU+UZ, публичка и вся админка
+php scripts/smoke.php http://127.0.0.1:8000 --admin admin:ПАРОЛЬ
+```
+После правок PHP: `php -l <файл>`. Сброс кэша страниц: `rm -rf storage/cache/page/*`
+(в админке — кнопка «Сброс кэша» в шапке).
+
+## Архитектура — где что лежит
+- **Блоки страниц** (конструктор): `app/Core/BlockRenderer.php`
+  (`DEFAULTS` = список типов и их поля; `enrichData()` = блоки-обёртки, которые
+  тянут данные из БД), шаблоны — `templates/blocks/*.php`, редактор полей —
+  `app/Views/admin/pages/block_form.php`, сохранение (whitelist полей) —
+  `app/Controllers/Admin/BlockController.php::collectData()`.
+- **Модели** — `app/Models/*` (Project, News, PhotoAlbum, TeamMember, Page,
+  MenuItem, Setting, …). Много `SELECT *`; статусы published/draft, мягкое удаление.
+- **i18n публички**: `App\Core\Lang` + глобальный `t()` (`app/Core/helpers.php`),
+  словарь `app/Core/lang/uz.php` (RU-строка → UZ). Контент — таблицы `*_translations`.
+- **Тема/дизайн-токены**: `public/assets/css/frontend.css` (база) →
+  `public/assets/css/gov-theme.css` (активная тема, грузится последней;
+  navy `--gov-navy`, teal `--gov-teal`, свет/тьма через `:root[data-theme]`).
+  a11y-слой — `a11y.css`. JS фронта — `public/assets/js/frontend.js`.
+- **Шапка/подвал**: `App\Core\HeaderConfig` / `FooterConfig` (JSON в settings),
+  вьюхи `app/Views/site/_header.php`, `_footer.php`. Логотипы — общий + светлый
+  (для тёмного фона) + по языкам (`logo_by_lang`, `logo_light_by_lang`).
+- **Переиспользуемые компоненты форм**: `App\Core\ImageField::resolve()`
+  (пустое присланное поле = очистка!), `AdminUi::imageField()`, `AdminUi::colorField()`.
+- **Миграции**: `database/migrations/*.sql`, применяет `database/migrate.php`
+  (трекинг в таблице `migrations`). **`schema.sql` обязан совпадать**: при новой
+  миграции добавь и колонки в CREATE TABLE, и файл в список
+  `INSERT INTO migrations(...) VALUES` (иначе падает тест консистентности).
+- **CDN**: `App\Core\Asset` (версионирование `?v=hash` + префикс CDN),
+  `Asset::rewriteMedia()` переписывает `/uploads/public` в HTML на CDN.
+  Pull-zone CDN (BunnyCDN и т.п.) — без переноса домена. `App\Core\Cloudflare` —
+  purge через API (только если домен проксируется через CF).
+- **CI**: `.github/workflows/ci.yml` (php -l + тесты на PHP 8.2/8.3 + MariaDB;
+  PHPStan — advisory, неблокирующий).
+
+## Реализованные фичи (чтобы не изобретать заново)
+- Конструктор шапки/футера (drag-and-drop зон), 4 макета, отдельный мобильный билдер.
+- Hero (видео/фото/overlay, бесшовное loop-видео без кнопок), счётчики,
+  направления, новости (лента + крупная), медиа-галерея, проекты, команда, FAQ и т.д.
+- Блоки-обёртки, тянущие данные из БД: `news_latest/news_feature/news_docs`
+  (новости), `projects_list` (проекты), `team_list` (команда).
+- **«Показать на главном»** (`is_featured` у projects и photo_albums): блоки
+  `image_cards` (источник «Проекты») и `media_gallery` (источник «Фотоальбомы»)
+  собирают отмеченные записи автоматически; нет отмеченных → откат на последние.
+- i18n публички, переводимые вводные тексты разделов, per-language логотипы.
+- Лид/описание страниц, цвета фона/текста/кнопок у блоков.
+- Telegram-публикация новостей, webpush, email-дайджест, формы, редиректы,
+  открытые данные, календарь мероприятий, каталоги (`/catalog/{type}`),
+  портал репозитория файлов (`/repo`), 2FA, аудит входов, CSP через nonce.
+- Доступность: WCAG 2.1 AA (контраст, aria) — 0 нарушений axe на ключевых страницах.
+
+## Грабли (уже наступали)
+- **`lastInsertId()` после `bustPageCache()` = 0**: `bustPageCache()` делает запрос
+  к settings (CDN/Cloudflare), обнуляющий last insert id при холодном кэше. В
+  `create()` читай id **до** сброса кэша. (Исправлено в Project/News/TeamMember.)
+- **`width:100vw` даёт горизонтальный скролл** на ширину скроллбара. Лечится
+  `html { overflow-x: clip }` (не `hidden` — не ломает sticky-шапку).
+- **SVG-логотип схлопывается**, если у SVG нет пиксельных размеров (`width="100%"`).
+  Нужна явная `height` на `img`, тогда ширина считается из viewBox.
+- **Контейнер эфемерный**: после рестарта нет БД/PHP-сервера, иногда пропадает
+  root-доступ MySQL — поднимать заново. Headless-браузер использует overlay-скроллбары
+  (0px), поэтому scrollbar-баги в нём не воспроизводятся.
+- **Playwright**: Chromium предустановлен (`/opt/pw-browsers`), `playwright install`
+  не запускать; для инъекции скриптов на страницы с CSP — `bypassCSP: true`.
