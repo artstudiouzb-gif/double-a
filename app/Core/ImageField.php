@@ -21,8 +21,13 @@ final class ImageField
             return FileEntry::publicUrl($file);
         }
 
-        $url = trim((string) ($_POST[$urlInputName] ?? ''));
+        // Если поле URL присутствует в форме — учитываем его дословно: пустое
+        // значение означает явную очистку (пользователь нажал «×»). Только когда
+        // поля нет в запросе вовсе — сохраняем ранее сохранённое значение.
+        if (array_key_exists($urlInputName, $_POST)) {
+            return trim((string) $_POST[$urlInputName]);
+        }
 
-        return $url !== '' ? $url : $existingUrl;
+        return $existingUrl;
     }
 }

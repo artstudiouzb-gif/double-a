@@ -154,7 +154,10 @@ summary:focus-visible {
     text-decoration: none;
     color: var(--color-primary, #1a1a1a);
 }
-.site-header__logo img { max-height: 48px; }
+/* Явная высота (не только max-height): SVG без собственных размеров
+   (width="100%") получает определённую высоту и вычисляет ширину из viewBox,
+   иначе схлопывается в 0. max-width страхует от переполнения по горизонтали. */
+.site-header__logo img { height: 48px; width: auto; max-width: 240px; object-fit: contain; }
 
 .site-content { max-width: 1140px; margin: 0 auto; padding: 20px; }
 .site-footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 14px; }

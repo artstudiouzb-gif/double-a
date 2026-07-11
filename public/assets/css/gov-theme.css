@@ -40,6 +40,12 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Полноширинные блоки (width:100vw, hero и фоновые подложки) выступают на
+   ширину вертикального скроллбара и в браузерах с классическим скроллбаром
+   (Windows) дают горизонтальную прокрутку. overflow-x:clip на корне обрезает
+   этот выступ, НЕ создавая scroll-контейнер — sticky-шапка продолжает работать. */
+html { overflow-x: clip; }
+
 /* Серифные заголовки. */
 h1, h2, h3, h4, h5, h6,
 .block-hero__title, .news-index__title, .content-list__head h1,
