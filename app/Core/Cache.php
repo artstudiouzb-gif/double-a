@@ -153,6 +153,13 @@ final class Cache
         );
         $target = self::dir() . '/' . implode('/', $segments);
         self::removeRecursive($target);
+
+        // Контент страниц изменился — очищаем и внешний CDN-кэш (Cloudflare),
+        // если интеграция включена. Безопасно: не чаще раза за запрос и no-op,
+        // когда выключено.
+        if (str_starts_with($prefix, 'page:')) {
+            Cloudflare::purgeSite();
+        }
     }
 
     public static function flush(): void

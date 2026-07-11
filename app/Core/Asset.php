@@ -47,7 +47,7 @@ final class Asset
         return self::$cache[$path] = $out;
     }
 
-    private static function cdnBase(): string
+    public static function cdnBase(): string
     {
         if (self::$cdnBase === null) {
             try {
@@ -58,5 +58,28 @@ final class Asset
         }
 
         return self::$cdnBase;
+    }
+
+    /**
+     * Переписать в готовом HTML ссылки на публичные загрузки (/uploads/public/…)
+     * на CDN-хост. Это позволяет раздавать картинки/видео через pull-zone CDN
+     * без переноса домена: CDN тянет файл с origin по этому пути и кэширует.
+     *
+     * Совпадение якорится по предшествующему символу (кавычка, скобка, запятая,
+     * пробел), поэтому абсолютные URL (og:image, canonical) не затрагиваются.
+     * Статика (/assets/…) уже отдаётся через Asset::url() и здесь не трогается.
+     */
+    public static function rewriteMedia(string $html): string
+    {
+        $cdn = self::cdnBase();
+        if ($cdn === '' || $html === '') {
+            return $html;
+        }
+
+        return (string) preg_replace(
+            '#(["\'(,\s])/uploads/public/#',
+            '$1' . $cdn . '/uploads/public/',
+            $html
+        );
     }
 }

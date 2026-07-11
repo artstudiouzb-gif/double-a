@@ -19,10 +19,21 @@ final class View
         // extract вызывался прямо здесь, ключ 'data' конфликтовал бы с
         // параметром $data и (при EXTR_SKIP) не попадал во вьюху — из-за этого
         // редакторы блоков не показывали сохранённое содержимое.
-        (static function (string $__file, array $__vars): void {
+        $renderTo = static function (string $__file, array $__vars): void {
             extract($__vars, EXTR_SKIP);
             require $__file;
-        })($file, $data);
+        };
+
+        // Для публичных страниц с настроенным CDN — переписываем ссылки на
+        // загрузки на CDN-хост (буферизуем только когда CDN реально задан).
+        if (str_starts_with($template, 'site/') && Asset::cdnBase() !== '') {
+            ob_start();
+            $renderTo($file, $data);
+            echo Asset::rewriteMedia((string) ob_get_clean());
+            return;
+        }
+
+        $renderTo($file, $data);
     }
 
     public static function renderPartial(string $template, array $data = []): string

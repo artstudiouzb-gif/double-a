@@ -45,7 +45,40 @@ final class PerformanceController
         }
         Setting::set('perf_cdn_url', rtrim($cdn, '/'));
 
+        // Cloudflare (очистка кэша по API).
+        Setting::set('cf_enabled', !empty($_POST['cf_enabled']) ? '1' : '0');
+        Setting::set('cf_api_token', trim((string) ($_POST['cf_api_token'] ?? '')));
+        $zone = trim((string) ($_POST['cf_zone_id'] ?? ''));
+        Setting::set('cf_zone_id', preg_match('/^[a-f0-9]{0,64}$/i', $zone) === 1 ? $zone : '');
+
         Flash::success('Настройки производительности сохранены.');
+        header('Location: /admin/performance');
+        exit;
+    }
+
+    public function cloudflareVerify(): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+
+        $r = \App\Core\Cloudflare::verify();
+        $r['ok'] ? Flash::success($r['message']) : Flash::error($r['message']);
+        header('Location: /admin/performance');
+        exit;
+    }
+
+    public function cloudflarePurge(): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+
+        if (!\App\Core\Cloudflare::enabled()) {
+            Flash::error('Интеграция с Cloudflare выключена или не настроена.');
+        } elseif (\App\Core\Cloudflare::purgeEverything()) {
+            Flash::success('Кэш Cloudflare очищен.');
+        } else {
+            Flash::error('Не удалось очистить кэш Cloudflare — проверьте токен и Zone ID (подробности в логах).');
+        }
         header('Location: /admin/performance');
         exit;
     }
@@ -56,6 +89,7 @@ final class PerformanceController
         Csrf::verifyRequest();
 
         Cache::flush();
+        \App\Core\Cloudflare::purgeSite();
         Flash::success('Кэш очищен.');
 
         // Возврат на страницу, откуда нажали (только локальные /admin-пути).

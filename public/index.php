@@ -186,6 +186,8 @@ $router->post('/admin/footer', [\App\Controllers\Admin\FooterController::class, 
 $router->get('/admin/performance', [\App\Controllers\Admin\PerformanceController::class, 'index']);
 $router->post('/admin/performance', [\App\Controllers\Admin\PerformanceController::class, 'update']);
 $router->post('/admin/performance/clear-cache', [\App\Controllers\Admin\PerformanceController::class, 'clearCache']);
+$router->post('/admin/cloudflare/verify', [\App\Controllers\Admin\PerformanceController::class, 'cloudflareVerify']);
+$router->post('/admin/cloudflare/purge', [\App\Controllers\Admin\PerformanceController::class, 'cloudflarePurge']);
 
 // --- Admin: боковые виджеты ---
 $router->get('/admin/widgets', [AdminWidgetController::class, 'index']);
