@@ -36,13 +36,20 @@ try { $footerMenu = \App\Models\MenuItem::activeForLang($footerLang); } catch (\
 $footerSocial = $hcfg['social_buttons'] ?? [];
 $footerBottom = \App\Core\FooterConfig::renderBottom($footerCfg['bottom'], $siteName);
 
+// Логотип подвала: тёмный фон → используем светлый (тёмный) вариант логотипа —
+// сначала для текущего языка, затем общий, иначе обычный логотип.
+$footerHcfg = \App\Core\HeaderConfig::get();
+$footerLogo = trim((string) ($footerHcfg['logo_light_by_lang'][$footerLang] ?? ''));
+if ($footerLogo === '') { $footerLogo = trim((string) ($footerHcfg['logo_light'] ?? '')); }
+if ($footerLogo === '') { $footerLogo = $logo; }
+
 // Рендер одного виджета колонки подвала.
-$renderFooterWidget = function (array $col) use ($logo, $siteName, $address, $phone, $email, $footerMenu, $footerLang, $footerSocial, $privacyUrl): string {
+$renderFooterWidget = function (array $col) use ($footerLogo, $siteName, $address, $phone, $email, $footerMenu, $footerLang, $footerSocial, $privacyUrl): string {
     switch ($col['widget']) {
         case 'about':
             $h = '';
-            if ($logo !== '') {
-                $h .= '<img class="site-footer__logo" src="' . htmlspecialchars($logo, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
+            if ($footerLogo !== '') {
+                $h .= '<img class="site-footer__logo" src="' . htmlspecialchars($footerLogo, ENT_QUOTES) . '" alt="' . htmlspecialchars($siteName, ENT_QUOTES) . '">';
             } else {
                 $h .= '<div class="site-footer__name">' . htmlspecialchars($siteName, ENT_QUOTES) . '</div>';
             }
