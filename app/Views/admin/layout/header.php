@@ -128,6 +128,46 @@ $navInitials = mb_strtoupper(mb_substr((string) ($navUser['username'] ?? 'A'), 0
         <kbd class="admin-search__kbd">Ctrl K</kbd>
         <div class="admin-search__results" data-search-results hidden></div>
     </div>
+
+    <div class="admin-tools">
+        <details class="admin-menu admin-tools__quick">
+            <summary class="admin-tbtn admin-tbtn--primary" aria-label="Быстрые действия" title="Быстрые действия">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                <span class="admin-tbtn__label">Создать</span>
+            </summary>
+            <div class="admin-menu__list">
+                <div class="admin-menu__label">Быстрые действия</div>
+                <a href="/admin/news/create" class="admin-user__link">Новость</a>
+                <a href="/admin/pages/create" class="admin-user__link">Страницу</a>
+                <a href="/admin/projects/create" class="admin-user__link">Проект</a>
+                <a href="/admin/team/create" class="admin-user__link">Сотрудника</a>
+                <a href="/admin/albums" class="admin-user__link">Фотоальбом</a>
+                <a href="/admin/forms/create" class="admin-user__link">Форму</a>
+                <?php foreach ($navContent as $navKey => [$navUrl, $navText]): ?>
+                    <?php if (str_starts_with($navKey, 'content:')): ?>
+                        <a href="<?= $navUrl ?>/create" class="admin-user__link"><?= htmlspecialchars($navText, ENT_QUOTES) ?></a>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </details>
+
+        <?php if ($navIsSuper): ?>
+        <form method="post" action="/admin/performance/clear-cache" class="admin-tools__form">
+            <?= Csrf::field() ?>
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/admin', ENT_QUOTES) ?>">
+            <button type="submit" class="admin-tbtn" title="Сбросить кэш страниц">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+                <span class="admin-tbtn__label">Сброс кэша</span>
+            </button>
+        </form>
+        <?php endif; ?>
+
+        <a href="/" target="_blank" rel="noopener" class="admin-tbtn" title="Открыть сайт в новой вкладке">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>
+            <span class="admin-tbtn__label">Сайт</span>
+        </a>
+    </div>
+
     <details class="admin-user">
         <summary class="admin-user__btn" aria-label="Аккаунт">
             <span class="admin-user__avatar"><?= htmlspecialchars($navInitials, ENT_QUOTES) ?></span>

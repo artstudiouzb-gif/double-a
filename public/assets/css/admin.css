@@ -165,6 +165,32 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 .admin-topbar__crumb { color: #a7a9b4; font-size: 14px; padding-left: 14px; border-left: 1px solid rgba(255,255,255,.14); }
 .admin-topbar__spacer { flex: 1; }
 
+/* Инструменты в топбаре: быстрые действия, сброс кэша, открыть сайт */
+.admin-tools { display: flex; align-items: center; gap: 8px; }
+.admin-tools__form { margin: 0; }
+.admin-tbtn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 12px; border-radius: 8px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+    color: var(--admin-topbar-text); font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: none; white-space: nowrap; line-height: 1;
+    list-style: none;
+}
+.admin-tbtn:hover { background: rgba(255,255,255,.16); text-decoration: none; color: #fff; }
+.admin-tbtn::-webkit-details-marker { display: none; }
+.admin-tbtn--primary { background: var(--admin-accent); border-color: var(--admin-accent); color: #fff; }
+.admin-tbtn--primary:hover { background: var(--admin-accent-hover); color: #fff; }
+.admin-tbtn svg { flex: none; }
+
+/* Универсальный выпадающий список в топбаре (native <details>) */
+.admin-menu { position: relative; }
+.admin-menu__list {
+    position: absolute; right: 0; top: calc(100% + 8px); min-width: 190px;
+    background: #fff; color: var(--admin-text); border: 1px solid var(--admin-border);
+    border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,.18); padding: 6px; z-index: 120;
+}
+.admin-menu__label { padding: 6px 10px 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--admin-muted); }
+
 .admin-user { position: relative; }
 .admin-user__btn { list-style: none; cursor: pointer; display: inline-flex; }
 .admin-user__btn::-webkit-details-marker { display: none; }
@@ -426,6 +452,15 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
     .admin-main { padding: 20px 16px; }
     .admin-search { min-width: 0; flex: 1; }
     .admin-search__kbd { display: none; }
+    /* Компактные кнопки-инструменты: только иконки */
+    .admin-tbtn__label { display: none; }
+    .admin-tbtn { padding: 8px; }
+    .admin-tools { gap: 6px; }
+}
+@media (max-width: 560px) {
+    /* На самых узких прячем поиск, оставляя быстрые действия и открыть сайт */
+    .admin-search { display: none; }
+    .admin-topbar { gap: 10px; }
 }
 @media (max-width: 720px) {
     .sidebar-columns { grid-template-columns: 1fr; }

@@ -57,7 +57,13 @@ final class PerformanceController
 
         Cache::flush();
         Flash::success('Кэш очищен.');
-        header('Location: /admin/performance');
+
+        // Возврат на страницу, откуда нажали (только локальные /admin-пути).
+        $back = (string) ($_POST['redirect'] ?? '');
+        if ($back === '' || $back[0] !== '/' || str_starts_with($back, '//') || !str_starts_with($back, '/admin')) {
+            $back = '/admin/performance';
+        }
+        header('Location: ' . $back);
         exit;
     }
 }
