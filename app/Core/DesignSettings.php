@@ -111,6 +111,20 @@ final class DesignSettings
             'choices' => ['compact' => 'Компактно', 'standard' => 'Стандарт', 'spacious' => 'Просторно'],
             'default' => 'standard',
         ],
+        'font_size' => [
+            'label' => 'Размер шрифта',
+            'hint' => 'Базовый размер основного текста сайта.',
+            'group' => 'Типографика',
+            'choices' => ['sm' => 'Мельче', 'md' => 'Стандарт', 'lg' => 'Крупнее', 'xl' => 'Очень крупный'],
+            'default' => 'md',
+        ],
+        'line_height' => [
+            'label' => 'Межстрочный интервал',
+            'hint' => 'Высота строки основного текста.',
+            'group' => 'Типографика',
+            'choices' => ['tight' => 'Плотный', 'normal' => 'Стандарт', 'relaxed' => 'Просторный'],
+            'default' => 'normal',
+        ],
         'button' => [
             'label' => 'Форма кнопок',
             'hint' => 'Стиль углов у кнопок и CTA.',
@@ -197,22 +211,22 @@ final class DesignSettings
         'classic' => [
             'label' => 'Классический',
             'desc' => 'Строгий официальный стиль, умеренные отступы.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'plain', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'gov_blue', 'font_style' => 'system'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'sm', 'density' => 'standard', 'font_size' => 'md', 'line_height' => 'normal', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'plain', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'gov_blue', 'font_style' => 'system'],
         ],
         'modern' => [
             'label' => 'Современный',
             'desc' => 'Крупные скругления, воздух, акцентная шапка.',
-            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'violet', 'font_style' => 'inter'],
+            'values' => ['container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'font_size' => 'lg', 'line_height' => 'relaxed', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'accent', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'violet', 'font_style' => 'inter'],
         ],
         'minimal' => [
             'label' => 'Минимал',
             'desc' => 'Прямые углы, максимум воздуха, список в каталоге.',
-            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off', 'search_type' => 'overlay', 'detail_layout' => 'plain', 'footer_style' => 'minimal', 'mobile_menu' => 'burger', 'mobile_header' => 'static', 'palette' => 'graphite', 'font_style' => 'serif'],
+            'values' => ['container' => 'narrow', 'radius' => 'none', 'card_gap' => 'md', 'density' => 'spacious', 'font_size' => 'md', 'line_height' => 'normal', 'button' => 'square', 'card_style' => 'flat', 'sidebar_position' => 'fixed', 'catalog_layout' => 'list', 'header_style' => 'light', 'header_sticky' => 'off', 'search_type' => 'overlay', 'detail_layout' => 'plain', 'footer_style' => 'minimal', 'mobile_menu' => 'burger', 'mobile_header' => 'static', 'palette' => 'graphite', 'font_style' => 'serif'],
         ],
         'compact' => [
             'label' => 'Компактный',
             'desc' => 'Плотная сетка, маленькие карточки — много данных.',
-            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'classic_red', 'font_style' => 'system'],
+            'values' => ['container' => 'standard', 'radius' => 'small', 'card_gap' => 'xs', 'density' => 'compact', 'font_size' => 'sm', 'line_height' => 'tight', 'button' => 'rounded', 'card_style' => 'soft', 'sidebar_position' => 'fixed', 'catalog_layout' => 'cards_sm', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'inline', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'palette' => 'classic_red', 'font_style' => 'system'],
         ],
     ];
 
@@ -446,6 +460,8 @@ final class DesignSettings
         $gap = ['xs' => '8px', 'sm' => '16px', 'md' => '24px', 'lg' => '32px'][$v['card_gap']] ?? '24px';
         $section = ['compact' => '28px', 'standard' => '46px', 'spacious' => '72px'][$v['density']] ?? '46px';
         $btn = ['square' => '0px', 'rounded' => '10px', 'pill' => '999px'][$v['button']] ?? '10px';
+        $fontSize = ['sm' => '15px', 'md' => '16px', 'lg' => '17px', 'xl' => '18px'][$v['font_size'] ?? 'md'] ?? '16px';
+        $lineHeight = ['tight' => '1.45', 'normal' => '1.6', 'relaxed' => '1.8'][$v['line_height'] ?? 'normal'] ?? '1.6';
         $shadow = [
             'flat' => 'none',
             'soft' => '0 1px 3px rgba(16,24,40,.06), 0 6px 18px rgba(16,24,40,.05)',
@@ -453,13 +469,15 @@ final class DesignSettings
         ][$v['card_style'] ?? 'soft'] ?? 'none';
 
         return sprintf(
-            ':root{--container-max:%s;--radius:%s;--radius-sm:calc(%s * .6);--card-gap:%s;--section-pad:%s;--btn-radius:%s;--card-shadow:%s;}',
+            ':root{--container-max:%s;--radius:%s;--radius-sm:calc(%s * .6);--card-gap:%s;--section-pad:%s;--btn-radius:%s;--base-font-size:%s;--base-line-height:%s;--card-shadow:%s;}',
             $container,
             $radius,
             $radius,
             $gap,
             $section,
             $btn,
+            $fontSize,
+            $lineHeight,
             $shadow
         );
     }
