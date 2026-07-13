@@ -1137,3 +1137,145 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .block-ctaband[style*="--ctaband-text"] .ctaband__text { color: var(--ctaband-text); opacity: .85; }
 .block-ctaband[style*="--ctaband-text"] .ctaband__icon { color: var(--ctaband-text); border-color: color-mix(in srgb, var(--ctaband-text) 45%, transparent); }
 .block-ctaband[style*="--ctaband-btn"] .ctaband__button { background: var(--ctaband-btn); }
+
+/* ============================================================================
+   Единое поведение интерактивных карточек и безопасная мобильная раскладка.
+   Оформление (радиусы, отступы, тени) по-прежнему задаётся настройками темы.
+   ============================================================================ */
+
+/* Только действительно кликабельные карточки получают одинаковую реакцию. */
+:where(
+    .news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
+    .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item, .mediacard
+) {
+    transition: transform .18s ease, box-shadow .18s ease,
+        border-color .18s ease, background-color .18s ease, color .18s ease;
+}
+
+:where(
+    .news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
+    .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item, .mediacard
+):focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--gov-teal) 72%, #fff);
+    outline-offset: 3px;
+}
+
+/* Карточка новости содержит ссылку: эффект принадлежит ссылке и доступен
+   клавиатуре, но визуально применяется к внешней рамке карточки. */
+.news-card:has(.news-card__link:focus-visible) {
+    border-color: var(--gov-teal);
+    box-shadow: 0 10px 30px rgba(19, 42, 92, .10);
+}
+.news-card__link:focus-visible { outline-offset: -3px; }
+
+@media (hover: hover) and (pointer: fine) {
+    :where(
+        .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
+        .newsdocs-item, .doc-card, .album-card, .cat-tile, .mediacard
+    ):hover {
+        transform: translateY(-3px);
+    }
+    :where(.news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
+        .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item,
+        .mediacard):hover :where(.newsfeat__more, .newsdocs-item__arrow,
+        .doc-card__dl, .media-item__action, .news-card__more) {
+        transform: translateX(3px);
+    }
+}
+
+:where(
+    .news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
+    .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item, .mediacard
+):active {
+    transform: translateY(0);
+}
+
+:where(.newsfeat__more, .newsdocs-item__arrow, .doc-card__dl,
+    .media-item__action, .news-card__more) {
+    transition: transform .18s ease, color .18s ease;
+}
+
+/* Grid/flex-элементы не должны расширять страницу длинным заголовком или URL. */
+:where(
+    .site-header__inner, .site-header__zone, .site-nav__inner,
+    .cms-columns, .cms-columns__col, .newsfeat-grid, .newsfeat-side,
+    .newsfeat-side__thumbs, .newsfeat-side__texts, .block-newsdocs,
+    .news-index__grid, .block-news__grid, .news-card, .newsdocs-item,
+    .doc-card, .contact-cards, .cat-grid
+) > * {
+    min-width: 0;
+}
+
+:where(.newsfeat-lead__title, .newsfeat-mini__title, .newsfeat-text__title,
+    .newsdocs-item__title, .doc-card__title, .news-card__title,
+    .site-menu__text) {
+    overflow-wrap: anywhere;
+}
+
+/* Четыре колонки слишком узки на планшете; до мобильного они становятся двумя. */
+@media (max-width: 1024px) and (min-width: 721px) {
+    .cms-columns--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cms-columns--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+    .site-header__inner {
+        flex-wrap: nowrap;
+        gap: 10px;
+        padding-inline: 16px;
+    }
+    .site-header__zone { min-width: 0; flex-wrap: nowrap; gap: 10px; }
+    .site-header__zone--center { justify-content: flex-start; }
+    .site-header__zone--right { flex: 0 0 auto; }
+    .site-header__logo { min-width: 0; max-width: 100%; }
+    .site-header__logo img { max-width: min(190px, 48vw); height: auto; max-height: 48px; }
+    .site-header__logo span {
+        max-width: min(54vw, 240px);
+        overflow-wrap: anywhere;
+        font-size: clamp(12px, 3.4vw, 15px);
+    }
+    .site-burger, .site-search-toggle, .site-theme-toggle { flex: 0 0 auto; }
+    body.mobile-menu-open { overflow: hidden; }
+    body.design-mmenu-burger .site-menu {
+        max-height: calc(100dvh - 72px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    body.design-mmenu-burger .site-menu__link {
+        width: 100%;
+        min-height: 44px;
+        white-space: normal;
+    }
+
+    .newsfeat-grid, .block-newsdocs { gap: 24px; }
+    .newsfeat-side { border-left: 0; padding-left: 0; }
+    .newsfeat-side__thumbs, .newsfeat-side__texts { gap: 18px; }
+    .news-index__grid, .block-news__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .newsdocs-item {
+        grid-template-columns: 80px minmax(0, 1fr) auto;
+        gap: 12px;
+    }
+    .doc-card { grid-template-columns: auto minmax(0, 1fr); gap: 12px; }
+    .doc-card__dl { grid-column: 2; justify-self: start; }
+    .section-head { align-items: flex-start; }
+}
+
+@media (max-width: 420px) {
+    .site-header__inner { padding-inline: 12px; }
+    .site-header__logo img { max-width: 42vw; }
+    .site-header__logo span { max-width: 46vw; }
+    .newsdocs-item { grid-template-columns: 68px minmax(0, 1fr); }
+    .newsdocs-item__arrow { grid-column: 2; }
+    .ctaband__lead { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(
+        .news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
+        .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item, .mediacard
+    ) {
+        transition: none;
+    }
+}
