@@ -11,6 +11,9 @@ final class News
 {
     public const LAYOUTS = ['standard', 'gallery', 'video', 'side_image', 'premium'];
 
+    /** @var array<string, array<int, array<string, mixed>>> */
+    private static array $publishedRequestCache = [];
+
     public static function normalizeLayout(mixed $layout): string
     {
         $layout = is_string($layout) ? $layout : 'standard';
@@ -35,6 +38,11 @@ final class News
         $ytId = Video::youtubeId($row['video_url'] ?? null);
         if ($ytId !== null) {
             return Video::youtubeThumbnail($ytId);
+        }
+
+        $prefetchedGallery = trim((string) ($row['first_gallery_image'] ?? ''));
+        if ($prefetchedGallery !== '') {
+            return $prefetchedGallery;
         }
 
         if (!empty($row['id'])) {
@@ -154,12 +162,19 @@ final class News
      */
     public static function published(int $limit = 20, int $offset = 0, ?string $lang = null, ?string $badge = null): array
     {
+        $cacheKey = implode('|', [$limit, $offset, $lang ?? '', $badge ?? '']);
+        if (isset(self::$publishedRequestCache[$cacheKey])) {
+            return self::$publishedRequestCache[$cacheKey];
+        }
         $where = "status = 'published' AND published_at <= NOW() AND deleted_at IS NULL";
         if ($badge !== null && $badge !== '') {
             $where .= ' AND badge = :badge';
         }
         $stmt = Database::pdo()->prepare(
-            "SELECT * FROM news WHERE {$where} ORDER BY published_at DESC LIMIT :limit OFFSET :offset"
+            "SELECT news.*,
+                    (SELECT ni.path FROM news_images ni WHERE ni.news_id = news.id
+                     ORDER BY ni.sort_order ASC, ni.id ASC LIMIT 1) AS first_gallery_image
+             FROM news WHERE {$where} ORDER BY published_at DESC LIMIT :limit OFFSET :offset"
         );
         if ($badge !== null && $badge !== '') {
             $stmt->bindValue(':badge', $badge);
@@ -170,10 +185,10 @@ final class News
 
         $rows = $stmt->fetchAll();
         if ($lang === null || $lang === Language::defaultCode()) {
-            return $rows;
+            return self::$publishedRequestCache[$cacheKey] = $rows;
         }
 
-        return array_map(static fn (array $row) => self::localize($row, $lang), $rows);
+        return self::$publishedRequestCache[$cacheKey] = self::localizeRows($rows, $lang);
     }
 
     /** Количество опубликованных новостей (для пагинации), опционально по бейджу. */
@@ -245,6 +260,24 @@ final class News
     public static function localize(array $row, string $lang): array
     {
         $translation = NewsTranslation::find((int) $row['id'], $lang);
+        return self::applyTranslation($row, $translation);
+    }
+
+    /** @param array<int, array<string, mixed>> $rows @return array<int, array<string, mixed>> */
+    private static function localizeRows(array $rows, string $lang): array
+    {
+        $translations = NewsTranslation::forNewsIds(
+            array_map(static fn (array $row): int => (int) $row['id'], $rows),
+            $lang
+        );
+        return array_map(
+            static fn (array $row): array => self::applyTranslation($row, $translations[(int) $row['id']] ?? null),
+            $rows
+        );
+    }
+
+    private static function applyTranslation(array $row, ?array $translation): array
+    {
         if ($translation === null) {
             return $row;
         }
@@ -411,9 +444,14 @@ final class News
         };
         $prev = $pick('<', 'DESC');
         $next = $pick('>', 'ASC');
-        if ($lang !== null) {
-            $prev = $prev ? self::localize($prev, $lang) : null;
-            $next = $next ? self::localize($next, $lang) : null;
+        if ($lang !== null && $lang !== Language::defaultCode()) {
+            $localized = self::localizeRows(array_values(array_filter([$prev, $next])), $lang);
+            $byId = [];
+            foreach ($localized as $row) {
+                $byId[(int) $row['id']] = $row;
+            }
+            $prev = $prev ? ($byId[(int) $prev['id']] ?? $prev) : null;
+            $next = $next ? ($byId[(int) $next['id']] ?? $next) : null;
         }
 
         return ['prev' => $prev, 'next' => $next];
@@ -424,13 +462,16 @@ final class News
     {
         $limit = max(1, min(12, $limit));
         $stmt = Database::pdo()->prepare(
-            "SELECT * FROM news WHERE status = 'published' AND deleted_at IS NULL AND id <> :id
+            "SELECT news.*,
+                    (SELECT ni.path FROM news_images ni WHERE ni.news_id = news.id
+                     ORDER BY ni.sort_order ASC, ni.id ASC LIMIT 1) AS first_gallery_image
+             FROM news WHERE status = 'published' AND deleted_at IS NULL AND id <> :id
              ORDER BY published_at DESC, id DESC LIMIT {$limit}"
         );
         $stmt->execute([':id' => $excludeId]);
         $rows = $stmt->fetchAll() ?: [];
-        if ($lang !== null) {
-            $rows = array_map(static fn (array $r): array => self::localize($r, $lang), $rows);
+        if ($lang !== null && $lang !== Language::defaultCode()) {
+            $rows = self::localizeRows($rows, $lang);
         }
 
         return $rows;

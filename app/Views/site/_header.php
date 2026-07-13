@@ -404,10 +404,25 @@ if ($inlineMenu !== '') {
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-title" content="<?= htmlspecialchars($pwaShortName, ENT_QUOTES) ?>">
 <?php endif; ?>
-<link rel="preload" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/fonts/manrope-400-cyrillic.woff2'), ENT_QUOTES) ?>" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/fonts/montserrat-700-cyrillic.woff2'), ENT_QUOTES) ?>" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/fonts/ptserif-700-cyrillic.woff2'), ENT_QUOTES) ?>" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/fonts/ptsans-400-cyrillic.woff2'), ENT_QUOTES) ?>" as="font" type="font/woff2" crossorigin>
+<?php // Preload только реально выбранных семейств: лишние preload конкурируют с CSS/LCP. ?>
+<?php
+$fontPreloads = [];
+foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
+    foreach ([
+        'Manrope' => '/assets/fonts/manrope-400-cyrillic.woff2',
+        'Montserrat' => '/assets/fonts/montserrat-700-cyrillic.woff2',
+        'PT Serif' => '/assets/fonts/ptserif-700-cyrillic.woff2',
+        'PT Sans' => '/assets/fonts/ptsans-400-cyrillic.woff2',
+    ] as $family => $fontFile) {
+        if (stripos($selectedFont, $family) !== false) {
+            $fontPreloads[$fontFile] = true;
+        }
+    }
+}
+?>
+<?php foreach (array_keys($fontPreloads) as $fontFile): ?>
+<link rel="preload" href="<?= htmlspecialchars(\App\Core\Asset::url($fontFile), ENT_QUOTES) ?>" as="font" type="font/woff2" crossorigin>
+<?php endforeach; ?>
 <?php // Google-шрифты (если выбраны в «Дизайне»); кириллица включена в css2. ?>
 <?php $googleFontsHref = \App\Core\DesignSettings::googleFontsHref(); ?>
 <?php if ($googleFontsHref !== null): ?>

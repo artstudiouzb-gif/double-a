@@ -35,6 +35,31 @@ final class NewsTranslation
         return $row ?: null;
     }
 
+    /**
+     * Пакетная загрузка одного перевода для списка новостей — устраняет N+1.
+     * @param list<int> $newsIds
+     * @return array<int, array<string, mixed>>
+     */
+    public static function forNewsIds(array $newsIds, string $lang): array
+    {
+        $newsIds = array_values(array_unique(array_filter(array_map('intval', $newsIds), static fn (int $id): bool => $id > 0)));
+        if ($newsIds === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($newsIds), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT * FROM news_translations WHERE news_id IN ({$placeholders}) AND lang = ?"
+        );
+        $stmt->execute([...$newsIds, $lang]);
+
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[(int) $row['news_id']] = $row;
+        }
+        return $result;
+    }
+
     public static function upsert(int $newsId, string $lang, array $data): void
     {
         $stmt = Database::pdo()->prepare(

@@ -33,6 +33,8 @@ final class PerformanceController
 
         Setting::set('perf_page_cache', !empty($_POST['perf_page_cache']) ? '1' : '0');
         Setting::set('perf_cache_ttl', (string) SettingsValidator::nonNegativeInt((string) ($_POST['perf_cache_ttl'] ?? ''), 0));
+        Setting::set('perf_public_cache_ttl', (string) min(3600, SettingsValidator::nonNegativeInt((string) ($_POST['perf_public_cache_ttl'] ?? ''), 60)));
+        Setting::set('perf_shared_cache_ttl', (string) min(86400, SettingsValidator::nonNegativeInt((string) ($_POST['perf_shared_cache_ttl'] ?? ''), 300)));
         Setting::set('perf_lazy_load', !empty($_POST['perf_lazy_load']) ? '1' : '0');
 
         $quality = SettingsValidator::nonNegativeInt((string) ($_POST['perf_webp_quality'] ?? ''), 82);

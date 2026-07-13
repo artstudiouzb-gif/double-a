@@ -38,6 +38,7 @@ final class View
         if (str_starts_with($template, 'site/') && Asset::cdnBase() !== '') {
             $html = Asset::rewriteMedia($html);
         }
+        PublicResponseCache::apply($template);
         echo $html;
     }
 

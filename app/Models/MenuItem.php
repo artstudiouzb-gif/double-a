@@ -8,6 +8,9 @@ use App\Core\Database;
 
 final class MenuItem
 {
+    /** @var array<string, array<int, array<string, mixed>>> */
+    private static array $activeRequestCache = [];
+
     public static function all(): array
     {
         $stmt = Database::pdo()->query('SELECT * FROM menu_items ORDER BY sort_order ASC, id ASC');
@@ -22,6 +25,9 @@ final class MenuItem
      */
     public static function activeForLang(string $lang): array
     {
+        if (isset(self::$activeRequestCache[$lang])) {
+            return self::$activeRequestCache[$lang];
+        }
         $stmt = Database::pdo()->prepare(
             "SELECT * FROM menu_items WHERE is_active = 1 AND (lang = :lang OR lang = '')
              ORDER BY sort_order ASC, id ASC"
@@ -47,10 +53,10 @@ final class MenuItem
             );
             $stmt->execute([':lang' => $default]);
 
-            return self::buildTree($stmt->fetchAll());
+            return self::$activeRequestCache[$lang] = self::buildTree($stmt->fetchAll());
         }
 
-        return self::buildTree($rows);
+        return self::$activeRequestCache[$lang] = self::buildTree($rows);
     }
 
     public static function findById(int $id): ?array
@@ -90,7 +96,9 @@ final class MenuItem
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
         ]);
 
-        return (int) Database::pdo()->lastInsertId();
+        $id = (int) Database::pdo()->lastInsertId();
+        self::$activeRequestCache = [];
+        return $id;
     }
 
     public static function update(int $id, array $data): void
@@ -113,6 +121,7 @@ final class MenuItem
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
             ':id' => $id,
         ]);
+        self::$activeRequestCache = [];
     }
 
     /**
@@ -245,6 +254,7 @@ final class MenuItem
                 ]);
             }
             $pdo->commit();
+            self::$activeRequestCache = [];
         } catch (\Throwable $e) {
             $pdo->rollBack();
             throw $e;
@@ -290,6 +300,7 @@ final class MenuItem
     {
         $stmt = Database::pdo()->prepare('DELETE FROM menu_items WHERE id = :id');
         $stmt->execute([':id' => $id]);
+        self::$activeRequestCache = [];
     }
 
     public static function move(int $id, string $direction): void
@@ -325,6 +336,7 @@ final class MenuItem
             $stmt->execute([':order' => $siblings[$swap]['sort_order'], ':id' => $siblings[$index]['id']]);
             $stmt->execute([':order' => $siblings[$index]['sort_order'], ':id' => $siblings[$swap]['id']]);
             $pdo->commit();
+            self::$activeRequestCache = [];
         } catch (\Throwable $e) {
             $pdo->rollBack();
             throw $e;
