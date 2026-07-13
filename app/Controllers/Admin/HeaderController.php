@@ -80,6 +80,8 @@ final class HeaderController
         HeaderConfig::save([
             'layout' => $_POST['layout'] ?? 'stacked',
             'logo_position' => $_POST['logo_position'] ?? 'left',
+            'logo_width' => $_POST['logo_width'] ?? HeaderConfig::DEFAULTS['logo_width'],
+            'logo_height' => $_POST['logo_height'] ?? HeaderConfig::DEFAULTS['logo_height'],
             'menu_position' => $_POST['menu_position'] ?? 'right',
             'sticky' => !empty($_POST['header_sticky']),
             'transparent' => !empty($_POST['header_transparent']),

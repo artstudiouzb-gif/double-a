@@ -51,6 +51,8 @@ final class HeaderConfig
     public const DEFAULTS = [
         'layout' => 'stacked',                // stacked | inline | centered | drawer
         'logo_position' => 'left',            // left | center
+        'logo_width' => 240,                  // px, 40..600
+        'logo_height' => 48,                  // px, 20..200
         'menu_position' => 'right',           // left | center | right
         // Поведение шапки: липкая (следует за прокруткой) и прозрачная
         // (накладывается на первый экран, при прокрутке становится сплошной).
@@ -210,6 +212,16 @@ final class HeaderConfig
 
         $result['logo_position'] = in_array($config['logo_position'] ?? '', ['left', 'center'], true)
             ? $config['logo_position'] : self::DEFAULTS['logo_position'];
+
+        $logoSize = static function (mixed $value, int $default, int $min, int $max): int {
+            if (!is_scalar($value) || !preg_match('/^\d+$/', trim((string) $value))) {
+                return $default;
+            }
+
+            return max($min, min($max, (int) $value));
+        };
+        $result['logo_width'] = $logoSize($config['logo_width'] ?? null, self::DEFAULTS['logo_width'], 40, 600);
+        $result['logo_height'] = $logoSize($config['logo_height'] ?? null, self::DEFAULTS['logo_height'], 20, 200);
 
         $result['menu_position'] = in_array($config['menu_position'] ?? '', ['left', 'center', 'right'], true)
             ? $config['menu_position'] : self::DEFAULTS['menu_position'];

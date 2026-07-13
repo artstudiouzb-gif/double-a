@@ -107,6 +107,16 @@ $heightSelect = function (string $name, string $current): string {
                     <span class="form-hint">Здесь — положение. Само изображение логотипа загружается в <a href="/admin/settings#logo">Настройки → Логотип</a> (там кнопка загрузки и медиабиблиотека).</span>
                 </div>
                 <div class="form-field">
+                    <label for="logo_width">Ширина логотипа, px</label>
+                    <input id="logo_width" name="logo_width" type="number" min="40" max="600" step="1" value="<?= (int) ($config['logo_width'] ?? 240) ?>" inputmode="numeric">
+                    <span class="form-hint">От 40 до 600 px. На узком экране логотип автоматически уменьшится.</span>
+                </div>
+                <div class="form-field">
+                    <label for="logo_height">Высота логотипа, px</label>
+                    <input id="logo_height" name="logo_height" type="number" min="20" max="200" step="1" value="<?= (int) ($config['logo_height'] ?? 48) ?>" inputmode="numeric">
+                    <span class="form-hint">От 20 до 200 px. Пропорции изображения сохраняются.</span>
+                </div>
+                <div class="form-field">
                     <label for="menu_position">Выравнивание меню</label>
                     <select id="menu_position" name="menu_position">
                         <option value="left" <?= $config['menu_position'] === 'left' ? 'selected' : '' ?>>Слева</option>

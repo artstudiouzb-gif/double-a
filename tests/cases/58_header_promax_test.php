@@ -41,6 +41,20 @@ test('HeaderConfig: sticky и transparent нормализуются в буле
     assert_true($off['sticky'] === false && $off['transparent'] === false);
 });
 
+test('HeaderConfig: размеры логотипа нормализуются и ограничиваются', function () {
+    $cfg = HeaderConfig::normalize(['logo_width' => '320', 'logo_height' => '72']);
+    assert_same(320, $cfg['logo_width']);
+    assert_same(72, $cfg['logo_height']);
+
+    $clamped = HeaderConfig::normalize(['logo_width' => '9999', 'logo_height' => '1']);
+    assert_same(600, $clamped['logo_width']);
+    assert_same(20, $clamped['logo_height']);
+
+    $invalid = HeaderConfig::normalize(['logo_width' => '100px', 'logo_height' => '-10']);
+    assert_same(240, $invalid['logo_width']);
+    assert_same(48, $invalid['logo_height']);
+});
+
 test('HeaderConfig: высоты секций и режим линий нормализуются', function () {
     $cfg = HeaderConfig::normalize([
         'topbar' => ['height' => 'tall'],
