@@ -340,6 +340,10 @@ if (\App\Core\Session::hasCookie()) {
     \App\Models\AuditLog::record();
 }
 
+// После успешных изменений публичного контента сбрасываем файловый кеш и
+// Cloudflare. Shutdown-регистрация срабатывает и при redirect/exit контроллера.
+\App\Core\PublicResponseCache::registerContentInvalidation();
+
 // Onboarding второго фактора: после корректного пароля пользователь без
 // Telegram получает ограниченную сессию и может открыть только профиль,
 // настройки доставки кода и выход. Остальная админка остаётся закрытой.

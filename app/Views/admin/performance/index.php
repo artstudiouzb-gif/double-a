@@ -37,6 +37,16 @@ $on = fn (string $k, string $d = '0') => ($settings[$k] ?? $d) === '1';
                 <input type="number" id="perf_cache_ttl" name="perf_cache_ttl" min="0" value="<?= $val('perf_cache_ttl', '0') ?>">
                 <span class="form-hint">Например, 3600 — пересобирать страницы не чаще раза в час.</span>
             </div>
+            <div class="form-field">
+                <label for="perf_public_cache_ttl">Кеш браузера для публичных страниц, секунд</label>
+                <input type="number" id="perf_public_cache_ttl" name="perf_public_cache_ttl" min="0" max="3600" value="<?= $val('perf_public_cache_ttl', '60') ?>">
+                <span class="form-hint">Рекомендуется 60. Применяется только к ответам без пользовательской сессии.</span>
+            </div>
+            <div class="form-field">
+                <label for="perf_shared_cache_ttl">Кеш CDN/reverse proxy, секунд</label>
+                <input type="number" id="perf_shared_cache_ttl" name="perf_shared_cache_ttl" min="0" max="86400" value="<?= $val('perf_shared_cache_ttl', '300') ?>">
+                <span class="form-hint">Рекомендуется 300. При изменении контента интеграция Cloudflare очищает кеш автоматически.</span>
+            </div>
         </div>
 
         <div class="header-builder__group">
