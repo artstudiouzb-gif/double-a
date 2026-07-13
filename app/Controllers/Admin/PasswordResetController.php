@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
-use App\Core\Config;
+use App\Core\AppUrl;
 use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\Logger;
@@ -133,7 +133,7 @@ final class PasswordResetController
 
     private function sendResetEmail(string $email, string $username, string $token): void
     {
-        $base = rtrim((string) Config::get('app.url', ''), '/');
+        $base = AppUrl::base();
         if ($base === '') {
             $scheme = SecurityHeaders::isHttps() ? 'https' : 'http';
             $base = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');

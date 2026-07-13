@@ -311,9 +311,6 @@ final class InstallController
 
     private function guessAppUrl(): string
     {
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-
-        return $scheme . '://' . $host;
+        return \App\Core\RequestUrl::origin();
     }
 }

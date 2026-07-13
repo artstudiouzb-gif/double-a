@@ -19,7 +19,7 @@ require __DIR__ . '/../Core/Cli.php';
 
 require __DIR__ . '/../Core/bootstrap.php';
 
-use App\Core\Config;
+use App\Core\AppUrl;
 use App\Core\Digest;
 use App\Core\Logger;
 use App\Core\ProcessLock;
@@ -58,7 +58,7 @@ try {
     }
 
     $siteName = Setting::get('site_name', '');
-    $baseUrl = rtrim((string) Config::get('app.url', ''), '/');
+    $baseUrl = AppUrl::base();
     $subject = Digest::buildSubject($siteName, date('d.m.Y'));
     $body = Digest::buildBody($items, $siteName, $baseUrl);
 

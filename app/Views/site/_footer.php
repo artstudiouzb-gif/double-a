@@ -139,11 +139,11 @@ $renderFooterWidget = function (array $col) use ($footerLogo, $siteName, $addres
 <?php if (\App\Core\Locale::path() === '/'): ?>
 <?= \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::organization(
     $siteName,
-    rtrim((string) \App\Core\Config::get('app.url', ''), '/') ?: '/',
+    \App\Core\AppUrl::base() ?: '/',
     Setting::get('contact_phone', ''),
     Setting::get('contact_email', ''),
     Setting::get('contact_address', ''),
-    $logo !== '' ? rtrim((string) \App\Core\Config::get('app.url', ''), '/') . $logo : ''
+    $logo !== '' ? \App\Core\AppUrl::base() . $logo : ''
 )) . "\n" ?>
 <?php endif; ?>
 <?php // Глобальный произвольный JS (группа 6, супер-админ). ?>

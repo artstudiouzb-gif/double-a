@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Site;
 
-use App\Core\Config;
+use App\Core\AppUrl;
 use App\Core\Locale;
 use App\Core\View;
 use App\Models\News;
@@ -46,7 +46,7 @@ final class NewsController
     {
         $lang = Locale::current();
         $items = News::published(30, 0, $lang);
-        $base = rtrim((string) Config::get('app.url', ''), '/');
+        $base = AppUrl::base();
         $siteName = (string) Setting::get('site_name', 'ArtStudio');
         $selfUrl = $base . Locale::url('news/rss.xml', $lang);
 

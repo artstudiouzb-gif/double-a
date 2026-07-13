@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Site;
 
-use App\Core\Config;
+use App\Core\AppUrl;
 use App\Core\Database;
 use App\Models\Language;
 
@@ -12,7 +12,7 @@ final class SitemapController
 {
     public function xml(): void
     {
-        $base = rtrim((string) Config::get('app.url', ''), '/');
+        $base = AppUrl::base();
         $languages = Language::active();
         $defaultCode = Language::defaultCode();
 
@@ -122,7 +122,7 @@ final class SitemapController
 
     public function robots(): void
     {
-        $base = rtrim((string) Config::get('app.url', ''), '/');
+        $base = AppUrl::base();
 
         header('Content-Type: text/plain; charset=UTF-8');
         echo "User-agent: *\n";

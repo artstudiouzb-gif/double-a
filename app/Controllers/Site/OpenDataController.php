@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controllers\Site;
 
-use App\Core\Config;
 use App\Models\ContentEntry;
 use App\Models\ContentType;
 use App\Models\News;
@@ -189,6 +188,6 @@ final class OpenDataController
 
     private function baseUrl(): string
     {
-        return rtrim((string) Config::get('app.url', ''), '/');
+        return \App\Core\AppUrl::base();
     }
 }

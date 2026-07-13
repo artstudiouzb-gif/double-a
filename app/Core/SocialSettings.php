@@ -75,7 +75,7 @@ final class SocialSettings
      */
     public static function buildPost(array $news): array
     {
-        $base = rtrim((string) Config::get('app.url', ''), '/');
+        $base = AppUrl::base();
         $link = $base . '/news/' . rawurlencode((string) $news['slug']);
         $abs = static fn (string $u): string => preg_match('#^https?://#', $u) ? $u : $base . '/' . ltrim($u, '/');
 

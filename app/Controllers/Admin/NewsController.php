@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\AppUrl;
 use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\ImageField;
@@ -173,7 +174,7 @@ final class NewsController
     /** Отправляет событие news.published в исходящие вебхуки (задача 136). */
     private function dispatchNewsPublished(int $id, array $data): void
     {
-        $base = rtrim((string) \App\Core\Config::get('app.url', ''), '/');
+        $base = AppUrl::base();
         \App\Core\WebhookDispatcher::dispatch('news.published', [
             'id' => $id,
             'title' => (string) ($data['title'] ?? ''),

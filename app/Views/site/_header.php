@@ -38,7 +38,7 @@ $fontUrl = Setting::get('font_url', '');           // ссылка на .woff2 �
 $fontFaceName = Setting::get('font_face_name', ''); // имя семейства для @font-face
 
 // --- SEO / Open Graph ---
-$appUrl = rtrim((string) \App\Core\Config::get('app.url', ''), '/');
+$appUrl = \App\Core\AppUrl::base();
 $canonicalUrl = $appUrl . Locale::url(Locale::path());
 $ogType = $ogType ?? 'website';
 // Приоритет OG-картинки: страница -> дефолтный OG:Image -> логотип (задача 116).

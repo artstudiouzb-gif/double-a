@@ -26,7 +26,7 @@ if ($workerLock === null) {
     exit(0);
 }
 
-use App\Core\Config;
+use App\Core\AppUrl;
 use App\Core\Logger;
 use App\Core\WebPush;
 use App\Models\News;
@@ -44,7 +44,7 @@ if ($batch === []) {
 }
 
 $push = new WebPush();
-$base = rtrim((string) Config::get('app.url', ''), '/');
+$base = AppUrl::base();
 
 foreach ($batch as $job) {
     $jobId = (int) $job['id'];

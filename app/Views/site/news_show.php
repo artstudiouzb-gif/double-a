@@ -1,7 +1,6 @@
 <?php
 
 use App\Core\AssetCollector;
-use App\Core\Config;
 use App\Core\DateFormatter;
 use App\Core\Locale;
 use App\Models\News;
@@ -61,7 +60,7 @@ $docs = is_array($docs) ? $docs : [];
 $videoUrl = trim((string) ($news['video_url'] ?? ''));
 $pressUrl = trim((string) ($news['press_release_url'] ?? ''));
 
-$base = rtrim((string) Config::get('app.url', ''), '/');
+$base = \App\Core\AppUrl::base();
 $pageUrl = $base . Locale::url('news/' . $news['slug'], $lang);
 $shareTitle = rawurlencode((string) $news['title']);
 $shareUrl = rawurlencode($pageUrl);

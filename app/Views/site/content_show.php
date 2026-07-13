@@ -87,7 +87,7 @@ $sideFields = array_values(array_filter($fields, static fn ($f) => !in_array($f[
 </article>
 <?php // Schema.org: хлебные крошки; для мероприятий — карточка события. ?>
 <?php
-$schemaBase = rtrim((string) \App\Core\Config::get('app.url', ''), '/');
+$schemaBase = \App\Core\AppUrl::base();
 $schemaUrl = static fn (string $p): string => $schemaBase . \App\Core\Locale::url($p);
 echo \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::breadcrumbs([
     [t('Главная'), $schemaUrl('/')],
