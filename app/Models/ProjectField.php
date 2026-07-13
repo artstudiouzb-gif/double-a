@@ -20,10 +20,7 @@ final class ProjectField
 
     public static function replaceAll(int $projectId, array $fields): void
     {
-        $pdo = Database::pdo();
-        $pdo->beginTransaction();
-
-        try {
+        Database::transaction(static function (\PDO $pdo) use ($projectId, $fields): void {
             $stmt = $pdo->prepare('DELETE FROM project_fields WHERE project_id = :project_id');
             $stmt->execute([':project_id' => $projectId]);
 
@@ -43,10 +40,6 @@ final class ProjectField
                 ]);
             }
 
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 }

@@ -6,7 +6,9 @@ namespace App\Controllers\Admin;
 
 use App\Core\Auth;
 use App\Core\AppUrl;
+use App\Core\ConcurrencyException;
 use App\Core\Csrf;
+use App\Core\Database;
 use App\Core\Flash;
 use App\Core\ImageField;
 use App\Core\Slug;
@@ -64,10 +66,18 @@ final class NewsController
             return;
         }
 
-        $id = News::create($data);
-        News::updateExtras($id, $this->collectExtras());
-        $this->saveTranslations($id);
-        $this->handleGallery($id);
+        $extras = $this->collectExtras();
+        [$id, $purgeAfterCommit] = Database::transaction(function (\PDO $_pdo) use ($data, $extras): array {
+            $id = News::create($data);
+            News::updateExtras($id, $extras);
+            $this->saveTranslations($id);
+            $purge = $this->handleGallery($id);
+
+            return [$id, $purge];
+        });
+        if ($purgeAfterCommit !== []) {
+            \App\Core\MediaCleaner::purgeUnreferenced($purgeAfterCommit);
+        }
 
         // Авто-публикация в соцсети + вебхук при создании опубликованной новости.
         if ($data['status'] === 'published') {
@@ -163,11 +173,30 @@ final class NewsController
         }
 
         $wasPublished = ($news['status'] ?? '') === 'published';
-        ContentRevision::capture('news', $id, Auth::id());
-        News::update($id, $data);
-        News::updateExtras($id, $this->collectExtras());
-        $this->saveTranslations($id);
-        $this->handleGallery($id);
+        $extras = $this->collectExtras();
+        $expectedVersion = (int) ($_POST['expected_lock_version'] ?? 0);
+        try {
+            $purgeAfterCommit = Database::transaction(function (\PDO $_pdo) use ($id, $data, $extras, $expectedVersion): array {
+                ContentRevision::capture('news', $id, Auth::id());
+                News::update($id, $data, $expectedVersion);
+                News::updateExtras($id, $extras);
+                $this->saveTranslations($id);
+
+                return $this->handleGallery($id);
+            });
+        } catch (ConcurrencyException) {
+            $news = News::findById($id) ?? $news;
+            View::render('admin/news/form', [
+                'news' => $news,
+                'translations' => NewsTranslation::forNews($id),
+                'gallery' => \App\Models\NewsImage::forNews($id),
+                'error' => 'Новость уже была изменена в другой вкладке или другим пользователем. Текущие данные перезагружены; восстановите локальный черновик и проверьте изменения.',
+            ]);
+            return;
+        }
+        if ($purgeAfterCommit !== []) {
+            \App\Core\MediaCleaner::purgeUnreferenced($purgeAfterCommit);
+        }
 
         // Авто-публикация + вебхук при переходе черновик -> опубликовано.
         if ($data['status'] === 'published' && !$wasPublished) {
@@ -356,8 +385,10 @@ final class NewsController
      * Обрабатывает галерею новости: удаление отмеченных фото, правку alt/порядка/
      * фокальной точки существующих и загрузку новых файлов (news_gallery[]).
      */
-    private function handleGallery(int $newsId): void
+    /** @return list<string> пути, которые можно удалить только после COMMIT */
+    private function handleGallery(int $newsId): array
     {
+        $purgeAfterCommit = [];
         // 1. Правки/удаления существующих.
         foreach ((array) ($_POST['gallery'] ?? []) as $imgId => $meta) {
             $imgId = (int) $imgId;
@@ -367,7 +398,7 @@ final class NewsController
             if (!empty($meta['delete'])) {
                 $path = \App\Models\NewsImage::delete($imgId, $newsId);
                 if ($path !== null) {
-                    \App\Core\MediaCleaner::purgeUnreferenced([$path]);
+                    $purgeAfterCommit[] = $path;
                 }
                 continue;
             }
@@ -383,7 +414,7 @@ final class NewsController
 
         // 2. Новые загрузки (множественный input news_gallery[]).
         if (empty($_FILES['news_gallery']) || !is_array($_FILES['news_gallery']['name'] ?? null)) {
-            return;
+            return $purgeAfterCommit;
         }
 
         $existing = \App\Models\NewsImage::forNews($newsId);
@@ -408,5 +439,7 @@ final class NewsController
                 Flash::error('Не удалось загрузить фото галереи: ' . $e->getMessage());
             }
         }
+
+        return $purgeAfterCommit;
     }
 }

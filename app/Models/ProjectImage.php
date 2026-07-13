@@ -20,10 +20,7 @@ final class ProjectImage
 
     public static function replaceAll(int $projectId, array $images): void
     {
-        $pdo = Database::pdo();
-        $pdo->beginTransaction();
-
-        try {
+        Database::transaction(static function (\PDO $pdo) use ($projectId, $images): void {
             $stmt = $pdo->prepare('DELETE FROM project_images WHERE project_id = :project_id');
             $stmt->execute([':project_id' => $projectId]);
 
@@ -43,10 +40,6 @@ final class ProjectImage
                 ]);
             }
 
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 }

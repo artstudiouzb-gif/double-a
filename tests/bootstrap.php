@@ -29,6 +29,7 @@ require APP_ROOT . '/app/Core/helpers.php';
 
 \App\Core\Config::set([
     'app' => ['env' => 'testing', 'debug' => true, 'url' => 'http://localhost', 'timezone' => 'UTC'],
+    'crypto' => ['encryption_key' => str_repeat('11', 32), 'previous_encryption_key' => ''],
     'paths' => [
         'protected_uploads' => APP_ROOT . '/storage/protected_uploads',
         'public_uploads' => APP_ROOT . '/public/uploads/public',

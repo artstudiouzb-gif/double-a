@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Core\ConcurrencyException;
 use App\Core\Database;
 
 final class Project
@@ -191,13 +192,15 @@ final class Project
         return $id;
     }
 
-    public static function update(int $id, array $data): void
+    public static function update(int $id, array $data, ?int $expectedLockVersion = null): void
     {
         $stmt = Database::pdo()->prepare(
             'UPDATE projects SET title = :title, slug = :slug, description = :description,
-             cover_image = :cover_image, status = :status, is_featured = :is_featured, sort_order = :sort_order WHERE id = :id'
+             cover_image = :cover_image, status = :status, is_featured = :is_featured,
+             sort_order = :sort_order, lock_version = lock_version + 1
+             WHERE id = :id' . ($expectedLockVersion !== null ? ' AND lock_version = :expected_lock_version' : '')
         );
-        $stmt->execute([
+        $params = [
             ':title' => $data['title'],
             ':slug' => $data['slug'],
             ':description' => $data['description'],
@@ -206,7 +209,14 @@ final class Project
             ':is_featured' => !empty($data['is_featured']) ? 1 : 0,
             ':sort_order' => $data['sort_order'] ?? 0,
             ':id' => $id,
-        ]);
+        ];
+        if ($expectedLockVersion !== null) {
+            $params[':expected_lock_version'] = $expectedLockVersion;
+        }
+        $stmt->execute($params);
+        if ($expectedLockVersion !== null && $stmt->rowCount() !== 1) {
+            throw new ConcurrencyException('Проект был изменён другим пользователем.');
+        }
         self::bustPageCache();
     }
 

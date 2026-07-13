@@ -74,7 +74,10 @@ foreach ($blocks as $b) {
     <?php endif; ?>
     <form method="post" action="<?= $action ?>" class="form-grid" data-content-draft="page:<?= $isEdit ? (int) $page['id'] : 'new' ?>" data-record-updated="<?= htmlspecialchars((string) ($page['updated_at'] ?? ''), ENT_QUOTES) ?>">
         <?= Csrf::field() ?>
-        <?php if ($isEdit): ?><input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $page['updated_at'], ENT_QUOTES) ?>"><?php endif; ?>
+        <?php if ($isEdit): ?>
+            <input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $page['updated_at'], ENT_QUOTES) ?>">
+            <input type="hidden" name="expected_lock_version" value="<?= (int) ($page['lock_version'] ?? 1) ?>">
+        <?php endif; ?>
 
         <div data-lang-tabs>
             <div class="lang-tabs">

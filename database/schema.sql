@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone           VARCHAR(20)  NULL COMMENT 'телефон в формате E.164 (+998...) для кода входа через Telegram',
     telegram_chat_id BIGINT      NULL COMMENT 'chat_id привязанного Telegram-аккаунта (коды входа через бота)',
     password_hash   VARCHAR(255) NOT NULL,
-    totp_secret     VARCHAR(64)  NULL,
+    totp_secret     TEXT         NULL,
     totp_enabled    TINYINT(1)   NOT NULL DEFAULT 0,
     role            ENUM('admin', 'editor') NOT NULL DEFAULT 'admin',
     last_login_at   DATETIME NULL,
@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS news (
     author_id       INT UNSIGNED NULL,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    lock_version    INT UNSIGNED NOT NULL DEFAULT 1,
     deleted_at      DATETIME NULL COMMENT 'мягкое удаление (корзина)',
     UNIQUE KEY uq_news_slug (slug),
     KEY idx_news_status_published (status, published_at),
@@ -137,6 +138,7 @@ CREATE TABLE IF NOT EXISTS pages (
     transparent_header TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'прозрачная шапка на этой странице' COMMENT 'лендинг: скрыть шапку/футер сайта',
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    lock_version    INT UNSIGNED NOT NULL DEFAULT 1,
     deleted_at      DATETIME NULL COMMENT 'мягкое удаление (корзина)',
     UNIQUE KEY uq_pages_slug (slug)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -226,6 +228,7 @@ CREATE TABLE IF NOT EXISTS projects (
     sort_order      INT NOT NULL DEFAULT 0,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    lock_version    INT UNSIGNED NOT NULL DEFAULT 1,
     deleted_at      DATETIME NULL COMMENT 'мягкое удаление (корзина)',
     UNIQUE KEY uq_projects_slug (slug)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -461,7 +464,7 @@ CREATE TABLE IF NOT EXISTS webhooks (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_type  VARCHAR(60)  NOT NULL,
     url         VARCHAR(500) NOT NULL,
-    secret      VARCHAR(190) NULL,
+    secret      TEXT         NULL,
     is_active   TINYINT(1)   NOT NULL DEFAULT 1,
     created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY idx_webhooks_event (event_type, is_active)
@@ -703,7 +706,7 @@ CREATE TABLE IF NOT EXISTS repo_users (
     full_name       VARCHAR(190) NOT NULL DEFAULT '',
     email           VARCHAR(190) NOT NULL,
     password_hash   VARCHAR(255) NOT NULL,
-    totp_secret     VARCHAR(64)  NULL,
+    totp_secret     TEXT         NULL,
     totp_enabled    TINYINT(1)   NOT NULL DEFAULT 0,
     is_active       TINYINT(1)   NOT NULL DEFAULT 1,
     last_login_at   DATETIME NULL,
@@ -837,7 +840,9 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_11_pages_lead.sql'),
     ('2026_07_11_featured_home.sql'),
     ('2026_07_12_videos.sql'),
-    ('2026_07_13_content_revisions.sql')
+    ('2026_07_13_content_revisions.sql'),
+    ('2026_07_13_content_locking.sql'),
+    ('2026_07_13_encrypt_secrets.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

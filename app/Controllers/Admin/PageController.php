@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\ConcurrencyException;
 use App\Core\Csrf;
+use App\Core\Database;
 use App\Core\Flash;
 use App\Core\Slug;
 use App\Core\View;
@@ -63,8 +65,12 @@ final class PageController
             return;
         }
 
-        $id = Page::create($data);
-        $this->saveTranslations($id);
+        $id = Database::transaction(function (\PDO $_pdo) use ($data): int {
+            $id = Page::create($data);
+            $this->saveTranslations($id);
+
+            return $id;
+        });
 
         Flash::success('Страница создана. Теперь добавьте блоки контента.');
         header('Location: /admin/pages/' . $id . '/edit?draft_saved=page%3Anew');
@@ -177,9 +183,25 @@ final class PageController
             return;
         }
 
-        ContentRevision::capture('page', $id, Auth::id());
-        Page::update($id, $data);
-        $this->saveTranslations($id);
+        $expectedVersion = (int) ($_POST['expected_lock_version'] ?? 0);
+        try {
+            Database::transaction(function (\PDO $_pdo) use ($id, $data, $expectedVersion): void {
+                ContentRevision::capture('page', $id, Auth::id());
+                Page::update($id, $data, $expectedVersion);
+                $this->saveTranslations($id);
+            });
+        } catch (ConcurrencyException) {
+            $page = Page::findById($id) ?? $page;
+            $blockLang = $this->resolveBlockLang();
+            View::render('admin/pages/form', [
+                'page' => $page,
+                'translations' => PageTranslation::forPage($id),
+                'error' => 'Страница уже была изменена в другой вкладке или другим пользователем. Текущие данные перезагружены; восстановите локальный черновик и проверьте изменения.',
+                'blocks' => Block::forPage($id, $blockLang),
+                'blockLang' => $blockLang,
+            ]);
+            return;
+        }
         \App\Core\Cache::forgetPrefix('page:' . $id);
 
         Flash::success('Страница обновлена.');

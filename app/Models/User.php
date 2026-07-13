@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Database;
+use App\Core\SecretBox;
 
 final class User
 {
@@ -40,7 +41,7 @@ final class User
         $stmt->execute([':username' => $username]);
         $row = $stmt->fetch();
 
-        return $row ?: null;
+        return self::decryptSecrets($row ?: null);
     }
 
     public static function findById(int $id): ?array
@@ -49,7 +50,7 @@ final class User
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch();
 
-        return $row ?: null;
+        return self::decryptSecrets($row ?: null);
     }
 
     public static function findByEmail(string $email): ?array
@@ -58,7 +59,7 @@ final class User
         $stmt->execute([':email' => $email]);
         $row = $stmt->fetch();
 
-        return $row ?: null;
+        return self::decryptSecrets($row ?: null);
     }
 
     public static function updatePassword(int $id, string $newPassword): void
@@ -73,7 +74,7 @@ final class User
     public static function enableTotp(int $id, string $secret): void
     {
         $stmt = Database::pdo()->prepare('UPDATE users SET totp_secret = :secret, totp_enabled = 1 WHERE id = :id');
-        $stmt->execute([':secret' => $secret, ':id' => $id]);
+        $stmt->execute([':secret' => SecretBox::encrypt($secret, 'users.totp_secret'), ':id' => $id]);
     }
 
     /** Телефон (E.164) для кода входа через Telegram; null — вход без кода. */
@@ -111,5 +112,14 @@ final class User
         ]);
 
         return (int) Database::pdo()->lastInsertId();
+    }
+
+    private static function decryptSecrets(?array $row): ?array
+    {
+        if ($row !== null && array_key_exists('totp_secret', $row)) {
+            $row['totp_secret'] = SecretBox::decrypt($row['totp_secret'] !== null ? (string) $row['totp_secret'] : null, 'users.totp_secret');
+        }
+
+        return $row;
     }
 }

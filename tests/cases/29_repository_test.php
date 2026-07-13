@@ -37,6 +37,9 @@ test('RepoUser: создание, поиск, уникальность, акти
     $u = RepoUser::findById($id);
     assert_same(1, (int) $u['totp_enabled']);
     assert_same('JBSWY3DPEHPK3PXP', $u['totp_secret']);
+    $rawSecret = (string) $pdo->query('SELECT totp_secret FROM repo_users WHERE id = ' . $id)->fetchColumn();
+    assert_true(str_starts_with($rawSecret, 'enc:v1:'), 'TOTP зашифрован в БД');
+    assert_false(str_contains($rawSecret, 'JBSWY3DPEHPK3PXP'), 'открытый TOTP отсутствует в БД');
     RepoUser::disableTotp($id);
     $u = RepoUser::findById($id);
     assert_same(0, (int) $u['totp_enabled']);

@@ -21,7 +21,10 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
     <?php endif; ?>
     <form method="post" action="<?= $action ?>" enctype="multipart/form-data" class="form-grid" data-content-draft="project:<?= $isEdit ? (int) $project['id'] : 'new' ?>" data-record-updated="<?= htmlspecialchars((string) ($project['updated_at'] ?? ''), ENT_QUOTES) ?>">
         <?= Csrf::field() ?>
-        <?php if ($isEdit): ?><input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $project['updated_at'], ENT_QUOTES) ?>"><?php endif; ?>
+        <?php if ($isEdit): ?>
+            <input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $project['updated_at'], ENT_QUOTES) ?>">
+            <input type="hidden" name="expected_lock_version" value="<?= (int) ($project['lock_version'] ?? 1) ?>">
+        <?php endif; ?>
 
         <div class="form-field">
             <label for="title">Название проекта</label>

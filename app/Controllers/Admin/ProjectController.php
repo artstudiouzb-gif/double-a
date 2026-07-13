@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\ConcurrencyException;
 use App\Core\Csrf;
+use App\Core\Database;
 use App\Core\Flash;
 use App\Core\ImageField;
 use App\Core\Slug;
@@ -65,9 +67,15 @@ final class ProjectController
             return;
         }
 
-        $id = Project::create($data);
-        ProjectImage::replaceAll($id, $this->collectImages());
-        ProjectField::replaceAll($id, $this->collectFields());
+        $images = $this->collectImages();
+        $fields = $this->collectFields();
+        $id = Database::transaction(static function (\PDO $_pdo) use ($data, $images, $fields): int {
+            $id = Project::create($data);
+            ProjectImage::replaceAll($id, $images);
+            ProjectField::replaceAll($id, $fields);
+
+            return $id;
+        });
 
         Flash::success('Проект создан.');
         header('Location: /admin/projects/' . $id . '/edit?draft_saved=project%3Anew');
@@ -128,10 +136,26 @@ final class ProjectController
             return;
         }
 
-        ContentRevision::capture('project', $id, Auth::id());
-        Project::update($id, $data);
-        ProjectImage::replaceAll($id, $this->collectImages());
-        ProjectField::replaceAll($id, $this->collectFields());
+        $images = $this->collectImages();
+        $fields = $this->collectFields();
+        $expectedVersion = (int) ($_POST['expected_lock_version'] ?? 0);
+        try {
+            Database::transaction(static function (\PDO $_pdo) use ($id, $data, $images, $fields, $expectedVersion): void {
+                ContentRevision::capture('project', $id, Auth::id());
+                Project::update($id, $data, $expectedVersion);
+                ProjectImage::replaceAll($id, $images);
+                ProjectField::replaceAll($id, $fields);
+            });
+        } catch (ConcurrencyException) {
+            $project = Project::findById($id) ?? $project;
+            View::render('admin/projects/form', [
+                'project' => $project,
+                'images' => ProjectImage::forProject($id),
+                'fields' => ProjectField::forProject($id),
+                'error' => 'Проект уже был изменён в другой вкладке или другим пользователем. Текущие данные перезагружены; восстановите локальный черновик и проверьте изменения.',
+            ]);
+            return;
+        }
 
         Flash::success('Проект обновлён.');
         header('Location: /admin/projects/' . $id . '/edit?draft_saved=project%3A' . $id);

@@ -251,6 +251,7 @@ final class InstallController
     private function writeConfig(array $db): void
     {
         $appUrl = $this->guessAppUrl();
+        $encryptionKey = bin2hex(random_bytes(32));
         $tpl = "<?php\n\ndeclare(strict_types=1);\n\n"
             . "// Сгенерировано веб-инсталлятором ArtStudio CMS.\n"
             . "return [\n"
@@ -259,6 +260,10 @@ final class InstallController
             . "        'debug' => filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOLEAN),\n"
             . "        'url' => getenv('APP_URL') ?: " . var_export($appUrl, true) . ",\n"
             . "        'timezone' => getenv('APP_TIMEZONE') ?: 'UTC',\n"
+            . "    ],\n"
+            . "    'crypto' => [\n"
+            . "        'encryption_key' => getenv('APP_ENCRYPTION_KEY') ?: " . var_export($encryptionKey, true) . ",\n"
+            . "        'previous_encryption_key' => getenv('APP_PREVIOUS_ENCRYPTION_KEY') ?: '',\n"
             . "    ],\n"
             . "    'db' => [\n"
             . "        'host' => getenv('DB_HOST') ?: " . var_export($db['host'], true) . ",\n"

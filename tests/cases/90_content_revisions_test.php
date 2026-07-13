@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 use App\Core\Database;
+use App\Core\ConcurrencyException;
 use App\Models\ContentRevision;
+use App\Models\Project;
+use App\Models\ProjectField;
 
 test('content revisions: project snapshot restores row, images and fields', function (): void {
     if (!Database::isConnected()) {
@@ -61,8 +64,45 @@ test('content revision UI exposes history links and local draft safeguards', fun
     assert_contains('/admin/revisions/news/', $newsForm);
     assert_contains('/admin/revisions/project/', $projectForm);
     assert_contains('expected_updated_at', $pageForm);
+    assert_contains('expected_lock_version', $pageForm);
     assert_contains('data-content-draft', $newsForm);
     assert_contains('artstudio:draft:', $adminJs);
     assert_contains('draft_saved', $adminJs);
     assert_contains('beforeunload', $adminJs);
+});
+
+test('content save: stale lock_version rolls back parent and children', function (): void {
+    if (!Database::isConnected()) {
+        return;
+    }
+    $pdo = Database::pdo();
+    $id = Project::create([
+        'title' => 'CAS original', 'slug' => 'cas-' . bin2hex(random_bytes(4)),
+        'description' => null, 'cover_image' => null, 'status' => 'draft',
+        'is_featured' => false, 'sort_order' => 0,
+    ]);
+    ProjectField::replaceAll($id, [['field_key' => 'year', 'field_value' => '2026']]);
+    $version = (int) Project::findById($id)['lock_version'];
+    $data = [
+        'title' => 'CAS first', 'slug' => Project::findById($id)['slug'],
+        'description' => null, 'cover_image' => null, 'status' => 'draft',
+        'is_featured' => false, 'sort_order' => 0,
+    ];
+    try {
+        Project::update($id, $data, $version);
+        $failed = false;
+        try {
+            Database::transaction(static function (\PDO $_pdo) use ($id, $data, $version): void {
+                Project::update($id, array_merge($data, ['title' => 'CAS stale']), $version);
+                ProjectField::replaceAll($id, [['field_key' => 'year', 'field_value' => '2030']]);
+            });
+        } catch (ConcurrencyException) {
+            $failed = true;
+        }
+        assert_true($failed, 'устаревшее сохранение отклонено');
+        assert_same('CAS first', Project::findById($id)['title']);
+        assert_same('2026', $pdo->query('SELECT field_value FROM project_fields WHERE project_id = ' . $id)->fetchColumn());
+    } finally {
+        Project::forceDelete($id);
+    }
 });

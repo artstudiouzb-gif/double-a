@@ -20,9 +20,11 @@ return [
     'crypto' => [
         'app_env' => getenv('APP_ENV') ?: 'production',
         'app_url' => getenv('APP_URL') ?: '',
-        // Ключ шифрования для будущего шифрования секретов at-rest
-        // (напр. TOTP-секретов). Сгенерируйте: bin2hex(random_bytes(32)).
+        // Ключ шифрования TOTP, API-токенов и секретов webhooks в БД.
+        // Сгенерируйте: php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
         'encryption_key' => getenv('APP_ENCRYPTION_KEY') ?: '',
+        // Только на время ротации: старый ключ для чтения, новый — выше.
+        'previous_encryption_key' => getenv('APP_PREVIOUS_ENCRYPTION_KEY') ?: '',
     ],
     'db' => [
         'host' => getenv('DB_HOST') ?: '127.0.0.1',

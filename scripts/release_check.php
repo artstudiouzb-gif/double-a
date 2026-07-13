@@ -14,9 +14,11 @@ require __DIR__ . '/../app/Core/Cli.php';
 \App\Core\Cli::assertCli();
 require __DIR__ . '/../app/Core/Config.php';
 require __DIR__ . '/../app/Core/Database.php';
+require __DIR__ . '/../app/Core/SecretBox.php';
 
 use App\Core\Config;
 use App\Core\Database;
+use App\Core\SecretBox;
 
 $root = dirname(__DIR__);
 $jsonOutput = in_array('--json', $argv, true);
@@ -61,6 +63,11 @@ if (is_file($configFile)) {
         $add('production_env', $env === 'production' ? 'ok' : 'warning', 'APP_ENV=' . $env);
         $add('debug_disabled', !$debug ? 'ok' : 'error', $debug ? 'APP_DEBUG включён' : 'APP_DEBUG выключен');
         $add('https_url', str_starts_with($url, 'https://') ? 'ok' : 'error', $url !== '' ? $url : 'APP_URL не задан');
+        $add(
+            'encryption_key',
+            SecretBox::hasValidCurrentKey() ? 'ok' : 'error',
+            SecretBox::hasValidCurrentKey() ? 'Ключ шифрования корректен' : 'Задайте APP_ENCRYPTION_KEY: 64 hex-символа'
+        );
 
         Database::init((array) ($config['db'] ?? []));
         Database::pdo()->query('SELECT 1');

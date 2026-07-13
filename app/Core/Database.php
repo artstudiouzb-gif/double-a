@@ -57,4 +57,34 @@ final class Database
 
         return self::$connection;
     }
+
+    /**
+     * Выполняет единицу работы атомарно. Вложенный вызов присоединяется к уже
+     * открытой транзакции, поэтому модели можно безопасно компоновать.
+     *
+     * @template T
+     * @param callable(PDO): T $callback
+     * @return T
+     */
+    public static function transaction(callable $callback): mixed
+    {
+        $pdo = self::pdo();
+        $owner = !$pdo->inTransaction();
+        if ($owner) {
+            $pdo->beginTransaction();
+        }
+        try {
+            $result = $callback($pdo);
+            if ($owner) {
+                $pdo->commit();
+            }
+
+            return $result;
+        } catch (\Throwable $e) {
+            if ($owner && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+    }
 }

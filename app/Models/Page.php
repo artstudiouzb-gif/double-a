@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Database;
+use App\Core\ConcurrencyException;
 
 final class Page
 {
@@ -205,10 +206,7 @@ final class Page
 
     public static function create(array $data): int
     {
-        $pdo = Database::pdo();
-        $pdo->beginTransaction();
-
-        try {
+        return Database::transaction(static function (\PDO $pdo) use ($data): int {
             if (!empty($data['is_home'])) {
                 $pdo->exec('UPDATE pages SET is_home = 0');
             }
@@ -231,21 +229,13 @@ final class Page
             ]);
             $id = (int) $pdo->lastInsertId();
 
-            $pdo->commit();
-
             return $id;
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 
-    public static function update(int $id, array $data): void
+    public static function update(int $id, array $data, ?int $expectedLockVersion = null): void
     {
-        $pdo = Database::pdo();
-        $pdo->beginTransaction();
-
-        try {
+        Database::transaction(static function (\PDO $pdo) use ($id, $data, $expectedLockVersion): void {
             if (!empty($data['is_home'])) {
                 $pdo->exec('UPDATE pages SET is_home = 0');
             }
@@ -254,9 +244,10 @@ final class Page
                 'UPDATE pages SET title = :title, slug = :slug, meta_title = :meta_title,
                  meta_description = :meta_description, lead = :lead, status = :status, is_home = :is_home,
                  layout_type = :layout_type, hide_chrome = :hide_chrome,
-                 transparent_header = :transparent_header WHERE id = :id'
+                 transparent_header = :transparent_header, lock_version = lock_version + 1
+                 WHERE id = :id' . ($expectedLockVersion !== null ? ' AND lock_version = :expected_lock_version' : '')
             );
-            $stmt->execute([
+            $params = [
                 ':title' => $data['title'],
                 ':slug' => $data['slug'],
                 ':meta_title' => $data['meta_title'],
@@ -268,13 +259,15 @@ final class Page
                 ':hide_chrome' => !empty($data['hide_chrome']) ? 1 : 0,
                 ':transparent_header' => !empty($data['transparent_header']) ? 1 : 0,
                 ':id' => $id,
-            ]);
-
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+            ];
+            if ($expectedLockVersion !== null) {
+                $params[':expected_lock_version'] = $expectedLockVersion;
+            }
+            $stmt->execute($params);
+            if ($expectedLockVersion !== null && $stmt->rowCount() !== 1) {
+                throw new ConcurrencyException('Страница была изменена другим пользователем.');
+            }
+        });
     }
 
     public static function delete(int $id): void

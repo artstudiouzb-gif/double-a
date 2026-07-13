@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Core\ConcurrencyException;
 use App\Core\Database;
 use App\Core\Video;
 
@@ -361,16 +362,17 @@ final class News
         return $id;
     }
 
-    public static function update(int $id, array $data): void
+    public static function update(int $id, array $data, ?int $expectedLockVersion = null): void
     {
         $stmt = Database::pdo()->prepare(
             'UPDATE news SET title = :title, slug = :slug, excerpt = :excerpt, content = :content,
              image = :image, video_url = :video_url, layout_type = :layout_type,
              focal_x = :focal_x, focal_y = :focal_y,
              meta_title = :meta_title, meta_description = :meta_description,
-             status = :status, published_at = :published_at WHERE id = :id'
+             status = :status, published_at = :published_at, lock_version = lock_version + 1
+             WHERE id = :id' . ($expectedLockVersion !== null ? ' AND lock_version = :expected_lock_version' : '')
         );
-        $stmt->execute([
+        $params = [
             ':title' => $data['title'],
             ':slug' => $data['slug'],
             ':excerpt' => $data['excerpt'],
@@ -385,7 +387,14 @@ final class News
             ':status' => $data['status'],
             ':published_at' => $data['published_at'],
             ':id' => $id,
-        ]);
+        ];
+        if ($expectedLockVersion !== null) {
+            $params[':expected_lock_version'] = $expectedLockVersion;
+        }
+        $stmt->execute($params);
+        if ($expectedLockVersion !== null && $stmt->rowCount() !== 1) {
+            throw new ConcurrencyException('Новость была изменена другим пользователем.');
+        }
         self::bustPageCache();
     }
 

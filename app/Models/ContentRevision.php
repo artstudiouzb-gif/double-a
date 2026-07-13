@@ -164,6 +164,8 @@ final class ContentRevision
                 $pdo->prepare('UPDATE pages SET is_home = 0 WHERE id <> :id')->execute([':id' => $entityId]);
             }
             self::updateRow($cfg['table'], $cfg['columns'], $entityId, (array) ($snapshot['entity'] ?? []));
+            $pdo->prepare('UPDATE ' . $cfg['table'] . ' SET lock_version = lock_version + 1 WHERE id = :id')
+                ->execute([':id' => $entityId]);
 
             foreach ($cfg['children'] as $child) {
                 $pdo->prepare('DELETE FROM ' . $child['table'] . ' WHERE ' . $child['fk'] . ' = :id')

@@ -51,6 +51,7 @@ if ($newestBackup === '' || (int) filemtime($newestBackup) < $backupStartedAt - 
     exit(1);
 }
 releaseRun('Миграции базы данных', $root . '/database/migrate.php');
+releaseRun('Шифрование секретов БД', $root . '/database/encrypt_secrets.php');
 
 fwrite(STDOUT, "\n== Очистка файлового кеша ==\n");
 $cacheDir = $root . '/storage/cache';

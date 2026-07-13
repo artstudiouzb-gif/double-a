@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Database;
+use App\Core\SecretBox;
 
 /**
  * Учётная запись портала защищённого файлового хранилища. Полностью отделена
@@ -30,7 +31,7 @@ final class RepoUser
         $stmt = Database::pdo()->prepare('SELECT * FROM repo_users WHERE id = :id LIMIT 1');
         $stmt->execute([':id' => $id]);
 
-        return $stmt->fetch() ?: null;
+        return self::decryptSecrets($stmt->fetch() ?: null);
     }
 
     public static function findByUsername(string $username): ?array
@@ -38,7 +39,7 @@ final class RepoUser
         $stmt = Database::pdo()->prepare('SELECT * FROM repo_users WHERE username = :u LIMIT 1');
         $stmt->execute([':u' => $username]);
 
-        return $stmt->fetch() ?: null;
+        return self::decryptSecrets($stmt->fetch() ?: null);
     }
 
     public static function usernameExists(string $username): bool
@@ -91,7 +92,7 @@ final class RepoUser
     public static function enableTotp(int $id, string $secret): void
     {
         $stmt = Database::pdo()->prepare('UPDATE repo_users SET totp_secret = :s, totp_enabled = 1 WHERE id = :id');
-        $stmt->execute([':s' => $secret, ':id' => $id]);
+        $stmt->execute([':s' => SecretBox::encrypt($secret, 'repo_users.totp_secret'), ':id' => $id]);
     }
 
     public static function disableTotp(int $id): void
@@ -110,5 +111,14 @@ final class RepoUser
     {
         $stmt = Database::pdo()->prepare('DELETE FROM repo_users WHERE id = :id');
         $stmt->execute([':id' => $id]);
+    }
+
+    private static function decryptSecrets(?array $row): ?array
+    {
+        if ($row !== null && array_key_exists('totp_secret', $row)) {
+            $row['totp_secret'] = SecretBox::decrypt($row['totp_secret'] !== null ? (string) $row['totp_secret'] : null, 'repo_users.totp_secret');
+        }
+
+        return $row;
     }
 }

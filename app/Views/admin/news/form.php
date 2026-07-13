@@ -65,7 +65,10 @@ $languages = Language::active();
 <?php endif; ?>
 <form method="post" action="<?= $action ?>" enctype="multipart/form-data" data-content-draft="news:<?= $isEdit ? (int) $news['id'] : 'new' ?>" data-record-updated="<?= htmlspecialchars((string) ($news['updated_at'] ?? ''), ENT_QUOTES) ?>">
     <?= Csrf::field() ?>
-    <?php if ($isEdit): ?><input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $news['updated_at'], ENT_QUOTES) ?>"><?php endif; ?>
+    <?php if ($isEdit): ?>
+        <input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $news['updated_at'], ENT_QUOTES) ?>">
+        <input type="hidden" name="expected_lock_version" value="<?= (int) ($news['lock_version'] ?? 1) ?>">
+    <?php endif; ?>
     <div class="entry-grid">
     <div class="entry-main">
     <div class="form-card">
