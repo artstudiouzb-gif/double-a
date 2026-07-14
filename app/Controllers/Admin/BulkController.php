@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\AdminListQuery;
 use App\Core\Cache;
 use App\Core\Csrf;
 use App\Core\Flash;
@@ -41,10 +42,11 @@ final class BulkController
 
         $ids = array_values(array_filter(array_map('intval', (array) ($_POST['ids'] ?? []))));
         $action = (string) ($_POST['bulk_action'] ?? '');
+        $returnPath = AdminListQuery::returnPath('/admin/' . $type, $_POST['return_query'] ?? '');
 
         if ($ids === []) {
             Flash::error('Не выбрано ни одной записи.');
-            $this->back($type);
+            $this->back($returnPath);
         }
 
         $done = 0;
@@ -69,7 +71,7 @@ final class BulkController
                     break;
                 default:
                     Flash::error('Неизвестное действие.');
-                    $this->back($type);
+                    $this->back($returnPath);
             }
         }
 
@@ -77,12 +79,12 @@ final class BulkController
         Cache::forgetPrefix('page:');
 
         Flash::success("Обработано записей: {$done}.");
-        $this->back($type);
+        $this->back($returnPath);
     }
 
-    private function back(string $type): never
+    private function back(string $returnPath): never
     {
-        header('Location: /admin/' . $type);
+        header('Location: ' . $returnPath);
         exit;
     }
 }

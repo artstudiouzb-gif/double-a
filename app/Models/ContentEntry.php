@@ -28,6 +28,59 @@ final class ContentEntry
         return $stmt->fetchAll();
     }
 
+    public static function adminList(int $typeId, array $filters): array
+    {
+        [$where, $params] = self::adminListWhere($typeId, $filters);
+        $orders = [
+            'manual' => 'ce.sort_order ASC, ce.created_at DESC, ce.id DESC',
+            'newest' => 'ce.created_at DESC, ce.id DESC',
+            'oldest' => 'ce.created_at ASC, ce.id ASC',
+            'title_asc' => 'ce.title ASC, ce.id ASC',
+            'title_desc' => 'ce.title DESC, ce.id DESC',
+        ];
+        $order = $orders[$filters['sort'] ?? 'manual'] ?? $orders['manual'];
+        $stmt = Database::pdo()->prepare("SELECT ce.* FROM content_entries ce {$where} ORDER BY {$order} LIMIT :limit OFFSET :offset");
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':limit', (int) $filters['per_page'], \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $filters['offset'], \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public static function adminCount(int $typeId, array $filters): int
+    {
+        [$where, $params] = self::adminListWhere($typeId, $filters);
+        $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM content_entries ce {$where}");
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** @return array{0:string,1:array<string,string>} */
+    private static function adminListWhere(int $typeId, array $filters): array
+    {
+        $where = 'WHERE ce.type_id = :type_id AND ce.deleted_at IS NULL';
+        $params = [':type_id' => (string) $typeId];
+        if (in_array($filters['status'] ?? '', ['published', 'draft'], true)) {
+            $where .= ' AND ce.status = :status';
+            $params[':status'] = (string) $filters['status'];
+        }
+        if (($filters['q'] ?? '') !== '') {
+            $where .= ' AND (ce.title LIKE :q_title OR ce.slug LIKE :q_slug OR ce.data LIKE :q_data'
+                . ' OR EXISTS (SELECT 1 FROM content_entry_translations cetq WHERE cetq.entry_id = ce.id AND cetq.title LIKE :q_translation))';
+            $like = '%' . (string) $filters['q'] . '%';
+            $params[':q_title'] = $like;
+            $params[':q_slug'] = $like;
+            $params[':q_data'] = $like;
+            $params[':q_translation'] = $like;
+        }
+
+        return [$where, $params];
+    }
+
     /**
      * Опубликованные записи типа с поиском/сортировкой/пагинацией (фронтенд).
      * Поиск — по заголовку и JSON-значениям полей (data). Сортировка:

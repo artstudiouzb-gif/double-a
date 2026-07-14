@@ -104,11 +104,25 @@ final class MenuItem
     public static function update(int $id, array $data): void
     {
         $parentId = isset($data['parent_id']) && $data['parent_id'] !== null ? (int) $data['parent_id'] : null;
+        $current = self::findById($id);
+        $sortOrder = (int) ($current['sort_order'] ?? 0);
+        $parentChanged = $current !== null
+            && ((string) $current['lang'] !== (string) $data['lang']
+                || (($current['parent_id'] === null) !== ($parentId === null))
+                || ($parentId !== null && (int) $current['parent_id'] !== $parentId));
+        if ($parentChanged) {
+            $orderStmt = Database::pdo()->prepare(
+                'SELECT COALESCE(MAX(sort_order), 0) + 1 FROM menu_items
+                 WHERE lang = :lang AND parent_id <=> :parent AND id <> :id'
+            );
+            $orderStmt->execute([':lang' => $data['lang'], ':parent' => $parentId, ':id' => $id]);
+            $sortOrder = (int) $orderStmt->fetchColumn();
+        }
 
         $stmt = Database::pdo()->prepare(
             'UPDATE menu_items SET lang = :lang, title = :title, icon_svg = :icon_svg,
              is_divider = :is_divider, url_type = :url_type, url_value = :url_value,
-             parent_id = :parent_id, is_active = :is_active WHERE id = :id'
+             parent_id = :parent_id, sort_order = :sort_order, is_active = :is_active WHERE id = :id'
         );
         $stmt->execute([
             ':lang' => $data['lang'],
@@ -118,6 +132,7 @@ final class MenuItem
             ':url_type' => $data['url_type'],
             ':url_value' => $data['url_value'],
             ':parent_id' => $parentId,
+            ':sort_order' => $sortOrder,
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
             ':id' => $id,
         ]);
@@ -151,6 +166,9 @@ final class MenuItem
      */
     public static function validateParent(?int $parentId, ?int $selfId, string $lang): ?string
     {
+        if ($selfId !== null && self::hasChildrenWithOtherLanguage($selfId, $lang)) {
+            return 'Сначала приведите язык вложенных пунктов в соответствие с родительским.';
+        }
         if ($parentId === null) {
             return null; // Пункт верхнего уровня — всегда допустимо.
         }
@@ -169,12 +187,25 @@ final class MenuItem
         if ((string) $parent['lang'] !== $lang) {
             return 'Родитель и вложенный пункт должны быть на одном языке.';
         }
+        if (!empty($parent['is_divider'])) {
+            return 'Разделитель не может быть родительским пунктом.';
+        }
         // Нельзя вкладывать пункт, у которого уже есть свои дети (появились бы «внуки»).
         if ($selfId !== null && self::hasChildren($selfId)) {
             return 'У этого пункта есть вложенные — сначала перенесите или удалите их.';
         }
 
         return null;
+    }
+
+    private static function hasChildrenWithOtherLanguage(int $id, string $lang): bool
+    {
+        $stmt = Database::pdo()->prepare(
+            'SELECT 1 FROM menu_items WHERE parent_id = :id AND lang <> :lang LIMIT 1'
+        );
+        $stmt->execute([':id' => $id, ':lang' => $lang]);
+
+        return $stmt->fetchColumn() !== false;
     }
 
     public static function hasChildren(int $id): bool
@@ -217,14 +248,65 @@ final class MenuItem
         foreach (self::all() as $r) {
             $byId[(int) $r['id']] = $r;
         }
-        // Множество «будущих» родителей верхнего уровня (после применения).
+        if ($rows === []) {
+            throw new \DomainException('Список пунктов меню пуст. Обновите страницу и повторите попытку.');
+        }
+
+        // Полная карта будущих родителей: неизменяемые строки тоже участвуют
+        // в проверке, поэтому частичный запрос не может создать скрытых «внуков».
         $futureParent = [];
+        foreach ($byId as $id => $row) {
+            $futureParent[$id] = $row['parent_id'] !== null ? (int) $row['parent_id'] : null;
+        }
+        $seen = [];
         foreach ($rows as $row) {
             $id = (int) $row['id'];
             if (!isset($byId[$id])) {
+                throw new \DomainException('Один из пунктов меню больше не существует. Обновите страницу.');
+            }
+            if (isset($seen[$id])) {
+                throw new \DomainException('Получен повторяющийся пункт меню. Обновите страницу.');
+            }
+            $seen[$id] = true;
+            $futureParent[$id] = isset($row['parent_id']) && $row['parent_id'] !== null ? (int) $row['parent_id'] : null;
+        }
+
+        // Проверяем всю будущую структуру до первого UPDATE: либо применятся
+        // все изменения, либо ни одного. Это исключает частично сохранённое меню.
+        foreach ($futureParent as $id => $parent) {
+            if (!empty($byId[$id]['is_divider']) && $parent !== null) {
+                throw new \DomainException('Разделитель нельзя сделать вложенным пунктом.');
+            }
+            if ($parent === null) {
                 continue;
             }
-            $futureParent[$id] = isset($row['parent_id']) && $row['parent_id'] !== null ? (int) $row['parent_id'] : null;
+            if ($parent === $id) {
+                throw new \DomainException('Пункт меню не может быть родителем самому себе.');
+            }
+            if (!isset($byId[$parent])) {
+                throw new \DomainException('Родительский пункт больше не существует. Обновите страницу.');
+            }
+            if (!empty($byId[$parent]['is_divider'])) {
+                throw new \DomainException('Разделитель не может содержать вложенные пункты.');
+            }
+            if ((string) $byId[$parent]['lang'] !== (string) $byId[$id]['lang']) {
+                throw new \DomainException('Нельзя объединять пункты меню разных языков.');
+            }
+            $parentOfParent = $futureParent[$parent];
+            if ($parentOfParent !== null) {
+                throw new \DomainException('Меню поддерживает только один уровень вложенности.');
+            }
+        }
+
+        // Нормализуем порядок отдельно внутри каждого языка и родителя.
+        $groupOrder = [];
+        $normalizedOrder = [];
+        foreach ($rows as $row) {
+            $id = (int) $row['id'];
+            $parent = $futureParent[$id];
+            $group = (string) $byId[$id]['lang'] . ':' . ($parent ?? 0);
+            $groupOrder[$group] = ($groupOrder[$group] ?? 0) + 1;
+            $normalizedOrder[$id] = $groupOrder[$group];
         }
 
         $pdo = Database::pdo();
@@ -233,23 +315,10 @@ final class MenuItem
             $stmt = $pdo->prepare('UPDATE menu_items SET parent_id = :parent, sort_order = :order WHERE id = :id');
             foreach ($rows as $row) {
                 $id = (int) $row['id'];
-                if (!isset($byId[$id])) {
-                    continue;
-                }
                 $parent = $futureParent[$id];
-                // Глубина: родитель не должен сам иметь родителя (после применения).
-                if ($parent !== null) {
-                    if ($parent === $id) {
-                        continue; // сам себе родитель — пропускаем
-                    }
-                    $parentOfParent = $futureParent[$parent] ?? ($byId[$parent]['parent_id'] ?? null);
-                    if ($parentOfParent !== null) {
-                        continue; // превышение глубины — пропускаем этот элемент
-                    }
-                }
                 $stmt->execute([
                     ':parent' => $parent,
-                    ':order' => (int) ($row['sort_order'] ?? 0),
+                    ':order' => $normalizedOrder[$id],
                     ':id' => $id,
                 ]);
             }
@@ -312,6 +381,8 @@ final class MenuItem
         $siblings = array_values(array_filter(
             self::all(),
             static fn (array $r) => (string) $r['lang'] === (string) $item['lang']
+                && (($r['parent_id'] === null && $item['parent_id'] === null)
+                    || (int) $r['parent_id'] === (int) $item['parent_id'])
         ));
 
         $index = null;

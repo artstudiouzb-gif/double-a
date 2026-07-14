@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\AdminListQuery;
 use App\Core\AppUrl;
 use App\Core\ConcurrencyException;
 use App\Core\Csrf;
@@ -24,12 +25,20 @@ final class NewsController
     public function index(): void
     {
         Auth::requireLogin();
-        $status = (string) ($_GET['status'] ?? '');
-        $lang = (string) ($_GET['lang'] ?? '');
+        $filters = AdminListQuery::normalize(
+            $_GET,
+            ['newest', 'oldest', 'title_asc', 'title_desc', 'published_desc'],
+            'newest',
+            true
+        );
+        $total = News::adminCount($filters);
+        [$filters, $pages] = AdminListQuery::fitPage($filters, $total);
         View::render('admin/news/index', [
-            'items' => News::filter($status ?: null, $lang ?: null),
-            'filterStatus' => $status,
-            'filterLang' => $lang,
+            'items' => News::adminList($filters),
+            'filters' => $filters,
+            'filterParams' => AdminListQuery::urlParams($filters),
+            'total' => $total,
+            'pages' => $pages,
         ]);
     }
 
@@ -279,7 +288,7 @@ final class NewsController
 
         News::delete((int) $params['id']);
         Flash::success('Новость удалена.');
-        header('Location: /admin/news');
+        header('Location: ' . AdminListQuery::returnPath('/admin/news', $_POST['return_query'] ?? ''));
         exit;
     }
 

@@ -9,32 +9,27 @@ $pageActions = '<a href="/admin/pages/create" class="btn btn--primary">+ Доб�
 require __DIR__ . '/../layout/header.php';
 
 /** @var array $items */
-/** @var string $filterStatus */
-/** @var string $filterLang */
-$filterStatus = $filterStatus ?? '';
-$filterLang = $filterLang ?? '';
+/** @var array $filters */
+/** @var array $filterParams */
+/** @var int $total */
+/** @var int $pages */
 $langs = Language::active();
 ?>
 
-<form method="get" action="/admin/pages" class="list-filters">
-    <select name="status" data-auto-submit>
-        <option value="">Все статусы</option>
-        <option value="published" <?= $filterStatus === 'published' ? 'selected' : '' ?>>Опубликованные</option>
-        <option value="draft" <?= $filterStatus === 'draft' ? 'selected' : '' ?>>Черновики</option>
-    </select>
-    <select name="lang" data-auto-submit>
-        <option value="">Все языки</option>
-        <?php foreach ($langs as $l): ?>
-            <option value="<?= htmlspecialchars($l['code'], ENT_QUOTES) ?>" <?= $filterLang === $l['code'] ? 'selected' : '' ?>>
-                Есть перевод: <?= htmlspecialchars($l['name'], ENT_QUOTES) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <noscript><button type="submit" class="btn btn--small">Фильтр</button></noscript>
+<form method="get" action="/admin/pages" class="list-filters list-filters--panel">
+    <div class="list-filter list-filter--search"><label for="pages_q">Поиск</label><input type="search" id="pages_q" name="q" value="<?= htmlspecialchars($filters['q'], ENT_QUOTES) ?>" placeholder="Заголовок или slug"></div>
+    <div class="list-filter"><label for="pages_status">Статус</label><select id="pages_status" name="status"><option value="">Все статусы</option><option value="published" <?= $filters['status'] === 'published' ? 'selected' : '' ?>>Опубликованные</option><option value="draft" <?= $filters['status'] === 'draft' ? 'selected' : '' ?>>Черновики</option></select></div>
+    <div class="list-filter"><label for="pages_lang">Язык</label><select id="pages_lang" name="lang"><option value="">Все языки</option><?php foreach ($langs as $l): ?><option value="<?= htmlspecialchars($l['code'], ENT_QUOTES) ?>" <?= $filters['lang'] === $l['code'] ? 'selected' : '' ?>><?= $l['code'] === Language::defaultCode() ? 'Основной: ' : 'Есть перевод: ' ?><?= htmlspecialchars($l['name'], ENT_QUOTES) ?></option><?php endforeach; ?></select></div>
+    <div class="list-filter"><label for="pages_sort">Сортировка</label><select id="pages_sort" name="sort"><option value="newest" <?= $filters['sort'] === 'newest' ? 'selected' : '' ?>>Сначала новые</option><option value="oldest" <?= $filters['sort'] === 'oldest' ? 'selected' : '' ?>>Сначала старые</option><option value="title_asc" <?= $filters['sort'] === 'title_asc' ? 'selected' : '' ?>>Название А–Я</option><option value="title_desc" <?= $filters['sort'] === 'title_desc' ? 'selected' : '' ?>>Название Я–А</option></select></div>
+    <div class="list-filter list-filter--compact"><label for="pages_per_page">На странице</label><select id="pages_per_page" name="per_page"><?php foreach ([20, 50, 100] as $size): ?><option value="<?= $size ?>" <?= $filters['per_page'] === $size ? 'selected' : '' ?>><?= $size ?></option><?php endforeach; ?></select></div>
+    <div class="list-filters__actions"><button type="submit" class="btn btn--primary">Применить</button><a href="/admin/pages" class="btn">Сбросить</a></div>
 </form>
+
+<p class="list-results">Найдено: <strong><?= (int) $total ?></strong></p>
 
 <form id="bulkform" method="post" action="/admin/bulk/pages" class="bulk-bar" data-bulk-form>
     <?= Csrf::field() ?>
+    <input type="hidden" name="return_query" value="<?= htmlspecialchars(http_build_query($filterParams), ENT_QUOTES) ?>">
     <select name="bulk_action" required>
         <option value="">С выбранными…</option>
         <option value="publish">Опубликовать</option>
@@ -64,7 +59,7 @@ $langs = Language::active();
         <?php foreach ($items as $item): ?>
             <tr>
                 <td><input type="checkbox" name="ids[]" value="<?= (int) $item['id'] ?>" form="bulkform" data-bulk-item></td>
-                <td><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></td>
+                <td><a class="data-table__primary" href="/admin/pages/<?= (int) $item['id'] ?>/edit"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></a></td>
                 <td>/<?= htmlspecialchars($item['slug'], ENT_QUOTES) ?></td>
                 <td>
                     <span class="badge badge--<?= $item['status'] ?>">
@@ -80,6 +75,7 @@ $langs = Language::active();
                     </form>
                     <form method="post" action="/admin/pages/<?= (int) $item['id'] ?>/delete" data-confirm="Удалить страницу «<?= htmlspecialchars($item['title'], ENT_QUOTES) ?>» вместе со всеми блоками?">
                         <?= Csrf::field() ?>
+                        <input type="hidden" name="return_query" value="<?= htmlspecialchars(http_build_query($filterParams), ENT_QUOTES) ?>">
                         <button type="submit" class="btn btn--small btn--danger">Удалить</button>
                     </form>
                 </td>
@@ -87,5 +83,7 @@ $langs = Language::active();
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<?= \App\Core\View::renderPartial('admin/layout/pagination', ['paginationPath' => '/admin/pages', 'filterParams' => $filterParams, 'page' => $filters['page'], 'pages' => $pages, 'total' => $total]) ?>
 
 <?php require __DIR__ . '/../layout/footer.php'; ?>

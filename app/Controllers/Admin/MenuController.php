@@ -20,7 +20,7 @@ final class MenuController
         View::render('admin/menu/index', [
             'tree' => MenuItem::allTree(),
             'items' => MenuItem::all(),
-            'pages' => Page::all(),
+            'pages' => Page::filter('published'),
             'languages' => Language::active(),
         ]);
     }
@@ -111,8 +111,12 @@ final class MenuController
         try {
             MenuItem::reorder($rows);
             echo json_encode(['ok' => true]);
+        } catch (\DomainException $e) {
+            http_response_code(422);
+            echo json_encode(['ok' => false, 'error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
         } catch (\Throwable $e) {
             \App\Core\Logger::warning('Не удалось сохранить порядок меню', ['error' => $e->getMessage()]);
+            http_response_code(500);
             echo json_encode(['ok' => false, 'error' => 'server_error']);
         }
     }
@@ -152,7 +156,11 @@ final class MenuController
         $isDivider = !empty($_POST['is_divider']);
         $iconSvg = (string) ($_POST['icon_svg'] ?? '');
         $urlType = in_array($_POST['url_type'] ?? '', ['page', 'news_index', 'custom'], true) ? $_POST['url_type'] : 'custom';
-        $urlValue = trim((string) ($_POST['url_value'] ?? ''));
+        $urlValue = match ($urlType) {
+            'page' => trim((string) ($_POST['page_slug'] ?? $_POST['url_value'] ?? '')),
+            'custom' => trim((string) ($_POST['custom_url'] ?? $_POST['url_value'] ?? '')),
+            default => '',
+        };
 
         // Разделитель — визуальный элемент без ссылки и, как правило, без названия.
         if ($isDivider) {
@@ -173,6 +181,9 @@ final class MenuController
         }
         if ($urlType === 'page' && $urlValue === '') {
             return [[], 'Выберите страницу для пункта меню.'];
+        }
+        if ($urlType === 'page' && Page::findBySlug($urlValue) === null) {
+            return [[], 'Выбранная страница не найдена. Обновите список и попробуйте снова.'];
         }
         if ($urlType === 'custom' && $urlValue === '') {
             return [[], 'Укажите URL для пункта меню.'];

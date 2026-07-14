@@ -51,15 +51,35 @@ test('MenuItem: вложенность, ограничение глубины и
     ]);
     assert_same($parent, (int) MenuItem::findById($other)['parent_id']);
 
-    // reorder с превышением глубины: пытаемся вложить $parent под $child — должно быть отклонено.
-    MenuItem::reorder([
-        ['id' => $parent, 'parent_id' => $child, 'sort_order' => 1],
-    ]);
+    // reorder с превышением глубины отклоняется целиком и сообщает об ошибке.
+    $depthRejected = false;
+    try {
+        MenuItem::reorder([
+            ['id' => $parent, 'parent_id' => $child, 'sort_order' => 1],
+        ]);
+    } catch (\DomainException) {
+        $depthRejected = true;
+    }
+    assert_true($depthRejected, 'невалидная структура должна вернуть ошибку');
     assert_same(null, MenuItem::findById($parent)['parent_id'], 'глубину нельзя превысить через reorder');
+
+    // Пункты разных языков нельзя объединять в одну ветку.
+    $uz = MenuItem::create(['title' => 'Aloqa', 'lang' => 'uz', 'url_type' => 'custom', 'url_value' => '/uz/contact', 'is_active' => 1]);
+    $langRejected = false;
+    try {
+        MenuItem::reorder([
+            ['id' => $uz, 'parent_id' => $parent, 'sort_order' => 1],
+        ]);
+    } catch (\DomainException) {
+        $langRejected = true;
+    }
+    assert_true($langRejected, 'межъязыковое вложение запрещено');
+    assert_same(null, MenuItem::findById($uz)['parent_id']);
 
     // Каскадное удаление: удаляем родителя — дети уходят (ON DELETE CASCADE).
     MenuItem::delete($parent);
     assert_same(null, MenuItem::findById($child), 'ребёнок удалён каскадно');
+    MenuItem::delete($uz);
 
     $pdo->exec('DELETE FROM menu_items');
 });

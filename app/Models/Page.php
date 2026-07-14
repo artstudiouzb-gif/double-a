@@ -41,6 +41,62 @@ final class Page
         return $stmt->fetchAll();
     }
 
+    public static function adminList(array $filters): array
+    {
+        [$from, $params] = self::adminListFrom($filters);
+        $orders = [
+            'newest' => 'p.created_at DESC, p.id DESC',
+            'oldest' => 'p.created_at ASC, p.id ASC',
+            'title_asc' => 'p.title ASC, p.id ASC',
+            'title_desc' => 'p.title DESC, p.id DESC',
+        ];
+        $order = $orders[$filters['sort'] ?? 'newest'] ?? $orders['newest'];
+        $stmt = Database::pdo()->prepare("SELECT p.* {$from} ORDER BY {$order} LIMIT :limit OFFSET :offset");
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':limit', (int) $filters['per_page'], \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $filters['offset'], \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public static function adminCount(array $filters): int
+    {
+        [$from, $params] = self::adminListFrom($filters);
+        $stmt = Database::pdo()->prepare("SELECT COUNT(*) {$from}");
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** @return array{0:string,1:array<string,string>} */
+    private static function adminListFrom(array $filters): array
+    {
+        $from = 'FROM pages p';
+        $params = [];
+        if (($filters['lang'] ?? '') !== '' && $filters['lang'] !== Language::defaultCode()) {
+            $from .= ' INNER JOIN page_translations pt ON pt.page_id = p.id AND pt.lang = :lang';
+            $params[':lang'] = (string) $filters['lang'];
+        }
+        $from .= ' WHERE p.deleted_at IS NULL';
+        if (in_array($filters['status'] ?? '', ['published', 'draft'], true)) {
+            $from .= ' AND p.status = :status';
+            $params[':status'] = (string) $filters['status'];
+        }
+        if (($filters['q'] ?? '') !== '') {
+            $from .= ' AND (p.title LIKE :q_title OR p.slug LIKE :q_slug'
+                . ' OR EXISTS (SELECT 1 FROM page_translations pqs WHERE pqs.page_id = p.id AND pqs.title LIKE :q_translation))';
+            $like = '%' . (string) $filters['q'] . '%';
+            $params[':q_title'] = $like;
+            $params[':q_slug'] = $like;
+            $params[':q_translation'] = $like;
+        }
+
+        return [$from, $params];
+    }
+
     public static function setStatus(int $id, string $status): void
     {
         if (!in_array($status, ['draft', 'published'], true)) {

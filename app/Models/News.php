@@ -92,6 +92,73 @@ final class News
         return $stmt->fetchAll();
     }
 
+    /** Фильтрованный и постраничный список для административной панели. */
+    public static function adminList(array $filters): array
+    {
+        [$from, $params] = self::adminListFrom($filters);
+        $orders = [
+            'newest' => 'n.created_at DESC, n.id DESC',
+            'oldest' => 'n.created_at ASC, n.id ASC',
+            'title_asc' => 'n.title ASC, n.id ASC',
+            'title_desc' => 'n.title DESC, n.id DESC',
+            'published_desc' => 'n.published_at DESC, n.id DESC',
+        ];
+        $order = $orders[$filters['sort'] ?? 'newest'] ?? $orders['newest'];
+        $sql = "SELECT n.* {$from} ORDER BY {$order} LIMIT :limit OFFSET :offset";
+        $stmt = Database::pdo()->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':limit', (int) $filters['per_page'], \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $filters['offset'], \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public static function adminCount(array $filters): int
+    {
+        [$from, $params] = self::adminListFrom($filters);
+        $stmt = Database::pdo()->prepare("SELECT COUNT(*) {$from}");
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** @return array{0:string,1:array<string,string>} */
+    private static function adminListFrom(array $filters): array
+    {
+        $from = 'FROM news n';
+        $params = [];
+        if (($filters['lang'] ?? '') !== '' && $filters['lang'] !== Language::defaultCode()) {
+            $from .= ' INNER JOIN news_translations nt ON nt.news_id = n.id AND nt.lang = :lang';
+            $params[':lang'] = (string) $filters['lang'];
+        }
+        $from .= ' WHERE n.deleted_at IS NULL';
+        if (in_array($filters['status'] ?? '', ['published', 'draft'], true)) {
+            $from .= ' AND n.status = :status';
+            $params[':status'] = (string) $filters['status'];
+        }
+        if (($filters['q'] ?? '') !== '') {
+            $from .= ' AND (n.title LIKE :q_title OR n.slug LIKE :q_slug'
+                . ' OR EXISTS (SELECT 1 FROM news_translations nqs WHERE nqs.news_id = n.id AND nqs.title LIKE :q_translation))';
+            $like = '%' . (string) $filters['q'] . '%';
+            $params[':q_title'] = $like;
+            $params[':q_slug'] = $like;
+            $params[':q_translation'] = $like;
+        }
+        if (($filters['from'] ?? '') !== '') {
+            $from .= ' AND n.published_at >= :date_from';
+            $params[':date_from'] = (string) $filters['from'] . ' 00:00:00';
+        }
+        if (($filters['to'] ?? '') !== '') {
+            $from .= ' AND n.published_at < DATE_ADD(:date_to, INTERVAL 1 DAY)';
+            $params[':date_to'] = (string) $filters['to'] . ' 00:00:00';
+        }
+
+        return [$from, $params];
+    }
+
     public static function setStatus(int $id, string $status): void
     {
         if (!in_array($status, ['draft', 'published'], true)) {

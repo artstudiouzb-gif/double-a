@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\AdminListQuery;
 use App\Core\ContentFields;
 use App\Core\Csrf;
 use App\Core\Flash;
@@ -34,9 +35,20 @@ final class ContentEntryController
             View::render('errors/404');
             return;
         }
+        $filters = AdminListQuery::normalize(
+            $_GET,
+            ['manual', 'newest', 'oldest', 'title_asc', 'title_desc'],
+            'manual'
+        );
+        $total = ContentEntry::adminCount((int) $type['id'], $filters);
+        [$filters, $pages] = AdminListQuery::fitPage($filters, $total);
         View::render('admin/content/index', [
             'type' => $type,
-            'items' => ContentEntry::forType((int) $type['id']),
+            'items' => ContentEntry::adminList((int) $type['id'], $filters),
+            'filters' => $filters,
+            'filterParams' => AdminListQuery::urlParams($filters),
+            'total' => $total,
+            'pages' => $pages,
         ]);
     }
 
@@ -145,7 +157,7 @@ final class ContentEntryController
         }
         ContentEntry::delete((int) $entry['id']);
         Flash::success('Запись удалена.');
-        header('Location: /admin/content/' . $type['slug']);
+        header('Location: ' . AdminListQuery::returnPath('/admin/content/' . $type['slug'], $_POST['return_query'] ?? ''));
         exit;
     }
 

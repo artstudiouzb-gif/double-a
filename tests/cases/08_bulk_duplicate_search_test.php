@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Core\Database;
+use App\Core\AdminListQuery;
 use App\Core\Search;
 use App\Models\Page;
 
@@ -56,6 +57,37 @@ test('Bulk: setStatus меняет статус, filter учитывает ег�
     Page::delete($pid); // в корзину
     $draftsAfter = array_map('intval', array_column(Page::filter('draft', null), 'id'));
     assert_false(in_array($pid, $draftsAfter, true), 'удалённая страница не должна попадать в фильтр');
+});
+
+test('Admin filters: поиск, количество и пагинация страниц согласованы', function () {
+    ensure_test_db();
+    $marker = 'adminfilter-' . bin2hex(random_bytes(3));
+    $ids = [];
+    foreach (['Первый', 'Второй'] as $title) {
+        $ids[] = Page::create([
+            'title' => $title . ' ' . $marker,
+            'slug' => $marker . '-' . count($ids),
+            'meta_title' => null,
+            'meta_description' => null,
+            'status' => 'draft',
+            'is_home' => 0,
+            'layout_type' => 'no_sidebar',
+        ]);
+    }
+    try {
+        $filters = AdminListQuery::normalize([
+            'q' => $marker,
+            'status' => 'draft',
+            'sort' => 'title_asc',
+            'per_page' => 20,
+        ], ['newest', 'title_asc'], 'newest');
+        assert_same(2, Page::adminCount($filters));
+        assert_same(2, count(Page::adminList($filters)));
+    } finally {
+        foreach ($ids as $id) {
+            Page::forceDelete($id);
+        }
+    }
 });
 
 test('Search: находит по заголовку и slug, ссылки на редактирование', function () {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Auth;
+use App\Core\AdminListQuery;
 use App\Core\ConcurrencyException;
 use App\Core\Csrf;
 use App\Core\Database;
@@ -22,10 +23,19 @@ final class ProjectController
     public function index(): void
     {
         Auth::requireLogin();
-        $status = (string) ($_GET['status'] ?? '');
+        $filters = AdminListQuery::normalize(
+            $_GET,
+            ['manual', 'newest', 'oldest', 'title_asc', 'title_desc'],
+            'manual'
+        );
+        $total = Project::adminCount($filters);
+        [$filters, $pages] = AdminListQuery::fitPage($filters, $total);
         View::render('admin/projects/index', [
-            'items' => Project::filter($status ?: null),
-            'filterStatus' => $status,
+            'items' => Project::adminList($filters),
+            'filters' => $filters,
+            'filterParams' => AdminListQuery::urlParams($filters),
+            'total' => $total,
+            'pages' => $pages,
         ]);
     }
 
@@ -169,7 +179,7 @@ final class ProjectController
 
         Project::delete((int) $params['id']);
         Flash::success('Проект удалён.');
-        header('Location: /admin/projects');
+        header('Location: ' . AdminListQuery::returnPath('/admin/projects', $_POST['return_query'] ?? ''));
         exit;
     }
 

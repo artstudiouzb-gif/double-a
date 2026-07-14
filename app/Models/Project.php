@@ -40,6 +40,57 @@ final class Project
         return $stmt->fetchAll();
     }
 
+    public static function adminList(array $filters): array
+    {
+        [$where, $params] = self::adminListWhere($filters);
+        $orders = [
+            'manual' => 'sort_order ASC, created_at DESC, id DESC',
+            'newest' => 'created_at DESC, id DESC',
+            'oldest' => 'created_at ASC, id ASC',
+            'title_asc' => 'title ASC, id ASC',
+            'title_desc' => 'title DESC, id DESC',
+        ];
+        $order = $orders[$filters['sort'] ?? 'manual'] ?? $orders['manual'];
+        $stmt = Database::pdo()->prepare("SELECT * FROM projects {$where} ORDER BY {$order} LIMIT :limit OFFSET :offset");
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':limit', (int) $filters['per_page'], \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $filters['offset'], \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public static function adminCount(array $filters): int
+    {
+        [$where, $params] = self::adminListWhere($filters);
+        $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM projects {$where}");
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** @return array{0:string,1:array<string,string>} */
+    private static function adminListWhere(array $filters): array
+    {
+        $where = 'WHERE deleted_at IS NULL';
+        $params = [];
+        if (in_array($filters['status'] ?? '', ['published', 'draft'], true)) {
+            $where .= ' AND status = :status';
+            $params[':status'] = (string) $filters['status'];
+        }
+        if (($filters['q'] ?? '') !== '') {
+            $where .= ' AND (title LIKE :q_title OR slug LIKE :q_slug OR description LIKE :q_description)';
+            $like = '%' . (string) $filters['q'] . '%';
+            $params[':q_title'] = $like;
+            $params[':q_slug'] = $like;
+            $params[':q_description'] = $like;
+        }
+
+        return [$where, $params];
+    }
+
     public static function setStatus(int $id, string $status): void
     {
         if (!in_array($status, ['draft', 'published'], true)) {

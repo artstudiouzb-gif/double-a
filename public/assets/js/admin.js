@@ -114,7 +114,9 @@
         var table = master.closest('table');
         if (!table) { return; }
         var items = table.querySelectorAll('[data-bulk-item]');
-        var counter = document.querySelector('[data-bulk-count]');
+        var formId = items.length ? items[0].getAttribute('form') : '';
+        var bulkForm = formId ? document.getElementById(formId) : null;
+        var counter = bulkForm ? bulkForm.querySelector('[data-bulk-count]') : null;
         function refresh() {
             var checked = table.querySelectorAll('[data-bulk-item]:checked').length;
             if (counter) { counter.textContent = checked + ' выбрано'; }
@@ -131,10 +133,18 @@
     // Не отправлять bulk-форму без выбранного действия/записей.
     document.querySelectorAll('[data-bulk-form]').forEach(function (form) {
         form.addEventListener('submit', function (e) {
-            var anyChecked = document.querySelectorAll('[data-bulk-item]:checked').length > 0;
+            var formId = form.id;
+            var associated = Array.prototype.filter.call(document.querySelectorAll('[data-bulk-item]:checked'), function (item) {
+                return item.getAttribute('form') === formId;
+            });
+            var anyChecked = associated.length > 0;
             var action = form.querySelector('[name="bulk_action"]');
             if (!anyChecked) { e.preventDefault(); alert('Выберите хотя бы одну запись.'); return; }
-            if (action && !action.value) { e.preventDefault(); alert('Выберите действие.'); }
+            if (action && !action.value) { e.preventDefault(); alert('Выберите действие.'); return; }
+            if (action && action.value === 'trash'
+                && !window.confirm('Переместить выбранные записи в корзину?')) {
+                e.preventDefault();
+            }
         });
     });
 
@@ -388,6 +398,8 @@
             bar = document.createElement('div');
             bar.className = 'reorder-bar';
             bar.setAttribute('hidden', '');
+            bar.setAttribute('role', 'status');
+            bar.setAttribute('aria-live', 'polite');
             bar.innerHTML = '<span class="reorder-bar__text"></span>'
                 + '<button type="button" class="btn btn--small" data-reorder-cancel>Отменить</button>'
                 + '<button type="button" class="btn btn--small btn--primary" data-reorder-save>Сохранить</button>';
@@ -483,7 +495,7 @@
 
     // --- Меню: drag-and-drop сортировка + вложенность (задача 3, группа 3) ---
     document.querySelectorAll('[data-menu-sortable]').forEach(function (root) {
-        var dragged = null;
+        var dragged = null, startParent = null, startNext = null, moved = false;
 
         function isChildList(list) { return list.hasAttribute('data-menu-children'); }
         function draggedHasChildren() {
@@ -491,22 +503,30 @@
             return kids && kids.querySelector('.menu-node');
         }
 
-        root.querySelectorAll('.menu-node').forEach(function (node) {
-            node.setAttribute('draggable', 'true');
-        });
-
         root.addEventListener('dragstart', function (e) {
-            var node = e.target.closest('.menu-node');
-            if (!node) { return; }
+            var handle = e.target.closest('.menu-node__handle');
+            var node = handle ? handle.closest('.menu-node') : null;
+            if (!node || node.getAttribute('data-menu-lang') !== root.getAttribute('data-menu-lang')) {
+                e.preventDefault();
+                return;
+            }
             dragged = node;
+            startParent = node.parentNode;
+            startNext = node.nextElementSibling;
+            moved = false;
             node.classList.add('is-dragging');
             try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); } catch (err) {}
         });
 
         root.addEventListener('dragend', function () {
             if (dragged) { dragged.classList.remove('is-dragging'); }
+            if (dragged && (moved || dragged.parentNode !== startParent || dragged.nextElementSibling !== startNext)) {
+                ReorderBar.markDirty(saveOrder);
+            }
             dragged = null;
-            ReorderBar.markDirty(saveOrder);
+            startParent = null;
+            startNext = null;
+            moved = false;
         });
 
         // Разрешаем вставку в root и в любой children-список.
@@ -516,6 +536,9 @@
                 if (!dragged) { return; }
                 // Ограничение глубины 1: пункт со своими детьми нельзя вкладывать.
                 if (isChildList(list) && draggedHasChildren()) { return; }
+                if (isChildList(list) && dragged.classList.contains('menu-node--divider')) { return; }
+                // Нельзя поместить пункт внутрь его собственной области детей.
+                if (dragged.contains(list)) { return; }
                 e.preventDefault();
                 e.stopPropagation();
                 var siblings = Array.prototype.slice.call(list.querySelectorAll(':scope > .menu-node:not(.is-dragging)'));
@@ -527,6 +550,7 @@
                 if (after == null) { list.appendChild(dragged); }
                 else { list.insertBefore(dragged, after); }
                 dragged.classList.toggle('menu-node--child', isChildList(list));
+                moved = true;
             });
         });
 
@@ -554,10 +578,98 @@
                 method: 'POST', body: body, credentials: 'same-origin',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             }).then(function (r) { return r.json(); })
-              .then(function (res) { done(!!res.ok, res.ok ? '' : 'Не удалось сохранить меню. Обновите страницу.'); })
+              .then(function (res) { done(!!res.ok, res.ok ? '' : (res.error || 'Не удалось сохранить меню. Обновите страницу.')); })
               .catch(function () { done(false, 'Сетевая ошибка при сохранении меню.'); });
         }
     });
+
+    // --- Меню: языковые вкладки, редактор и зависимые поля ---
+    (function () {
+        function syncMenuForm(form) {
+            var type = form.querySelector('[data-menu-url-type]');
+            var divider = form.querySelector('[data-menu-divider]');
+            var lang = form.querySelector('[data-menu-lang-select]');
+            var isDivider = !!(divider && divider.checked);
+            form.querySelectorAll('[data-menu-link-only]').forEach(function (field) {
+                field.hidden = isDivider;
+            });
+            form.querySelectorAll('[data-menu-url-field]').forEach(function (field) {
+                field.hidden = isDivider || !type || field.getAttribute('data-menu-url-field') !== type.value;
+            });
+            form.querySelectorAll('[data-menu-parent-field]').forEach(function (field) {
+                field.hidden = isDivider;
+            });
+
+            var parent = form.querySelector('[data-menu-parent-select]');
+            if (parent && lang) {
+                Array.prototype.forEach.call(parent.options, function (option, index) {
+                    if (index === 0) { option.hidden = false; option.disabled = false; return; }
+                    var matches = option.getAttribute('data-lang') === lang.value;
+                    option.hidden = !matches;
+                    option.disabled = !matches;
+                    if (!matches && option.selected) { parent.value = ''; }
+                });
+            }
+        }
+
+        document.querySelectorAll('[data-menu-link-form]').forEach(syncMenuForm);
+
+        document.addEventListener('change', function (e) {
+            if (!e.target.matches('[data-menu-url-type], [data-menu-divider], [data-menu-lang-select]')) { return; }
+            var form = e.target.closest('[data-menu-link-form]');
+            if (form) syncMenuForm(form);
+        });
+
+        document.addEventListener('click', function (e) {
+            var toggle = e.target.closest('[data-menu-edit-toggle]');
+            if (toggle) {
+                var panel = document.getElementById(toggle.getAttribute('aria-controls'));
+                if (!panel) { return; }
+                var opening = panel.hasAttribute('hidden');
+                panel.toggleAttribute('hidden', !opening);
+                toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+                if (opening) {
+                    var first = panel.querySelector('input:not([type="hidden"]), select, textarea');
+                    if (first) first.focus();
+                }
+                return;
+            }
+            var close = e.target.closest('[data-menu-edit-close]');
+            if (close) {
+                var editPanel = close.closest('[data-menu-edit-panel]');
+                if (!editPanel) { return; }
+                editPanel.setAttribute('hidden', '');
+                var editToggle = document.querySelector('[aria-controls="' + editPanel.id + '"]');
+                if (editToggle) { editToggle.setAttribute('aria-expanded', 'false'); editToggle.focus(); }
+                return;
+            }
+            var tab = e.target.closest('[data-menu-lang-tab]');
+            if (tab) {
+                var code = tab.getAttribute('data-menu-lang-tab');
+                try { localStorage.setItem('artstudio:admin-menu-lang', code); } catch (err) {}
+                document.querySelectorAll('[data-menu-lang-tab]').forEach(function (button) {
+                    var active = button === tab;
+                    button.classList.toggle('is-active', active);
+                    button.setAttribute('aria-selected', active ? 'true' : 'false');
+                });
+                document.querySelectorAll('[data-menu-lang-panel]').forEach(function (panel) {
+                    panel.toggleAttribute('hidden', panel.getAttribute('data-menu-lang-panel') !== code);
+                });
+                var createLang = document.querySelector('#menu-add [data-menu-lang-select]');
+                if (createLang) { createLang.value = code; syncMenuForm(createLang.closest('[data-menu-link-form]')); }
+            }
+        });
+
+        try {
+            var savedMenuLang = localStorage.getItem('artstudio:admin-menu-lang');
+            if (savedMenuLang !== null) {
+                var savedTab = Array.prototype.find.call(document.querySelectorAll('[data-menu-lang-tab]'), function (button) {
+                    return button.getAttribute('data-menu-lang-tab') === savedMenuLang;
+                });
+                if (savedTab) savedTab.click();
+            }
+        } catch (e) {}
+    })();
 
     // Языковые вкладки: переключение панелей внутри одной группы [data-lang-tabs]
     document.querySelectorAll('[data-lang-tabs]').forEach(function (group) {
