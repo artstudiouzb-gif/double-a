@@ -1,27 +1,28 @@
 /* ==========================================================================
-   СОВРЕМЕННЫЙ ГОС-ШАБЛОН (Modern Gov Theme)
-   Полная переработка для создания премиального, чистого и современного дизайна.
+   УМЕРЕННЫЙ СОВРЕМЕННЫЙ ГОС-ШАБЛОН (Moderate Modern Gov Theme)
+   Сбалансированное сочетание эффекта матового стекла, строгой разметки
+   и профессиональной типографики для государственных порталов.
    ========================================================================== */
 
 :root {
-    --gov-bg: #f8fafc; /* Светлый slate-50 */
-    --gov-surface: #ffffff;
-    --gov-border: #e2e8f0; /* Slate-200 */
-    --gov-navy: var(--color-primary, #0f2942); /* Глубокий синий */
-    --gov-teal: var(--color-accent, #2563eb); /* Современный синий */
+    --gov-bg: #f1f5f9; /* Мягкий Slate-100 */
+    --gov-surface: rgba(255, 255, 255, 0.93); /* Умеренно прозрачный белый */
+    --gov-border: rgba(15, 23, 42, 0.08); /* Очень тонкая темная граница */
+    --gov-navy: var(--color-primary, #1e3a8a); /* Насыщенный синий */
+    --gov-teal: var(--color-accent, #0ea5e9); /* Современный голубой/бирюзовый */
     --gov-ink: #0f172a; /* Slate-900 */
-    --gov-muted: #64748b; /* Slate-500 */
+    --gov-muted: #475569; /* Slate-600 */
     --gov-title: var(--gov-navy);
     --radius: 16px;
     --container-max: 1240px;
-    --btn-radius: 10px;
+    --btn-radius: 8px;
     --gov-emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4.7' y='4.7' width='14.6' height='14.6' rx='1'/%3E%3Crect x='4.7' y='4.7' width='14.6' height='14.6' rx='1' transform='rotate(45 12 12)'/%3E%3C/svg%3E");
 }
 
 :root[data-theme="dark"] {
     --gov-bg: #0f172a; /* Slate-900 */
-    --gov-surface: #1e293b; /* Slate-800 */
-    --gov-border: #334155; /* Slate-700 */
+    --gov-surface: rgba(30, 41, 59, 0.9); /* Умеренно прозрачный Slate-800 */
+    --gov-border: rgba(255, 255, 255, 0.08);
     --gov-ink: #f8fafc; /* Slate-50 */
     --gov-muted: #94a3b8; /* Slate-400 */
     --gov-title: #f8fafc;
@@ -38,7 +39,7 @@ body {
 
 html { overflow-x: clip; }
 
-/* --- Жесткое ограничение для предотвращения раздувания SVGs --- */
+/* --- Защита от раздувания встроенных SVG-иконок --- */
 .cms-block svg,
 .cat-tile svg,
 .counter svg,
@@ -47,10 +48,10 @@ html { overflow-x: clip; }
 .team-card svg,
 .project-card svg,
 .site-footer svg {
-    max-width: 48px;
-    max-height: 48px;
-    width: 48px;
-    height: 48px;
+    max-width: 44px;
+    max-height: 44px;
+    width: 44px;
+    height: 44px;
     display: inline-block;
     vertical-align: middle;
     fill: currentColor;
@@ -58,15 +59,15 @@ html { overflow-x: clip; }
     margin-bottom: 12px;
 }
 
-/* Иконки в мелких элементах (шапка, контакты, соцсети) */
+/* Мелкие иконки в утилитарных зонах */
 .site-header svg,
 .hdr-contact svg,
 .site-social svg,
 .site-footer__social-link svg {
-    width: 18px !important;
-    height: 18px !important;
-    max-width: 18px !important;
-    max-height: 18px !important;
+    width: 16px !important;
+    height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
     margin-bottom: 0 !important;
 }
 
@@ -89,43 +90,41 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 
 /* --- Увеличенные отступы секций --- */
 .cms-block {
-    padding-block: clamp(48px, 6.2vw, 84px) !important;
+    padding-block: clamp(40px, 5.5vw, 76px) !important;
 }
 
 /* --- Заголовки секций с вертикальной бирюзовой полосой --- */
 .section-title {
     position: relative;
-    padding-left: 18px;
+    padding-left: 16px;
     border-left: 4px solid var(--gov-teal) !important;
-    font-size: clamp(1.6rem, 2.6vw, 2.2rem) !important;
-    margin-bottom: 32px;
+    font-size: clamp(1.5rem, 2.4vw, 2.1rem) !important;
+    margin-bottom: 28px;
 }
 
-/* --- Шапка сайта: плавающая с эффектом матового стекла --- */
+/* --- Шапка сайта: плавающая с умеренным эффектом стекла --- */
 .site-header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    background: rgba(255, 255, 255, 0.91) !important;
+    backdrop-filter: blur(10px) saturate(190%);
+    -webkit-backdrop-filter: blur(10px) saturate(190%);
+    border-bottom: 1px solid var(--gov-border) !important;
+    box-shadow: 0 4px 20px -8px rgba(15, 23, 42, 0.05);
 }
 
 :root[data-theme="dark"] .site-header {
-    background: rgba(15, 23, 42, 0.85) !important;
-    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(15, 23, 42, 0.88) !important;
 }
 
-.site-header__inner { max-width: var(--container-max); padding: 16px 20px !important; }
+.site-header__inner { max-width: var(--container-max); padding: 14px 20px !important; }
 .site-header__logo { color: var(--gov-title); font-family: var(--font-family, sans-serif); font-weight: 800; gap: 10px; }
 .site-header__logo span { font-size: 14px; line-height: 1.25; letter-spacing: 0; text-transform: none; max-width: 320px; }
 
-/* Звезда-эмблема перед названием */
 .site-header--logo-left .site-header__logo:not(:has(img))::before,
 .site-header__logo:not(:has(img))::before {
-    content: ''; flex-shrink: 0; width: 32px; height: 32px;
+    content: ''; flex-shrink: 0; width: 30px; height: 30px;
     background: var(--gov-teal);
     -webkit-mask: var(--gov-emblem) center/contain no-repeat; mask: var(--gov-emblem) center/contain no-repeat;
 }
@@ -134,10 +133,9 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 .site-menu__link {
     text-transform: none;
     font-size: 14px;
-    letter-spacing: 0;
     font-weight: 600;
     color: var(--gov-ink);
-    padding: 16px 4px;
+    padding: 14px 4px;
     position: relative;
 }
 .site-menu__link::after {
@@ -158,15 +156,15 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 
 /* Выпадающие меню */
 .site-submenu {
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(12px);
     border: 1px solid var(--gov-border) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
-    padding: 10px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+    padding: 8px !important;
 }
 :root[data-theme="dark"] .site-submenu {
-    background: rgba(30, 41, 59, 0.9) !important;
+    background: rgba(30, 41, 59, 0.94) !important;
 }
 
 /* --- Кнопки и формы --- */
@@ -174,34 +172,35 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 .block-cta__button, .btn-cta, .btn, .btn--primary {
     background: var(--gov-teal) !important; color: #fff !important; border-radius: var(--btn-radius) !important;
     font-family: var(--font-family, sans-serif); font-weight: 600; text-transform: none;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important; border: 0 !important; transition: all 0.2s ease !important;
-    padding: 10px 22px !important;
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.15) !important; border: 0 !important; transition: all 0.2s ease !important;
+    padding: 8px 20px !important;
     text-decoration: none !important;
 }
 .block-hero__button:hover, .btn-cta:hover, .btn:hover, .btn--primary:hover {
-    background: color-mix(in srgb, var(--gov-teal) 85%, #000) !important;
-    transform: translateY(-1.5px) !important;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3) !important;
+    background: color-mix(in srgb, var(--gov-teal) 88%, #000) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 14px rgba(14, 165, 233, 0.25) !important;
 }
 
-/* --- Карточки контента (Новая премиальная концепция) --- */
+/* --- Карточки контента (Умеренный стеклянный стиль) --- */
 .news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item,
 .block-testimonials__item, .testimonial, .team-card, .project-card {
     background: var(--gov-surface) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--gov-border) !important;
     border-radius: var(--radius) !important;
-    box-shadow: 0 10px 25px -15px rgba(15, 23, 42, 0.04) !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    padding: 24px !important;
+    box-shadow: 0 6px 18px -10px rgba(15, 23, 42, 0.03) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    padding: 22px !important;
 }
 
 .news-card:hover, .content-card:hover, .contact-card:hover, .cat-tile:hover, .team-card:hover, .project-card:hover {
-    transform: translateY(-5px) !important;
-    box-shadow: 0 24px 36px -12px rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 16px 24px -10px rgba(15, 23, 42, 0.05) !important;
     border-color: var(--gov-teal) !important;
 }
 
-/* Выравнивание иконок внутри плиток категорий */
 .cat-tile {
     display: flex;
     flex-direction: column;
@@ -213,19 +212,20 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 /* --- Блок счетчиков (Полоса статистики) --- */
 .block-counters {
     background: var(--gov-surface);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--gov-border);
-    border-radius: 20px;
-    padding: clamp(24px, 3.2vw, 38px);
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+    border-radius: 18px;
+    padding: clamp(20px, 3vw, 32px);
+    box-shadow: 0 6px 24px -10px rgba(15, 23, 42, 0.02);
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 16px;
 }
 .counter { 
     border: 0 !important; 
     border-radius: 0 !important; 
-    padding: 10px 20px !important; 
+    padding: 8px 16px !important; 
     box-shadow: none !important; 
     background: transparent !important;
     display: flex;
@@ -239,9 +239,9 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
     border-right: 1px solid var(--gov-border) !important;
 }
 @media (max-width: 768px) {
-    .counter:not(:last-child) { border-right: 0 !important; border-bottom: 1px solid var(--gov-border) !important; padding-bottom: 20px !important; }
+    .counter:not(:last-child) { border-right: 0 !important; border-bottom: 1px solid var(--gov-border) !important; padding-bottom: 16px !important; }
 }
-.counter__value { color: var(--gov-title); font-weight: 800; font-size: 2.5rem; line-height: 1.1; margin-bottom: 4px; }
+.counter__value { color: var(--gov-title); font-weight: 800; font-size: 2.2rem; line-height: 1.1; margin-bottom: 4px; }
 .counter__label { color: var(--gov-muted); font-size: 14px; font-weight: 500; }
 
 /* --- Hero баннер --- */
@@ -263,15 +263,15 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 
 /* --- Подвал сайта --- */
 .site-footer--columns {
-    background: #0f172a !important; /* Угольно-темный сланцевый */
+    background: #0f172a !important;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(148, 163, 184, 0.8) !important; /* Slate-400 */
-    padding-block: clamp(40px, 5vw, 70px) !important;
+    color: rgba(148, 163, 184, 0.8) !important;
+    padding-block: clamp(32px, 4.5vw, 60px) !important;
 }
 .site-footer--columns .site-footer__heading { color: #fff; font-weight: 700; }
 .site-footer--columns .site-footer__heading::after { background: var(--gov-teal); height: 2px; }
 .site-footer__social-link {
-    width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.05);
+    width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.05);
     display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;
     color: #fff;
 }
