@@ -74,20 +74,6 @@ foreach ($options as $key => $opt) {
     </form>
 </section>
 
-<section class="design-section">
-    <h2 class="design-section__title">Живое превью</h2>
-    <div class="design-preview">
-        <div class="design-preview__bar">
-            <button type="button" class="btn btn--small is-active" data-pv-width="100%">Десктоп</button>
-            <button type="button" class="btn btn--small" data-pv-width="768px">Планшет</button>
-            <button type="button" class="btn btn--small" data-pv-width="390px">Телефон</button>
-            <span class="form-hint" style="margin-left:auto;">Обновляется при выборе опций ниже — до сохранения.</span>
-        </div>
-        <div class="design-preview__stage">
-            <iframe class="design-preview__frame" data-design-preview src="/admin/design/preview" title="Превью сайта" loading="lazy"></iframe>
-        </div>
-    </div>
-</section>
 
 <form method="post" action="/admin/design" class="design-fine">
     <?= Csrf::field() ?>
@@ -245,29 +231,6 @@ foreach ($options as $key => $opt) {
 <script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
 (function () {
     'use strict';
-    var frame = document.querySelector('[data-design-preview]');
-    if (!frame) { return; }
-
-    // Пересобираем src превью из всех настроек внешнего вида (с дебаунсом).
-    var timer = null;
-    function refresh() {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            var params = new URLSearchParams();
-            document.querySelectorAll('.design-fine input[type=radio]:checked').forEach(function (r) {
-                params.set(r.name, r.value);
-            });
-            document.querySelectorAll('.design-fine [data-design-preview-field]').forEach(function (field) {
-                params.set(field.name, field.value);
-            });
-            frame.src = '/admin/design/preview?' + params.toString();
-        }, 250);
-    }
-    document.querySelectorAll('.design-fine input[type=radio], .design-fine [data-design-preview-field]').forEach(function (field) {
-        field.addEventListener('change', refresh);
-        if (field.matches('input[type="text"], input[type="number"]')) { field.addEventListener('input', refresh); }
-    });
-
     var fontChoice = document.querySelector('[data-font-body-choice]');
     var customFontFields = document.querySelector('[data-custom-font-fields]');
     function syncCustomFontFields() {
@@ -277,15 +240,6 @@ foreach ($options as $key => $opt) {
     }
     if (fontChoice) { fontChoice.addEventListener('change', syncCustomFontFields); }
     syncCustomFontFields();
-
-    // Переключатель ширины (десктоп/планшет/телефон).
-    document.querySelectorAll('[data-pv-width]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('[data-pv-width]').forEach(function (b) { b.classList.remove('is-active'); });
-            btn.classList.add('is-active');
-            frame.style.width = btn.getAttribute('data-pv-width');
-        });
-    });
 })();
 </script>
 <?php require __DIR__ . '/../layout/footer.php'; ?>
