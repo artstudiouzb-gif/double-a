@@ -236,54 +236,133 @@ final class DemoSeeder
 
     private static function seedPages(PDO $pdo, array &$c): void
     {
-        // Принудительно пересоздаем страницу "о нас", чтобы обновить законодательную основу
-        $pdo->exec("DELETE FROM blocks WHERE page_id IN (SELECT id FROM pages WHERE slug = 'o-nas')");
-        $pdo->exec("DELETE FROM pages WHERE slug = 'o-nas'");
+        // Принудительно пересоздаем страницы, чтобы обновить законодательную основу и переводы
+        $slugs = ['o-nas', 'rukovodstvo', 'struktura', 'antikorrupciya'];
+        foreach ($slugs as $slug) {
+            $pdo->exec("DELETE FROM blocks WHERE page_id IN (SELECT id FROM pages WHERE slug = '{$slug}')");
+            $pdo->exec("DELETE FROM page_translations WHERE page_id IN (SELECT id FROM pages WHERE slug = '{$slug}')");
+            $pdo->exec("DELETE FROM pages WHERE slug = '{$slug}'");
+        }
 
-        // [slug, title, [blocks: [type, title, data]]]
+        // Страницы с переводами для 'ru' и 'uz'
         $pages = [
-            ['o-nas', 'Об организации', [
-                ['text', 'О нас', [
-                    'title' => 'Правовой статус и законодательная основа деятельности',
-                    'content' => '<h3>Законодательная основа и правовой статус</h3><p>Деятельность Агентства стратегического планирования и развития осуществляется в строгом соответствии с Конституцией Республики Узбекистан, законами Республики Узбекистан, а также нормативно-правовыми актами Президента Республики Узбекистан, направленными на модернизацию системы государственного управления.</p><div class="gov-card" style="background: var(--gov-bg-alt, #f8f9fa); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid var(--gov-teal, #008080);"><h4 style="margin-top:0; color: var(--gov-teal-text, #005f5f);">Ключевые нормативно-правовые акты Агентства:</h4><ul style="padding-left: 20px; margin-bottom: 0;"><li><strong>Указ Президента Республики Узбекистан № УП-201 от 30 октября 2025 года</strong> «О мерах по внедрению системы стратегического планирования и развития» — заложил основу для системного прогнозирования развития отраслей и регионов страны.</li><li><strong>Постановление Президента Республики Узбекистан № ПП-394 от 29 декабря 2025 года</strong> «О мерах по организации и эффективному налаживанию системы стратегического планирования и развития на основе новых подходов» — регламентирует структуру, организацию деятельности, полномочия и порядок взаимодействия Агентства с другими министерствами и ведомствами.</li><li><strong>Указ Президента Республики Узбекистан № УП-21 от 16 февраля 2026 года</strong> «О дополнительных мерах по последовательному продолжению реформ и выведению их на новый этап в рамках приоритетных направлений развития страны до 2030 года» — определяет ключевые KPI развития отраслей и координирующую роль Агентства в мониторинге реализации реформ до 2030 года.</li></ul></div><h3>Основные задачи и функции</h3><p>В соответствии с Указами Президента, на Агентство возложены следующие стратегические задачи:</p><ul><li><strong>Стратегическое планирование:</strong> Координация разработки и мониторинга реализации долгосрочных стратегий развития отраслей экономики и регионов.</li><li><strong>Оценка реформ (KPI до 2030 года):</strong> Разработка и внедрение системы ключевых показателей эффективности (KPI) для оценки хода реформ на основе Указа Президента № УП-21.</li><li><strong>Анализ и прогнозирование:</strong> Мониторинг макроэкономических показателей, выявление системных проблем и барьеров на пути реформ с подготовкой аналитических отчетов руководству страны.</li><li><strong>Методологическое руководство:</strong> Внедрение новых подходов и передовых международных стандартов стратегического планирования в деятельность органов исполнительной власти.</li></ul><h3>Регламент и прозрачность деятельности</h3><p>В соответствии с Законом РУз «Об открытости деятельности органов государственной власти и управления», Агентство обеспечивает полную прозрачность процессов разработки и мониторинга стратегий развития. Вся информация о ходе выполнения приоритетных направлений до 2030 года регулярно публикуется на нашем портале для ознакомления граждан, инвесторов и внутренних партнеров.</p>'
-                ]],
-            ]],
-            ['rukovodstvo', 'Руководство', [
-                ['text', 'Введение', ['title' => 'Руководство', 'content' => '<p>Руководящий состав организации.</p>']],
-                ['team_list', 'Команда', ['title' => 'Руководящий состав', 'limit' => 0]],
-            ]],
-            ['struktura', 'Структура', [
-                ['text', 'Структура', ['title' => 'Организационная структура', 'content' => '<p>Организация включает профильные подразделения: юридический отдел, отдел информационных технологий, отдел кадров, пресс-службу и другие структурные единицы.</p>']],
-            ]],
-            ['antikorrupciya', 'Противодействие коррупции', [
-                ['text', 'Антикоррупция', ['title' => 'Противодействие коррупции', 'content' => '<p>Организация проводит последовательную антикоррупционную политику. Ознакомиться с нормативными документами можно в разделе «Документы».</p><p>Сообщить о фактах коррупции можно через форму обратной связи.</p>']],
-            ]],
+            'o-nas' => [
+                'ru' => [
+                    'title' => 'Об организации',
+                    'blocks' => [
+                        ['text', 'О нас', [
+                            'title' => 'Правовой статус и законодательная основа деятельности',
+                            'content' => '<h3>Законодательная основа и правовой статус</h3><p>Деятельность Агентства стратегического планирования и развития осуществляется в строгом соответствии с Конституцией Республики Узбекистан, законами Республики Узбекистан, а также нормативно-правовыми актами Президента Республики Узбекистан, нацеленными на модернизацию системы государственного управления.</p><div class="gov-card" style="background: var(--gov-bg-alt, #f8f9fa); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid var(--gov-teal, #008080);"><h4 style="margin-top:0; color: var(--gov-teal-text, #005f5f);">Ключевые нормативно-правовые акты Агентства:</h4><ul style="padding-left: 20px; margin-bottom: 0;"><li><strong>Указ Президента Республики Узбекистан № УП-201 от 30 октября 2025 года</strong> «О мерах по внедрению системы стратегического планирования и развития» — заложил основу для системного прогнозирования развития отраслей и регионов страны.</li><li><strong>Постановление Президента Республики Узбекистан № ПП-394 от 29 декабря 2025 года</strong> «О мерах по организации и эффективному налаживанию системы стратегического планирования и развития на основе новых подходов» — регламентирует структуру, организацию деятельности, полномочия и порядок взаимодействия Агентства с другими министерствами и ведомствами.</li><li><strong>Указ Президента Республики Узбекистан № УП-21 от 16 февраля 2026 года</strong> «О дополнительных мерах по последовательному продолжению реформ и выведению их на новый этап в рамках приоритетных направлений развития страны до 2030 года» — определяет ключевые KPI развития отраслей и координирующую роль Агентства в мониторинге реализации реформ до 2030 года.</li></ul></div><h3>Основные задачи и функции</h3><p>В соответствии с Указами Президента, на Агентство возложены следующие стратегические задачи:</p><ul><li><strong>Стратегическое планирование:</strong> Координация разработки и мониторинга реализации долгосрочных стратегий развития отраслей экономики и регионов.</li><li><strong>Оценка реформ (KPI до 2030 года):</strong> Разработка и внедрение системы ключевых показателей эффективности (KPI) для оценки хода реформ на основе Указа Президента № УП-21.</li><li><strong>Анализ и прогнозирование:</strong> Мониторинг макроэкономических показателей, выявление системных проблем и барьеров на пути реформ с подготовкой аналитических отчетов руководству страны.</li><li><strong>Методологическое руководство:</strong> Внедрение новых подходов и передовых международных стандартов стратегического планирования в деятельность органов исполнительной власти.</li></ul><h3>Регламент и прозрачность деятельности</h3><p>В соответствии с Законом РУз «Об открытости деятельности органов государственной власти и управления», Агентство обеспечивает полную прозрачность процессов разработки и мониторинга стратегий развития. Вся информация о ходе выполнения приоритетных направлений до 2030 года регулярно публикуется на нашем портале для ознакомления граждан, инвесторов и внутренних партнеров.</p>'
+                        ]]
+                    ]
+                ],
+                'uz' => [
+                    'title' => 'Tashkilot haqida',
+                    'blocks' => [
+                        ['text', 'Tashkilot haqida', [
+                            'title' => 'Huquqiy maqom va faoliyatning qonuniy asoslari',
+                            'content' => '<h3>Qonunchilik asosi va huquqiy maqomi</h3><p>Strategik rejalashtirish va rivojlanish agentligi faoliyati O‘zbekiston Respublikasi Konstitutsiyasi, O‘zbekiston Respublikasi qonunlari, shuningdek, davlat boshqaruvi tizimini modernizatsiya qilishga qaratilgan O‘zbekiston Respublikasi Prezidentining normativ-huquqiy hujjatlariga qat’iy muvofiq ravishda amalga oshiriladi.</p><div class="gov-card" style="background: var(--gov-bg-alt, #f8f9fa); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid var(--gov-teal, #008080);"><h4 style="margin-top:0; color: var(--gov-teal-text, #005f5f);">Agentlik faoliyatining asosiy normativ-huquqiy hujjatlari:</h4><ul style="padding-left: 20px; margin-bottom: 0;"><li><strong>O‘zbekiston Respublikasi Prezidentining 2025-yil 30-oktabrdagi PF-201-son Farmoni</strong> «Strategik rejalashtirish va rivojlanish tizimini joriy etish bo‘yicha tashkiliy chora-tadbirlar to‘g‘risida» — tarmoqlar va hududlarni rivojlantirishni tizimli prognozlashtirish asosi etib belgilandi.</li><li><strong>O‘zbekiston Respublikasi Prezidentining 2025-yil 29-dekabrdagi PQ-394-son qarori</strong> «Strategik rejalashtirish va rivojlanish tizimini yangicha yondashuvlar asosida tashkil etish va samarali yo‘lga qo‘yish chora-tadbirlari to‘g‘risida» — Agentlikning tuzilmasini, faoliyatini tashkil etishni, vakolatlari va boshqa vazirliklar hamda idoralar bilan hamkorlik qilish tartibini belgilaydi.</li><li><strong>O‘zbekiston Respublikasi Prezidentining 2026-yil 16-fevraldagi PF-21-son Farmoni</strong> «Mamlakat taraqqiyotining 2030-yilgacha mo‘ljallangan ustuvor yo‘nalishlari doirasida islohotlarni izchil davom ettirish va yangi bosqichga olib chiqishning qo‘shimcha chora-tadbirlari to‘g‘risida» — islohotlar ijrosini monitoring qilishda Agentlikning muvofiqlashtiruvchi rolini hamda 2030-yilgacha bo‘lgan asosiy KPI ko‘rsatkichlarini belgilaydi.</li></ul></div><h3>Asosiy vazifalar va funksiyalar</h3><p>Prezident Farmonlariga muvofiq, Agentlik zimmasiga quyidagi strategik vazifalar yuklatilgan:</p><ul><li><strong>Strategik rejalashtirish:</strong> Iqtisodiyot tarmoqlari va hududlarni rivojlantirishning uzoq muddatli strategiyalarini ishlab chiqish va amalga oshirilishini muvofiqlashtirish.</li><li><strong>Islohotlarni baholash (2030-yilgacha bo‘lgan KPI):</strong> PF-21-son Farmoni asosida islohotlar ijrosini baholash uchun samaradorlik ko‘rsatkichlari (KPI) tizimini ishlab chiqish va joriy etish.</li><li><strong>Tahlil va prognozlash:</strong> Makroiqtisodiy ko‘rsatkichlarni monitoring qilish, tizimli muammolar va to‘siqlarni aniqlash, tahliliy hisobotlarni davlat rahbariyatiga taqdim etish.</li><li><strong>Metodologik rahbarlik:</strong> Davlat ijro etuvchi hokimiyat organlari faoliyatiga strategik rejalashtirishning yangi yondashuvlari va ilg‘or xalqaro standartlarini joriy etish.</li></ul><h3>Faoliyat reglamenti va shaffoflik</h3><p>O‘zbekiston Respublikasining «Davlat hokimiyati va boshqaruvi organlari faoliyatining ochiqligi to‘g‘risida»gi Qonuniga muvofiq, Agentlik rivojlanish strategiyalarini ishlab chiqish va monitoring qilish jarayonlarining to‘liq shaffofligini ta’minlaydi. 2030-yilgacha bo‘lgan ustuvor yo‘nalishlar ijrosi to‘g‘risidagi ma’lumotlar fuqarolar, investorlar va xalqaro hamkorlar uchun muntazam ravishda portalimizda e’lon qilib boriladi.</p>'
+                        ]]
+                    ]
+                ]
+            ],
+            'rukovodstvo' => [
+                'ru' => [
+                    'title' => 'Руководство',
+                    'blocks' => [
+                        ['text', 'Введение', ['title' => 'Руководство', 'content' => '<p>Руководящий состав организации.</p>']],
+                        ['team_list', 'Команда', ['title' => 'Руководящий состав', 'limit' => 0]]
+                    ]
+                ],
+                'uz' => [
+                    'title' => 'Rahbariyat',
+                    'blocks' => [
+                        ['text', 'Kirish', ['title' => 'Rahbariyat', 'content' => '<p>Tashkilotning rahbariyat tarkibi.</p>']],
+                        ['team_list', 'Jamoa', ['title' => 'Rahbariyat tarkibi', 'limit' => 0]]
+                    ]
+                ]
+            ],
+            'struktura' => [
+                'ru' => [
+                    'title' => 'Структура',
+                    'blocks' => [
+                        ['text', 'Структура', ['title' => 'Организационная структура', 'content' => '<p>Организация включает профильные подразделения: юридический отдел, отдел информационных технологий, отдел кадров, пресс-службу и другие структурные единицы.</p>']]
+                    ]
+                ],
+                'uz' => [
+                    'title' => 'Tuzilma',
+                    'blocks' => [
+                        ['text', 'Tuzilma', ['title' => 'Tashkiliy tuzilma', 'content' => '<p>Tashkilot tarkibiga quyidagi ixtisoslashtirilgan bo‘linmalar kiradi: yuridik bo‘lim, axborot texnologiyalari bo‘limi, kadrlar bo‘limi, matbuot xizmati va boshqa tarkibiy tuzilmalar.</p>']]
+                    ]
+                ]
+            ],
+            'antikorrupciya' => [
+                'ru' => [
+                    'title' => 'Противодействие коррупции',
+                    'blocks' => [
+                        ['text', 'Антикоррупция', ['title' => 'Противодействие коррупции', 'content' => '<p>Организация проводит последовательную антикоррупционную политику. Ознакомиться с нормативными документами можно в разделе «Документы».</p><p>Сообщить о фактах коррупции можно через форму обратной связи.</p>']]
+                    ]
+                ],
+                'uz' => [
+                    'title' => 'Korrupsiyaga qarshi kurash',
+                    'blocks' => [
+                        ['text', 'Korrupsiyaga qarshi kurashish', ['title' => 'Korrupsiyaga qarshi kurashish', 'content' => '<p>Tashkilotda korrupsiyaga qarshi kurashish bo‘yicha tizimli siyosat yuritiladi. Normativ hujjatlar bilan «Hujjatlar» bo‘limida tanishishingiz mumkin.</p><p>Korrupsiya holatlari haqida xabar berish uchun qayta aloqa shaklidan foydalanishingiz mumkin.</p>']]
+                    ]
+                ]
+            ]
         ];
+
         $pageIns = $pdo->prepare(
             "INSERT INTO pages (title, slug, status, is_home, layout_type, created_at)
              SELECT :t, :s, 'published', 0, 'no_sidebar', NOW()
              FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM pages WHERE slug = :s2)"
         );
+
+        $transIns = $pdo->prepare(
+            "INSERT INTO page_translations (page_id, lang, title)
+             SELECT :pid, :lang, :title
+             FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM page_translations WHERE page_id = :pid2 AND lang = :lang2)"
+        );
+
         $blockIns = $pdo->prepare(
             'INSERT INTO blocks (page_id, lang, type, title, data, sort_order, is_active, created_at)
              VALUES (:pid, :lang, :ty, :ti, :d, :so, 1, NOW())'
         );
-        $lang = self::defaultLang($pdo);
-        foreach ($pages as [$slug, $title, $blocks]) {
-            $pageIns->execute([':t' => $title, ':s' => $slug, ':s2' => $slug]);
+
+        foreach ($pages as $slug => $langData) {
+            $defaultTitle = $langData['ru']['title'] ?? '';
+            $pageIns->execute([':t' => $defaultTitle, ':s' => $slug, ':s2' => $slug]);
             $c['pages'] += $pageIns->rowCount();
             $pid = self::pageId($pdo, $slug);
             if ($pid === null) {
                 continue;
             }
-            // Блоки добавляем только если страница пустая (не дублируем).
+
             $hasBlocks = (int) $pdo->query('SELECT COUNT(*) FROM blocks WHERE page_id = ' . $pid)->fetchColumn() > 0;
-            if ($hasBlocks) {
-                continue;
-            }
-            $order = 1;
-            foreach ($blocks as [$type, $btitle, $data]) {
-                $blockIns->execute([':pid' => $pid, ':lang' => $lang, ':ty' => $type, ':ti' => $btitle, ':d' => json_encode($data, JSON_UNESCAPED_UNICODE), ':so' => $order++]);
+
+            foreach ($langData as $lang => $data) {
+                // Вставляем перевод страницы
+                $transIns->execute([
+                    ':pid' => $pid,
+                    ':lang' => $lang,
+                    ':title' => $data['title'],
+                    ':pid2' => $pid,
+                    ':lang2' => $lang
+                ]);
+
+                if (!$hasBlocks) {
+                    $order = 1;
+                    foreach ($data['blocks'] as [$type, $btitle, $blockData]) {
+                        $blockIns->execute([
+                            ':pid' => $pid,
+                            ':lang' => $lang,
+                            ':ty' => $type,
+                            ':ti' => $btitle,
+                            ':d' => json_encode($blockData, JSON_UNESCAPED_UNICODE),
+                            ':so' => $order++
+                        ]);
+                    }
+                }
             }
         }
     }
