@@ -112,7 +112,7 @@ $fields = $form['fields'] ?? [];
             </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить</button>
             <a href="/admin/forms" class="btn">Отмена</a>
         </div>

@@ -200,7 +200,7 @@ require __DIR__ . '/../layout/header.php';
             </div>
         </fieldset>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить настройки</button>
         </div>
     </form>

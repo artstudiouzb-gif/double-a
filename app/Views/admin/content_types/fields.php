@@ -65,7 +65,7 @@ $ftypes = ['text' => 'Текст', 'textarea' => 'Многострочный', '
         </template>
         <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="cfields">+ Добавить поле</button></div>
 
-        <div class="form-actions"><button type="submit" class="btn btn--primary">Сохранить поля</button></div>
+        <div class="form-actions form-actions--sticky"><button type="submit" class="btn btn--primary">Сохранить поля</button></div>
     </form>
 </div>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

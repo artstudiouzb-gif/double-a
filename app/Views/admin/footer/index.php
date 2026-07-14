@@ -105,7 +105,7 @@ $widgetSelect = function (string $name, string $current) use ($widgets): string 
             </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить подвал</button>
         </div>
     </form>

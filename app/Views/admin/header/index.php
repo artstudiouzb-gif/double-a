@@ -364,7 +364,7 @@ $heightSelect = function (string $name, string $current): string {
             </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить шапку</button>
         </div>
     </form>

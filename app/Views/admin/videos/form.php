@@ -49,7 +49,7 @@ require __DIR__ . '/../layout/header.php';
             <input type="checkbox" id="is_featured" name="is_featured" value="1" <?= (int) ($video['is_featured'] ?? 0) === 1 ? 'checked' : '' ?>>
             <label for="is_featured">Показать на главной (блок «Медиа»)</label>
         </div>
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить</button>
         </div>
     </form>

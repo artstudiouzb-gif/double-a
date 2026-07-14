@@ -14,6 +14,34 @@
 </div>
 
 <script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
+var stickyActions = Array.prototype.slice.call(document.querySelectorAll('.form-actions--sticky'));
+if (stickyActions.length) {
+    document.body.classList.add('has-sticky-actions');
+    stickyActions.forEach(function (actions) {
+        actions.setAttribute('role', 'toolbar');
+        actions.setAttribute('aria-label', 'Действия формы');
+    });
+    var stickyTicking = false;
+    var syncStickyActions = function () {
+        var topOffset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--admin-topbar-h'), 10) || 46;
+        stickyActions.forEach(function (actions) {
+            var form = actions.closest('form');
+            if (!form) return;
+            var rect = form.getBoundingClientRect();
+            var inContext = rect.bottom > topOffset && rect.top < window.innerHeight;
+            actions.classList.toggle('is-context-hidden', !inContext);
+        });
+        stickyTicking = false;
+    };
+    var requestStickySync = function () {
+        if (stickyTicking) return;
+        stickyTicking = true;
+        window.requestAnimationFrame(syncStickyActions);
+    };
+    syncStickyActions();
+    window.addEventListener('scroll', requestStickySync, {passive: true});
+    window.addEventListener('resize', requestStickySync);
+}
 /* Навигация админки: мобильная панель и запоминаемое сворачивание на десктопе. */
 (function () {
     var t = document.querySelector('[data-sidebar-toggle]');

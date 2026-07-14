@@ -262,7 +262,7 @@ $languages = Language::active();
                     <input type="text" id="slug" name="slug" value="<?= htmlspecialchars($news['slug'] ?? '', ENT_QUOTES) ?>" placeholder="оставьте пустым для автогенерации">
                 </div>
             </div>
-            <div class="form-actions" style="margin-top:18px;">
+            <div class="form-actions form-actions--sticky">
                 <button type="submit" class="btn btn--primary">Сохранить</button>
                 <a href="/admin/news" class="btn">Отмена</a>
                 <?php if ($isEdit): ?>

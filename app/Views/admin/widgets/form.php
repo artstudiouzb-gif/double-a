@@ -116,7 +116,7 @@ $currentType = $widget['type'] ?? 'latest_news';
             <label for="is_active">Активен</label>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить</button>
             <a href="/admin/widgets" class="btn">Отмена</a>
         </div>

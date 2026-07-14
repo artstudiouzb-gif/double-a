@@ -63,7 +63,7 @@ $socials = $member['socials'] ?? [];
             <input type="number" id="sort_order" name="sort_order" value="<?= (int) ($member['sort_order'] ?? 0) ?>">
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--sticky">
             <button type="submit" class="btn btn--primary">Сохранить</button>
             <a href="/admin/team" class="btn">Отмена</a>
         </div>
