@@ -1428,3 +1428,66 @@ body.mobile-menu-open .site-drawer__panel { transform: translateX(0); }
 .media-item__body { display: flex; flex-direction: column; gap: 2px; }
 .media-item__label { font-weight: 600; }
 .media-item__action { color: var(--color-accent, #2f6fed); font-size: .85rem; font-weight: 600; }
+
+/* --- Улучшенное оформление кнопок-утилит (Поиск, Тема, Версия для слабовидящих) --- */
+.site-search-toggle,
+.site-theme-toggle,
+.a11y-toggle {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: inherit !important;
+    cursor: pointer !important;
+    border-radius: 50% !important;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease !important;
+}
+.site-search-toggle:hover,
+.site-theme-toggle:hover,
+.a11y-toggle:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+}
+/* Адаптация под светлый фон (когда шапка/топбар светлые) */
+.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-search-toggle,
+.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-theme-toggle,
+.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .a11y-toggle,
+.site-topbar--light .site-search-toggle,
+.site-topbar--light .site-theme-toggle,
+.site-topbar--light .a11y-toggle {
+    color: var(--gov-ink, var(--text-main)) !important;
+}
+.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-search-toggle:hover,
+.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-theme-toggle:hover,
+.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .a11y-toggle:hover,
+.site-topbar--light .site-search-toggle:hover,
+.site-topbar--light .site-theme-toggle:hover,
+.site-topbar--light .a11y-toggle:hover {
+    background: rgba(15, 23, 42, 0.08) !important;
+    color: var(--gov-teal, var(--color-accent)) !important;
+}
+
+/* Все иконки строго одинакового размера */
+.site-search-toggle svg,
+.site-theme-toggle svg,
+.a11y-toggle svg {
+    width: 20px !important;
+    height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    display: block !important;
+    margin: 0 !important;
+    stroke-width: 2 !important;
+}
+/* Скрываем текстовую подпись кнопки a11y в шапке/топбаре */
+.site-header .a11y-toggle span,
+.site-topbar .a11y-toggle span {
+    display: none !important;
+}

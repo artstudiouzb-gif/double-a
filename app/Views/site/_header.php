@@ -189,7 +189,7 @@ if ($hcfg['cta']['enabled'] && $hcfg['cta']['text'] !== '') {
 // --- Переключатель темы (показываем, если тема не фиксирована как auto) ---
 $themeToggle = '';
 if ($defaultTheme !== 'auto') {
-    $themeToggle = '<button type="button" class="site-theme-toggle" aria-label="' . $et('Сменить тему') . '" title="' . $et('Светлая/тёмная тема') . '">◐</button>';
+    $themeToggle = '<button type="button" class="site-theme-toggle" aria-label="' . $et('Сменить тему') . '" title="' . $et('Светлая/тёмная тема') . '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20V2z" fill="currentColor"/></svg></button>';
 }
 
 // --- Версия для слабовидящих: состояние из cookie (без JS-мигания) ---
