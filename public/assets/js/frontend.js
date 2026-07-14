@@ -49,27 +49,85 @@
     }
     if (searchToggles.length && searchOverlay) {
         var searchInput = searchOverlay.querySelector('[data-search-input]');
-        var openSearch = function () {
+        var searchForm = searchOverlay.querySelector('.site-search-overlay__form');
+        var activeSearchToggle = null;
+        var searchCloseTimer = null;
+        var positionSearch = function (toggle) {
+            if (!toggle || !searchForm) { return; }
+            var toggleRect = toggle.getBoundingClientRect();
+            var header = toggle.closest('.site-header');
+            var anchorRect = header ? header.getBoundingClientRect() : toggleRect;
+            var desiredTop = anchorRect.bottom + 10;
+            var maxTop = Math.max(12, window.innerHeight - searchForm.offsetHeight - 12);
+            var top = Math.max(12, Math.min(desiredTop, maxTop));
+            var desiredRight = Math.max(12, window.innerWidth - toggleRect.right);
+            var maxRight = Math.max(12, window.innerWidth - searchForm.offsetWidth - 12);
+            var right = Math.min(desiredRight, maxRight);
+            searchOverlay.style.setProperty('--search-popover-top', top + 'px');
+            searchOverlay.style.setProperty('--search-popover-right', right + 'px');
+        };
+        var openSearch = function (toggle) {
+            if (searchOverlay.classList.contains('is-open') && activeSearchToggle === toggle) {
+                closeSearch(true);
+                return;
+            }
+            if (searchCloseTimer) { clearTimeout(searchCloseTimer); searchCloseTimer = null; }
+            activeSearchToggle = toggle;
             searchOverlay.hidden = false;
+            document.body.classList.add('site-search-open');
+            positionSearch(toggle);
             searchToggles.forEach(function (t) { t.setAttribute('aria-expanded', 'true'); });
             requestAnimationFrame(function () {
                 searchOverlay.classList.add('is-open');
                 if (searchInput) { searchInput.focus(); }
             });
         };
-        var closeSearch = function () {
+        var closeSearch = function (restoreFocus) {
+            var focusTarget = activeSearchToggle;
             searchOverlay.classList.remove('is-open');
+            document.body.classList.remove('site-search-open');
             searchToggles.forEach(function (t) { t.setAttribute('aria-expanded', 'false'); });
-            setTimeout(function () { searchOverlay.hidden = true; }, 200);
+            searchCloseTimer = setTimeout(function () {
+                searchOverlay.hidden = true;
+                searchCloseTimer = null;
+                if (restoreFocus && focusTarget) { focusTarget.focus(); }
+                activeSearchToggle = null;
+            }, 180);
         };
-        searchToggles.forEach(function (t) { t.addEventListener('click', openSearch); });
+        searchToggles.forEach(function (t) {
+            t.addEventListener('click', function () { openSearch(t); });
+        });
         searchOverlay.addEventListener('click', function (e) {
-            if (e.target === searchOverlay || e.target.hasAttribute('data-search-close')) {
-                closeSearch();
+            if (e.target === searchOverlay || e.target.closest('[data-search-close]')) {
+                closeSearch(true);
             }
         });
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && !searchOverlay.hidden) { closeSearch(); }
+            if (searchOverlay.hidden) { return; }
+            if (e.key === 'Escape') {
+                closeSearch(true);
+                return;
+            }
+            if (e.key === 'Tab' && searchForm) {
+                var focusable = Array.prototype.slice.call(searchForm.querySelectorAll('input, button, [href], [tabindex]:not([tabindex="-1"])'))
+                    .filter(function (element) { return !element.disabled && element.offsetParent !== null; });
+                if (!focusable.length) { return; }
+                var first = focusable[0];
+                var last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+        window.addEventListener('resize', function () {
+            if (!searchOverlay.hidden && activeSearchToggle) { positionSearch(activeSearchToggle); }
+        });
+        window.addEventListener('a11y:panelchange', function () {
+            if (!searchOverlay.hidden && activeSearchToggle) { positionSearch(activeSearchToggle); }
         });
     }
 
@@ -245,9 +303,13 @@
         if (!hdr) { return; }
         // Прозрачная шапка стартует сразу под верхней полосой (если есть).
         var topbar = document.querySelector('.site-topbar');
+        var a11yPanel = document.querySelector('.a11y-panel');
         var offset = function () {
-            if (topbar && hdr.classList.contains('site-header--transparent')) {
-                hdr.style.setProperty('--hdr-top', topbar.offsetHeight + 'px');
+            var panelHeight = a11yPanel && a11yPanel.classList.contains('is-open') ? a11yPanel.offsetHeight : 0;
+            hdr.style.setProperty('--hdr-panel-height', panelHeight + 'px');
+            if (hdr.classList.contains('site-header--transparent')) {
+                var topbarHeight = topbar ? topbar.offsetHeight : 0;
+                hdr.style.setProperty('--hdr-top', (topbarHeight + panelHeight) + 'px');
             }
         };
         var apply = function () {
@@ -255,6 +317,7 @@
         };
         window.addEventListener('scroll', apply, { passive: true });
         window.addEventListener('resize', offset);
+        window.addEventListener('a11y:panelchange', offset);
         offset();
         apply();
     })();

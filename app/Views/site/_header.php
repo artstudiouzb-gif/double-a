@@ -36,6 +36,11 @@ if (!in_array($defaultTheme, ['light', 'dark', 'auto'], true)) {
 }
 $fontUrl = Setting::get('font_url', '');           // ссылка на .woff2 локального шрифта
 $fontFaceName = Setting::get('font_face_name', ''); // имя семейства для @font-face
+// Не загружаем сохранённый локальный файл, когда выбран базовый или Google-шрифт.
+if (\App\Core\DesignSettings::bodyFontChoice() !== 'style:custom') {
+    $fontUrl = '';
+    $fontFaceName = '';
+}
 
 // --- SEO / Open Graph ---
 $appUrl = \App\Core\AppUrl::base();
@@ -197,7 +202,7 @@ $a11y = [
     'size' => in_array($a11yParts[1] ?? '', $a11ySizes, true) ? $a11yParts[1] : 'm',
     'images' => ($a11yParts[2] ?? '') === 'off' ? 'off' : 'on',
 ];
-$a11yToggle = '<button type="button" class="a11y-toggle" aria-label="' . $et('Версия для слабовидящих') . '" title="' . $et('Версия для слабовидящих') . '">'
+$a11yToggle = '<button type="button" class="a11y-toggle" aria-label="' . $et('Версия для слабовидящих') . '" title="' . $et('Версия для слабовидящих') . '" aria-controls="a11y-panel" aria-expanded="' . ($a11y['on'] ? 'true' : 'false') . '">'
     . '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>'
     . '<span>' . $et('Для слабовидящих') . '</span></button>';
 
@@ -205,9 +210,9 @@ $a11yToggle = '<button type="button" class="a11y-toggle" aria-label="' . $et('В
 $searchAction = htmlspecialchars(Locale::url('search', $currentLang), ENT_QUOTES);
 $searchIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>';
 $searchHtml = '<form class="site-search" method="get" action="' . $searchAction . '" role="search">'
-    . '<input type="search" name="q" placeholder="' . htmlspecialchars(t('Поиск'), ENT_QUOTES) . '" aria-label="' . htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) . '">'
+    . '<input type="search" name="q" minlength="2" required autocomplete="off" placeholder="' . htmlspecialchars(t('Поиск'), ENT_QUOTES) . '" aria-label="' . htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) . '">'
     . '<button type="submit" aria-label="' . $et('Найти') . '">' . $searchIcon . '</button></form>'
-    . '<button type="button" class="site-search-toggle" aria-label="' . $et('Открыть поиск') . '" aria-expanded="false" data-search-toggle>' . $searchIcon . '</button>';
+    . '<button type="button" class="site-search-toggle" aria-label="' . $et('Открыть поиск') . '" aria-controls="site-search-popover" aria-expanded="false" data-search-toggle>' . $searchIcon . '</button>';
 
 // --- Тема-билдер: значения дизайна + классы для <body> ---
 $designVals = \App\Core\DesignSettings::current();
@@ -468,7 +473,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 </div>
 <?php endif; ?>
 <?php if (empty($hideChrome)): // лендинг (группа 6) скрывает шапку сайта ?>
-<div class="a11y-panel<?= $a11y['on'] ? ' is-open' : '' ?>" role="region" aria-label="<?= $et('Настройки версии для слабовидящих') ?>">
+<div class="a11y-panel<?= $a11y['on'] ? ' is-open' : '' ?>" id="a11y-panel" role="region" aria-label="<?= $et('Настройки версии для слабовидящих') ?>">
     <div class="a11y-panel__group">
         <b><?= $et('Цвет:') ?></b>
         <button type="button" data-a11y-set="scheme:cw" title="<?= $et('Чёрным по белому') ?>">A</button>
@@ -517,9 +522,9 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
     </div>
 </div>
 <?php endif; ?>
-<div class="site-search-overlay" data-search-overlay hidden>
+<div class="site-search-overlay" id="site-search-popover" data-search-overlay hidden role="dialog" aria-modal="true" aria-label="<?= htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) ?>">
     <form class="site-search-overlay__form" method="get" action="<?= $searchAction ?>" role="search">
-        <input type="search" name="q" placeholder="<?= htmlspecialchars(t('Введите запрос…'), ENT_QUOTES) ?>" aria-label="<?= htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) ?>" data-search-input>
+        <input type="search" name="q" minlength="2" required autocomplete="off" placeholder="<?= htmlspecialchars(t('Введите запрос…'), ENT_QUOTES) ?>" aria-label="<?= htmlspecialchars(t('Поиск по сайту'), ENT_QUOTES) ?>" data-search-input>
         <button type="submit" class="site-search-overlay__submit"><?= $et('Найти') ?></button>
         <button type="button" class="site-search-overlay__close" aria-label="<?= $et('Закрыть поиск') ?>" data-search-close>&times;</button>
     </form>

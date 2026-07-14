@@ -39,31 +39,51 @@ final class DesignController
     {
         Auth::requireSuperAdmin();
 
+        $preview = $_GET;
+        if (array_key_exists('font_body_choice', $preview)) {
+            $preview = array_merge(
+                $preview,
+                DesignSettings::normalizeBodyFontChoice((string) $preview['font_body_choice'])
+            );
+        }
+
         // Примеряем каждую валидную опцию поверх сохранённых значений.
         foreach (DesignSettings::OPTIONS as $key => $opt) {
-            if (!isset($_GET[$key])) {
+            if (!isset($preview[$key])) {
                 continue;
             }
-            $val = DesignSettings::sanitize($key, (string) $_GET[$key]);
+            $val = DesignSettings::sanitize($key, (string) $preview[$key]);
             if ($val !== null) {
                 Setting::overrideInMemory('design_' . $key, $val);
             }
         }
-        if (isset($_GET['container_custom'])) {
+        if (isset($preview['container_custom'])) {
             Setting::overrideInMemory(
                 'design_container_custom',
-                DesignSettings::normalizeWidth((string) $_GET['container_custom'])
+                DesignSettings::normalizeWidth((string) $preview['container_custom'])
+            );
+        }
+        if (array_key_exists('font_size_custom', $preview)) {
+            Setting::overrideInMemory(
+                'design_font_size_custom',
+                DesignSettings::normalizeFontSize((string) $preview['font_size_custom'])
+            );
+        }
+        if (array_key_exists('radius_custom', $preview)) {
+            Setting::overrideInMemory(
+                'design_radius_custom',
+                DesignSettings::normalizeRadius((string) $preview['radius_custom'])
             );
         }
 
         // Ручные значения превью берутся из той же формы, что и пресеты.
         // Они применяются только для соответствующих вариантов «Свои…».
         $customPrimary = \App\Core\SettingsValidator::hexColor(
-            (string) ($_GET['color_primary'] ?? ''),
+            (string) ($preview['color_primary'] ?? ''),
             (string) Setting::get('color_primary', '#173a63')
         );
         $customAccent = \App\Core\SettingsValidator::hexColor(
-            (string) ($_GET['color_accent'] ?? ''),
+            (string) ($preview['color_accent'] ?? ''),
             (string) Setting::get('color_accent', '#17999b')
         );
 
@@ -79,16 +99,16 @@ final class DesignController
         $font = Setting::get('design_font_style', 'custom');
         if ($font !== 'custom' && isset(DesignSettings::FONTS[$font])) {
             Setting::overrideInMemory('font_family', DesignSettings::FONTS[$font][1]);
-        } elseif (trim((string) ($_GET['font_family'] ?? '')) !== '') {
-            Setting::overrideInMemory('font_family', mb_substr(trim((string) $_GET['font_family']), 0, 200));
+        } elseif (trim((string) ($preview['font_family'] ?? '')) !== '') {
+            Setting::overrideInMemory('font_family', mb_substr(trim((string) $preview['font_family']), 0, 200));
         }
 
         foreach (['heading' => 'font_heading', 'body' => 'font_family'] as $role => $target) {
-            $slug = (string) ($_GET['font_google_' . $role] ?? '');
+            $slug = (string) ($preview['font_google_' . $role] ?? '');
             if ($slug !== '' && isset(DesignSettings::GOOGLE_FONTS[$slug])) {
                 Setting::overrideInMemory('design_font_google_' . $role, $slug);
                 Setting::overrideInMemory($target, DesignSettings::GOOGLE_FONTS[$slug][1]);
-            } elseif (array_key_exists('font_google_' . $role, $_GET)) {
+            } elseif (array_key_exists('font_google_' . $role, $preview)) {
                 Setting::overrideInMemory('design_font_google_' . $role, '');
                 if ($role === 'heading') {
                     Setting::overrideInMemory('font_heading', "'PT Serif', Georgia, 'Times New Roman', serif");
@@ -96,16 +116,16 @@ final class DesignController
             }
         }
 
-        if (array_key_exists('font_face_name', $_GET)) {
-            $face = preg_replace('/[^a-zA-Z0-9 _-]/', '', trim((string) $_GET['font_face_name'])) ?? '';
+        if (array_key_exists('font_face_name', $preview)) {
+            $face = preg_replace('/[^a-zA-Z0-9 _-]/', '', trim((string) $preview['font_face_name'])) ?? '';
             Setting::overrideInMemory('font_face_name', mb_substr($face, 0, 80));
         }
-        if (array_key_exists('font_url', $_GET)) {
-            $url = mb_substr(trim((string) $_GET['font_url']), 0, 500);
+        if (array_key_exists('font_url', $preview)) {
+            $url = mb_substr(trim((string) $preview['font_url']), 0, 500);
             Setting::overrideInMemory('font_url', $url === '' || \App\Core\UrlGuard::isSafeLink($url) ? $url : '');
         }
-        if (isset($_GET['default_theme']) && in_array($_GET['default_theme'], ['light', 'dark', 'auto'], true)) {
-            Setting::overrideInMemory('default_theme', (string) $_GET['default_theme']);
+        if (isset($preview['default_theme']) && in_array($preview['default_theme'], ['light', 'dark', 'auto'], true)) {
+            Setting::overrideInMemory('default_theme', (string) $preview['default_theme']);
         }
 
         (new \App\Controllers\Site\PageController())->home();

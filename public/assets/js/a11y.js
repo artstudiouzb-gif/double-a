@@ -60,11 +60,27 @@
     function onReady() {
         var toggles = document.querySelectorAll('.a11y-toggle');
         var panel = document.querySelector('.a11y-panel');
+        var lastToggle = null;
+        var setPanelOpen = function (open, restoreFocus) {
+            if (!panel) { return; }
+            panel.classList.toggle('is-open', open);
+            toggles.forEach(function (toggle) {
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            window.dispatchEvent(new CustomEvent('a11y:panelchange', { detail: { open: open } }));
+            if (restoreFocus && lastToggle) { lastToggle.focus(); }
+        };
         if (toggles.length && panel) {
             toggles.forEach(function (toggle) {
                 toggle.addEventListener('click', function () {
-                    panel.classList.toggle('is-open');
+                    lastToggle = toggle;
+                    setPanelOpen(!panel.classList.contains('is-open'), false);
                 });
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+                    setPanelOpen(false, true);
+                }
             });
         }
 
@@ -83,11 +99,12 @@
                 e.preventDefault();
                 state.on = false;
                 apply();
-                if (panel) { panel.classList.remove('is-open'); }
+                setPanelOpen(false, true);
             });
         }
 
         syncButtons();
+        if (panel) { setPanelOpen(panel.classList.contains('is-open'), false); }
     }
 
     // Атрибуты уже проставлены сервером; JS лишь синхронизирует и вешает обработчики.

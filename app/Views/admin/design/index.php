@@ -95,6 +95,7 @@ foreach ($options as $key => $opt) {
         <section class="design-section">
             <h2 class="design-section__title"><?= htmlspecialchars($groupName, ENT_QUOTES) ?></h2>
             <?php foreach ($groupOpts as $key => $opt): ?>
+                <?php if ($key === 'font_style') { continue; } // Ниже выводится единый выбор всех источников шрифта. ?>
                 <div class="design-opt">
                     <div class="design-opt__label">
                         <span><?= htmlspecialchars($opt['label'], ENT_QUOTES) ?></span>
@@ -119,11 +120,13 @@ foreach ($options as $key => $opt) {
                 $accent = $customAppearance['color_accent'];
                 $defaultTheme = (string) \App\Models\Setting::get('default_theme', 'light');
                 if (!in_array($defaultTheme, ['light', 'dark', 'auto'], true)) { $defaultTheme = 'light'; }
+                $bodyFontChoice = \App\Core\DesignSettings::bodyFontChoice();
+                $gHeading = (string) \App\Models\Setting::get('design_font_google_heading', '');
                 ?>
                 <div class="design-manual">
                     <div class="design-manual__head">
-                        <strong>Ручные значения</strong>
-                        <span>Используются при выборе «Свои цвета» и «Свой шрифт».</span>
+                        <strong>Цвета и шрифты</strong>
+                        <span>Все источники шрифта собраны здесь; выбранный вариант применяется без скрытых переопределений.</span>
                     </div>
                     <div class="design-manual__grid">
                         <div class="form-field">
@@ -135,22 +138,55 @@ foreach ($options as $key => $opt) {
                             <input type="color" id="design_color_accent" name="color_accent" value="<?= htmlspecialchars($accent, ENT_QUOTES) ?>" data-design-preview-field>
                         </div>
                         <div class="form-field design-manual__wide">
-                            <label for="design_font_family">Свой шрифт (CSS font-family)</label>
-                            <input type="text" id="design_font_family" name="font_family" maxlength="200"
-                                   value="<?= htmlspecialchars($customAppearance['font_family'], ENT_QUOTES) ?>"
-                                   placeholder="'MyBrandFont', system-ui, sans-serif" data-design-preview-field>
+                            <label for="design_font_body_choice">Основной шрифт текста</label>
+                            <select id="design_font_body_choice" name="font_body_choice" data-design-preview-field data-font-body-choice>
+                                <optgroup label="Базовые шрифты">
+                                    <?php foreach (\App\Core\DesignSettings::FONTS as $fontKey => $fontData): ?>
+                                        <?php if ($fontKey === 'custom') { continue; } ?>
+                                        <?php $choice = 'style:' . $fontKey; ?>
+                                        <option value="<?= htmlspecialchars($choice, ENT_QUOTES) ?>" <?= $bodyFontChoice === $choice ? 'selected' : '' ?>><?= htmlspecialchars($fontData[0], ENT_QUOTES) ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                                <optgroup label="Google Fonts">
+                                    <?php foreach (\App\Core\DesignSettings::GOOGLE_FONTS as $slug => $fontData): ?>
+                                        <?php $choice = 'google:' . $slug; ?>
+                                        <option value="<?= htmlspecialchars($choice, ENT_QUOTES) ?>" <?= $bodyFontChoice === $choice ? 'selected' : '' ?>><?= htmlspecialchars($fontData[0], ENT_QUOTES) ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                                <optgroup label="Собственный шрифт">
+                                    <option value="style:custom" <?= $bodyFontChoice === 'style:custom' ? 'selected' : '' ?>>Свой CSS-стек или файл</option>
+                                </optgroup>
+                            </select>
+                            <small class="form-hint">Внешние шрифты загружаются с fonts.googleapis.com; базовые и собственный шрифт не требуют такого подключения.</small>
                         </div>
-                        <div class="form-field">
-                            <label for="design_font_face_name">Локальный шрифт: имя</label>
-                            <input type="text" id="design_font_face_name" name="font_face_name" maxlength="80"
-                                   value="<?= htmlspecialchars((string) \App\Models\Setting::get('font_face_name', ''), ENT_QUOTES) ?>"
-                                   placeholder="MyBrandFont" data-design-preview-field>
+                        <div class="design-manual__custom-font design-manual__wide" data-custom-font-fields<?= $bodyFontChoice !== 'style:custom' ? ' hidden' : '' ?>>
+                            <div class="form-field design-manual__wide">
+                                <label for="design_font_family">Свой шрифт (CSS font-family)</label>
+                                <input type="text" id="design_font_family" name="font_family" maxlength="200"
+                                       value="<?= htmlspecialchars($customAppearance['font_family'], ENT_QUOTES) ?>"
+                                       placeholder="'MyBrandFont', system-ui, sans-serif" data-design-preview-field>
+                            </div>
+                            <div class="form-field">
+                                <label for="design_font_face_name">Имя семейства</label>
+                                <input type="text" id="design_font_face_name" name="font_face_name" maxlength="80"
+                                       value="<?= htmlspecialchars((string) \App\Models\Setting::get('font_face_name', ''), ENT_QUOTES) ?>"
+                                       placeholder="MyBrandFont" data-design-preview-field>
+                            </div>
+                            <div class="form-field">
+                                <label for="design_font_url">Файл .woff2</label>
+                                <input type="text" id="design_font_url" name="font_url" maxlength="500"
+                                       value="<?= htmlspecialchars((string) \App\Models\Setting::get('font_url', ''), ENT_QUOTES) ?>"
+                                       placeholder="/uploads/public/font.woff2" data-design-preview-field>
+                            </div>
                         </div>
-                        <div class="form-field">
-                            <label for="design_font_url">Локальный шрифт: файл .woff2</label>
-                            <input type="text" id="design_font_url" name="font_url" maxlength="500"
-                                   value="<?= htmlspecialchars((string) \App\Models\Setting::get('font_url', ''), ENT_QUOTES) ?>"
-                                   placeholder="/uploads/public/font.woff2" data-design-preview-field>
+                        <div class="form-field design-manual__wide">
+                            <label for="design_font_heading">Шрифт заголовков</label>
+                            <select id="design_font_heading" name="font_google_heading" data-design-preview-field>
+                                <option value="">Стандартный (PT Serif)</option>
+                                <?php foreach (\App\Core\DesignSettings::GOOGLE_FONTS as $slug => $fontData): ?>
+                                    <option value="<?= htmlspecialchars($slug, ENT_QUOTES) ?>" <?= $gHeading === $slug ? 'selected' : '' ?>><?= htmlspecialchars($fontData[0], ENT_QUOTES) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="form-field">
                             <label for="design_default_theme">Тема для посетителей</label>
@@ -167,7 +203,7 @@ foreach ($options as $key => $opt) {
     <?php endforeach; ?>
 
     <section class="design-section">
-        <h2 class="design-section__title">Своя ширина контейнера</h2>
+        <h2 class="design-section__title">Точные размеры</h2>
         <div class="design-opt">
             <div class="design-opt__label">
                 <span>Точная ширина</span>
@@ -177,41 +213,26 @@ foreach ($options as $key => $opt) {
                 <input type="text" name="container_custom" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_container_custom', ''), ENT_QUOTES) ?>" placeholder="напр. 1440px" style="max-width:220px;" data-design-preview-field>
             </div>
         </div>
-    </section>
-
-    <section class="design-section">
-        <h2 class="design-section__title">Google-шрифты</h2>
-        <p class="form-hint" style="margin:0 0 12px;">
-            Отдельные шрифты для заголовков и текста из каталога Google Fonts
-            (все — с поддержкой кириллицы, подключаются с fonts.googleapis.com).
-            Для заголовков «Стандарт» возвращает PT Serif; для текста пустой выбор
-            использует карточку «Шрифт сайта» выше.
-            Выбранный Google-шрифт текста имеет приоритет над карточкой «Шрифт сайта» выше.
-        </p>
-        <?php
-        $gHeading = \App\Models\Setting::get('design_font_google_heading', '');
-        $gBody = \App\Models\Setting::get('design_font_google_body', '');
-        ?>
         <div class="design-opt">
-            <div class="design-opt__label"><span>Шрифт заголовков</span></div>
+            <div class="design-opt__label">
+                <span>Базовый размер текста</span>
+                <small>От 12 до 24 px с шагом 0,5. Пусто — использовать выбранный вариант размера выше.</small>
+            </div>
             <div class="design-opt__choices">
-                <select name="font_google_heading" class="form-select" style="min-width:280px;">
-                    <option value="">Стандарт (PT Serif)</option>
-                    <?php foreach (\App\Core\DesignSettings::GOOGLE_FONTS as $slug => $f): ?>
-                        <option value="<?= htmlspecialchars($slug, ENT_QUOTES) ?>" <?= $gHeading === $slug ? 'selected' : '' ?>><?= htmlspecialchars($f[0], ENT_QUOTES) ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <?php $fontSizeCustom = preg_replace('/px$/', '', \App\Core\DesignSettings::fontSizeCustom()); ?>
+                <input type="number" name="font_size_custom" min="12" max="24" step="0.5" inputmode="decimal"
+                       value="<?= htmlspecialchars((string) $fontSizeCustom, ENT_QUOTES) ?>" placeholder="напр. 16.5" style="max-width:220px;" data-design-preview-field>
             </div>
         </div>
         <div class="design-opt">
-            <div class="design-opt__label"><span>Шрифт текста</span></div>
+            <div class="design-opt__label">
+                <span>Точное скругление</span>
+                <small>От 0 до 48 px. Применяется к карточкам и полям, а также к кнопкам с формой «Скруглённые». Пусто — использовать вариант выше.</small>
+            </div>
             <div class="design-opt__choices">
-                <select name="font_google_body" class="form-select" style="min-width:280px;">
-                    <option value="">Использовать «Шрифт сайта» выше</option>
-                    <?php foreach (\App\Core\DesignSettings::GOOGLE_FONTS as $slug => $f): ?>
-                        <option value="<?= htmlspecialchars($slug, ENT_QUOTES) ?>" <?= $gBody === $slug ? 'selected' : '' ?>><?= htmlspecialchars($f[0], ENT_QUOTES) ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <?php $radiusCustom = preg_replace('/px$/', '', \App\Core\DesignSettings::radiusCustom()); ?>
+                <input type="number" name="radius_custom" min="0" max="48" step="0.5" inputmode="decimal"
+                       value="<?= htmlspecialchars((string) $radiusCustom, ENT_QUOTES) ?>" placeholder="напр. 12" style="max-width:220px;" data-design-preview-field>
             </div>
         </div>
     </section>
@@ -239,16 +260,23 @@ foreach ($options as $key => $opt) {
             document.querySelectorAll('.design-fine [data-design-preview-field]').forEach(function (field) {
                 params.set(field.name, field.value);
             });
-            document.querySelectorAll('.design-fine select[name^="font_google_"]').forEach(function (field) {
-                params.set(field.name, field.value);
-            });
             frame.src = '/admin/design/preview?' + params.toString();
         }, 250);
     }
-    document.querySelectorAll('.design-fine input[type=radio], .design-fine [data-design-preview-field], .design-fine select[name^="font_google_"]').forEach(function (field) {
+    document.querySelectorAll('.design-fine input[type=radio], .design-fine [data-design-preview-field]').forEach(function (field) {
         field.addEventListener('change', refresh);
-        if (field.matches('input[type="text"]')) { field.addEventListener('input', refresh); }
+        if (field.matches('input[type="text"], input[type="number"]')) { field.addEventListener('input', refresh); }
     });
+
+    var fontChoice = document.querySelector('[data-font-body-choice]');
+    var customFontFields = document.querySelector('[data-custom-font-fields]');
+    function syncCustomFontFields() {
+        if (fontChoice && customFontFields) {
+            customFontFields.hidden = fontChoice.value !== 'style:custom';
+        }
+    }
+    if (fontChoice) { fontChoice.addEventListener('change', syncCustomFontFields); }
+    syncCustomFontFields();
 
     // Переключатель ширины (десктоп/планшет/телефон).
     document.querySelectorAll('[data-pv-width]').forEach(function (btn) {

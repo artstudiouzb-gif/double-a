@@ -78,9 +78,9 @@ final class DesignSettings
         ],
         'font_style' => [
             'label' => 'Шрифт сайта',
-            'hint' => '«Свой шрифт» — ручный CSS-стек и локальный @font-face ниже.',
+            'hint' => 'Основной шрифт выбирается в едином списке базовых, внешних и собственных шрифтов ниже.',
             'group' => 'Цвета и шрифт',
-            'choices' => ['inter' => 'Inter', 'system' => 'Системный', 'serif' => 'С засечками', 'custom' => 'Свой шрифт'],
+            'choices' => ['pt' => 'PT Sans', 'inter' => 'Inter', 'system' => 'Системный', 'serif' => 'С засечками', 'custom' => 'Свой шрифт'],
             'default' => 'custom',
         ],
         'container' => [
@@ -92,7 +92,7 @@ final class DesignSettings
         ],
         'radius' => [
             'label' => 'Скругление углов',
-            'hint' => 'Радиус карточек, кнопок и полей.',
+            'hint' => 'Радиус карточек и крупных блоков. Ниже можно задать точное значение.',
             'group' => 'Общие',
             'choices' => ['none' => 'Прямые', 'small' => 'Малое', 'medium' => 'Среднее', 'large' => 'Большое'],
             'default' => 'medium',
@@ -279,6 +279,82 @@ final class DesignSettings
     }
 
     /**
+     * Единое значение выбора основного шрифта для формы дизайна.
+     * Старые design_font_style/design_font_google_body остаются форматом
+     * хранения, поэтому обновление не требует миграции базы.
+     */
+    public static function bodyFontChoice(): string
+    {
+        $google = (string) Setting::get('design_font_google_body', '');
+        if ($google !== '' && isset(self::GOOGLE_FONTS[$google])) {
+            return 'google:' . $google;
+        }
+
+        $style = (string) Setting::get('design_font_style', 'custom');
+        return 'style:' . (isset(self::FONTS[$style]) ? $style : 'custom');
+    }
+
+    /**
+     * Нормализует единый выбор шрифта в совместимые внутренние поля.
+     * @return array{font_style:string,font_google_body:string}
+     */
+    public static function normalizeBodyFontChoice(string $choice): array
+    {
+        if (str_starts_with($choice, 'google:')) {
+            $slug = substr($choice, 7);
+            if (isset(self::GOOGLE_FONTS[$slug])) {
+                return ['font_style' => 'system', 'font_google_body' => $slug];
+            }
+        }
+        if (str_starts_with($choice, 'style:')) {
+            $style = substr($choice, 6);
+            if (isset(self::FONTS[$style])) {
+                return ['font_style' => $style, 'font_google_body' => ''];
+            }
+        }
+
+        return ['font_style' => 'custom', 'font_google_body' => ''];
+    }
+
+    /** Точный базовый размер текста, 12–24px; пусто — значение пресета. */
+    public static function fontSizeCustom(): string
+    {
+        return self::normalizePixelValue((string) Setting::get('design_font_size_custom', ''), 12, 24);
+    }
+
+    public static function normalizeFontSize(string $raw): string
+    {
+        return self::normalizePixelValue($raw, 12, 24);
+    }
+
+    /** Точное скругление, 0–48px; пусто — значение пресета. */
+    public static function radiusCustom(): string
+    {
+        return self::normalizePixelValue((string) Setting::get('design_radius_custom', ''), 0, 48);
+    }
+
+    public static function normalizeRadius(string $raw): string
+    {
+        return self::normalizePixelValue($raw, 0, 48);
+    }
+
+    private static function normalizePixelValue(string $raw, float $min, float $max): string
+    {
+        $raw = strtolower(trim(str_replace(',', '.', $raw)));
+        $raw = preg_replace('/px$/', '', $raw) ?? '';
+        if ($raw === '' || !preg_match('/^\d{1,3}(?:\.\d)?$/', $raw)) {
+            return '';
+        }
+        $value = (float) $raw;
+        if ($value < $min || $value > $max) {
+            return '';
+        }
+        $normalized = rtrim(rtrim(number_format($value, 1, '.', ''), '0'), '.');
+
+        return $normalized . 'px';
+    }
+
+    /**
      * Ручные значения внешнего вида. Хранятся отдельно от материализованных
      * рабочих ключей цветов и font_family, чтобы готовый пресет не затирал настройки
      * пользователя при последующем возврате к варианту «Свои…».
@@ -305,12 +381,24 @@ final class DesignSettings
 
     public static function save(array $input): void
     {
+        // Новая форма присылает один выбор вместо двух конкурирующих полей.
+        // Прямые font_style/font_google_body по-прежнему принимаются от пресетов
+        // и старых форм.
+        if (array_key_exists('font_body_choice', $input)) {
+            $input = array_merge($input, self::normalizeBodyFontChoice((string) $input['font_body_choice']));
+        }
         foreach (self::OPTIONS as $key => $opt) {
             $val = self::sanitize($key, (string) ($input[$key] ?? ''));
             Setting::set('design_' . $key, (string) $val);
         }
         // Своя ширина контейнера — отдельное свободное поле (не из choices).
         Setting::set('design_container_custom', self::normalizeWidth(trim((string) ($input['container_custom'] ?? ''))));
+        if (array_key_exists('font_size_custom', $input)) {
+            Setting::set('design_font_size_custom', self::normalizeFontSize((string) $input['font_size_custom']));
+        }
+        if (array_key_exists('radius_custom', $input)) {
+            Setting::set('design_radius_custom', self::normalizeRadius((string) $input['radius_custom']));
+        }
 
         // Ручные цвета и шрифт сохраняются отдельно от активного пресета.
         // При первом сохранении старые рабочие ключи цветов и font_family используются как
@@ -431,6 +519,8 @@ final class DesignSettings
         self::save(array_merge(self::PRESETS[$preset]['values'], [
             'font_google_heading' => '',
             'font_google_body' => '',
+            'font_size_custom' => '',
+            'radius_custom' => '',
         ]));
         Setting::set('design_preset', $preset);
 
@@ -489,6 +579,8 @@ final class DesignSettings
                 'default_theme' => Setting::get('default_theme', 'light'),
                 'font_google_heading' => Setting::get('design_font_google_heading', ''),
                 'font_google_body' => Setting::get('design_font_google_body', ''),
+                'font_size_custom' => Setting::get('design_font_size_custom', ''),
+                'radius_custom' => Setting::get('design_radius_custom', ''),
             ],
         ];
         Setting::set(self::USER_PRESETS_KEY, json_encode($presets, JSON_UNESCAPED_UNICODE));
@@ -533,10 +625,20 @@ final class DesignSettings
         }
         // Новые пресеты хранят весь единый блок оформления; colors остаётся
         // fallback для конфигураций, созданных до унификации.
-        self::save(array_merge($values, array_intersect_key($appearance, array_flip([
+        $appearanceInput = array_intersect_key($appearance, array_flip([
             'color_primary', 'color_accent', 'font_family', 'font_face_name',
             'font_url', 'default_theme', 'font_google_heading', 'font_google_body',
-        ]))));
+            'font_size_custom', 'radius_custom',
+        ]));
+        // Старые пользовательские конфигурации не знали об этих полях: при
+        // их применении сбрасываем текущие переопределения, а не наследуем их.
+        $appearanceInput = array_merge([
+            'font_google_heading' => '',
+            'font_google_body' => '',
+            'font_size_custom' => '',
+            'radius_custom' => '',
+        ], $appearanceInput);
+        self::save(array_merge($values, $appearanceInput));
 
         Setting::set('design_preset', 'user:' . $slug);
 
@@ -556,10 +658,21 @@ final class DesignSettings
             $container = $custom;
         }
         $radius = ['none' => '0px', 'small' => '8px', 'medium' => '14px', 'large' => '22px'][$v['radius']] ?? '14px';
+        $customRadius = self::radiusCustom();
+        if ($customRadius !== '') {
+            $radius = $customRadius;
+        }
         $gap = ['xs' => '8px', 'sm' => '16px', 'md' => '24px', 'lg' => '32px'][$v['card_gap']] ?? '24px';
         $section = ['compact' => '28px', 'standard' => '46px', 'spacious' => '72px'][$v['density']] ?? '46px';
         $btn = ['square' => '0px', 'rounded' => '10px', 'pill' => '999px'][$v['button']] ?? '10px';
+        if ($customRadius !== '' && ($v['button'] ?? 'rounded') === 'rounded') {
+            $btn = $customRadius;
+        }
         $fontSize = ['sm' => '15px', 'md' => '16px', 'lg' => '17px', 'xl' => '18px'][$v['font_size'] ?? 'md'] ?? '16px';
+        $customFontSize = self::fontSizeCustom();
+        if ($customFontSize !== '') {
+            $fontSize = $customFontSize;
+        }
         $lineHeight = ['tight' => '1.45', 'normal' => '1.6', 'relaxed' => '1.8'][$v['line_height'] ?? 'normal'] ?? '1.6';
         $shadow = [
             'flat' => 'none',

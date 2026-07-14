@@ -34,7 +34,7 @@ $a11y = [
         <span>Защищённое хранилище</span>
     </div>
     <nav>
-        <button type="button" class="a11y-toggle" aria-label="Версия для слабовидящих" title="Версия для слабовидящих">
+        <button type="button" class="a11y-toggle" aria-label="Версия для слабовидящих" title="Версия для слабовидящих" aria-controls="a11y-panel" aria-expanded="<?= $a11y['on'] ? 'true' : 'false' ?>">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
         <?php if (!empty($repoUser)): ?>
@@ -48,7 +48,7 @@ $a11y = [
         <?php endif; ?>
     </nav>
 </header>
-<div class="a11y-panel<?= $a11y['on'] ? ' is-open' : '' ?>" role="region" aria-label="Настройки версии для слабовидящих">
+<div class="a11y-panel<?= $a11y['on'] ? ' is-open' : '' ?>" id="a11y-panel" role="region" aria-label="Настройки версии для слабовидящих">
     <div class="a11y-panel__group">
         <b>Цвет:</b>
         <button type="button" data-a11y-set="scheme:cw" title="Чёрным по белому">Ч</button>
