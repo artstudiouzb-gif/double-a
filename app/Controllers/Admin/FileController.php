@@ -17,7 +17,7 @@ final class FileController
     public function index(): void
     {
         Auth::requireLogin();
-        View::render('admin/files/index', ['items' => FileEntry::all()]);
+        View::render('admin/files/index', ['items' => FileEntry::filtered($_GET)]);
     }
 
     /**

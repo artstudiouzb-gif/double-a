@@ -52,6 +52,32 @@ require __DIR__ . '/../layout/header.php';
         <div id="chunk_progress" class="form-hint"></div>
     </div>
 </div>
+<form method="get" action="/admin/files" class="list-filters list-filters--panel" style="margin-bottom: 20px;">
+    <div class="list-filters__group">
+        <input type="text" name="q" value="<?= htmlspecialchars((string) ($_GET['q'] ?? ''), ENT_QUOTES) ?>" placeholder="Поиск по имени…">
+        
+        <select name="type">
+            <option value="">Все типы</option>
+            <option value="image" <?= ($_GET['type'] ?? '') === 'image' ? 'selected' : '' ?>>Изображения</option>
+            <option value="document" <?= ($_GET['type'] ?? '') === 'document' ? 'selected' : '' ?>>Документы</option>
+            <option value="video" <?= ($_GET['type'] ?? '') === 'video' ? 'selected' : '' ?>>Видео</option>
+        </select>
+
+        <select name="sort">
+            <option value="date_desc" <?= ($_GET['sort'] ?? '') === 'date_desc' ? 'selected' : '' ?>>Сначала новые</option>
+            <option value="date_asc" <?= ($_GET['sort'] ?? '') === 'date_asc' ? 'selected' : '' ?>>Сначала старые</option>
+            <option value="size_desc" <?= ($_GET['sort'] ?? '') === 'size_desc' ? 'selected' : '' ?>>Сначала крупные</option>
+            <option value="size_asc" <?= ($_GET['sort'] ?? '') === 'size_asc' ? 'selected' : '' ?>>Сначала небольшие</option>
+            <option value="name_asc" <?= ($_GET['sort'] ?? '') === 'name_asc' ? 'selected' : '' ?>>По имени (А-Я)</option>
+            <option value="name_desc" <?= ($_GET['sort'] ?? '') === 'name_desc' ? 'selected' : '' ?>>По имени (Я-А)</option>
+        </select>
+
+        <button type="submit" class="btn">Применить</button>
+        <?php if (!empty($_GET['q']) || !empty($_GET['type']) || !empty($_GET['sort'])): ?>
+            <a href="/admin/files" class="btn" style="text-decoration:none; display:inline-flex; align-items:center; background:#e8e8e8; color:#333;">Сбросить</a>
+        <?php endif; ?>
+    </div>
+</form>
 
 <table class="data-table">
     <thead>

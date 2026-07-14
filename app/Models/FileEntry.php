@@ -16,6 +16,45 @@ final class FileEntry
         return $stmt->fetchAll();
     }
 
+    public static function filtered(array $params): array
+    {
+        $q = trim((string) ($params['q'] ?? ''));
+        $type = trim((string) ($params['type'] ?? ''));
+        $sort = trim((string) ($params['sort'] ?? 'date_desc'));
+
+        $sql = 'SELECT * FROM files WHERE 1=1';
+        $bind = [];
+
+        if ($q !== '') {
+            $sql .= ' AND original_name LIKE :q';
+            $bind[':q'] = '%' . $q . '%';
+        }
+
+        if ($type === 'image') {
+            $sql .= " AND mime_type LIKE 'image/%'";
+        } elseif ($type === 'video') {
+            $sql .= " AND mime_type LIKE 'video/%'";
+        } elseif ($type === 'document') {
+            $sql .= " AND mime_type NOT LIKE 'image/%' AND mime_type NOT LIKE 'video/%'";
+        }
+
+        $orderBy = match ($sort) {
+            'date_asc' => 'created_at ASC',
+            'size_desc' => 'size DESC',
+            'size_asc' => 'size ASC',
+            'name_asc' => 'original_name ASC',
+            'name_desc' => 'original_name DESC',
+            default => 'created_at DESC',
+        };
+
+        $sql .= ' ORDER BY ' . $orderBy;
+
+        $stmt = Database::pdo()->prepare($sql);
+        $stmt->execute($bind);
+
+        return $stmt->fetchAll();
+    }
+
     public static function findById(int $id): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM files WHERE id = :id LIMIT 1');
