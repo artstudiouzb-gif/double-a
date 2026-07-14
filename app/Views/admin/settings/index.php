@@ -22,41 +22,10 @@ require __DIR__ . '/../layout/header.php';
             'file' => 'logo_file',
         ]) ?>
 
-        <p class="form-hint">Готовые цветовые палитры и шрифтовые пресеты — в разделе <a href="/admin/design">«Дизайн»</a>. Поля ниже — ручные значения (используются при выборе «Свои цвета»/«Свой шрифт»).</p>
-        <div class="form-field">
-            <label for="color_primary">Основной цвет</label>
-            <input type="text" id="color_primary" name="color_primary" value="<?= htmlspecialchars($settings['color_primary'] ?? '#1a1a1a', ENT_QUOTES) ?>">
-        </div>
-
-        <div class="form-field">
-            <label for="color_accent">Акцентный цвет</label>
-            <input type="text" id="color_accent" name="color_accent" value="<?= htmlspecialchars($settings['color_accent'] ?? '#e63946', ENT_QUOTES) ?>">
-        </div>
-
-        <div class="form-field">
-            <label for="font_family">Шрифт (CSS font-family)</label>
-            <input type="text" id="font_family" name="font_family" value="<?= htmlspecialchars($settings['font_family'] ?? "'Inter', sans-serif", ENT_QUOTES) ?>">
-        </div>
-
-        <div class="form-field">
-            <label for="default_theme">Тема оформления</label>
-            <select id="default_theme" name="default_theme">
-                <?php $th = $settings['default_theme'] ?? 'light'; ?>
-                <option value="light" <?= $th === 'light' ? 'selected' : '' ?>>Светлая</option>
-                <option value="dark" <?= $th === 'dark' ? 'selected' : '' ?>>Тёмная</option>
-                <option value="auto" <?= $th === 'auto' ? 'selected' : '' ?>>Авто (по системе)</option>
-            </select>
-            <span class="form-hint">Посетители могут переключать тему; выбор сохраняется в браузере.</span>
-        </div>
-
-        <div class="form-field">
-            <label for="font_face_name">Локальный шрифт: имя семейства</label>
-            <input type="text" id="font_face_name" name="font_face_name" value="<?= htmlspecialchars($settings['font_face_name'] ?? '', ENT_QUOTES) ?>" placeholder="напр. MyBrandFont">
-            <span class="form-hint">Если задать имя и ссылку на .woff2, шрифт подключится через @font-face с preload (без мерцания). Не забудьте указать это имя в поле «Шрифт» выше.</span>
-        </div>
-        <div class="form-field">
-            <label for="font_url">Локальный шрифт: ссылка на .woff2</label>
-            <input type="text" id="font_url" name="font_url" value="<?= htmlspecialchars($settings['font_url'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/font.woff2">
+        <div class="settings-design-link">
+            <strong>Цвета, шрифты и тема оформления</strong>
+            <span>Теперь настраиваются в одном месте — в разделе «Дизайн сайта».</span>
+            <a href="/admin/design" class="btn btn--small">Открыть управление дизайном</a>
         </div>
 
         <div class="form-field">

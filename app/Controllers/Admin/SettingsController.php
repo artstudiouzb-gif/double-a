@@ -16,9 +16,9 @@ use App\Models\Setting;
 final class SettingsController
 {
     private const TEXT_KEYS = [
-        'site_name', 'color_primary', 'color_accent', 'font_family',
+        'site_name',
         'contact_phone', 'contact_email', 'contact_address',
-        'font_url', 'font_face_name', 'default_meta_description',
+        'default_meta_description',
         'telegram_gateway_token', 'telegram_bot_token', 'telegram_notify_chat_ids',
     ];
 
@@ -84,11 +84,6 @@ final class SettingsController
         // --- Глобальное SEO / соцсети ---
         $ogImage = ImageField::resolve('default_og_image_file', 'default_og_image', Setting::get('default_og_image'), Auth::id());
         Setting::set('default_og_image', $ogImage ?? '');
-
-        // Тема оформления.
-        $theme = in_array($_POST['default_theme'] ?? 'light', ['light', 'dark', 'auto'], true)
-            ? $_POST['default_theme'] : 'light';
-        Setting::set('default_theme', $theme);
 
         // Режим обслуживания.
         Setting::set('maintenance_mode', !empty($_POST['maintenance_mode']) ? '1' : '0');

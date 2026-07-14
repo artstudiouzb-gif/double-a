@@ -18,7 +18,7 @@ test('admin layout exposes accessible responsive navigation controls', function 
     assert_contains("s.inert = mobile && !open", $footer);
 });
 
-test('admin stylesheet contains WordPress-inspired desktop and mobile states', function (): void {
+test('admin stylesheet contains professional desktop and mobile states', function (): void {
     $css = file_get_contents(dirname(__DIR__, 2) . '/public/assets/css/admin.css');
 
     assert_true(is_string($css));

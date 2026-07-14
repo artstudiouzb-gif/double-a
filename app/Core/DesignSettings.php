@@ -20,7 +20,7 @@ final class DesignSettings
      */
     /**
      * Готовые палитры: значение опции palette => [подпись, основной, акцент].
-     * 'custom' сохраняет цвета, заданные вручную в «Настройках».
+     * 'custom' использует ручные цвета из этого же раздела «Дизайн».
      */
     public const PALETTES = [
         'gov_blue' => ['Гос-синий', '#173a63', '#17999b'],
@@ -71,14 +71,14 @@ final class DesignSettings
     public const OPTIONS = [
         'palette' => [
             'label' => 'Цветовая палитра',
-            'hint' => 'Основной и акцентный цвета сайта. «Свои цвета» — значения из «Настроек».',
+            'hint' => 'Основной и акцентный цвета сайта. «Свои цвета» — ручные значения ниже.',
             'group' => 'Цвета и шрифт',
             'choices' => ['gov_blue' => 'Гос-синий', 'classic_red' => 'Классика', 'emerald' => 'Изумруд', 'graphite' => 'Графит', 'violet' => 'Индиго', 'custom' => 'Свои цвета'],
             'default' => 'custom',
         ],
         'font_style' => [
             'label' => 'Шрифт сайта',
-            'hint' => '«Свой шрифт» — значение из «Настроек» (включая локальный @font-face).',
+            'hint' => '«Свой шрифт» — ручный CSS-стек и локальный @font-face ниже.',
             'group' => 'Цвета и шрифт',
             'choices' => ['inter' => 'Inter', 'system' => 'Системный', 'serif' => 'С засечками', 'custom' => 'Свой шрифт'],
             'default' => 'custom',
@@ -278,6 +278,31 @@ final class DesignSettings
         return '';
     }
 
+    /**
+     * Ручные значения внешнего вида. Хранятся отдельно от материализованных
+     * рабочих ключей цветов и font_family, чтобы готовый пресет не затирал настройки
+     * пользователя при последующем возврате к варианту «Свои…».
+     *
+     * @return array{color_primary:string,color_accent:string,font_family:string}
+     */
+    public static function customAppearance(): array
+    {
+        return [
+            'color_primary' => SettingsValidator::hexColor(
+                (string) Setting::get('design_custom_color_primary', Setting::get('color_primary', '#173a63')),
+                '#173a63'
+            ),
+            'color_accent' => SettingsValidator::hexColor(
+                (string) Setting::get('design_custom_color_accent', Setting::get('color_accent', '#17999b')),
+                '#17999b'
+            ),
+            'font_family' => (string) Setting::get(
+                'design_custom_font_family',
+                Setting::get('font_family', "'PT Sans', system-ui, sans-serif")
+            ),
+        ];
+    }
+
     public static function save(array $input): void
     {
         foreach (self::OPTIONS as $key => $opt) {
@@ -287,35 +312,86 @@ final class DesignSettings
         // Своя ширина контейнера — отдельное свободное поле (не из choices).
         Setting::set('design_container_custom', self::normalizeWidth(trim((string) ($input['container_custom'] ?? ''))));
 
+        // Ручные цвета и шрифт сохраняются отдельно от активного пресета.
+        // При первом сохранении старые рабочие ключи цветов и font_family используются как
+        // значения по умолчанию — миграция базы не требуется.
+        if (array_key_exists('color_primary', $input)) {
+            Setting::set('design_custom_color_primary', SettingsValidator::hexColor(
+                (string) $input['color_primary'],
+                self::customAppearance()['color_primary']
+            ));
+        }
+        if (array_key_exists('color_accent', $input)) {
+            Setting::set('design_custom_color_accent', SettingsValidator::hexColor(
+                (string) $input['color_accent'],
+                self::customAppearance()['color_accent']
+            ));
+        }
+        if (array_key_exists('font_family', $input)) {
+            $family = mb_substr(trim((string) $input['font_family']), 0, 200);
+            if ($family !== '') {
+                Setting::set('design_custom_font_family', $family);
+            }
+        }
+        if (array_key_exists('font_face_name', $input)) {
+            $face = preg_replace('/[^a-zA-Z0-9 _-]/', '', trim((string) $input['font_face_name'])) ?? '';
+            Setting::set('font_face_name', mb_substr($face, 0, 80));
+        }
+        if (array_key_exists('font_url', $input)) {
+            $url = mb_substr(trim((string) $input['font_url']), 0, 500);
+            Setting::set('font_url', $url === '' || UrlGuard::isSafeLink($url) ? $url : '');
+        }
+        if (array_key_exists('default_theme', $input)) {
+            $theme = in_array($input['default_theme'], ['light', 'dark', 'auto'], true)
+                ? (string) $input['default_theme']
+                : 'light';
+            Setting::set('default_theme', $theme);
+        }
+
+        // Запоминаем выбранные Google-шрифты до материализации. Пустое
+        // значение отключает Google-шрифт для соответствующей роли.
+        foreach (['heading', 'body'] as $role) {
+            $inputKey = 'font_google_' . $role;
+            if (!array_key_exists($inputKey, $input)) {
+                continue;
+            }
+            $slug = (string) $input[$inputKey];
+            Setting::set(
+                'design_font_google_' . $role,
+                $slug !== '' && isset(self::GOOGLE_FONTS[$slug]) ? $slug : ''
+            );
+        }
+
         // Материализация палитры/шрифта в реальные настройки сайта
         // (color_primary/color_accent/font_family, их читает фронтенд).
-        // 'custom' ничего не трогает — остаются значения из «Настроек».
+        $custom = self::customAppearance();
         $palette = (string) Setting::get('design_palette', 'custom');
         if ($palette !== 'custom' && isset(self::PALETTES[$palette])) {
             Setting::set('color_primary', self::PALETTES[$palette][1]);
             Setting::set('color_accent', self::PALETTES[$palette][2]);
+        } else {
+            Setting::set('color_primary', $custom['color_primary']);
+            Setting::set('color_accent', $custom['color_accent']);
         }
         $font = (string) Setting::get('design_font_style', 'custom');
         if ($font !== 'custom' && isset(self::FONTS[$font])) {
             Setting::set('font_family', self::FONTS[$font][1]);
+        } else {
+            Setting::set('font_family', $custom['font_family']);
         }
 
-        // Google-шрифты: отдельные роли «заголовки» и «текст». Пустое значение
-        // возвращает роль к стандартному стеку (PT Serif / PT Sans).
-        foreach (['heading' => ['font_heading', "'PT Serif', Georgia, 'Times New Roman', serif"],
-                  'body' => ['font_family', "'PT Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"]] as $role => [$target, $default]) {
-            if (!array_key_exists('font_google_' . $role, $input)) {
-                continue;
-            }
-            $slug = (string) $input['font_google_' . $role];
-            $prev = (string) Setting::get('design_font_google_' . $role, '');
-            if ($slug !== '' && isset(self::GOOGLE_FONTS[$slug])) {
-                Setting::set('design_font_google_' . $role, $slug);
-                Setting::set($target, self::GOOGLE_FONTS[$slug][1]);
-            } elseif ($slug === '' && $prev !== '') {
-                Setting::set('design_font_google_' . $role, '');
-                Setting::set($target, $default);
-            }
+        // Google-шрифты имеют явный приоритет над базовой ролью. Отключение
+        // Google-шрифта текста возвращает выбранный выше пресет/свой стек.
+        $headingSlug = (string) Setting::get('design_font_google_heading', '');
+        Setting::set(
+            'font_heading',
+            $headingSlug !== '' && isset(self::GOOGLE_FONTS[$headingSlug])
+                ? self::GOOGLE_FONTS[$headingSlug][1]
+                : "'PT Serif', Georgia, 'Times New Roman', serif"
+        );
+        $bodySlug = (string) Setting::get('design_font_google_body', '');
+        if ($bodySlug !== '' && isset(self::GOOGLE_FONTS[$bodySlug])) {
+            Setting::set('font_family', self::GOOGLE_FONTS[$bodySlug][1]);
         }
     }
 
@@ -349,7 +425,13 @@ final class DesignSettings
         if (!isset(self::PRESETS[$preset])) {
             return false;
         }
-        self::save(self::PRESETS[$preset]['values']);
+        // Встроенный пресет должен полностью определять типографику, поэтому
+        // отключаем ранее выбранные Google-шрифты, которые иначе имели бы
+        // приоритет над шрифтом пресета.
+        self::save(array_merge(self::PRESETS[$preset]['values'], [
+            'font_google_heading' => '',
+            'font_google_body' => '',
+        ]));
         Setting::set('design_preset', $preset);
 
         return true;
@@ -360,7 +442,7 @@ final class DesignSettings
     private const USER_PRESETS_KEY = 'design_user_presets';
     private const USER_PRESETS_MAX = 10;
 
-    /** @return array<string,array{label:string,values:array<string,string>,colors?:array<int,string>}> */
+    /** @return array<string,array{label:string,values:array<string,string>,colors?:array<int,string>,appearance?:array<string,string>}> */
     public static function userPresets(): array
     {
         $json = Setting::get(self::USER_PRESETS_KEY, '');
@@ -389,13 +471,24 @@ final class DesignSettings
             return null;
         }
 
+        $custom = self::customAppearance();
         $presets[$slug] = [
             'label' => $name,
             'values' => self::current(),
             'colors' => [
-                Setting::get('color_primary', ''),
-                Setting::get('color_accent', ''),
-                Setting::get('font_family', ''),
+                $custom['color_primary'],
+                $custom['color_accent'],
+                $custom['font_family'],
+            ],
+            'appearance' => [
+                'color_primary' => $custom['color_primary'],
+                'color_accent' => $custom['color_accent'],
+                'font_family' => $custom['font_family'],
+                'font_face_name' => Setting::get('font_face_name', ''),
+                'font_url' => Setting::get('font_url', ''),
+                'default_theme' => Setting::get('default_theme', 'light'),
+                'font_google_heading' => Setting::get('design_font_google_heading', ''),
+                'font_google_body' => Setting::get('design_font_google_body', ''),
             ],
         ];
         Setting::set(self::USER_PRESETS_KEY, json_encode($presets, JSON_UNESCAPED_UNICODE));
@@ -426,18 +519,24 @@ final class DesignSettings
             return false;
         }
         $preset = $presets[$slug];
-        self::save((array) ($preset['values'] ?? []));
-
-        // Палитра «Свои цвета»: восстанавливаем снапшот ручных значений.
         $values = (array) ($preset['values'] ?? []);
         $colors = (array) ($preset['colors'] ?? []);
+        $appearance = (array) ($preset['appearance'] ?? []);
+        // Сначала восстанавливаем ручные значения, затем применяем через
+        // обычный save. Так они сохраняются и после переключения пресетов.
         if (($values['palette'] ?? '') === 'custom' && count($colors) === 3) {
-            if ($colors[0] !== '') { Setting::set('color_primary', (string) $colors[0]); }
-            if ($colors[1] !== '') { Setting::set('color_accent', (string) $colors[1]); }
+            if ($colors[0] !== '') { Setting::set('design_custom_color_primary', (string) $colors[0]); }
+            if ($colors[1] !== '') { Setting::set('design_custom_color_accent', (string) $colors[1]); }
         }
         if (($values['font_style'] ?? '') === 'custom' && ($colors[2] ?? '') !== '') {
-            Setting::set('font_family', (string) $colors[2]);
+            Setting::set('design_custom_font_family', (string) $colors[2]);
         }
+        // Новые пресеты хранят весь единый блок оформления; colors остаётся
+        // fallback для конфигураций, созданных до унификации.
+        self::save(array_merge($values, array_intersect_key($appearance, array_flip([
+            'color_primary', 'color_accent', 'font_family', 'font_face_name',
+            'font_url', 'default_theme', 'font_google_heading', 'font_google_body',
+        ]))));
 
         Setting::set('design_preset', 'user:' . $slug);
 
