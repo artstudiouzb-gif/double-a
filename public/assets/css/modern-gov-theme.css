@@ -167,6 +167,43 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
     background: rgba(30, 41, 59, 0.94) !important;
 }
 
+/* Выпадающий поиск и мобильное меню с эффектом стекла */
+.site-search-overlay {
+    background: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+.site-search-overlay__form {
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--gov-border) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.15) !important;
+}
+:root[data-theme="dark"] .site-search-overlay__form {
+    background: rgba(30, 41, 59, 0.92) !important;
+    border-color: var(--gov-border) !important;
+}
+.site-search-overlay__form input {
+    background: rgba(15, 23, 42, 0.03) !important;
+    border-color: var(--gov-border) !important;
+}
+:root[data-theme="dark"] .site-search-overlay__form input {
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.site-drawer__panel {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-left: 1px solid var(--gov-border) !important;
+}
+:root[data-theme="dark"] .site-drawer__panel {
+    background: rgba(30, 41, 59, 0.95) !important;
+    border-left-color: var(--gov-border) !important;
+}
+
 /* --- Кнопки и формы --- */
 .block-hero__button, .block-cta a, .content-detail__download, .site-search__submit,
 .block-cta__button, .btn-cta, .btn, .btn--primary {
