@@ -188,9 +188,20 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 .site-search-overlay__form input {
     background: rgba(15, 23, 42, 0.03) !important;
     border-color: var(--gov-border) !important;
+    color: var(--gov-ink) !important;
 }
 :root[data-theme="dark"] .site-search-overlay__form input {
     background: rgba(0, 0, 0, 0.2) !important;
+    color: #fff !important;
+}
+.site-search-overlay__submit {
+    background: var(--gov-teal) !important;
+}
+.site-search-overlay__close {
+    color: var(--gov-muted) !important;
+}
+.site-search-overlay__close:hover {
+    color: var(--gov-teal) !important;
 }
 
 .site-drawer__panel {
@@ -202,6 +213,47 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 :root[data-theme="dark"] .site-drawer__panel {
     background: rgba(30, 41, 59, 0.95) !important;
     border-left-color: var(--gov-border) !important;
+}
+
+/* Стилизация ссылок мобильного меню под палитру темы */
+.site-drawer .site-menu__link {
+    color: var(--gov-title) !important;
+}
+.site-drawer .site-menu__link:hover {
+    color: var(--gov-teal) !important;
+    background: rgba(15, 23, 42, 0.04) !important;
+}
+:root[data-theme="dark"] .site-drawer .site-menu__link:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+.site-drawer .site-submenu__link {
+    color: var(--gov-muted) !important;
+}
+.site-drawer .site-submenu__link:hover {
+    color: var(--gov-teal) !important;
+    background: rgba(15, 23, 42, 0.04) !important;
+}
+:root[data-theme="dark"] .site-drawer .site-submenu__link:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+.site-drawer .site-menu__item--has-children > .site-menu__toggle:hover {
+    background: rgba(15, 23, 42, 0.04) !important;
+}
+:root[data-theme="dark"] .site-drawer .site-menu__item--has-children > .site-menu__toggle:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+.site-drawer .site-menu__divider {
+    background: var(--gov-border) !important;
+}
+.site-drawer__close {
+    color: var(--gov-title) !important;
+}
+.site-drawer__close:hover {
+    background: rgba(15, 23, 42, 0.04) !important;
+    color: var(--gov-teal) !important;
+}
+:root[data-theme="dark"] .site-drawer__close:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
 }
 
 /* --- Кнопки и формы --- */
