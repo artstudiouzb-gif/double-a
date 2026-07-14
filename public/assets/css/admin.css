@@ -759,6 +759,12 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 .design-card__preview--palette-violet { background: linear-gradient(90deg, #312e81 60%, #6d28d9 60%); }
 .design-card__preview--palette-custom { background: repeating-conic-gradient(#e8eaf0 0 25%, #f7f8fa 0 50%) 0 0 / 16px 16px; }
 
+/* Превью шаблонов */
+.design-card__preview--site_template-gov { background: linear-gradient(135deg, #173a63 0%, #173a63 50%, #ffffff 50%, #ffffff 100%); }
+.design-card__preview--site_template-modern_gov { background: linear-gradient(135deg, #2563eb 0%, #2563eb 50%, #f8fafc 50%, #f8fafc 100%); }
+.design-card__preview--site_template-gov::before,
+.design-card__preview--site_template-modern_gov::before { background: none; }
+
 /* Превью шрифтов: образец «Аа» нужным стеком */
 .design-card__preview--font_style-inter::before,
 .design-card__preview--font_style-system::before,

@@ -1,0 +1,211 @@
+/* ==========================================================================
+   СОВРЕМЕННЫЙ ГОС-ШАБЛОН (Modern Gov Theme).
+   Внедряет тренды современного веб-дизайна для гос-порталов:
+   чистые шрифты без засечек, увеличенные отступы, мягкие тени и плавные эффекты.
+   ========================================================================== */
+
+:root {
+    --gov-bg: #f8fafc; /* Светлый slate-50 */
+    --gov-surface: #ffffff;
+    --gov-border: #e2e8f0; /* Slate-200 */
+    --gov-navy: var(--color-primary, #0f2942); /* Глубокий королевский синий */
+    --gov-teal: var(--color-accent, #2563eb); /* Современный цифровой синий (blue-600) */
+    --gov-ink: #0f172a; /* Slate-900 */
+    --gov-muted: #64748b; /* Slate-500 */
+    --gov-title: var(--gov-navy);
+    --radius: 14px;
+    --container-max: 1240px;
+    --btn-radius: 10px;
+    --gov-emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4.7' y='4.7' width='14.6' height='14.6' rx='1'/%3E%3Crect x='4.7' y='4.7' width='14.6' height='14.6' rx='1' transform='rotate(45 12 12)'/%3E%3C/svg%3E");
+}
+
+:root[data-theme="dark"] {
+    --gov-bg: #0f172a; /* Slate-900 */
+    --gov-surface: #1e293b; /* Slate-800 */
+    --gov-border: #334155; /* Slate-700 */
+    --gov-ink: #f8fafc; /* Slate-50 */
+    --gov-muted: #94a3b8; /* Slate-400 */
+    --gov-title: #f8fafc;
+}
+
+body {
+    background: var(--gov-bg);
+    color: var(--gov-ink);
+    font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+    font-size: var(--base-font-size, 16px);
+    line-height: var(--base-line-height, 1.6);
+    -webkit-font-smoothing: antialiased;
+}
+
+html { overflow-x: clip; }
+
+/* Современная типографика без засечек для заголовков */
+h1, h2, h3, h4, h5, h6,
+.block-hero__title, .news-index__title, .content-list__head h1,
+.block-news__title, .block-categories__title, .block-media__title,
+.block-contact-cards__title, .section-title, .site-footer__name {
+    font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+    color: var(--gov-title);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+:root[data-theme="dark"] h1, :root[data-theme="dark"] h2, :root[data-theme="dark"] h3 { color: var(--gov-ink); }
+a { color: var(--gov-teal); transition: color 0.15s ease; }
+a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
+
+.site-content { max-width: var(--container-max); }
+
+/* --- Увеличенные отступы секций (больше воздуха) --- */
+.cms-block {
+    padding-block: clamp(48px, 6.2vw, 84px) !important;
+}
+
+/* --- Трендовые заголовки секций с вертикальной полосой слева --- */
+.section-title {
+    position: relative;
+    padding-left: 16px;
+    border-left: 4px solid var(--gov-teal);
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem) !important;
+}
+.block-news__head, .news-index__head {
+    border-bottom: 0;
+    margin-bottom: 28px;
+}
+.block-news__head::after, .news-index__head::after {
+    display: none !important;
+}
+
+/* --- Шапка сайта: чистая, скругленная, с тонкими разделителями --- */
+.site-header {
+    background: var(--gov-surface);
+    border-bottom: 1px solid var(--gov-border);
+    box-shadow: 0 4px 20px -12px rgba(15, 23, 42, 0.08);
+}
+.site-header__inner { max-width: var(--container-max); }
+.site-header__logo { color: var(--gov-title); font-family: var(--font-family, sans-serif); font-weight: 800; gap: 10px; }
+.site-header__logo span { font-size: 14px; line-height: 1.25; letter-spacing: 0; text-transform: none; max-width: 320px; }
+
+/* Звезда-эмблема перед названием */
+.site-header--logo-left .site-header__logo:not(:has(img))::before,
+.site-header__logo:not(:has(img))::before {
+    content: ''; flex-shrink: 0; width: 36px; height: 36px;
+    background: var(--gov-teal);
+    -webkit-mask: var(--gov-emblem) center/contain no-repeat; mask: var(--gov-emblem) center/contain no-repeat;
+}
+
+.site-nav { border-top: 1px solid var(--gov-border); }
+.site-menu__link {
+    text-transform: none; /* Трендовый смешанный регистр */
+    font-size: 14px;
+    letter-spacing: 0;
+    font-weight: 600;
+    color: var(--gov-ink);
+    padding: 18px 4px;
+}
+.site-menu__link::after { height: 2px; bottom: 0; background: var(--gov-teal); border-radius: 2px; }
+.site-menu__link:hover, .site-menu__link:focus-visible { color: var(--gov-teal); }
+
+/* Выпадающие меню с эффектом стекла */
+.site-submenu {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--gov-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
+    padding: 10px !important;
+}
+:root[data-theme="dark"] .site-submenu {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-color: var(--gov-border) !important;
+}
+
+.site-lang-switcher__item { color: var(--gov-ink); font-weight: 600; font-size: 13px; }
+.site-lang-switcher__item.is-active { color: var(--gov-teal); }
+
+.a11y-toggle, .site-theme-toggle, .site-search input, .site-search-toggle { color: var(--gov-title); }
+.site-search input { border-color: var(--gov-border); border-radius: 8px; font-weight: 500; }
+.site-burger { color: var(--gov-ink); border-color: var(--gov-border); }
+
+:root[data-theme="dark"] .site-header__logo { color: var(--gov-ink); }
+:root[data-theme="dark"] .site-header__logo:not(:has(img))::before { background: var(--gov-teal); }
+:root[data-theme="dark"] .site-lang-switcher__item.is-active { color: var(--gov-teal); }
+
+/* --- Хлебные крошки --- */
+.crumbs, .content-crumbs { color: var(--gov-muted); font-size: .9rem; font-weight: 500; }
+.crumbs a, .content-crumbs a { color: var(--gov-teal); }
+
+/* --- Кнопки и формы --- */
+.block-hero__button, .block-cta a, .content-detail__download, .site-search__submit,
+.block-cta__button, .btn-cta, .btn {
+    background: var(--gov-teal); color: #fff; border-radius: var(--btn-radius);
+    font-family: var(--font-family, sans-serif); font-weight: 600; text-transform: none;
+    box-shadow: 0 4px 10px -3px rgba(37, 99, 235, 0.3); border: 0; transition: all 0.2s ease;
+}
+.block-hero__button:hover, .btn-cta:hover, .btn:hover {
+    background: color-mix(in srgb, var(--gov-teal) 85%, #000);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.4);
+}
+
+/* --- Карточки контента с мягкими тенями и эффектом приподнимания --- */
+.news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item,
+.block-testimonials__item, .testimonial, .team-card, .project-card {
+    background: var(--gov-surface);
+    border: 1px solid var(--gov-border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.02), 0 10px 15px -3px rgba(15, 23, 42, 0.03);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.news-card:hover, .content-card:hover, .contact-card:hover, .cat-tile:hover, .team-card:hover, .project-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 10px 10px -5px rgba(15, 23, 42, 0.03);
+    border-color: var(--gov-teal);
+}
+
+.news-card__title a, .content-card__title a { color: var(--gov-ink); text-decoration: none; font-weight: 700; }
+.news-card__title a:hover, .content-card__title a:hover { color: var(--gov-teal); }
+
+/* --- Полоса статистики (counters) --- */
+.block-counters {
+    background: var(--gov-surface);
+    border: 1px solid var(--gov-border);
+    border-radius: 16px;
+    padding: clamp(24px, 3.2vw, 38px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+}
+.counter { border: 0; border-right: 1px solid var(--gov-border); border-radius: 0; padding: 6px 26px; box-shadow: none; background: transparent; }
+.counter__value { color: var(--gov-title); font-weight: 800; }
+
+/* --- Hero баннер --- */
+.block-hero {
+    background: var(--gov-surface);
+    border: 1px solid var(--gov-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+.block-hero--media {
+    border-radius: 0;
+    background: var(--gov-navy);
+}
+.block-hero__eyebrow { color: var(--gov-teal); font-weight: 700; letter-spacing: .08em; }
+.block-hero__eyebrow::before { background: var(--gov-teal); width: 28px; }
+.block-hero__button { text-transform: none; letter-spacing: 0; border-radius: var(--btn-radius); }
+.block-hero__button--ghost { border: 1.5px solid rgba(255,255,255,.4); }
+.block-hero__button--ghost:hover { background: rgba(255,255,255,.08); border-color: #fff; }
+
+/* --- Подписка и футер --- */
+.subscribe-block {
+    background: var(--gov-navy);
+    border-radius: 16px;
+    border: 0;
+}
+.site-footer--columns {
+    background: color-mix(in srgb, var(--gov-navy) 95%, #000);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255,255,255,.75);
+}
+.site-footer--columns .site-footer__heading { color: #fff; font-weight: 700; }
+.site-footer--columns .site-footer__heading::after { background: var(--gov-teal); height: 2px; }
+.site-footer__social-link:hover { background: var(--gov-teal); }
