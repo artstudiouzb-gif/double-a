@@ -297,6 +297,13 @@
         });
     });
 
+    // Кнопка «Печать».
+    document.querySelectorAll('[data-print-page]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            window.print();
+        });
+    });
+
     // Липкая/прозрачная шапка: класс is-scrolled после небольшой прокрутки.
     (function () {
         var hdr = document.querySelector('[data-header-scroll]');

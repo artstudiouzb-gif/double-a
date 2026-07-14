@@ -1059,6 +1059,7 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .catdetail__fact dt { font-size: .74rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gov-muted); }
 .catdetail__fact dd { margin: 2px 0 0; color: var(--gov-title); font-weight: 600; }
 .catdetail__download { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 18px; border-radius: 10px; background: var(--gov-navy); color: #fff; font-weight: 700; text-decoration: none; }
+button.catdetail__download { border: none; cursor: pointer; font-family: inherit; font-size: inherit; width: 100%; }
 .catdetail__download:hover { background: var(--gov-teal); }
 .catdetail__back { color: var(--gov-teal-text); font-weight: 600; font-size: .9rem; text-decoration: none; }
 .catdetail__back:hover { text-decoration: underline; }
@@ -1300,3 +1301,9 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
         transition: none;
     }
 }
+
+/* Кнопка печати в хлебных крошках */
+.content-crumbs { width: 100%; align-items: center; }
+.crumbs-print-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: inherit; font-size: inherit; font-weight: 600; padding: 0 4px; margin-left: auto; text-decoration: none; font-family: var(--font-family); opacity: 0.75; transition: opacity 0.15s ease; }
+.crumbs-print-btn:hover { opacity: 1; text-decoration: underline; }
+.crumbs-print-btn svg { display: inline-block; vertical-align: middle; }

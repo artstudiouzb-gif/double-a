@@ -332,7 +332,8 @@ summary:focus-visible {
     .site-header, .layout__sidebar, .site-footer, .site-theme-toggle,
     .site-social, .site-cta, .site-lang-switcher, .site-menu,
     .cookie-banner, .share-buttons, .news-slider__nav, .news-video__play,
-    .news-single__back { display: none !important; }
+    .news-single__back, .newsdetail-share, .catdetail__download,
+    .catdetail__back, .no-print { display: none !important; }
 
     html, body { background: #fff !important; color: #000 !important; }
     a { color: #000 !important; text-decoration: none; }
