@@ -941,6 +941,7 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 /* --- Выпадающее подменю (гос-тема) --- */
 .site-submenu { background: var(--gov-surface); border: 1px solid var(--gov-border); border-radius: 12px; box-shadow: 0 18px 44px rgba(11,26,48,.16); padding: 8px; min-width: 240px; margin-top: 6px; }
 .site-submenu::before { content: ''; position: absolute; top: -6px; left: 26px; width: 10px; height: 10px; background: var(--gov-surface); border-left: 1px solid var(--gov-border); border-top: 1px solid var(--gov-border); transform: rotate(45deg); }
+.site-submenu::after { content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 12px; background: transparent; }
 .site-submenu__link { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; color: var(--gov-title); font-weight: 600; font-size: .92rem; text-transform: none; letter-spacing: 0; }
 .site-submenu__link:hover, .site-submenu__link:focus-visible { background: color-mix(in srgb, var(--gov-teal) 9%, var(--gov-surface)); color: var(--gov-teal-text); }
 .site-menu__toggle { color: var(--gov-teal); background: transparent; border: 0; cursor: pointer; font-size: 10px; padding: 4px; }
