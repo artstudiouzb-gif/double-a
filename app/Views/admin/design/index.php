@@ -111,6 +111,58 @@ foreach ($options as $key => $opt) {
                     </div>
                 </div>
             <?php endforeach; ?>
+
+            <?php if ($groupName === 'Цвета и шрифт'): ?>
+                <?php
+                $customAppearance = \App\Core\DesignSettings::customAppearance();
+                $primary = $customAppearance['color_primary'];
+                $accent = $customAppearance['color_accent'];
+                $defaultTheme = (string) \App\Models\Setting::get('default_theme', 'light');
+                if (!in_array($defaultTheme, ['light', 'dark', 'auto'], true)) { $defaultTheme = 'light'; }
+                ?>
+                <div class="design-manual">
+                    <div class="design-manual__head">
+                        <strong>Ручные значения</strong>
+                        <span>Используются при выборе «Свои цвета» и «Свой шрифт».</span>
+                    </div>
+                    <div class="design-manual__grid">
+                        <div class="form-field">
+                            <label for="design_color_primary">Основной цвет</label>
+                            <input type="color" id="design_color_primary" name="color_primary" value="<?= htmlspecialchars($primary, ENT_QUOTES) ?>" data-design-preview-field>
+                        </div>
+                        <div class="form-field">
+                            <label for="design_color_accent">Акцентный цвет</label>
+                            <input type="color" id="design_color_accent" name="color_accent" value="<?= htmlspecialchars($accent, ENT_QUOTES) ?>" data-design-preview-field>
+                        </div>
+                        <div class="form-field design-manual__wide">
+                            <label for="design_font_family">Свой шрифт (CSS font-family)</label>
+                            <input type="text" id="design_font_family" name="font_family" maxlength="200"
+                                   value="<?= htmlspecialchars($customAppearance['font_family'], ENT_QUOTES) ?>"
+                                   placeholder="'MyBrandFont', system-ui, sans-serif" data-design-preview-field>
+                        </div>
+                        <div class="form-field">
+                            <label for="design_font_face_name">Локальный шрифт: имя</label>
+                            <input type="text" id="design_font_face_name" name="font_face_name" maxlength="80"
+                                   value="<?= htmlspecialchars((string) \App\Models\Setting::get('font_face_name', ''), ENT_QUOTES) ?>"
+                                   placeholder="MyBrandFont" data-design-preview-field>
+                        </div>
+                        <div class="form-field">
+                            <label for="design_font_url">Локальный шрифт: файл .woff2</label>
+                            <input type="text" id="design_font_url" name="font_url" maxlength="500"
+                                   value="<?= htmlspecialchars((string) \App\Models\Setting::get('font_url', ''), ENT_QUOTES) ?>"
+                                   placeholder="/uploads/public/font.woff2" data-design-preview-field>
+                        </div>
+                        <div class="form-field">
+                            <label for="design_default_theme">Тема для посетителей</label>
+                            <select id="design_default_theme" name="default_theme" data-design-preview-field>
+                                <option value="light" <?= $defaultTheme === 'light' ? 'selected' : '' ?>>Светлая</option>
+                                <option value="dark" <?= $defaultTheme === 'dark' ? 'selected' : '' ?>>Тёмная</option>
+                                <option value="auto" <?= $defaultTheme === 'auto' ? 'selected' : '' ?>>Авто (по системе)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
         </section>
     <?php endforeach; ?>
 
@@ -122,7 +174,7 @@ foreach ($options as $key => $opt) {
                 <small>Перекрывает выбор «Ширина контейнера» выше. Напр. <code>1440px</code>, <code>90%</code> или число <code>1440</code> (px). Пусто — использовать пресет.</small>
             </div>
             <div class="design-opt__choices">
-                <input type="text" name="container_custom" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_container_custom', ''), ENT_QUOTES) ?>" placeholder="напр. 1440px" style="max-width:220px;">
+                <input type="text" name="container_custom" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_container_custom', ''), ENT_QUOTES) ?>" placeholder="напр. 1440px" style="max-width:220px;" data-design-preview-field>
             </div>
         </div>
     </section>
@@ -132,7 +184,9 @@ foreach ($options as $key => $opt) {
         <p class="form-hint" style="margin:0 0 12px;">
             Отдельные шрифты для заголовков и текста из каталога Google Fonts
             (все — с поддержкой кириллицы, подключаются с fonts.googleapis.com).
-            «Стандарт» возвращает роль к встроенным PT Serif / PT Sans.
+            Для заголовков «Стандарт» возвращает PT Serif; для текста пустой выбор
+            использует карточку «Шрифт сайта» выше.
+            Выбранный Google-шрифт текста имеет приоритет над карточкой «Шрифт сайта» выше.
         </p>
         <?php
         $gHeading = \App\Models\Setting::get('design_font_google_heading', '');
@@ -153,7 +207,7 @@ foreach ($options as $key => $opt) {
             <div class="design-opt__label"><span>Шрифт текста</span></div>
             <div class="design-opt__choices">
                 <select name="font_google_body" class="form-select" style="min-width:280px;">
-                    <option value="">Стандарт (PT Sans)</option>
+                    <option value="">Использовать «Шрифт сайта» выше</option>
                     <?php foreach (\App\Core\DesignSettings::GOOGLE_FONTS as $slug => $f): ?>
                         <option value="<?= htmlspecialchars($slug, ENT_QUOTES) ?>" <?= $gBody === $slug ? 'selected' : '' ?>><?= htmlspecialchars($f[0], ENT_QUOTES) ?></option>
                     <?php endforeach; ?>
@@ -173,7 +227,7 @@ foreach ($options as $key => $opt) {
     var frame = document.querySelector('[data-design-preview]');
     if (!frame) { return; }
 
-    // Пересобираем src превью из выбранных радио-опций (с дебаунсом).
+    // Пересобираем src превью из всех настроек внешнего вида (с дебаунсом).
     var timer = null;
     function refresh() {
         clearTimeout(timer);
@@ -182,11 +236,18 @@ foreach ($options as $key => $opt) {
             document.querySelectorAll('.design-fine input[type=radio]:checked').forEach(function (r) {
                 params.set(r.name, r.value);
             });
+            document.querySelectorAll('.design-fine [data-design-preview-field]').forEach(function (field) {
+                params.set(field.name, field.value);
+            });
+            document.querySelectorAll('.design-fine select[name^="font_google_"]').forEach(function (field) {
+                params.set(field.name, field.value);
+            });
             frame.src = '/admin/design/preview?' + params.toString();
         }, 250);
     }
-    document.querySelectorAll('.design-fine input[type=radio]').forEach(function (r) {
-        r.addEventListener('change', refresh);
+    document.querySelectorAll('.design-fine input[type=radio], .design-fine [data-design-preview-field], .design-fine select[name^="font_google_"]').forEach(function (field) {
+        field.addEventListener('change', refresh);
+        if (field.matches('input[type="text"]')) { field.addEventListener('input', refresh); }
     });
 
     // Переключатель ширины (десктоп/планшет/телефон).

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-use App\Core\WordPressImporter;
+use App\Core\LegacyCmsImporter;
 
 test('WP import: приватный/loopback источник блокируется до сетевого запроса', function () {
     $blocked = false;
     try {
-        WordPressImporter::importAll('http://127.0.0.1');
+        LegacyCmsImporter::importAll('http://127.0.0.1');
     } catch (InvalidArgumentException) {
         $blocked = true;
     }
     assert_true($blocked, 'SSRF-адрес отклонён');
 });
 
-// Импорт из WordPress: чистые преобразования (без сети/БД).
+// Импорт из старой CMS: чистые преобразования (без сети/БД).
 
 test('mapPost извлекает поля поста WP REST', function () {
     $post = [
@@ -26,7 +26,7 @@ test('mapPost извлекает поля поста WP REST', function () {
         'content' => ['rendered' => '<p>Тело <img src="https://old.example/a.jpg"></p>'],
         '_embedded' => ['wp:featuredmedia' => [['source_url' => 'https://old.example/cover.jpg']]],
     ];
-    $m = WordPressImporter::mapPost($post);
+    $m = LegacyCmsImporter::mapPost($post);
     assert_same('Заголовок & тест', $m['title'], 'HTML-сущности раскодированы, теги убраны');
     assert_same('moya-novost', $m['slug'], 'slug из поста');
     assert_same('Краткое описание.', $m['excerpt'], 'анонс очищен от тегов и лишних пробелов');
@@ -36,11 +36,11 @@ test('mapPost извлекает поля поста WP REST', function () {
 
 test('extractImageUrls находит все картинки, rewriteImages заменяет по карте', function () {
     $html = '<p><img src="https://o/a.jpg" alt="x"> текст <img src=\'https://o/b.png\'></p>';
-    $urls = WordPressImporter::extractImageUrls($html);
+    $urls = LegacyCmsImporter::extractImageUrls($html);
     assert_same(2, count($urls), 'найдены обе картинки');
     assert_true(in_array('https://o/a.jpg', $urls, true), 'первая');
 
-    $rewritten = WordPressImporter::rewriteImages($html, [
+    $rewritten = LegacyCmsImporter::rewriteImages($html, [
         'https://o/a.jpg' => '/uploads/public/a.jpg',
         'https://o/b.png' => '/uploads/public/b.png',
     ]);
@@ -50,21 +50,21 @@ test('extractImageUrls находит все картинки, rewriteImages з�
 
 test('normalizeImageUrl снимает Jetpack Photon и query, возвращая оригинал', function () {
     $src = 'https://i0.wp.com/asdr.gov.uz/wp-content/uploads/2026/07/2.jpg?resize=351%2C234&#038;ssl=1';
-    assert_same('https://asdr.gov.uz/wp-content/uploads/2026/07/2.jpg', WordPressImporter::normalizeImageUrl($src), 'Photon-обёртка и query сняты');
+    assert_same('https://asdr.gov.uz/wp-content/uploads/2026/07/2.jpg', LegacyCmsImporter::normalizeImageUrl($src), 'Photon-обёртка и query сняты');
     $clean = 'https://asdr.gov.uz/wp-content/uploads/2026/07/1-scaled.jpg';
-    assert_same($clean, WordPressImporter::normalizeImageUrl($clean), 'чистый URL не изменяется');
+    assert_same($clean, LegacyCmsImporter::normalizeImageUrl($clean), 'чистый URL не изменяется');
 });
 
 test('stripResponsiveAttrs убирает srcset/sizes', function () {
     $html = '<img src="/a.jpg" srcset="a 300w, b 1024w" sizes="(max-width: 351px) 100vw, 351px">';
-    $out = WordPressImporter::stripResponsiveAttrs($html);
+    $out = LegacyCmsImporter::stripResponsiveAttrs($html);
     assert_true(!str_contains($out, 'srcset') && !str_contains($out, 'sizes'), 'srcset и sizes удалены');
     assert_true(str_contains($out, 'src="/a.jpg"'), 'основной src сохранён');
 });
 
 test('absoluteUrl абсолютизирует относительные и protocol-relative ссылки', function () {
     $base = 'https://old.example';
-    assert_same('https://old.example/x/y.jpg', WordPressImporter::absoluteUrl('/x/y.jpg', $base), 'относительная от корня');
-    assert_same('https://cdn/z.jpg', WordPressImporter::absoluteUrl('//cdn/z.jpg', $base), 'protocol-relative');
-    assert_same('https://o/w.jpg', WordPressImporter::absoluteUrl('https://o/w.jpg', $base), 'уже абсолютная');
+    assert_same('https://old.example/x/y.jpg', LegacyCmsImporter::absoluteUrl('/x/y.jpg', $base), 'относительная от корня');
+    assert_same('https://cdn/z.jpg', LegacyCmsImporter::absoluteUrl('//cdn/z.jpg', $base), 'protocol-relative');
+    assert_same('https://o/w.jpg', LegacyCmsImporter::absoluteUrl('https://o/w.jpg', $base), 'уже абсолютная');
 });

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Импорт новостей из старого сайта на WordPress (REST API) с фотографиями.
+ * Импорт новостей из старой CMS (REST API или WXR) с фотографиями.
  *
  * Запуск на сервере, где доступен старый сайт:
  *   php scripts/wp_import.php https://asdr.gov.uz [опции]
@@ -12,7 +12,7 @@ declare(strict_types=1);
  *   --limit N        импортировать не более N новостей (0 = все)
  *   --status STATE   draft (по умолчанию) | published
  *   --author ID      id пользователя-автора (по умолчанию первый админ)
- *   --lang WP:ART    язык (повторяемо): код языка WordPress → код языка ArtStudio.
+ *   --lang OLD:ART   язык (повторяемо): код языка источника → код языка ArtStudio.
  *                    Первый = основной, остальные пишутся переводами. Напр.:
  *                    --lang uz:uz --lang ru:ru   (двуязычный сайт)
  *   --dry-run        только показать, сколько будет импортировано, без записи
@@ -25,7 +25,8 @@ require __DIR__ . '/../app/Core/bootstrap.php';
 
 use App\Core\Config;
 use App\Core\Database;
-use App\Core\WordPressImporter;
+use App\Core\LegacyCmsImporter;
+use App\Core\LegacyWxrImporter;
 
 $args = array_slice($argv, 1);
 $source = '';   // URL сайта ИЛИ путь к файлу экспорта .xml
@@ -77,8 +78,8 @@ $isFile = !str_starts_with($source, 'http');
 echo 'Импорт из ' . ($isFile ? "файла {$source}" : rtrim($source, '/'))
     . " (статус: {$opts['status']}" . ($opts['dryRun'] ? ', dry-run' : '') . ")…\n";
 $r = $isFile
-    ? \App\Core\WordPressWxrImporter::importFile($source, $opts)
-    : WordPressImporter::importAll(rtrim($source, '/'), $opts);
+    ? LegacyWxrImporter::importFile($source, $opts)
+    : LegacyCmsImporter::importAll(rtrim($source, '/'), $opts);
 
 echo "\n────────────────────────────────────────\n";
 echo "Импортировано новостей: {$r['imported']}\n";

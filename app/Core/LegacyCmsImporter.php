@@ -10,7 +10,7 @@ use App\Models\NewsTranslation;
 use App\Models\Redirect;
 
 /**
- * Импорт новостей из WordPress через REST API (/wp-json/wp/v2/posts) с
+ * Импорт новостей из совместимого REST API (/wp-json/wp/v2/posts) с
  * переносом фотографий. Чистые методы (mapPost/extractImageUrls/rewriteImages)
  * покрыты тестами; importAll — оркестрация с сетью и БД.
  *
@@ -18,7 +18,7 @@ use App\Models\Redirect;
  * просматривает перед публикацией). Идемпотентно: посты с уже существующим
  * slug пропускаются, повторный запуск не плодит дубли.
  */
-final class WordPressImporter
+final class LegacyCmsImporter
 {
     /** Разрешённые расширения картинок для переноса. */
     private const IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -28,7 +28,7 @@ final class WordPressImporter
 
     /**
      * @param array{limit?:int,perPage?:int,status?:string,authorId?:?int,dryRun?:bool,langs?:array<string,string>} $opts
-     *   langs — карта «код языка WP => код языка ArtStudio», первый = основной
+     *   langs — карта «код языка источника => код языка ArtStudio», первый = основной
      *   (в него пишется базовая строка новости, остальные — переводы). Пусто —
      *   одноязычный импорт.
      * @return array{imported:int,skipped:int,images:int,redirects:int,translations:int,errors:array<int,string>}
@@ -37,7 +37,7 @@ final class WordPressImporter
     {
         $base = rtrim($baseUrl, '/');
         if (!UrlGuard::isSafeRemote($base)) {
-            throw new \InvalidArgumentException('Адрес WordPress небезопасен или указывает на внутреннюю сеть.');
+            throw new \InvalidArgumentException('Адрес исходной CMS небезопасен или указывает на внутреннюю сеть.');
         }
         $perPage = max(1, min(100, (int) ($opts['perPage'] ?? 20)));
         $limit = (int) ($opts['limit'] ?? 0); // 0 = все
@@ -407,7 +407,7 @@ final class WordPressImporter
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_TIMEOUT => 60,
             CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_USERAGENT => 'ArtStudio-WP-Import/1.0',
+            CURLOPT_USERAGENT => 'ArtStudio-Legacy-Import/1.0',
         ]);
         $ok = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);

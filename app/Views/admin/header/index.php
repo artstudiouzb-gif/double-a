@@ -130,7 +130,7 @@ $heightSelect = function (string $name, string $current): string {
                     <span class="form-hint">Иконки и разделители пунктов — в разделе «Меню».</span>
                 </div>
             </div>
-            <div class="form-field" style="max-width:340px;">
+            <div class="form-field hb-divider-field">
                 <label for="borders">Разделительные линии секций</label>
                 <select id="borders" name="borders">
                     <option value="full" <?= ($config['borders'] ?? 'full') === 'full' ? 'selected' : '' ?>>Во всю ширину экрана</option>
@@ -139,10 +139,26 @@ $heightSelect = function (string $name, string $current): string {
                 </select>
             </div>
             <div class="hb-behavior">
-                <label class="hb-switch"><input type="checkbox" name="header_sticky" value="1" <?= !empty($config['sticky']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Липкая шапка (следует за прокруткой)</label>
-                <label class="hb-switch"><input type="checkbox" name="header_transparent" value="1" <?= !empty($config['transparent']) ? 'checked' : '' ?>><span class="hb-switch__track"></span> Прозрачная шапка (поверх первого экрана)</label>
-                <span class="form-hint">Прозрачная шапка эффектна с полноэкранным hero (фото/видео). При прокрутке она становится сплошной; вместе с «липкой» — классическое поведение премиальных сайтов. В прозрачном режиме элементы и логотип автоматически белые.</span>
-                <div style="margin-top:10px;">
+                <div class="hb-behavior__options">
+                    <label class="hb-behavior-card">
+                        <span class="hb-switch">
+                            <input type="checkbox" name="header_sticky" value="1" <?= !empty($config['sticky']) ? 'checked' : '' ?>>
+                            <span class="hb-switch__track"></span>
+                            <span class="hb-behavior-card__title">Липкая шапка</span>
+                        </span>
+                        <span class="hb-behavior-card__hint">Остаётся в верхней части экрана при прокрутке страницы.</span>
+                    </label>
+                    <label class="hb-behavior-card">
+                        <span class="hb-switch">
+                            <input type="checkbox" name="header_transparent" value="1" <?= !empty($config['transparent']) ? 'checked' : '' ?>>
+                            <span class="hb-switch__track"></span>
+                            <span class="hb-behavior-card__title">Прозрачная шапка</span>
+                        </span>
+                        <span class="hb-behavior-card__hint">Располагается поверх первого полноэкранного блока и становится сплошной при прокрутке.</span>
+                    </label>
+                </div>
+                <p class="hb-behavior__note">Прозрачный режим лучше всего работает с первым блоком на основе фото или видео. Текст, элементы управления и эмблема без отдельного изображения автоматически становятся светлыми.</p>
+                <div class="hb-behavior__media">
                     <?= \App\Core\AdminUi::imageField('logo_light', $config['logo_light'] ?? '', [
                         'label' => 'Светлый логотип для прозрачной шапки (необязательно)',
                         'file' => 'logo_light_file',

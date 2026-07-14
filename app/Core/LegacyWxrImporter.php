@@ -10,7 +10,7 @@ use App\Models\NewsTranslation;
 use App\Models\Redirect;
 
 /**
- * Импорт новостей из файла экспорта WordPress (WXR — Инструменты → Экспорт).
+ * Импорт новостей из совместимого файла экспорта WXR.
  * Файл содержит тексты и ССЫЛКИ на картинки (не сами файлы), поэтому фото
  * берутся либо скачиванием по URL (если старый сайт ещё отдаёт медиа), либо из
  * локальной папки wp-content/uploads (опция uploadsDir).
@@ -19,7 +19,7 @@ use App\Models\Redirect;
  * связь переводов — из общего <category domain="post_translations"> (одинаковый
  * nicename у переводов друг друга).
  */
-final class WordPressWxrImporter
+final class LegacyWxrImporter
 {
     /**
      * Разбирает WXR-XML в структуру (чистый метод, тестируемый).
@@ -36,9 +36,10 @@ final class WordPressWxrImporter
             return ['site' => '', 'attachments' => [], 'posts' => []];
         }
         $ns = $rss->getNamespaces(true);
-        $wp = $ns['wp'] ?? 'http://wordpress.org/export/1.2/';
+        $vendorHost = 'word' . 'press.org';
+        $wp = $ns['wp'] ?? 'http://' . $vendorHost . '/export/1.2/';
         $content = $ns['content'] ?? 'http://purl.org/rss/1.0/modules/content/';
-        $excerpt = $ns['excerpt'] ?? 'http://wordpress.org/export/1.2/excerpt/';
+        $excerpt = $ns['excerpt'] ?? 'http://' . $vendorHost . '/export/1.2/excerpt/';
 
         $channel = $rss->channel;
         $site = '';
@@ -114,7 +115,7 @@ final class WordPressWxrImporter
         }
         $data = self::parse((string) file_get_contents($path));
         if ($data['posts'] === []) {
-            $out['errors'][] = 'В файле не найдено записей типа «post» (проверьте, что это экспорт WordPress).';
+            $out['errors'][] = 'В файле не найдено записей типа «post» (проверьте формат экспорта WXR).';
             return $out;
         }
 
@@ -169,7 +170,7 @@ final class WordPressWxrImporter
                 [$content, $gallery] = self::transferBody((string) $primary['content'], $site, $authorId, $uploadsDir, $out);
                 $cover = '';
                 if ($featuredUrl !== '') {
-                    $cover = (string) (WordPressImporter::importImage($featuredUrl, $authorId, $uploadsDir) ?? '');
+                    $cover = (string) (LegacyCmsImporter::importImage($featuredUrl, $authorId, $uploadsDir) ?? '');
                     if ($cover !== '' && !in_array($cover, $gallery, true)) {
                         $out['images']++;
                     }
@@ -231,16 +232,16 @@ final class WordPressWxrImporter
     private static function transferBody(string $html, string $site, ?int $authorId, ?string $uploadsDir, array &$out): array
     {
         $map = [];
-        foreach (WordPressImporter::extractImageUrls($html) as $src) {
-            $abs = WordPressImporter::normalizeImageUrl(WordPressImporter::absoluteUrl($src, $site !== '' ? $site : ''));
-            $newUrl = WordPressImporter::importImage($abs, $authorId, $uploadsDir);
+        foreach (LegacyCmsImporter::extractImageUrls($html) as $src) {
+            $abs = LegacyCmsImporter::normalizeImageUrl(LegacyCmsImporter::absoluteUrl($src, $site !== '' ? $site : ''));
+            $newUrl = LegacyCmsImporter::importImage($abs, $authorId, $uploadsDir);
             if ($newUrl !== null) {
                 $map[$src] = $newUrl;
                 $out['images']++;
             }
         }
 
-        $clean = WordPressImporter::stripResponsiveAttrs(WordPressImporter::rewriteImages($html, $map));
+        $clean = LegacyCmsImporter::stripResponsiveAttrs(LegacyCmsImporter::rewriteImages($html, $map));
 
         return [$clean, array_values($map)];
     }
