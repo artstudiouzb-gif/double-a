@@ -151,12 +151,16 @@ final class FormController
                 continue;
             }
             $fieldName = preg_replace('/[^a-z0-9_]/i', '', $fieldName) ?? '';
+            $type = in_array($field['type'] ?? 'text', ['text', 'email', 'tel', 'textarea', 'file', 'select', 'radio', 'checkbox_group', 'checkbox', 'date'], true) ? $field['type'] : 'text';
             $entry = [
                 'name' => $fieldName,
                 'label' => $fieldLabel,
-                'type' => in_array($field['type'] ?? 'text', ['text', 'email', 'tel', 'textarea', 'file'], true) ? $field['type'] : 'text',
+                'type' => $type,
                 'required' => !empty($field['required']),
             ];
+            if (in_array($type, ['select', 'radio', 'checkbox_group'], true)) {
+                $entry['options'] = trim((string) ($field['options'] ?? ''));
+            }
             // Условная логика показа поля (задача 135): показывать только если
             // другое поле равно заданному значению.
             $condField = preg_replace('/[^a-z0-9_]/i', '', trim((string) ($field['condition_field'] ?? ''))) ?? '';

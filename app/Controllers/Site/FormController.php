@@ -81,17 +81,26 @@ final class FormController
                 continue;
             }
 
-            $value = trim((string) ($_POST[$name] ?? ''));
-            if (!empty($field['required']) && $value === '') {
-                $errors[$name] = 'Поле «' . $field['label'] . '» обязательно.';
-                continue;
+            if (is_array($_POST[$name] ?? null)) {
+                $values = array_map('trim', $_POST[$name]);
+                $values = array_filter($values, static fn($v) => $v !== '');
+                if (!empty($field['required']) && empty($values)) {
+                    $errors[$name] = 'Поле «' . $field['label'] . '» обязательно.';
+                    continue;
+                }
+                $data[$name] = implode(', ', $values);
+            } else {
+                $value = trim((string) ($_POST[$name] ?? ''));
+                if (!empty($field['required']) && $value === '') {
+                    $errors[$name] = 'Поле «' . $field['label'] . '» обязательно.';
+                    continue;
+                }
+                if ($field['type'] === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                    $errors[$name] = 'Некорректный email.';
+                    continue;
+                }
+                $data[$name] = $value;
             }
-            if ($field['type'] === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                $errors[$name] = 'Некорректный email.';
-                continue;
-            }
-
-            $data[$name] = $value;
         }
 
         if ($errors !== []) {

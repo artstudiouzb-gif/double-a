@@ -54,10 +54,25 @@ $fields = $form['fields'] ?? [];
                         <div class="form-field">
                             <label>Тип поля</label>
                             <select name="fields[<?= $i ?>][type]">
-                                <?php foreach (['text' => 'Текст', 'email' => 'Email', 'tel' => 'Телефон', 'textarea' => 'Многострочный текст', 'file' => 'Файл'] as $val => $label): ?>
+                                <?php foreach ([
+                                    'text' => 'Текст',
+                                    'email' => 'Email',
+                                    'tel' => 'Телефон',
+                                    'textarea' => 'Многострочный текст',
+                                    'file' => 'Файл',
+                                    'select' => 'Выпадающий список',
+                                    'radio' => 'Радио-кнопки',
+                                    'checkbox_group' => 'Группа чекбоксов',
+                                    'checkbox' => 'Одиночный чекбокс',
+                                    'date' => 'Дата'
+                                ] as $val => $label): ?>
                                     <option value="<?= $val ?>" <?= ($field['type'] ?? 'text') === $val ? 'selected' : '' ?>><?= $label ?></option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        <div class="form-field" data-field-options-container style="display:none;">
+                            <label>Варианты выбора (через запятую)</label>
+                            <input type="text" name="fields[<?= $i ?>][options]" value="<?= htmlspecialchars($field['options'] ?? '', ENT_QUOTES) ?>" placeholder="Вариант 1, Вариант 2, Вариант 3">
                         </div>
                         <div class="form-field form-field--checkbox">
                             <input type="checkbox" name="fields[<?= $i ?>][required]" value="1" <?= !empty($field['required']) ? 'checked' : '' ?>>
@@ -92,7 +107,16 @@ $fields = $form['fields'] ?? [];
                         <option value="tel">Телефон</option>
                         <option value="textarea">Многострочный текст</option>
                         <option value="file">Файл</option>
+                        <option value="select">Выпадающий список</option>
+                        <option value="radio">Радио-кнопки</option>
+                        <option value="checkbox_group">Группа чекбоксов</option>
+                        <option value="checkbox">Одиночный чекбокс</option>
+                        <option value="date">Дата</option>
                     </select>
+                </div>
+                <div class="form-field" data-field-options-container style="display:none;">
+                    <label>Варианты выбора (через запятую)</label>
+                    <input type="text" name="fields[__INDEX__][options]" placeholder="Вариант 1, Вариант 2, Вариант 3">
                 </div>
                 <div class="form-field form-field--checkbox">
                     <input type="checkbox" name="fields[__INDEX__][required]" value="1">
@@ -118,4 +142,52 @@ $fields = $form['fields'] ?? [];
         </div>
     </form>
 </div>
+
+<script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
+(function () {
+    'use strict';
+
+    function toggleOptions(row) {
+        var select = row.querySelector('select[name$="[type]"]');
+        var container = row.querySelector('[data-field-options-container]');
+        if (select && container) {
+            var val = select.value;
+            if (val === 'select' || val === 'radio' || val === 'checkbox_group') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+    }
+
+    // Toggle on load for existing fields
+    document.querySelectorAll('.repeater-row').forEach(toggleOptions);
+
+    // Toggle on change
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.name && e.target.name.match(/^fields\[\d+\]\[type\]/)) {
+            var row = e.target.closest('.repeater-row');
+            if (row) {
+                toggleOptions(row);
+            }
+        }
+    });
+
+    // Toggle when a new field is added
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+                if (node.nodeType === 1 && node.classList.contains('repeater-row')) {
+                    toggleOptions(node);
+                }
+            });
+        });
+    });
+    var repeater = document.querySelector('[data-repeater="fields"]');
+    if (repeater) {
+        observer.observe(repeater, { childList: true });
+    }
+})();
+</script>
+
 <?php require __DIR__ . '/../layout/footer.php'; ?>

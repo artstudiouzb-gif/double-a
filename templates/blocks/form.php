@@ -34,11 +34,55 @@ $form = $data['form'] ?? null;
                 }
                 ?>
                 <div class="block-form__field"<?= $condAttrs ?><?= $hiddenStyle ?>>
-                    <label for="<?= $inputId ?>"><?= $fieldLabel ?></label>
+                    <?php if ($fieldType !== 'checkbox'): ?>
+                        <label for="<?= $inputId ?>"><?= $fieldLabel ?></label>
+                    <?php endif; ?>
+
                     <?php if ($fieldType === 'textarea'): ?>
                         <textarea id="<?= $inputId ?>" name="<?= $fieldName ?>" <?= $required ?>></textarea>
                     <?php elseif ($fieldType === 'file'): ?>
                         <input type="file" id="<?= $inputId ?>" name="<?= $fieldName ?>" <?= $required ?>>
+                    <?php elseif ($fieldType === 'select'): ?>
+                        <?php $opts = array_map('trim', explode(',', (string) ($field['options'] ?? ''))); ?>
+                        <select id="<?= $inputId ?>" name="<?= $fieldName ?>" <?= $required ?>>
+                            <option value="">Выберите...</option>
+                            <?php foreach ($opts as $opt): ?>
+                                <?php if ($opt !== ''): ?>
+                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>"><?= htmlspecialchars($opt, ENT_QUOTES) ?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php elseif ($fieldType === 'radio'): ?>
+                        <?php $opts = array_map('trim', explode(',', (string) ($field['options'] ?? ''))); ?>
+                        <div class="block-form__radio-group" style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+                            <?php foreach ($opts as $opt): ?>
+                                <?php if ($opt !== ''): ?>
+                                    <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:normal;">
+                                        <input type="radio" name="<?= $fieldName ?>" value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= $required ?>>
+                                        <?= htmlspecialchars($opt, ENT_QUOTES) ?>
+                                    </label>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php elseif ($fieldType === 'checkbox_group'): ?>
+                        <?php $opts = array_map('trim', explode(',', (string) ($field['options'] ?? ''))); ?>
+                        <div class="block-form__checkbox-group" style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+                            <?php foreach ($opts as $opt): ?>
+                                <?php if ($opt !== ''): ?>
+                                    <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:normal;">
+                                        <input type="checkbox" name="<?= $fieldName ?>[]" value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>">
+                                        <?= htmlspecialchars($opt, ENT_QUOTES) ?>
+                                    </label>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php elseif ($fieldType === 'checkbox'): ?>
+                        <div class="block-form__checkbox-single" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                            <input type="checkbox" id="<?= $inputId ?>" name="<?= $fieldName ?>" value="1" <?= $required ?>>
+                            <label for="<?= $inputId ?>" style="display:inline; cursor:pointer; font-weight:normal;"><?= $fieldLabel ?></label>
+                        </div>
+                    <?php elseif ($fieldType === 'date'): ?>
+                        <input type="date" id="<?= $inputId ?>" name="<?= $fieldName ?>" <?= $required ?>>
                     <?php else: ?>
                         <input type="<?= htmlspecialchars($fieldType, ENT_QUOTES) ?>" id="<?= $inputId ?>" name="<?= $fieldName ?>" <?= $required ?>>
                     <?php endif; ?>
