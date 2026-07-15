@@ -77,11 +77,10 @@ jobs:
           if [ $status -ne 0 ]; then
             git config --global user.name "github-actions[bot]"
             git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git checkout -b test-log-branch
-            mv tests_output.log test_failure_log.txt
+            cp tests_output.log test_failure_log.txt
             git add test_failure_log.txt
-            git commit -m "ci: save test failure log"
-            git push -f https://x-access-token:${GITHUB_TOKEN}@github.com/artstudiouzb-gif/artstudio.git test-log-branch
+            git commit -m "ci: save test failure log [skip ci]"
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/artstudiouzb-gif/artstudio.git HEAD:${{ github.ref }}
             exit $status
           fi
 
