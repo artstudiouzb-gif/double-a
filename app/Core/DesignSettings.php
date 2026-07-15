@@ -387,6 +387,27 @@ final class DesignSettings
         ];
     }
 
+    /** @return array{bg_primary:string,bg_surface:string,text_main:string,text_muted:string,border_color:string} */
+    public static function semanticColors(): array
+    {
+        $defaults = [
+            'bg_primary' => '#ffffff',
+            'bg_surface' => '#f4f5f7',
+            'text_main' => '#1a1a1a',
+            'text_muted' => '#666666',
+            'border_color' => '#e1e3e8',
+        ];
+        $colors = [];
+        foreach ($defaults as $key => $fallback) {
+            $colors[$key] = SettingsValidator::hexColor(
+                (string) Setting::get('design_semantic_' . $key, $fallback),
+                $fallback
+            );
+        }
+
+        return $colors;
+    }
+
     public static function save(array $input): void
     {
         // Новая форма присылает один выбор вместо двух конкурирующих полей.
@@ -436,6 +457,15 @@ final class DesignSettings
                 (string) $input['color_accent'],
                 self::customAppearance()['color_accent']
             ));
+        }
+        $semantic = self::semanticColors();
+        foreach ($semantic as $key => $current) {
+            if (array_key_exists($key, $input)) {
+                Setting::set(
+                    'design_semantic_' . $key,
+                    SettingsValidator::hexColor((string) $input[$key], $current)
+                );
+            }
         }
         if (array_key_exists('font_family', $input)) {
             $family = mb_substr(trim((string) $input['font_family']), 0, 200);
@@ -584,6 +614,7 @@ final class DesignSettings
         }
 
         $custom = self::customAppearance();
+        $semantic = self::semanticColors();
         $presets[$slug] = [
             'label' => $name,
             'values' => self::current(),
@@ -603,6 +634,11 @@ final class DesignSettings
                 'font_google_body' => Setting::get('design_font_google_body', ''),
                 'font_size_custom' => Setting::get('design_font_size_custom', ''),
                 'radius_custom' => Setting::get('design_radius_custom', ''),
+                'bg_primary' => $semantic['bg_primary'],
+                'bg_surface' => $semantic['bg_surface'],
+                'text_main' => $semantic['text_main'],
+                'text_muted' => $semantic['text_muted'],
+                'border_color' => $semantic['border_color'],
             ],
         ];
         Setting::set(self::USER_PRESETS_KEY, json_encode($presets, JSON_UNESCAPED_UNICODE));
@@ -651,6 +687,7 @@ final class DesignSettings
             'color_primary', 'color_accent', 'font_family', 'font_face_name',
             'font_url', 'default_theme', 'font_google_heading', 'font_google_body',
             'font_size_custom', 'radius_custom',
+            'bg_primary', 'bg_surface', 'text_main', 'text_muted', 'border_color',
         ]));
         // Старые пользовательские конфигурации не знали об этих полях: при
         // их применении сбрасываем текущие переопределения, а не наследуем их.

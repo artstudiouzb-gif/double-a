@@ -25,6 +25,7 @@ if ($logo === '') {
 // типографика PT Serif (заголовки) / PT Sans (текст) — см. gov-theme.css.
 $primaryColor = Setting::get('color_primary', '#173a63');
 $accentColor = Setting::get('color_accent', '#17999b');
+$semanticColors = \App\Core\DesignSettings::semanticColors();
 $font = Setting::get('font_family', "'PT Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif");
 $fontHeading = Setting::get('font_heading', "'PT Serif', Georgia, 'Times New Roman', serif");
 $extraHeadCss = $extraHeadCss ?? '';
@@ -452,6 +453,16 @@ if ($siteTemplate === 'modern_gov'): ?>
 :root {
     --color-primary: <?= htmlspecialchars($primaryColor, ENT_QUOTES) ?>;
     --color-accent: <?= htmlspecialchars($accentColor, ENT_QUOTES) ?>;
+    --bg-primary: <?= htmlspecialchars($semanticColors['bg_primary'], ENT_QUOTES) ?>;
+    --bg-surface: <?= htmlspecialchars($semanticColors['bg_surface'], ENT_QUOTES) ?>;
+    --text-main: <?= htmlspecialchars($semanticColors['text_main'], ENT_QUOTES) ?>;
+    --text-muted: <?= htmlspecialchars($semanticColors['text_muted'], ENT_QUOTES) ?>;
+    --border-color: <?= htmlspecialchars($semanticColors['border_color'], ENT_QUOTES) ?>;
+    --gov-bg: var(--bg-primary);
+    --gov-surface: var(--bg-surface);
+    --gov-ink: var(--text-main);
+    --gov-muted: var(--text-muted);
+    --gov-border: var(--border-color);
     <?php // Внутри <style> HTML-экранирование ломает кавычки ('Inter' -> &#039;Inter&#039;).
           // Санитизация под CSS: только буквы/цифры/пробел/запятая/дефис/одинарные кавычки. ?>
     --font-family: <?= preg_replace("/[^a-zA-Z0-9 ,'\\-]/", '', (string) $font) ?: 'system-ui, sans-serif' ?>;

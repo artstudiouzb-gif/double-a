@@ -86,6 +86,14 @@ final class DesignController
             (string) ($preview['color_accent'] ?? ''),
             (string) Setting::get('color_accent', '#17999b')
         );
+        foreach (DesignSettings::semanticColors() as $key => $current) {
+            if (array_key_exists($key, $preview)) {
+                Setting::overrideInMemory(
+                    'design_semantic_' . $key,
+                    \App\Core\SettingsValidator::hexColor((string) $preview[$key], $current)
+                );
+            }
+        }
 
         // Палитра/шрифт материализуются тоже только в памяти.
         $palette = Setting::get('design_palette', 'custom');

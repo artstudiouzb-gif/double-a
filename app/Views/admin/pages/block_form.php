@@ -429,11 +429,31 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                     <option value="standard" <?= ($data['width'] ?? '') === 'standard' ? 'selected' : '' ?>>Стандартная (по контейнеру)</option>
                 </select>
             </div>
+            <?php
+            $heroHeightMode = in_array($data['height'] ?? 'regular', ['regular', 'full', 'custom'], true) ? $data['height'] : 'regular';
+            $heroCustomHeight = (string) ($data['custom_height'] ?? '720px');
+            preg_match('/^(\d+(?:\.\d+)?)(px|vh|dvh|rem)$/', $heroCustomHeight, $heroHeightParts);
+            $heroHeightValue = $heroHeightParts[1] ?? '720';
+            $heroHeightUnit = $heroHeightParts[2] ?? 'px';
+            ?>
             <div class="form-field"><label for="hero_height">Высота секции</label>
-                <select id="hero_height" name="hero_height">
+                <select id="hero_height" name="hero_height" data-hero-height>
                     <option value="regular" <?= ($data['height'] ?? 'regular') === 'regular' ? 'selected' : '' ?>>Обычная</option>
                     <option value="full" <?= ($data['height'] ?? '') === 'full' ? 'selected' : '' ?>>Полноэкранная (100vh)</option>
+                    <option value="custom" <?= $heroHeightMode === 'custom' ? 'selected' : '' ?>>Своя высота</option>
                 </select>
+            </div>
+            <div class="form-field" data-hero-custom-height<?= $heroHeightMode !== 'custom' ? ' hidden' : '' ?>>
+                <label for="hero_height_value">Своя высота секции</label>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px;">
+                    <input type="number" id="hero_height_value" name="hero_height_value" min="10" max="2000" step="0.1" value="<?= htmlspecialchars($heroHeightValue, ENT_QUOTES) ?>">
+                    <select id="hero_height_unit" name="hero_height_unit" aria-label="Единица высоты">
+                        <?php foreach (['px' => 'px', 'vh' => 'vh', 'dvh' => 'dvh', 'rem' => 'rem'] as $unit => $label): ?>
+                            <option value="<?= $unit ?>" <?= $heroHeightUnit === $unit ? 'selected' : '' ?>><?= $label ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <span class="form-hint">Допустимо: 160–2000 px, 20–150 vh/dvh или 10–120 rem. Используется минимальная высота, поэтому содержимое не обрезается.</span>
             </div>
             <div class="form-field">
                 <label for="eyebrow">Надзаголовок (мелкий текст над заголовком)</label>

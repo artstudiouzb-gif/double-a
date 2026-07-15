@@ -86,4 +86,10 @@ test('Блок hero: классы ширины и высоты секции', fu
     $def = \App\Core\BlockRenderer::render(['id' => 61, 'type' => 'hero', 'custom_css' => null, 'data' => json_encode(['title' => 'T'])])['html'];
     assert_contains('block-hero--w-full', $def);
     assert_contains('block-hero--h-regular', $def);
+
+    $custom = \App\Core\BlockRenderer::render(['id' => 62, 'type' => 'hero', 'custom_css' => null, 'data' => json_encode([
+        'title' => 'T', 'image' => '/uploads/public/x.jpg', 'height' => 'custom', 'custom_height' => '68.5vh',
+    ])])['html'];
+    assert_contains('block-hero--h-custom', $custom);
+    assert_contains('--hero-custom-height:68.5vh', $custom);
 });

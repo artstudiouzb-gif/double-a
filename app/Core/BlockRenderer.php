@@ -33,7 +33,7 @@ final class BlockRenderer
         'subscribe' => ['title' => 'Подписка на новости', 'text' => 'Получайте дайджест новостей на почту раз в неделю.', 'button_text' => 'Подписаться'],
         'faq' => ['title' => '', 'items' => []],
         'contact_cards' => ['title' => '', 'items' => []],
-        'hero' => ['title' => '', 'eyebrow' => '', 'subtitle' => '', 'bg_type' => '', 'image' => '', 'video_url' => '', 'youtube_url' => '', 'bg_color' => '', 'width' => 'full', 'height' => 'regular', 'overlay_color' => '#0b1a30', 'overlay_opacity' => 55, 'text_position' => 'left', 'text_color' => '', 'button_color' => '', 'panel_enabled' => false, 'panel_color' => '#0b1a30', 'panel_opacity' => 0, 'button_text' => '', 'button_url' => '', 'button2_text' => '', 'button2_url' => '', 'video_button_text' => '', 'video_button_url' => ''],
+        'hero' => ['title' => '', 'eyebrow' => '', 'subtitle' => '', 'bg_type' => '', 'image' => '', 'video_url' => '', 'youtube_url' => '', 'bg_color' => '', 'width' => 'full', 'height' => 'regular', 'custom_height' => '720px', 'overlay_color' => '#0b1a30', 'overlay_opacity' => 55, 'text_position' => 'left', 'text_color' => '', 'button_color' => '', 'panel_enabled' => false, 'panel_color' => '#0b1a30', 'panel_opacity' => 0, 'button_text' => '', 'button_url' => '', 'button2_text' => '', 'button2_url' => '', 'video_button_text' => '', 'video_button_url' => ''],
         'categories_grid' => ['title' => '', 'items' => []],
         'media_materials' => ['title' => '', 'items' => []],
         'cards_grid' => ['title' => '', 'all_text' => '', 'all_url' => '', 'columns' => 5, 'card_bg' => '', 'text_color' => '', 'items' => []],

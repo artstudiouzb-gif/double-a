@@ -64,3 +64,9 @@ test('Hero: без bg_type определяет тип по заполненны
     assert_true(str_contains($html, 'block-hero--media'), 'старый блок с картинкой = медиа-герой');
     assert_true(!str_contains($html, 'block-hero--video'), 'без видео нет video-класса');
 });
+
+test('Hero: небезопасная произвольная высота не попадает в style', function () {
+    $html = render_hero(['title' => 'X', 'height' => 'custom', 'custom_height' => '100vh;background:red']);
+    assert_true(str_contains($html, 'block-hero--h-custom'), 'режим сохраняется');
+    assert_true(!str_contains($html, 'background:red'), 'CSS-инъекция отброшена');
+});

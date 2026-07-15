@@ -62,7 +62,17 @@ $vBtnText = trim((string) ($data['video_button_text'] ?? ''));
 $vBtnUrl = trim((string) ($data['video_button_url'] ?? ''));
 
 $heroWidth = ($data['width'] ?? 'full') === 'standard' ? 'standard' : 'full';
-$heroHeight = ($data['height'] ?? 'regular') === 'full' ? 'full' : 'regular';
+$heroHeight = in_array($data['height'] ?? 'regular', ['regular', 'full', 'custom'], true) ? $data['height'] : 'regular';
+$customHeight = (string) ($data['custom_height'] ?? '720px');
+if ($heroHeight === 'custom' && preg_match('/^(\d+(?:\.\d+)?)(px|vh|dvh|rem)$/', $customHeight, $heightParts)) {
+    $heightValue = (float) $heightParts[1];
+    $heightUnit = $heightParts[2];
+    $heightLimits = $heightUnit === 'px' ? [160.0, 2000.0]
+        : ($heightUnit === 'rem' ? [10.0, 120.0] : [20.0, 150.0]);
+    $heightValue = max($heightLimits[0], min($heightLimits[1], $heightValue));
+    $heightNumber = rtrim(rtrim(number_format($heightValue, 1, '.', ''), '0'), '.');
+    $heroRootStyle .= '--hero-custom-height:' . $heightNumber . $heightUnit . ';';
+}
 ?>
 <div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= $heroBg !== '' ? ' block-hero--bgcolor' : '' ?><?= ($bgType === 'video' || $bgType === 'youtube') ? ' block-hero--video' : '' ?> block-hero--w-<?= $heroWidth ?> block-hero--h-<?= $heroHeight ?> block-hero--pos-<?= $textPos ?>"<?= $heroRootStyle !== '' ? ' style="' . $heroRootStyle . '"' : '' ?>>
     <?php if ($bgType === 'video' && $videoFile !== ''): ?>

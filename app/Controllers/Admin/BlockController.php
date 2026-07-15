@@ -594,10 +594,22 @@ final class BlockController
                 $hexColor = static fn (string $v, string $def): string => preg_match('/^#[0-9a-fA-F]{6}$/', $v) ? strtolower($v) : $def;
                 $pct = static fn ($v, int $def): int => is_numeric($v) ? max(0, min(100, (int) $v)) : $def;
                 $bgType = in_array($_POST['bg_type'] ?? 'image', ['none', 'image', 'video', 'youtube'], true) ? $_POST['bg_type'] : 'image';
+                $heightMode = in_array($_POST['hero_height'] ?? 'regular', ['regular', 'full', 'custom'], true)
+                    ? (string) $_POST['hero_height']
+                    : 'regular';
+                $heightUnit = in_array($_POST['hero_height_unit'] ?? 'px', ['px', 'vh', 'dvh', 'rem'], true)
+                    ? (string) $_POST['hero_height_unit']
+                    : 'px';
+                $heightValue = is_numeric($_POST['hero_height_value'] ?? null) ? (float) $_POST['hero_height_value'] : 720.0;
+                $heightLimits = $heightUnit === 'px' ? [160.0, 2000.0]
+                    : ($heightUnit === 'rem' ? [10.0, 120.0] : [20.0, 150.0]);
+                $heightValue = max($heightLimits[0], min($heightLimits[1], $heightValue));
+                $heightNumber = rtrim(rtrim(number_format($heightValue, 1, '.', ''), '0'), '.');
                 return [
                     'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
                     'width' => ($_POST['hero_width'] ?? 'full') === 'standard' ? 'standard' : 'full',
-                    'height' => ($_POST['hero_height'] ?? 'regular') === 'full' ? 'full' : 'regular',
+                    'height' => $heightMode,
+                    'custom_height' => $heightNumber . $heightUnit,
                     'eyebrow' => TextProcessor::typographPlain(trim((string) ($_POST['eyebrow'] ?? '')), $locale),
                     'subtitle' => TextProcessor::typographPlain(trim((string) ($_POST['subtitle'] ?? '')), $locale),
                     'bg_type' => $bgType,

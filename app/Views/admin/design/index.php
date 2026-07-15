@@ -104,6 +104,7 @@ foreach ($options as $key => $opt) {
                 $customAppearance = \App\Core\DesignSettings::customAppearance();
                 $primary = $customAppearance['color_primary'];
                 $accent = $customAppearance['color_accent'];
+                $semanticColors = \App\Core\DesignSettings::semanticColors();
                 $defaultTheme = (string) \App\Models\Setting::get('default_theme', 'light');
                 if (!in_array($defaultTheme, ['light', 'dark', 'auto'], true)) { $defaultTheme = 'light'; }
                 $bodyFontChoice = \App\Core\DesignSettings::bodyFontChoice();
@@ -123,6 +124,18 @@ foreach ($options as $key => $opt) {
                             <label for="design_color_accent">Акцентный цвет</label>
                             <input type="color" id="design_color_accent" name="color_accent" value="<?= htmlspecialchars($accent, ENT_QUOTES) ?>" data-design-preview-field>
                         </div>
+                        <?php foreach ([
+                            'bg_primary' => 'Фон страницы',
+                            'bg_surface' => 'Фон поверхностей и карточек',
+                            'text_main' => 'Основной цвет текста',
+                            'text_muted' => 'Приглушённый цвет текста',
+                            'border_color' => 'Цвет границ',
+                        ] as $colorKey => $colorLabel): ?>
+                            <div class="form-field">
+                                <label for="design_<?= htmlspecialchars($colorKey, ENT_QUOTES) ?>"><?= htmlspecialchars($colorLabel, ENT_QUOTES) ?></label>
+                                <input type="color" id="design_<?= htmlspecialchars($colorKey, ENT_QUOTES) ?>" name="<?= htmlspecialchars($colorKey, ENT_QUOTES) ?>" value="<?= htmlspecialchars($semanticColors[$colorKey], ENT_QUOTES) ?>" data-design-preview-field>
+                            </div>
+                        <?php endforeach; ?>
                         <div class="form-field design-manual__wide">
                             <label for="design_font_body_choice">Основной шрифт текста</label>
                             <select id="design_font_body_choice" name="font_body_choice" data-design-preview-field data-font-body-choice>

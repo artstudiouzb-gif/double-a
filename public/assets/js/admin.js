@@ -330,6 +330,26 @@
         if (out) { out.textContent = input.value; }
     });
 
+    // --- Hero: произвольная высота с единицей измерения. ---
+    (function () {
+        var mode = document.querySelector('[data-hero-height]');
+        var custom = document.querySelector('[data-hero-custom-height]');
+        var value = document.getElementById('hero_height_value');
+        var unit = document.getElementById('hero_height_unit');
+        if (!mode || !custom || !value || !unit) { return; }
+
+        function sync() {
+            custom.hidden = mode.value !== 'custom';
+            var limits = unit.value === 'px' ? [160, 2000]
+                : (unit.value === 'rem' ? [10, 120] : [20, 150]);
+            value.min = String(limits[0]);
+            value.max = String(limits[1]);
+        }
+        mode.addEventListener('change', sync);
+        unit.addEventListener('change', sync);
+        sync();
+    })();
+
     // --- Поле изображения с превью (медиабиблиотека / URL / загрузка файла) ---
     (function () {
         function setPreview(field, src) {
