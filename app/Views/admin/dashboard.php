@@ -6,6 +6,8 @@ require __DIR__ . '/layout/header.php';
 
 /** @var array $user */
 /** @var array $counts */
+/** @var array<string, int> $chartData */
+/** @var array<int, array<string, mixed>> $recentLogs */
 ?>
 <section class="admin-welcome" aria-labelledby="admin-welcome-title">
     <div>
@@ -95,11 +97,11 @@ $fillPointsStr = "$padding," . ($height - $padding) . " $pointsStr " . ($width -
                 <?php $i = 0; foreach ($chartData as $date => $count): ?>
                     <?php 
                     $parts = explode(',', $points[$i]); 
-                    $cx = $parts[0];
-                    $cy = $parts[1];
+                    $cx = (float) $parts[0];
+                    $cy = (float) $parts[1];
                     ?>
                     <circle cx="<?= $cx ?>" cy="<?= $cy ?>" r="5" fill="var(--admin-surface)" stroke="var(--admin-accent)" stroke-width="2"></circle>
-                    <text x="<?= $cx ?>" y="<?= $cy - 10 ?>" font-size="10" font-weight="700" fill="var(--admin-text)" text-anchor="middle"><?= $count ?></text>
+                    <text x="<?= $cx ?>" y="<?= $cy - 10.0 ?>" font-size="10" font-weight="700" fill="var(--admin-text)" text-anchor="middle"><?= $count ?></text>
                 <?php $i++; endforeach; ?>
                 <!-- X Labels -->
                 <?php $i = 0; foreach ($chartData as $date => $count): ?>
