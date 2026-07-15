@@ -879,7 +879,9 @@ body .site-header--transparent:not(.is-scrolled) .site-header__logo:has(.site-he
 .site-header--transparent:not(.is-scrolled) .site-menu__link:hover,
 .site-header--transparent:not(.is-scrolled) .site-menu__link:focus-visible { color: #9fe3e4; }
 body .site-header--transparent:not(.is-scrolled) .site-nav { border-top-color: rgba(255,255,255,.16); background: transparent; }
-.site-header--transparent:not(.is-scrolled) .site-search input { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; }
+.site-header--transparent:not(.is-scrolled) .site-search { background: rgba(255,255,255,.15) !important; border-color: rgba(255,255,255,.3) !important; }
+.site-header--transparent:not(.is-scrolled) .site-search input { color: #fff !important; }
+.site-header--transparent:not(.is-scrolled) .site-search button { color: #fff !important; }
 .site-header--transparent:not(.is-scrolled) .site-search input::placeholder { color: rgba(255,255,255,.6); }
 body .site-header--transparent { transition: background .25s ease, box-shadow .25s ease; }
 /* Прозрачная поверх контента: первый блок страницы должен быть full-bleed hero;

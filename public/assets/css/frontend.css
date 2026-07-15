@@ -1462,34 +1462,45 @@ body.mobile-menu-open .site-drawer__panel { transform: translateX(0); }
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    color: inherit !important;
     cursor: pointer !important;
     border-radius: 50% !important;
     transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease !important;
+    color: var(--gov-ink, var(--text-main)) !important; /* По умолчанию темные */
 }
+
+/* Белый цвет для кнопок в темных/акцентных шапках и в прозрачной шапке (пока не прокручена) */
+body.design-header-accent .site-search-toggle,
+body.design-header-accent .site-theme-toggle,
+body.design-header-accent .a11y-toggle,
+body.design-header-dark .site-search-toggle,
+body.design-header-dark .site-theme-toggle,
+body.design-header-dark .a11y-toggle,
+.site-header--transparent:not(.is-scrolled) .site-search-toggle,
+.site-header--transparent:not(.is-scrolled) .site-theme-toggle,
+.site-header--transparent:not(.is-scrolled) .a11y-toggle {
+    color: #fff !important;
+}
+
+/* Ховер для светлых кнопок (становится темным/акцентным с серым фоном) */
 .site-search-toggle:hover,
 .site-theme-toggle:hover,
 .a11y-toggle:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-    color: #fff !important;
-}
-/* Адаптация под светлый фон (когда шапка/топбар светлые) */
-.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-search-toggle,
-.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-theme-toggle,
-.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .a11y-toggle,
-.site-topbar--light .site-search-toggle,
-.site-topbar--light .site-theme-toggle,
-.site-topbar--light .a11y-toggle {
-    color: var(--gov-ink, var(--text-main)) !important;
-}
-.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-search-toggle:hover,
-.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .site-theme-toggle:hover,
-.site-header:not(.site-header--transparent):not(.design-header-accent):not(.design-header-dark) .a11y-toggle:hover,
-.site-topbar--light .site-search-toggle:hover,
-.site-topbar--light .site-theme-toggle:hover,
-.site-topbar--light .a11y-toggle:hover {
     background: rgba(15, 23, 42, 0.08) !important;
     color: var(--gov-teal, var(--color-accent)) !important;
+}
+
+/* Ховер для темных/акцентных/прозрачных шапок (остается белым со светлым фоном) */
+body.design-header-accent .site-search-toggle:hover,
+body.design-header-accent .site-theme-toggle:hover,
+body.design-header-accent .a11y-toggle:hover,
+body.design-header-dark .site-search-toggle:hover,
+body.design-header-dark .site-theme-toggle:hover,
+body.design-header-dark .a11y-toggle:hover,
+.site-header--transparent:not(.is-scrolled) .site-search-toggle:hover,
+.site-header--transparent:not(.is-scrolled) .site-theme-toggle:hover,
+.site-header--transparent:not(.is-scrolled) .a11y-toggle:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
 }
 
 /* Все иконки строго одинакового размера */
