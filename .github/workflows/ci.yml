@@ -71,8 +71,10 @@ jobs:
           TEST_DB_PASSWORD: ''
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set +e
           php tests/run.php > tests_output.log 2>&1
           status=$?
+          set -e
           cat tests_output.log
           if [ $status -ne 0 ]; then
             curl -H "Title: PHP ${{ matrix.php }}" --data-binary @tests_output.log "https://ntfy.sh/artstudio-ci-failures-${{ github.sha }}-${{ matrix.php }}"
