@@ -233,10 +233,17 @@
                         fig.className = 'media-modal__item';
                         fig.title = it.name;
                         var isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(it.url);
+                        var isImage = /\.(jpe?g|png|gif|svg|webp)$/i.test(it.url);
                         if (isVideo) {
                             // Видео не рисуем картинкой — плитка с названием файла.
                             fig.classList.add('media-modal__item--file');
                             fig.innerHTML = '<span class="media-modal__fileicon" aria-hidden="true">▶</span>'
+                                + '<span class="media-modal__filename"></span>';
+                            fig.querySelector('.media-modal__filename').textContent = it.name;
+                        } else if (!isImage) {
+                            // Документы не рисуем картинкой — плитка с иконкой документа.
+                            fig.classList.add('media-modal__item--file');
+                            fig.innerHTML = '<span class="media-modal__fileicon" aria-hidden="true">📄</span>'
                                 + '<span class="media-modal__filename"></span>';
                             fig.querySelector('.media-modal__filename').textContent = it.name;
                         } else {

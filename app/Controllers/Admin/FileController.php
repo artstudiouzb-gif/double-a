@@ -29,12 +29,14 @@ final class FileController
         Auth::requireLogin();
         header('Content-Type: application/json; charset=UTF-8');
 
-        // Фильтр по типу: image (по умолчанию), svg, video, all.
-        $type = in_array($_GET['type'] ?? 'image', ['image', 'svg', 'video', 'all'], true) ? $_GET['type'] : 'image';
+        // Фильтр по типу: image (по умолчанию), svg, video, document, all_files, all.
+        $type = in_array($_GET['type'] ?? 'image', ['image', 'svg', 'video', 'document', 'all_files', 'all'], true) ? $_GET['type'] : 'image';
         $matches = static function (string $mime) use ($type): bool {
             return match ($type) {
                 'svg' => $mime === 'image/svg+xml',
                 'video' => str_starts_with($mime, 'video/'),
+                'document' => !str_starts_with($mime, 'image/') && !str_starts_with($mime, 'video/'),
+                'all_files' => true,
                 'all' => str_starts_with($mime, 'image/') || str_starts_with($mime, 'video/'),
                 default => str_starts_with($mime, 'image/'),
             };

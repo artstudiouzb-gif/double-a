@@ -700,7 +700,13 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                         <div class="repeater-row">
                             <div class="form-field"><label>Название</label><input type="text" name="docs[<?= $i ?>][title]" value="<?= htmlspecialchars($doc['title'] ?? '', ENT_QUOTES) ?>"></div>
                             <div class="form-field"><label>Мета (напр. PDF · 2.4 МБ)</label><input type="text" name="docs[<?= $i ?>][meta]" value="<?= htmlspecialchars($doc['meta'] ?? '', ENT_QUOTES) ?>"></div>
-                            <div class="form-field"><label>Ссылка на файл</label><input type="text" name="docs[<?= $i ?>][url]" value="<?= htmlspecialchars($doc['url'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/....pdf"></div>
+                            <div class="form-field">
+                                <label>Ссылка на файл</label>
+                                <div style="display:flex;gap:8px;">
+                                    <input type="text" name="docs[<?= $i ?>][url]" value="<?= htmlspecialchars($doc['url'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/....pdf" style="flex:1;">
+                                    <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[<?= $i ?>][url]']" data-media-type="all_files">Выбрать</button>
+                                </div>
+                            </div>
                             <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
                         </div>
                     <?php endforeach; ?>
@@ -708,7 +714,13 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 <template data-repeater-template="docs">
                     <div class="form-field"><label>Название</label><input type="text" name="docs[__INDEX__][title]"></div>
                     <div class="form-field"><label>Мета (напр. PDF · 2.4 МБ)</label><input type="text" name="docs[__INDEX__][meta]"></div>
-                    <div class="form-field"><label>Ссылка на файл</label><input type="text" name="docs[__INDEX__][url]"></div>
+                    <div class="form-field">
+                        <label>Ссылка на файл</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" name="docs[__INDEX__][url]" style="flex:1;">
+                            <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[__INDEX__][url]']" data-media-type="all_files">Выбрать</button>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
                 </template>
                 <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="docs">+ Добавить документ</button></div>
@@ -902,7 +914,13 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                         <div class="repeater-row">
                             <div class="form-field"><label>Название</label><input type="text" name="items[<?= $i ?>][title]" value="<?= htmlspecialchars($item['title'] ?? '', ENT_QUOTES) ?>"></div>
                             <div class="form-field"><label>Мета (PDF · 2.4 МБ)</label><input type="text" name="items[<?= $i ?>][meta]" value="<?= htmlspecialchars($item['meta'] ?? '', ENT_QUOTES) ?>"></div>
-                            <div class="form-field"><label>Ссылка на файл</label><input type="text" name="items[<?= $i ?>][url]" value="<?= htmlspecialchars($item['url'] ?? '', ENT_QUOTES) ?>"></div>
+                            <div class="form-field">
+                                <label>Ссылка на файл</label>
+                                <div style="display:flex;gap:8px;">
+                                    <input type="text" name="items[<?= $i ?>][url]" value="<?= htmlspecialchars($item['url'] ?? '', ENT_QUOTES) ?>" style="flex:1;">
+                                    <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='items[<?= $i ?>][url]']" data-media-type="all_files">Выбрать</button>
+                                </div>
+                            </div>
                             <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
                         </div>
                     <?php endforeach; ?>
@@ -910,7 +928,13 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 <template data-repeater-template="items">
                     <div class="form-field"><label>Название</label><input type="text" name="items[__INDEX__][title]"></div>
                     <div class="form-field"><label>Мета</label><input type="text" name="items[__INDEX__][meta]"></div>
-                    <div class="form-field"><label>Ссылка на файл</label><input type="text" name="items[__INDEX__][url]"></div>
+                    <div class="form-field">
+                        <label>Ссылка на файл</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" name="items[__INDEX__][url]" style="flex:1;">
+                            <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='items[__INDEX__][url]']" data-media-type="all_files">Выбрать</button>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
                 </template>
                 <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="items">+ Добавить документ</button></div>

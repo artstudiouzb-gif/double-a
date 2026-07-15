@@ -180,7 +180,10 @@ $languages = Language::active();
             </div>
             <div class="form-field">
                 <label for="press_release_url">Пресс-релиз (URL файла)</label>
-                <input type="text" id="press_release_url" name="press_release_url" value="<?= htmlspecialchars($news['press_release_url'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/press.pdf">
+                <div style="display:flex;gap:8px;">
+                    <input type="text" id="press_release_url" name="press_release_url" value="<?= htmlspecialchars($news['press_release_url'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/press.pdf" style="flex:1;">
+                    <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="#press_release_url" data-media-type="all_files">Выбрать из медиа</button>
+                </div>
             </div>
             <div class="form-field">
                 <label for="key_points">Ключевые тезисы (по одному на строку)</label>
@@ -198,7 +201,13 @@ $languages = Language::active();
                         <div class="repeater-row">
                             <div class="form-field"><label>Название</label><input type="text" name="docs[<?= $i ?>][title]" value="<?= htmlspecialchars($doc['title'] ?? '', ENT_QUOTES) ?>"></div>
                             <div class="form-field"><label>Мета (PDF · 2.4 МБ)</label><input type="text" name="docs[<?= $i ?>][meta]" value="<?= htmlspecialchars($doc['meta'] ?? '', ENT_QUOTES) ?>"></div>
-                            <div class="form-field"><label>Ссылка</label><input type="text" name="docs[<?= $i ?>][url]" value="<?= htmlspecialchars($doc['url'] ?? '', ENT_QUOTES) ?>"></div>
+                            <div class="form-field">
+                                <label>Ссылка</label>
+                                <div style="display:flex;gap:8px;">
+                                    <input type="text" name="docs[<?= $i ?>][url]" value="<?= htmlspecialchars($doc['url'] ?? '', ENT_QUOTES) ?>" style="flex:1;">
+                                    <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[<?= $i ?>][url]']" data-media-type="all_files">Выбрать</button>
+                                </div>
+                            </div>
                             <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
                         </div>
                     <?php endforeach; ?>
@@ -206,7 +215,13 @@ $languages = Language::active();
                 <template data-repeater-template="docs">
                     <div class="form-field"><label>Название</label><input type="text" name="docs[__INDEX__][title]"></div>
                     <div class="form-field"><label>Мета (PDF · 2.4 МБ)</label><input type="text" name="docs[__INDEX__][meta]"></div>
-                    <div class="form-field"><label>Ссылка</label><input type="text" name="docs[__INDEX__][url]"></div>
+                    <div class="form-field">
+                        <label>Ссылка</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" name="docs[__INDEX__][url]" style="flex:1;">
+                            <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[__INDEX__][url]']" data-media-type="all_files">Выбрать</button>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
                 </template>
                 <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="docs">+ Добавить документ</button></div>
