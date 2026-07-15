@@ -1,0 +1,92 @@
+{
+  "napravleniya": {
+    "ru": {
+      "title": "Направления деятельности",
+      "blocks": [
+        ["hero", "", {"eyebrow": "Стратегическое развитие", "title": "Приоритетные направления", "subtitle": "Системная работа по ключевым направлениям развития Республики Узбекистан до 2030 года.", "image": "/uploads/public/hero-demo-g4.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 58}],
+        ["cards_grid", "", {"title": "Ключевые направления", "columns": 3, "items": [{"title": "Устойчивый экономический рост", "text": "Инвестиции, производительность и развитие предпринимательства.", "url": "/ustoychivyy-ekonomicheskiy-rost"}, {"title": "Человеческий капитал", "text": "Образование, здоровье и навыки будущего.", "url": "/analitika"}, {"title": "Эффективное государство", "text": "Качество институтов и государственных услуг.", "url": "/projects"}, {"title": "Зелёная экономика", "text": "Энергоэффективность и рациональное использование ресурсов.", "url": "/projects/zelenaya-energetika"}, {"title": "Региональное развитие", "text": "Инфраструктура и точки роста в регионах.", "url": "/projects/transportnaya-infrastruktura"}, {"title": "Международное сотрудничество", "text": "Обмен опытом и партнёрские программы.", "url": "/press-centr"}]}],
+        ["cta_band", "", {"title": "Открытые данные о ходе реформ", "text": "Показатели, документы и результаты публикуются в соответствующих разделах портала.", "button_text": "Перейти к аналитике", "button_url": "/analitika", "bg_color": "#072b61", "text_color": "#ffffff"}]
+      ]
+    }
+  },
+  "ustoychivyy-ekonomicheskiy-rost": {
+    "ru": {
+      "title": "Устойчивый экономический рост",
+      "blocks": [
+        ["hero", "", {"title": "Устойчивый экономический рост", "subtitle": "Благоприятные условия для бизнеса, инвестиций и повышения благосостояния населения.", "image": "/uploads/public/hero-demo-g4.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 62}],
+        ["anchor_nav", "", {"items": [{"title": "Обзор", "url": "#obzor"}, {"title": "Цели", "url": "#celi"}, {"title": "Показатели", "url": "#pokazateli"}, {"title": "Документы", "url": "#dokumenty"}]}],
+        ["text_image", "", {"title": "О направлении", "text": "<p>Устойчивый экономический рост является ключевым условием повышения качества жизни и укрепления конкурентоспособности страны.</p><p>Агентство анализирует эффективность реформ, выявляет ограничения и готовит предложения по развитию частного сектора и регионов.</p>", "image": "/uploads/public/hero-demo-g2.jpg", "items": [{"title": "Рост производительности", "text": "Современные технологии и управленческие практики."}, {"title": "Развитие экспорта", "text": "Выход предприятий на новые рынки."}, {"title": "Поддержка бизнеса", "text": "Улучшение регуляторной и инвестиционной среды."}]}],
+        ["counters", "", {"title": "Ключевые показатели", "items": [{"value": "6,2", "suffix": "%", "label": "целевой рост ВВП"}, {"value": "25", "suffix": " млрд", "label": "инвестиционный портфель"}, {"value": "150", "suffix": "+", "label": "крупных проектов"}, {"value": "15", "suffix": "%", "label": "рост экспортного потенциала"}]}],
+        ["docs_list", "", {"title": "Документы", "all_text": "Все документы", "all_url": "/catalog/documenty", "columns": 3, "items": [{"title": "Стратегия развития до 2030 года", "meta": "PDF", "url": "/catalog/documenty"}, {"title": "План приоритетных мероприятий", "meta": "PDF", "url": "/catalog/documenty"}, {"title": "Отчёт о ходе реализации", "meta": "PDF", "url": "/catalog/documenty"}]}]
+      ]
+    }
+  },
+  "analitika": {
+    "ru": {
+      "title": "Аналитические исследования",
+      "blocks": [
+        ["hero", "", {"title": "Аналитические исследования", "subtitle": "Данные и аналитические материалы для принятия обоснованных стратегических решений.", "image": "/uploads/public/hero-demo-g3.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 60}],
+        ["counters", "", {"items": [{"value": "120", "suffix": "+", "label": "исследований и обзоров"}, {"value": "25", "suffix": "+", "label": "отраслей экономики"}, {"value": "4", "suffix": " раза", "label": "обновление данных в год"}, {"value": "100", "suffix": "%", "label": "открытый доступ"}]}],
+        ["docs_list", "", {"title": "Последние исследования", "all_text": "Все документы", "all_url": "/catalog/documenty", "columns": 3, "items": [{"title": "Макроэкономический обзор Республики Узбекистан", "meta": "Май 2026 · PDF", "url": "/catalog/documenty"}, {"title": "Развитие человеческого капитала", "meta": "Апрель 2026 · PDF", "url": "/catalog/documenty"}, {"title": "Инвестиционный климат в регионах", "meta": "Март 2026 · PDF", "url": "/catalog/documenty"}, {"title": "Зелёная экономика: мировой опыт", "meta": "Февраль 2026 · PDF", "url": "/catalog/documenty"}, {"title": "Транспортно-логистический потенциал", "meta": "Январь 2026 · PDF", "url": "/catalog/documenty"}, {"title": "Предпринимательство и занятость", "meta": "Декабрь 2025 · PDF", "url": "/catalog/documenty"}]}]
+      ]
+    }
+  },
+  "press-centr": {
+    "ru": {
+      "title": "Пресс-центр",
+      "blocks": [
+        ["hero", "", {"title": "Пресс-центр", "subtitle": "Оперативная информация о деятельности Агентства, новости, мероприятия и медиаматериалы.", "image": "/uploads/public/hero-demo.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 60}],
+        ["counters", "", {"items": [{"value": "1256", "suffix": "+", "label": "новостей опубликовано"}, {"value": "245", "suffix": "+", "label": "пресс-релизов"}, {"value": "120", "suffix": "+", "label": "мероприятий"}, {"value": "8500", "suffix": "+", "label": "представителей СМИ"}]}],
+        ["categories_grid", "", {"title": "Материалы пресс-центра", "items": [{"title": "Новости", "url": "/news"}, {"title": "Пресс-релизы", "url": "/catalog/documenty"}, {"title": "Мероприятия", "url": "/meropriyatiya"}, {"title": "Фотогалерея", "url": "/albums"}]}],
+        ["news_feature", "", {"title": "Главное", "all_text": "Все новости", "all_url": "/news", "limit": 6}],
+        ["media_gallery", "", {"title": "Медиаматериалы", "all_text": "Вся галерея", "all_url": "/albums", "source": "featured", "limit": 8}],
+        ["subscribe", "", {"title": "Подпишитесь на новости", "text": "Получайте важные новости и аналитические материалы Агентства.", "button_text": "Подписаться"}]
+      ]
+    }
+  },
+  "meropriyatiya": {
+    "ru": {
+      "title": "Мероприятия",
+      "blocks": [
+        ["hero", "", {"title": "Мероприятия", "subtitle": "Конференции, форумы, семинары и открытые обсуждения Агентства.", "image": "/uploads/public/hero-demo.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 60}],
+        ["counters", "", {"items": [{"value": "120", "suffix": "+", "label": "мероприятий запланировано"}, {"value": "25000", "suffix": "+", "label": "участников ежегодно"}, {"value": "14", "suffix": "", "label": "регионов охвата"}, {"value": "40", "suffix": "+", "label": "международных партнёров"}]}],
+        ["cards_grid", "", {"title": "Предстоящие мероприятия", "columns": 3, "items": [{"title": "Международная конференция «Узбекистан–2030»", "text": "25 июня · Ташкент", "url": "/news"}, {"title": "Форум по зелёной экономике", "text": "5 июля · Самарканд", "url": "/news"}, {"title": "Семинар по современному государственному управлению", "text": "18 июля · Ташкент", "url": "/news"}]}],
+        ["subscribe", "", {"title": "Анонсы мероприятий", "text": "Получайте приглашения и изменения программы на электронную почту.", "button_text": "Подписаться"}]
+      ]
+    }
+  },
+  "karera": {
+    "ru": {
+      "title": "Карьера",
+      "blocks": [
+        ["hero", "", {"title": "Карьера", "subtitle": "Присоединяйтесь к команде профессионалов, работающих над будущим Узбекистана.", "image": "/uploads/public/hero-demo-g2.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 58, "button_text": "Смотреть вакансии", "button_url": "/catalog/vakansii"}],
+        ["cards_grid", "", {"title": "Работа в Агентстве", "columns": 4, "items": [{"title": "Миссия со смыслом", "text": "Участие в стратегических инициативах страны."}, {"title": "Профессиональный рост", "text": "Обучение и обмен опытом с экспертами."}, {"title": "Современная команда", "text": "Открытое взаимодействие и ответственность."}, {"title": "Забота о сотрудниках", "text": "Стабильные условия и социальные гарантии."}]}],
+        ["stages", "", {"title": "Как проходит отбор", "items": [{"title": "Подача заявки", "text": "Отправьте резюме через форму вакансии."}, {"title": "Предварительный отбор", "text": "Мы изучим опыт и компетенции кандидата."}, {"title": "Собеседование", "text": "Встреча с руководителем и профильными специалистами."}, {"title": "Предложение о работе", "text": "Успешный кандидат получает официальное предложение."}]}],
+        ["cta_band", "", {"title": "Не нашли подходящую вакансию?", "text": "Следите за обновлениями раздела и новыми конкурсами.", "button_text": "Все вакансии", "button_url": "/catalog/vakansii", "bg_color": "#072b61", "text_color": "#ffffff"}]
+      ]
+    }
+  },
+  "kontakty": {
+    "ru": {
+      "title": "Контакты",
+      "blocks": [
+        ["hero", "", {"title": "Контакты", "subtitle": "Мы открыты для сотрудничества и диалога.", "image": "/uploads/public/hero-demo-g2.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 58}],
+        ["contact_cards", "", {"title": "Свяжитесь с нами", "items": [{"title": "Адрес", "lines": "100011, Республика Узбекистан\nг. Ташкент", "link_text": "Показать на карте", "link_url": "#map"}, {"title": "Телефон", "lines": "+998 71 238 60 00\n+998 71 238 60 01"}, {"title": "E-mail", "lines": "info@example.uz\npress@example.uz"}, {"title": "Часы работы", "lines": "Понедельник–Пятница\n09:00–18:00"}]}],
+        ["form", "Форма обращения", {"form_slug": "public-appeal", "layout": "2col"}],
+        ["map_point", "", {"title": "Как нас найти", "image": "/uploads/public/hero-demo-g2.jpg", "card_title": "Агентство стратегического развития и реформ", "address": "г. Ташкент, Республика Узбекистан", "button_text": "Построить маршрут", "button_url": "https://maps.google.com/"}],
+        ["faq", "", {"title": "Часто задаваемые вопросы", "items": [{"question": "Как направить официальное обращение?", "answer": "<p>Заполните форму на этой странице. После отправки обращение будет зарегистрировано.</p>"}, {"question": "Как получить официальный ответ?", "answer": "<p>Ответ направляется по контактам, указанным заявителем.</p>"}, {"question": "Как записаться на личный приём?", "answer": "<p>Выберите соответствующую тему в форме обращения.</p>"}]}]
+      ]
+    }
+  },
+  "strategiya-2030": {
+    "ru": {
+      "title": "Стратегия «Узбекистан–2030»",
+      "blocks": [
+        ["hero", "", {"eyebrow": "Официальный документ", "title": "Стратегия «Узбекистан–2030»", "subtitle": "Стратегические цели и приоритеты развития Республики Узбекистан на период до 2030 года.", "image": "/uploads/public/hero-demo-g3.jpg", "bg_type": "image", "overlay_color": "#071b3f", "overlay_opacity": 60, "button_text": "Документы", "button_url": "/catalog/documenty"}],
+        ["counters", "", {"items": [{"value": "5", "suffix": "", "label": "приоритетных направлений"}, {"value": "100", "suffix": "+", "label": "целевых показателей"}, {"value": "2030", "suffix": "", "label": "горизонт планирования"}, {"value": "14", "suffix": "", "label": "регионов реализации"}]}],
+        ["stages", "", {"title": "Этапы реализации", "items": [{"title": "2024", "text": "Формирование системы показателей."}, {"title": "2025", "text": "Запуск приоритетных программ."}, {"title": "2026–2027", "text": "Масштабирование решений."}, {"title": "2028–2029", "text": "Оценка эффективности."}, {"title": "2030", "text": "Подведение итогов стратегии."}]}],
+        ["docs_list", "", {"title": "Материалы стратегии", "all_text": "Все документы", "all_url": "/catalog/documenty", "columns": 3, "items": [{"title": "Стратегия «Узбекистан–2030»", "meta": "PDF", "url": "/catalog/documenty"}, {"title": "План практических мероприятий", "meta": "PDF", "url": "/catalog/documenty"}, {"title": "Методика мониторинга показателей", "meta": "PDF", "url": "/catalog/documenty"}]}]
+      ]
+    }
+  }
+}
