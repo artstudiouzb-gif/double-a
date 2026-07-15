@@ -7,7 +7,6 @@
     --rich-border: var(--gov-border, #e5e9f0);
     --rich-surface: var(--gov-surface, #ffffff);
     --rich-tint: color-mix(in srgb, var(--rich-title) 5%, var(--rich-surface));
-    max-inline-size: 72ch;
     color: var(--rich-ink);
     font-family: var(--font-family, 'PT Sans', system-ui, -apple-system, 'Segoe UI', sans-serif);
     font-size: 1.025rem;
@@ -212,7 +211,7 @@ body.rich-content {
 }
 
 @media print {
-    :where(.rich-content) { max-inline-size: none; color: #000000; }
+    :where(.rich-content) { color: #000000; }
     :where(.rich-content) a { color: #000000; }
     :where(.rich-content) table { display: table; overflow: visible; }
     :where(.rich-content) pre { white-space: pre-wrap; }
