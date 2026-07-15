@@ -34,7 +34,7 @@ $sectionLabels = [
     '/admin/profile' => 'Профиль',
     '/admin/repository' => 'Хранилище',
     '/admin/backup' => 'Бэкапы',
-    '/admin/demo-content' => 'Демо-контент',
+    '/admin/settings/demo-content' => 'Демо-контент',
     '/admin/logout' => 'Выход',
 ];
 $sectionOf = static function (string $path) use ($sectionLabels): string {

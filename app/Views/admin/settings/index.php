@@ -212,6 +212,20 @@ require __DIR__ . '/../layout/header.php';
 </div>
 
 <div class="form-card" style="margin-top:24px;">
+    <h2 style="margin-top:0;">Демо-контент</h2>
+    <p class="form-hint">Наполнить сайт примерами: оформленная главная (hero, счётчики, направления, проекты, новости, медиа) с демо-изображениями, новости, документы, вакансии, тендеры, руководство, типовые страницы и меню. Существующие записи не дублируются, отредактированную главную не трогает — повторная загрузка безопасна.</p>
+    <form method="post" action="/admin/settings/demo-content" data-confirm="Загрузить демо-контент в разделы сайта?">
+        <?= Csrf::field() ?>
+        <div class="form-field" style="max-width:360px;">
+            <label for="demo_confirm_code">Код подтверждения</label>
+            <input type="text" id="demo_confirm_code" name="demo_confirm_code" required autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Введите DEMO">
+            <span class="form-hint">Для запуска введите <code>DEMO</code>.</span>
+        </div>
+        <button type="submit" class="btn btn--primary">Загрузить демо-контент</button>
+    </form>
+</div>
+
+<div class="form-card" style="margin-top:24px;">
     <h2 style="margin-top:0;">Резервное копирование</h2>
     <p class="form-hint">Скачать полный бэкап (дамп базы данных + загруженные файлы) одним архивом.</p>
     <form method="post" action="/admin/backup">

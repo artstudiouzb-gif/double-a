@@ -92,7 +92,6 @@ $router->post('/admin/profile/sessions/{id}/revoke', [\App\Controllers\Admin\Pro
 
 // --- Admin: дашборд ---
 $router->get('/admin', [DashboardController::class, 'index']);
-$router->post('/admin/demo-content', [DashboardController::class, 'seedDemo']);
 
 // --- Admin: массовые операции + быстрый поиск (этап 12.4) ---
 $router->post('/admin/bulk/{type}', [\App\Controllers\Admin\BulkController::class, 'handle']);
@@ -260,6 +259,7 @@ $router->get('/admin/design/preview', [\App\Controllers\Admin\DesignController::
 // --- Admin: настройки дизайна ---
 $router->get('/admin/settings', [SettingsController::class, 'index']);
 $router->post('/admin/settings', [SettingsController::class, 'update']);
+$router->post('/admin/settings/demo-content', [SettingsController::class, 'seedDemo']);
 
 // --- Admin: авто-публикация в соцсети (только супер-админ) ---
 $router->get('/admin/social', [\App\Controllers\Admin\SocialController::class, 'index']);

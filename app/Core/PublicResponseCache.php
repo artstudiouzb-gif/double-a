@@ -22,7 +22,7 @@ final class PublicResponseCache
         '/admin/content', '/admin/content-types', '/admin/menu', '/admin/header',
         '/admin/footer', '/admin/widgets', '/admin/design', '/admin/settings',
         '/admin/performance', '/admin/trash', '/admin/bulk',
-        '/admin/demo-content', '/admin/redirects', '/admin/languages',
+        '/admin/settings/demo-content', '/admin/redirects', '/admin/languages',
     ];
 
     public static function apply(string $template): void
