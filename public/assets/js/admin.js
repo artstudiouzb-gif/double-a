@@ -712,11 +712,19 @@
                 });
 
                 if (group.hasAttribute('data-sync-block-language')) {
-                    const current = new URL(window.location.href);
-                    if (current.searchParams.get('block_lang') !== target) {
-                        current.searchParams.set('block_lang', target);
-                        current.searchParams.delete('draft_saved');
-                        window.location.assign(current.toString());
+                    var search = window.location.search;
+                    var hasBlockLang = search.indexOf('block_lang=') !== -1;
+                    var param = 'block_lang=' + encodeURIComponent(target);
+                    var newSearch = '';
+                    if (hasBlockLang) {
+                        newSearch = search.replace(/block_lang=[^&]*/g, param);
+                    } else {
+                        newSearch = search ? (search + '&' + param) : ('?' + param);
+                    }
+                    newSearch = newSearch.replace(/[&?]draft_saved=[^&]*/g, '');
+                    newSearch = newSearch.replace(/&&+/g, '&').replace(/\?&/, '?').replace(/&$/, '');
+                    if (search !== newSearch) {
+                        window.location.assign(window.location.pathname + newSearch + window.location.hash);
                     }
                 }
             });

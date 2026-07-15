@@ -71,16 +71,7 @@ jobs:
           TEST_DB_PASSWORD: ''
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set +e
-          php tests/run.php > tests_output.log 2>&1
-          status=$?
-          set -e
-          cat tests_output.log
-          if [ $status -ne 0 ]; then
-            php_ver=$(echo "${{ matrix.php }}" | tr -d '.')
-            curl -H "Title: PHP ${{ matrix.php }}" --data-binary @tests_output.log "https://ntfy.sh/artstudio-ci-${{ github.run_id }}-$php_ver"
-            exit $status
-          fi
+          php tests/run.php
 
   static-analysis:
     name: Static analysis (PHPStan)

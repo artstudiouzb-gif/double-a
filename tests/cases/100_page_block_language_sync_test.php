@@ -16,6 +16,6 @@ test('page editor keeps page and block language tabs synchronized', function ():
     assert_contains('$code === $blockLang', $view);
     assert_contains("\$_GET['block_lang'] ?? \$_POST['block_lang']", $controller);
     assert_contains("/edit?block_lang=' . urlencode(\$blockLang)", $controller);
-    assert_contains("current.searchParams.set('block_lang', target)", $js);
-    assert_contains("window.location.assign(current.toString())", $js);
+    assert_contains("param = 'block_lang=' + encodeURIComponent(target)", $js);
+    assert_contains("window.location.assign(window.location.pathname + newSearch + window.location.hash)", $js);
 });
