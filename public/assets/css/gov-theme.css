@@ -1348,3 +1348,20 @@ button.catdetail__download { border: none; cursor: pointer; font-family: inherit
 .crumbs-print-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: inherit; font-size: inherit; font-weight: 600; padding: 0 4px; margin-left: auto; text-decoration: none; font-family: var(--font-family); opacity: 0.75; transition: opacity 0.15s ease; }
 .crumbs-print-btn:hover { opacity: 1; text-decoration: underline; }
 .crumbs-print-btn svg { display: inline-block; vertical-align: middle; }
+
+/* --- Тач-устройства: отключаем hover-подъёмы карточек и кнопок ---
+   На касание :hover срабатывает при тапе и «залипает» после возврата
+   со страницы — карточка остаётся приподнятой. Цвет/тень оставляем
+   (мигают безвредно), убираем только transform. Новые карточки уже
+   защищены блоком (hover:hover) and (pointer:fine) выше — здесь
+   покрываем старые правила этого файла и frontend.css. */
+@media (hover: none) {
+    .news-card:hover, .content-card:hover, .contact-card:hover, .cat-tile:hover,
+    .team-card:hover, .project-card:hover, .feature-card:hover,
+    .newsdetail-photos__item:hover, .album-card:hover, .site-cta:hover,
+    .block-cta a:hover, .block-partners__item:hover, .block-banner__button:hover,
+    .block-cta__button:hover, .site-footer__social-link:hover,
+    .block-hero__button:hover, .btn-cta:hover, .btn:hover,
+    .cms-columns__col .cms-block--cta .block-cta:hover,
+    .imgcard:hover .imgcard__media { transform: none; }
+}

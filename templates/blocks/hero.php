@@ -74,6 +74,14 @@ if ($heroHeight === 'custom' && preg_match('/^(\d+(?:\.\d+)?)(px|vh|dvh|rem)$/',
     $heroRootStyle .= '--hero-custom-height:' . $heightNumber . $heightUnit . ';';
 }
 ?>
+<?php if ($bgType === 'image' && $image !== ''): ?>
+    <?php /* Фон hero задан через CSS background-image — браузер узнаёт о нём
+             только после построения CSSOM, что затягивает LCP. Preload (валиден
+             в body) стартует загрузку сразу при парсинге; дубли браузер склеит. */ ?>
+    <link rel="preload" as="image" href="<?= htmlspecialchars($image, ENT_QUOTES) ?>" fetchpriority="high">
+<?php elseif ($bgType === 'video' && $videoFile !== '' && $image !== ''): ?>
+    <link rel="preload" as="image" href="<?= htmlspecialchars($image, ENT_QUOTES) ?>">
+<?php endif; ?>
 <div class="block-hero<?= $hasMedia ? ' block-hero--media' : '' ?><?= $heroBg !== '' ? ' block-hero--bgcolor' : '' ?><?= ($bgType === 'video' || $bgType === 'youtube') ? ' block-hero--video' : '' ?> block-hero--w-<?= $heroWidth ?> block-hero--h-<?= $heroHeight ?> block-hero--pos-<?= $textPos ?>"<?= $heroRootStyle !== '' ? ' style="' . $heroRootStyle . '"' : '' ?>>
     <?php if ($bgType === 'video' && $videoFile !== ''): ?>
         <video class="block-hero__video" autoplay muted loop playsinline preload="metadata"

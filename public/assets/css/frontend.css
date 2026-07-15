@@ -962,7 +962,8 @@ body.design-header-dark .site-burger, body.design-header-accent .site-burger { c
     --tint-6: color-mix(in srgb, var(--color-primary, #1f4b8e) 7%, var(--bg-primary));
     --shadow-primary: 0 14px 40px color-mix(in srgb, var(--color-primary, #1f4b8e) 16%, transparent);
 }
-html { scroll-behavior: smooth; }
+/* Плавная прокрутка только при отсутствии prefers-reduced-motion (WCAG). */
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 ::selection { background: color-mix(in srgb, var(--color-primary, #1f4b8e) 82%, #000); color: #fff; }
 /* Заголовочная гарнитура (Montserrat) — крупный корпоративный характер. */
 h1, h2, h3, h4, h5, h6,
