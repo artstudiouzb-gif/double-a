@@ -217,7 +217,12 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .block-hero__video, .block-hero--media .block-hero__media {
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
     background-size: cover; background-position: center;
+    /* Скелетон: пока фото/видео грузится, под ним navy, а не светлый фон. */
+    background-color: var(--gov-navy);
 }
+/* Гасим светлый градиент старой темы (frontend.css красил левый край
+   в --bg-primary) — в гос-теме читаемость текста обеспечивает navy-скрим. */
+.block-hero__media::after { background: none; }
 /* Фоновое видео — полностью незаметное: не кликается и без нативных контролов. */
 .block-hero__video { pointer-events: none; }
 .block-hero__video::-webkit-media-controls,
