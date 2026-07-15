@@ -131,10 +131,6 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             <?php if (!empty($news['badge'])): ?>
                 <span class="newsdetail__badge newsdetail__badge--onDark"><?= htmlspecialchars((string) $news['badge'], ENT_QUOTES) ?></span>
             <?php endif; ?>
-            <h1 class="newsdetail-phero__title"><?= htmlspecialchars((string) $news['title'], ENT_QUOTES) ?></h1>
-            <?php if (!empty($news['excerpt'])): ?>
-                <p class="newsdetail-phero__lead"><?= htmlspecialchars((string) $news['excerpt'], ENT_QUOTES) ?></p>
-            <?php endif; ?>
             <div class="newsdetail__meta newsdetail__meta--onDark">
                 <?php if ($dateLong !== ''): ?>
                     <span class="newsdetail__meta-item"><?= $eventIcons[0] ?><time datetime="<?= htmlspecialchars(substr($date, 0, 10), ENT_QUOTES) ?>"><?= htmlspecialchars($dateLong, ENT_QUOTES) ?></time></span>
@@ -144,6 +140,10 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
                     <span class="newsdetail__meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><?= number_format($views, 0, '', ' ') ?> <?= htmlspecialchars(t('просмотров'), ENT_QUOTES) ?></span>
                 <?php endif; ?>
             </div>
+            <h1 class="newsdetail-phero__title"><?= htmlspecialchars((string) $news['title'], ENT_QUOTES) ?></h1>
+            <?php if (!empty($news['excerpt'])): ?>
+                <p class="newsdetail-phero__lead"><?= htmlspecialchars((string) $news['excerpt'], ENT_QUOTES) ?></p>
+            <?php endif; ?>
             <?php if (!empty($news['source_note'])): ?>
                 <p class="newsdetail__source newsdetail__source--onDark"><?= htmlspecialchars((string) $news['source_note'], ENT_QUOTES) ?></p>
             <?php endif; ?>
@@ -161,10 +161,6 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
             <?php if (!empty($news['badge'])): ?>
                 <span class="newsdetail__badge"><?= htmlspecialchars((string) $news['badge'], ENT_QUOTES) ?></span>
             <?php endif; ?>
-            <h1 class="newsdetail__title"><?= htmlspecialchars((string) $news['title'], ENT_QUOTES) ?></h1>
-            <?php if (!empty($news['excerpt'])): ?>
-                <p class="newsdetail__lead"><?= htmlspecialchars((string) $news['excerpt'], ENT_QUOTES) ?></p>
-            <?php endif; ?>
             <div class="newsdetail__meta">
                 <?php if ($dateLong !== ''): ?>
                     <span class="newsdetail__meta-item"><?= $eventIcons[0] ?><time datetime="<?= htmlspecialchars(substr($date, 0, 10), ENT_QUOTES) ?>"><?= htmlspecialchars($dateLong, ENT_QUOTES) ?></time></span>
@@ -174,6 +170,10 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
                     <span class="newsdetail__meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><?= number_format($views, 0, '', ' ') ?> <?= htmlspecialchars(t('просмотров'), ENT_QUOTES) ?></span>
                 <?php endif; ?>
             </div>
+            <h1 class="newsdetail__title"><?= htmlspecialchars((string) $news['title'], ENT_QUOTES) ?></h1>
+            <?php if (!empty($news['excerpt'])): ?>
+                <p class="newsdetail__lead"><?= htmlspecialchars((string) $news['excerpt'], ENT_QUOTES) ?></p>
+            <?php endif; ?>
             <?php if (!empty($news['source_note'])): ?>
                 <p class="newsdetail__source"><?= htmlspecialchars((string) $news['source_note'], ENT_QUOTES) ?></p>
             <?php endif; ?>
