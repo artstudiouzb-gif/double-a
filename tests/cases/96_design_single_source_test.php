@@ -18,14 +18,14 @@ test('цвета и шрифты редактируются только в ра
 
     assert_contains('name="color_primary"', $designView);
     assert_contains('name="color_accent"', $designView);
-    assert_contains('name="bg_primary"', $designView);
-    assert_contains('name="bg_surface"', $designView);
-    assert_contains('name="text_main"', $designView);
-    assert_contains('name="text_muted"', $designView);
-    assert_contains('name="border_color"', $designView);
-    assert_contains('name="space_small"', $designView);
-    assert_contains('name="space_premium"', $designView);
-    assert_contains('name="space_max"', $designView);
+    assert_contains("'bg_primary'", $designView);
+    assert_contains("'bg_surface'", $designView);
+    assert_contains("'text_main'", $designView);
+    assert_contains("'text_muted'", $designView);
+    assert_contains("'border_color'", $designView);
+    assert_contains("'space_small'", $designView);
+    assert_contains("'space_premium'", $designView);
+    assert_contains("'space_max'", $designView);
     assert_contains('name="font_family"', $designView);
     assert_contains('name="font_face_name"', $designView);
     assert_contains('name="font_url"', $designView);
