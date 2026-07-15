@@ -213,7 +213,8 @@ final class PageController
         \App\Core\Cache::forgetPrefix('page:' . $id);
 
         Flash::success('Страница обновлена.');
-        header('Location: /admin/pages/' . $id . '/edit?draft_saved=page%3A' . $id);
+        $blockLang = $this->resolveBlockLang();
+        header('Location: /admin/pages/' . $id . '/edit?block_lang=' . urlencode($blockLang) . '&draft_saved=page%3A' . $id);
         exit;
     }
 
@@ -231,7 +232,7 @@ final class PageController
 
     private function resolveBlockLang(): string
     {
-        $lang = (string) ($_GET['block_lang'] ?? Language::defaultCode());
+        $lang = (string) ($_GET['block_lang'] ?? $_POST['block_lang'] ?? Language::defaultCode());
 
         return Language::isActive($lang) ? $lang : Language::defaultCode();
     }

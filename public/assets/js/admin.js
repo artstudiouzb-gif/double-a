@@ -710,6 +710,15 @@
                 panels.forEach(function (p) {
                     p.classList.toggle('is-active', p.getAttribute('data-lang-panel') === target);
                 });
+
+                if (group.hasAttribute('data-sync-block-language')) {
+                    const current = new URL(window.location.href);
+                    if (current.searchParams.get('block_lang') !== target) {
+                        current.searchParams.set('block_lang', target);
+                        current.searchParams.delete('draft_saved');
+                        window.location.assign(current.toString());
+                    }
+                }
             });
         });
     });

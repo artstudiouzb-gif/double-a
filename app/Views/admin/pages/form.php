@@ -74,15 +74,17 @@ foreach ($blocks as $b) {
     <?php endif; ?>
     <form method="post" action="<?= $action ?>" class="form-grid" data-content-draft="page:<?= $isEdit ? (int) $page['id'] : 'new' ?>" data-record-updated="<?= htmlspecialchars((string) ($page['updated_at'] ?? ''), ENT_QUOTES) ?>">
         <?= Csrf::field() ?>
+        <input type="hidden" name="block_lang" value="<?= htmlspecialchars($blockLang, ENT_QUOTES) ?>">
         <?php if ($isEdit): ?>
             <input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars((string) $page['updated_at'], ENT_QUOTES) ?>">
             <input type="hidden" name="expected_lock_version" value="<?= (int) ($page['lock_version'] ?? 1) ?>">
         <?php endif; ?>
 
-        <div data-lang-tabs>
+        <div data-lang-tabs<?= $isEdit ? ' data-sync-block-language' : '' ?>>
             <div class="lang-tabs">
                 <?php foreach ($languages as $i => $lang): ?>
-                    <button type="button" class="lang-tab-btn <?= $i === 0 ? 'is-active' : '' ?>" data-lang-target="<?= htmlspecialchars($lang['code'], ENT_QUOTES) ?>">
+                    <?php $langCode = (string) $lang['code']; $langActive = $isEdit ? $langCode === $blockLang : $i === 0; ?>
+                    <button type="button" class="lang-tab-btn <?= $langActive ? 'is-active' : '' ?>" data-lang-target="<?= htmlspecialchars($langCode, ENT_QUOTES) ?>">
                         <?= htmlspecialchars($lang['name'], ENT_QUOTES) ?>
                         <?php if ($lang['code'] === $defaultCode): ?><span class="lang-tab-btn__badge">(основной)</span><?php endif; ?>
                     </button>
@@ -90,8 +92,8 @@ foreach ($blocks as $b) {
             </div>
 
             <?php foreach ($languages as $i => $lang): ?>
-                <?php $code = (string) $lang['code']; $isDefault = $code === $defaultCode; ?>
-                <div class="lang-tab-panel <?= $i === 0 ? 'is-active' : '' ?>" data-lang-panel="<?= htmlspecialchars($code, ENT_QUOTES) ?>">
+                <?php $code = (string) $lang['code']; $isDefault = $code === $defaultCode; $langActive = $isEdit ? $code === $blockLang : $i === 0; ?>
+                <div class="lang-tab-panel <?= $langActive ? 'is-active' : '' ?>" data-lang-panel="<?= htmlspecialchars($code, ENT_QUOTES) ?>">
                     <?php if ($isDefault): ?>
                         <div class="form-field">
                             <label>Заголовок страницы</label>
