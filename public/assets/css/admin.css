@@ -406,6 +406,24 @@ body:has(.form-actions--sticky) .admin-main,
 body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 .form-actions--sticky .btn--primary { min-width: 132px; justify-content: center; }
 
+/* Сворачиваемая секция формы (details): второстепенные поля не шумят,
+   пока не понадобятся. Значения внутри закрытой секции отправляются как обычно. */
+.form-section { border: 1px solid var(--admin-border); border-radius: var(--admin-radius); background: var(--admin-surface-soft); }
+.form-section > summary {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    cursor: pointer; font-weight: 600; font-size: 13px; list-style: none; user-select: none;
+}
+.form-section > summary::-webkit-details-marker { display: none; }
+.form-section > summary::before {
+    content: ''; flex-shrink: 0; width: 7px; height: 7px; margin-top: -3px;
+    border-right: 2px solid var(--admin-muted); border-bottom: 2px solid var(--admin-muted);
+    transform: rotate(-45deg); transition: transform .15s ease;
+}
+.form-section[open] > summary::before { transform: rotate(45deg); margin-top: -5px; }
+.form-section > summary:hover { color: var(--admin-accent); }
+.form-section__hint { font-weight: 400; font-size: 12px; color: var(--admin-muted); }
+.form-section__body { display: flex; flex-direction: column; gap: 18px; padding: 6px 16px 16px; }
+
 .settings-group { border: 1px solid var(--admin-border); border-radius: var(--admin-radius-lg); padding: 22px; margin: 20px 0; background: var(--admin-surface-soft); }
 .settings-group > legend { padding: 0 10px; font-size: 14px; font-weight: 700; color: var(--admin-text); }
 
@@ -627,7 +645,7 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .admin-sidebar, .admin-sidebar-backdrop, .admin-sidebar__collapse svg, .form-actions--sticky, .btn, .stat-card { transition: none; }
+    .admin-sidebar, .admin-sidebar-backdrop, .admin-sidebar__collapse svg, .form-actions--sticky, .btn, .stat-card, .form-section > summary::before { transition: none; }
     .stat-card:hover { transform: none; }
 }
 

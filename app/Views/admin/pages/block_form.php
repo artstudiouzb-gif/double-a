@@ -970,6 +970,12 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             <div class="form-field"><label for="button_url">Кнопка — ссылка</label><input type="text" id="button_url" name="button_url" value="<?= htmlspecialchars($data['button_url'] ?? '', ENT_QUOTES) ?>" placeholder="https://maps.google.com/?daddr=..."></div>
         <?php endif; ?>
 
+        <?php // Общие поля оформления свёрнуты: контент-поля — основная задача,
+              // а отступы/фон/анимация нужны эпизодически (значения внутри
+              // закрытого details всё равно отправляются с формой). ?>
+        <details class="form-section">
+            <summary>Оформление секции <span class="form-section__hint">отступы, фон, анимация появления</span></summary>
+            <div class="form-section__body">
         <?php $spacing = $data['_spacing'] ?? 'premium'; ?>
         <div class="form-field">
             <label for="spacing">Вертикальные отступы («воздух»)</label>
@@ -1042,8 +1048,13 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 <?php endforeach; ?>
             </select>
         </div>
+            </div>
+        </details>
 
         <?php if (\App\Core\Auth::isSuperAdmin()): ?>
+        <details class="form-section">
+            <summary>Дополнительно <span class="form-section__hint">собственный CSS блока</span></summary>
+            <div class="form-section__body">
         <div class="form-field">
             <label for="custom_css">Собственный CSS блока</label>
             <textarea id="custom_css" name="custom_css" style="min-height:140px; font-family: monospace;"><?= htmlspecialchars($block['custom_css'] ?? '', ENT_QUOTES) ?></textarea>
@@ -1053,6 +1064,8 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 Пример: <code>h2 { color: red; }</code> → <code>#block-<?= (int) $block['id'] ?> h2 { color: red; }</code>.
             </span>
         </div>
+            </div>
+        </details>
         <?php else: ?>
             <?php /* Редактор не может менять кастомный CSS — сохраняем прежнее значение. */ ?>
             <input type="hidden" name="custom_css" value="<?= htmlspecialchars($block['custom_css'] ?? '', ENT_QUOTES) ?>">
