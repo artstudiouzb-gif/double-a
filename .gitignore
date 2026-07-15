@@ -15,3 +15,6 @@
 /node_modules/
 /playwright-report/
 /test-results/
+
+# Локальные настройки Claude Code (сессионные, не для репозитория)
+/.claude/
