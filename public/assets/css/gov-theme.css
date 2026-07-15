@@ -6,6 +6,7 @@
    ========================================================================== */
 
 :root {
+    color-scheme: light;
     --gov-bg: #f4f6f9;
     --gov-surface: #ffffff;
     --gov-border: #e5e9f0;
@@ -23,6 +24,7 @@
 }
 :root[data-theme="dark"] {
     /* Мягкая тёмная тема — тёмно-синий сланец вместо почти чёрного. */
+    color-scheme: dark;
     --gov-bg: #172231;
     --gov-surface: #212f45;
     --gov-border: #34445d;
