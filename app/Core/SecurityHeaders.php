@@ -73,8 +73,9 @@ final class SecurityHeaders
     {
         return "default-src 'self'; "
             . "img-src 'self' data:; "
-            . "style-src 'self' 'unsafe-inline'; "
-            . "script-src 'self' 'nonce-{$nonce}'; "
+            // TinyMCE и его языковой пакет подключаются только в админ-редакторе.
+            . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            . "script-src 'self' 'nonce-{$nonce}' https://cdn.jsdelivr.net; "
             . "font-src 'self' data:; "
             . "connect-src 'self'; "
             . "object-src 'none'; "

@@ -15,9 +15,10 @@ test('SecurityHeaders::nonce: стабилен в запросе, URL-safe base6
     assert_true((bool) preg_match('/^[A-Za-z0-9_-]+$/', $n1), 'без спецсимволов');
 });
 
-test('adminCsp: скрипты только self+nonce, без unsafe-inline', function () {
+test('adminCsp: TinyMCE разрешён с CDN, unsafe-inline для скриптов отключён', function () {
     $csp = SecurityHeaders::adminCsp('testnonce');
-    assert_contains("script-src 'self' 'nonce-testnonce'", $csp);
+    assert_contains("script-src 'self' 'nonce-testnonce' https://cdn.jsdelivr.net", $csp);
+    assert_contains("style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net", $csp);
     assert_true(!str_contains($csp, "script-src 'self' 'unsafe-inline'"), 'unsafe-inline для скриптов убран');
     assert_contains("object-src 'none'", $csp);
     assert_contains("frame-ancestors 'self'", $csp);
