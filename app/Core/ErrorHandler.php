@@ -42,6 +42,10 @@ final class ErrorHandler
         // Полный стек — в файл; в Telegram уходит компактное сообщение + контекст.
         Logger::log('error', $concise . ' in ' . $e->getFile() . ':' . $e->getLine()
             . PHP_EOL . 'Stack trace:' . PHP_EOL . $e->getTraceAsString(), 'ERROR');
+        // Журнал ошибок в панели (понятное объяснение + 7 дней хранения).
+        if (defined('APP_INSTALLED') && APP_INSTALLED) {
+            \App\Models\ErrorLog::record('ERROR', $concise, $e->getFile(), $e->getLine());
+        }
         \App\Core\TelegramNotifier::send('ERROR', $concise, [
             'file' => $e->getFile(),
             'line' => $e->getLine(),
@@ -67,6 +71,9 @@ final class ErrorHandler
             'line' => $error['line'],
             'url' => $_SERVER['REQUEST_URI'] ?? 'cli',
         ]);
+        if (defined('APP_INSTALLED') && APP_INSTALLED) {
+            \App\Models\ErrorLog::record('CRITICAL', $error['message'], (string) $error['file'], (int) $error['line']);
+        }
 
         self::renderErrorPage(new \ErrorException(
             $error['message'],

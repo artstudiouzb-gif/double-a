@@ -209,6 +209,8 @@ $router->post('/admin/trash/{type}/{id}/force-delete', [\App\Controllers\Admin\T
 
 // --- Admin: пользователи (только супер-администратор) ---
 $router->get('/admin/audit', [\App\Controllers\Admin\AuditController::class, 'index']);
+$router->get('/admin/audit/errors', [\App\Controllers\Admin\AuditController::class, 'errors']);
+$router->post('/admin/audit/errors/clear', [\App\Controllers\Admin\AuditController::class, 'errorsClear']);
 $router->get('/admin/subscribers', [\App\Controllers\Admin\SubscriberController::class, 'index']);
 $router->post('/admin/subscribers/{id}/delete', [\App\Controllers\Admin\SubscriberController::class, 'destroy']);
 $router->get('/admin/albums', [\App\Controllers\Admin\AlbumController::class, 'index']);

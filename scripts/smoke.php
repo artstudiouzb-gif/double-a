@@ -193,7 +193,7 @@ if ($adminCreds !== null) {
             '/admin', '/admin/news', '/admin/pages', '/admin/projects', '/admin/albums',
             '/admin/videos', '/admin/team', '/admin/forms', '/admin/languages', '/admin/menu', '/admin/header',
             '/admin/footer', '/admin/performance', '/admin/widgets', '/admin/trash',
-            '/admin/audit', '/admin/subscribers', '/admin/redirects', '/admin/users',
+            '/admin/audit', '/admin/audit/errors', '/admin/subscribers', '/admin/redirects', '/admin/users',
             '/admin/design', '/admin/settings', '/admin/social', '/admin/webhooks',
             '/admin/files', '/admin/repository', '/admin/profile',
         ];

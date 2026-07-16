@@ -514,6 +514,23 @@ CREATE TABLE IF NOT EXISTS audit_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- Журнал ошибок сайта (хранение 7 дней либо ручная очистка из панели)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS error_log (
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    level      VARCHAR(10) NOT NULL DEFAULT 'ERROR',
+    human      VARCHAR(500) NOT NULL DEFAULT '',
+    message    TEXT NOT NULL,
+    file       VARCHAR(500) NOT NULL DEFAULT '',
+    line       INT UNSIGNED NOT NULL DEFAULT 0,
+    url        VARCHAR(500) NOT NULL DEFAULT '',
+    ip         VARCHAR(45) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_error_created (created_at),
+    KEY idx_error_level (level, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- Менеджер 301/302-редиректов: переезд со старого сайта без потери ссылок
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS redirects (
@@ -842,7 +859,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_12_videos.sql'),
     ('2026_07_13_content_revisions.sql'),
     ('2026_07_13_content_locking.sql'),
-    ('2026_07_13_encrypt_secrets.sql')
+    ('2026_07_13_encrypt_secrets.sql'),
+    ('2026_07_16_error_log.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -58,6 +58,11 @@ $qs = static function (int $p) use ($filters): string {
     return $params === [] ? '/admin/audit' : '/admin/audit?' . http_build_query($params);
 };
 ?>
+<div style="display:flex;gap:8px;margin-bottom:14px;">
+    <a class="btn btn--small btn--primary" href="/admin/audit">Действия администраторов</a>
+    <a class="btn btn--small" href="/admin/audit/errors">Ошибки сайта</a>
+</div>
+
 <p class="form-hint">Все изменяющие действия администраторов в панели: кто, что, когда и с какого IP. Входы/выходы и события безопасности дополнительно пишутся в security-лог. Записи старше 180 дней удаляются автоматически.</p>
 
 <form method="get" action="/admin/audit" class="form-grid form-grid--inline" style="margin-bottom:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
