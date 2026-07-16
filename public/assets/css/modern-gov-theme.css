@@ -368,6 +368,11 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 .block-hero__button { text-transform: none; letter-spacing: 0; border-radius: var(--btn-radius); }
 .block-hero__button--ghost { border: 1.5px solid rgba(255,255,255,.4) !important; background: transparent !important; }
 .block-hero__button--ghost:hover { background: rgba(255,255,255,.08) !important; border-color: #fff !important; }
+/* Своя ширина текста hero (--hero-text-width) на телефонах игнорируется,
+   иначе 50vw и подобные значения сжимают текст в узкий столбик. */
+@media (max-width: 720px) {
+    .block-hero .block-hero__text { max-width: none; }
+}
 
 /* --- Подвал сайта --- */
 .site-footer--columns {

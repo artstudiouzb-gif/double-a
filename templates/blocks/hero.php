@@ -67,6 +67,17 @@ $btn2Url = trim((string) ($data['button2_url'] ?? ''));
 $vBtnText = trim((string) ($data['video_button_text'] ?? ''));
 $vBtnUrl = trim((string) ($data['video_button_url'] ?? ''));
 
+// Своя ширина текстовой колонки: px (200–2000) или %/vw (10–100).
+// Пусто/невалидно — ширина темы (560/620px). Отдаётся CSS-переменной.
+$textWidth = (string) ($data['text_width'] ?? '');
+if ($textWidth !== '' && preg_match('/^(\d+(?:\.\d+)?)(px|%|vw)$/', $textWidth, $twParts)) {
+    $twValue = (float) $twParts[1];
+    $twLimits = $twParts[2] === 'px' ? [200.0, 2000.0] : [10.0, 100.0];
+    $twValue = max($twLimits[0], min($twLimits[1], $twValue));
+    $twNumber = rtrim(rtrim(number_format($twValue, 1, '.', ''), '0'), '.');
+    $heroRootStyle .= '--hero-text-width:' . $twNumber . $twParts[2] . ';';
+}
+
 $heroWidth = ($data['width'] ?? 'full') === 'standard' ? 'standard' : 'full';
 $heroHeight = in_array($data['height'] ?? 'regular', ['regular', 'full', 'custom'], true) ? $data['height'] : 'regular';
 $customHeight = (string) ($data['custom_height'] ?? '720px');

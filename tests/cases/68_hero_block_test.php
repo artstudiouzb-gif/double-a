@@ -70,3 +70,15 @@ test('Hero: небезопасная произвольная высота не 
     assert_true(str_contains($html, 'block-hero--h-custom'), 'режим сохраняется');
     assert_true(!str_contains($html, 'background:red'), 'CSS-инъекция отброшена');
 });
+
+test('Hero: своя ширина текста отдаётся переменной, мусор отбрасывается', function () {
+    $html = render_hero(['title' => 'X', 'image' => '/uploads/public/x.jpg', 'text_width' => '50vw']);
+    assert_true(str_contains($html, '--hero-text-width:50vw'), 'переменная ширины текста');
+
+    $html = render_hero(['title' => 'X', 'text_width' => '5000px']);
+    assert_true(str_contains($html, '--hero-text-width:2000px'), 'px ограничивается лимитом');
+
+    $html = render_hero(['title' => 'X', 'text_width' => '50vw;background:red']);
+    assert_true(!str_contains($html, 'background:red'), 'CSS-инъекция отброшена');
+    assert_true(!str_contains($html, '--hero-text-width'), 'невалидное значение не выводится');
+});

@@ -514,6 +514,23 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                     <option value="right" <?= $tp === 'right' ? 'selected' : '' ?>>Справа</option>
                 </select>
             </div>
+            <?php
+            preg_match('/^(\d+(?:\.\d+)?)(px|%|vw)$/', (string) ($data['text_width'] ?? ''), $twParts);
+            $twValue = $twParts[1] ?? '';
+            $twUnit = $twParts[2] ?? 'px';
+            ?>
+            <div class="form-field">
+                <label for="text_width_value">Ширина текстовой колонки</label>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px;">
+                    <input type="number" id="text_width_value" name="text_width_value" min="10" max="2000" step="0.1" value="<?= htmlspecialchars($twValue, ENT_QUOTES) ?>" placeholder="по теме (620)">
+                    <select id="text_width_unit" name="text_width_unit" aria-label="Единица ширины">
+                        <?php foreach (['px' => 'px', '%' => '%', 'vw' => 'vw'] as $unit => $label): ?>
+                            <option value="<?= $unit ?>" <?= $twUnit === $unit ? 'selected' : '' ?>><?= $label ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <span class="form-hint">Максимальная ширина блока с заголовком и текстом: 200–2000 px или 10–100 %/vw (например, 50 vw — половина экрана). Пусто — ширина темы. На телефонах ограничение не применяется.</span>
+            </div>
             <div class="colorfield-row">
                 <?= \App\Core\AdminUi::colorField('text_color', $data['text_color'] ?? '', 'Цвет текста', '#ffffff', 'Авто (белый на фото, тёмный без фона)') ?>
                 <?= \App\Core\AdminUi::colorField('button_color', $data['button_color'] ?? '', 'Цвет кнопок', '#173a63', 'По умолчанию') ?>

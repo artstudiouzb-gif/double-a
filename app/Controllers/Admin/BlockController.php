@@ -605,6 +605,16 @@ final class BlockController
                     : ($heightUnit === 'rem' ? [10.0, 120.0] : [20.0, 150.0]);
                 $heightValue = max($heightLimits[0], min($heightLimits[1], $heightValue));
                 $heightNumber = rtrim(rtrim(number_format($heightValue, 1, '.', ''), '0'), '.');
+                // Ширина текстовой колонки: пусто — по теме; px 200–2000, %/vw 10–100.
+                $textWidth = '';
+                if (is_numeric($_POST['text_width_value'] ?? null)) {
+                    $twUnit = in_array($_POST['text_width_unit'] ?? 'px', ['px', '%', 'vw'], true)
+                        ? (string) $_POST['text_width_unit']
+                        : 'px';
+                    $twLimits = $twUnit === 'px' ? [200.0, 2000.0] : [10.0, 100.0];
+                    $twValue = max($twLimits[0], min($twLimits[1], (float) $_POST['text_width_value']));
+                    $textWidth = rtrim(rtrim(number_format($twValue, 1, '.', ''), '0'), '.') . $twUnit;
+                }
                 return [
                     'title' => TextProcessor::typographPlain(trim((string) ($_POST['title_field'] ?? '')), $locale),
                     'width' => ($_POST['hero_width'] ?? 'full') === 'standard' ? 'standard' : 'full',
@@ -619,6 +629,7 @@ final class BlockController
                     'overlay_color' => $hexColor(trim((string) ($_POST['overlay_color'] ?? '')), '#0b1a30'),
                     'overlay_opacity' => $pct($_POST['overlay_opacity'] ?? null, 55),
                     'text_position' => in_array($_POST['text_position'] ?? 'left', ['left', 'center', 'right'], true) ? $_POST['text_position'] : 'left',
+                    'text_width' => $textWidth,
                     'text_color' => empty($_POST['text_color_off']) ? self::hexOrEmpty($_POST['text_color'] ?? '') : '',
                     'button_color' => empty($_POST['button_color_off']) ? self::hexOrEmpty($_POST['button_color'] ?? '') : '',
                     'bg_color' => empty($_POST['bg_color_off']) ? self::hexOrEmpty($_POST['bg_color'] ?? '') : '',
