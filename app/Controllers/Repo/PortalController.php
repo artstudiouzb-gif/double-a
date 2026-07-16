@@ -144,8 +144,7 @@ final class PortalController
                 $_SESSION['repo_totp_setup_secret'] = TOTP::generateSecret();
             }
             $setupSecret = $_SESSION['repo_totp_setup_secret'];
-            $issuer = (string) (Config::get('app.url') ?: 'ArtStudio');
-            $otpauthUri = TOTP::provisioningUri($setupSecret, (string) $user['username'], 'Файловый портал');
+            $otpauthUri = TOTP::provisioningUri($setupSecret, (string) $user['username'], self::totpIssuer());
         }
 
         View::render('repo/security', [
@@ -166,11 +165,10 @@ final class PortalController
         $code = preg_replace('/\s+/', '', (string) ($_POST['code'] ?? ''));
 
         if (!$secret || !TOTP::verify((string) $secret, (string) $code)) {
-            $issuer = (string) (Config::get('app.url') ?: 'ArtStudio');
             View::render('repo/security', [
                 'repoUser' => $user,
                 'setupSecret' => $secret,
-                'otpauthUri' => $secret ? TOTP::provisioningUri((string) $secret, (string) $user['username'], 'Файловый портал') : null,
+                'otpauthUri' => $secret ? TOTP::provisioningUri((string) $secret, (string) $user['username'], self::totpIssuer()) : null,
                 'error' => 'Неверный код. Убедитесь, что время на устройстве синхронизировано.',
             ]);
             return;
@@ -181,6 +179,18 @@ final class PortalController
         Flash::success('Двухфакторная аутентификация включена.');
         header('Location: /repo/security');
         exit;
+    }
+
+    /**
+     * Issuer для otpauth-URI. Только короткий ASCII (домен сайта): кириллица
+     * раздувает URI percent-кодированием втрое и не помещается в компактный
+     * QR-генератор (QrCode, максимум ~108 байт).
+     */
+    private static function totpIssuer(): string
+    {
+        $host = (string) (parse_url((string) Config::get('app.url'), PHP_URL_HOST) ?: '');
+
+        return $host !== '' && preg_match('/^[\x21-\x7E]{1,40}$/', $host) ? $host : 'Portal';
     }
 
     public function disableTotp(): void

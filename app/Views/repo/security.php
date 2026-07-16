@@ -27,11 +27,20 @@ require __DIR__ . '/layout/top.php';
         </form>
     <?php else: ?>
         <p><span class="repo-badge repo-badge--muted">Выключена</span> Рекомендуем включить для дополнительной защиты доступа.</p>
+        <?php
+        // Страховка: при слишком длинном URI (например, очень длинный логин)
+        // показываем только ручной ключ вместо ошибки 500.
+        $qrSvg = '';
+        try {
+            $qrSvg = QrCode::svg((string) $otpauthUri, 4);
+        } catch (\Throwable) {
+        }
+        ?>
         <div class="repo-qr">
-            <div class="repo-qr__code"><?= QrCode::svg((string) $otpauthUri, 4) ?></div>
+            <?php if ($qrSvg !== ''): ?><div class="repo-qr__code"><?= $qrSvg ?></div><?php endif; ?>
             <div>
-                <p>1. Отсканируйте QR-код приложением (Google Authenticator, Aegis, 1Password и т.п.).</p>
-                <p>2. Или введите ключ вручную: <span class="repo-secret"><?= htmlspecialchars((string) $setupSecret, ENT_QUOTES) ?></span></p>
+                <p>1. <?= $qrSvg !== '' ? 'Отсканируйте QR-код приложением (Google Authenticator, Aegis, 1Password и т.п.).' : 'Добавьте ключ в приложение-аутентификатор (Google Authenticator, Aegis, 1Password и т.п.).' ?></p>
+                <p>2. <?= $qrSvg !== '' ? 'Или введите ключ вручную:' : 'Ключ для ручного ввода:' ?> <span class="repo-secret"><?= htmlspecialchars((string) $setupSecret, ENT_QUOTES) ?></span></p>
                 <p>3. Введите текущий 6-значный код для подтверждения:</p>
                 <form method="post" action="/repo/security/2fa/enable" style="max-width:280px;">
                     <?= Csrf::field() ?>
