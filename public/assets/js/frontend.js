@@ -375,3 +375,137 @@
             });
         });
     })();
+
+    // Лайтбокс: фото (альбомы, блок-галерея, фотолента новости, медиа-карточки)
+    // и видео YouTube (карточки на главной/страницах, «Смотреть видео» в новостях).
+    (function () {
+        var IMG_RE = /\.(jpe?g|png|gif|webp|avif)(\?.*)?$/i;
+        var PHOTO_SCOPES = '.album-photos, .block-gallery__grid, .newsdetail-photos__grid, .mediagallery-grid';
+
+        function ytId(url) {
+            var patterns = [
+                /youtu\.be\/([\w-]{11})/,
+                /youtube\.com\/watch\?[^\s]*v=([\w-]{11})/,
+                /youtube\.com\/embed\/([\w-]{11})/,
+                /youtube\.com\/shorts\/([\w-]{11})/
+            ];
+            for (var i = 0; i < patterns.length; i++) {
+                var m = String(url || '').match(patterns[i]);
+                if (m) { return m[1]; }
+            }
+            return null;
+        }
+
+        var box = null, stage = null, captionEl = null, prevBtn = null, nextBtn = null;
+        var items = [], index = 0, lastFocus = null;
+
+        function ensure() {
+            if (box) { return; }
+            box = document.createElement('div');
+            box.className = 'cms-lightbox';
+            box.setAttribute('role', 'dialog');
+            box.setAttribute('aria-modal', 'true');
+            box.setAttribute('aria-label', 'Просмотр медиа');
+            box.innerHTML =
+                '<button type="button" class="cms-lightbox__close" aria-label="Закрыть">&times;</button>' +
+                '<button type="button" class="cms-lightbox__nav cms-lightbox__nav--prev" aria-label="Предыдущее">&#10094;</button>' +
+                '<div class="cms-lightbox__stage"></div>' +
+                '<button type="button" class="cms-lightbox__nav cms-lightbox__nav--next" aria-label="Следующее">&#10095;</button>' +
+                '<div class="cms-lightbox__caption"></div>';
+            document.body.appendChild(box);
+            stage = box.querySelector('.cms-lightbox__stage');
+            captionEl = box.querySelector('.cms-lightbox__caption');
+            prevBtn = box.querySelector('.cms-lightbox__nav--prev');
+            nextBtn = box.querySelector('.cms-lightbox__nav--next');
+
+            box.querySelector('.cms-lightbox__close').addEventListener('click', close);
+            box.addEventListener('click', function (e) {
+                if (e.target === box || e.target === stage) { close(); }
+            });
+            prevBtn.addEventListener('click', function () { go(-1); });
+            nextBtn.addEventListener('click', function () { go(1); });
+            document.addEventListener('keydown', function (e) {
+                if (!box.classList.contains('is-open')) { return; }
+                if (e.key === 'Escape') { close(); }
+                if (e.key === 'ArrowLeft') { go(-1); }
+                if (e.key === 'ArrowRight') { go(1); }
+            });
+        }
+
+        function render() {
+            var item = items[index];
+            if (!item) { return; }
+            if (item.type === 'video') {
+                stage.innerHTML = '<iframe class="cms-lightbox__video" src="https://www.youtube-nocookie.com/embed/'
+                    + item.id + '?rel=0&modestbranding=1&autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="Видео"></iframe>';
+            } else {
+                var img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.caption || '';
+                stage.innerHTML = '';
+                stage.appendChild(img);
+            }
+            captionEl.textContent = item.caption || '';
+            captionEl.hidden = !item.caption;
+            var many = items.length > 1;
+            prevBtn.hidden = !many;
+            nextBtn.hidden = !many;
+        }
+
+        function open(list, i, trigger) {
+            ensure();
+            items = list;
+            index = i;
+            lastFocus = trigger || document.activeElement;
+            render();
+            box.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            box.querySelector('.cms-lightbox__close').focus();
+        }
+
+        function close() {
+            if (!box) { return; }
+            box.classList.remove('is-open');
+            stage.innerHTML = ''; // останавливает видео
+            document.body.style.overflow = '';
+            if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+        }
+
+        function go(step) {
+            if (items.length < 2) { return; }
+            index = (index + step + items.length) % items.length;
+            render();
+        }
+
+        document.addEventListener('click', function (e) {
+            var a = e.target.closest('a[href]');
+            if (!a || e.defaultPrevented) { return; }
+            var href = a.getAttribute('href') || '';
+
+            // Видео YouTube — в лайтбокс на любой публичной странице.
+            var id = ytId(href);
+            if (id) {
+                e.preventDefault();
+                open([{ type: 'video', id: id }], 0, a);
+                return;
+            }
+
+            // Фото: только в известных контейнерах, группой с листанием.
+            var scope = a.closest(PHOTO_SCOPES);
+            if (!scope || !IMG_RE.test(href)) { return; }
+            var links = Array.prototype.filter.call(scope.querySelectorAll('a[href]'), function (el) {
+                return IMG_RE.test(el.getAttribute('href') || '');
+            });
+            var list = links.map(function (el) {
+                var fig = el.closest('figure');
+                var cap = fig ? fig.querySelector('figcaption') : null;
+                return {
+                    type: 'image',
+                    src: el.getAttribute('href'),
+                    caption: (cap && cap.textContent) || el.getAttribute('aria-label') || (el.querySelector('img') && el.querySelector('img').alt) || ''
+                };
+            });
+            e.preventDefault();
+            open(list, Math.max(0, links.indexOf(a)), a);
+        });
+    })();

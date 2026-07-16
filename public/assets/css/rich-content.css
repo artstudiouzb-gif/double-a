@@ -184,14 +184,6 @@
     font-weight: 500;
 }
 
-body.rich-content {
-    box-sizing: border-box;
-    min-block-size: 100%;
-    margin: 0 auto;
-    padding: 24px;
-    background: #ffffff;
-}
-
 @media (max-width: 720px) {
     :where(.rich-content) { font-size: 1rem; }
     :where(.rich-content) h2 { font-size: 1.5rem; }

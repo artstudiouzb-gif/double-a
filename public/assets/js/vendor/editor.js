@@ -55,12 +55,10 @@
                     'bold italic underline strikethrough | subscript superscript | blockquote | alignleft aligncenter ' +
                     'alignright alignjustify | bullist numlist outdent indent | ' +
                     'link image table | removeformat code fullscreen',
-                body_class: 'rich-content',
-                content_css: [
-                    '/assets/css/fonts.css',
-                    '/assets/css/gov-fonts.css',
-                    '/assets/css/rich-content.css'
-                ],
+                // Стандартный вид редактора. Дефолтный content.css TinyMCE 6
+                // зажимает текст узкой колонкой (body { max-width; margin auto })
+                // — снимаем, чтобы контент занимал всю ширину окна.
+                content_style: 'body { max-width: none; margin: 1rem; }',
                 setup: function (editor) {
                     editor.on('change input blur', function () {
                         editor.save(); // Synchronizes TinyMCE content back to the textarea

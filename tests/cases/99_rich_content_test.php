@@ -34,11 +34,10 @@ test('rich content stylesheet covers editorial elements and responsive tables', 
     assert_contains("Asset::url('/assets/css/rich-content.css')", $header);
 });
 
-test('TinyMCE previews the public editorial stylesheet', function (): void {
+test('TinyMCE: стандартный вид без узкой колонки и без редакционных стилей', function (): void {
     $editor = file_get_contents(dirname(__DIR__, 2) . '/public/assets/js/vendor/editor.js');
 
     assert_true(is_string($editor));
-    assert_contains("body_class: 'rich-content'", $editor);
-    assert_contains("'/assets/css/rich-content.css'", $editor);
-    assert_contains("'/assets/css/gov-fonts.css'", $editor);
+    assert_false(str_contains($editor, 'rich-content'), 'редакционные стили убраны из редактора');
+    assert_contains('max-width: none', $editor);
 });

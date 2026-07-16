@@ -26,12 +26,13 @@ AssetCollector::requireJs('news');
 
 require __DIR__ . '/_header.php';
 
+// Крошки: у премиум-макета рендерятся внутри hero (см. ниже), у остальных —
+// обычной полосой перед статьёй.
 $crumbs = [
     ['label' => t('Главная'), 'url' => Locale::url('/')],
     ['label' => t('Новости'), 'url' => Locale::url('news')],
     ['label' => (string) $news['title']],
 ];
-require __DIR__ . '/_crumbs.php';
 
 $date = (string) ($news['published_at'] ?? '');
 $dateLong = $date !== '' ? DateFormatter::long($date, $lang) : '';
@@ -122,12 +123,17 @@ $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, 
                 </div>
             </div>
 <?php };
+
+if (!$isPremium) {
+    require __DIR__ . '/_crumbs.php';
+}
 ?>
 <article class="newsdetail<?= $isPremium ? ' newsdetail--premium' : '' ?>">
     <?php if ($isPremium): ?>
     <div class="newsdetail-phero"<?= $cover !== '' ? ' style="background-image:url(\'' . htmlspecialchars($cover, ENT_QUOTES) . '\')"' : '' ?>>
         <span class="newsdetail-phero__overlay"></span>
         <div class="newsdetail-phero__body">
+            <?php require __DIR__ . '/_crumbs.php'; ?>
             <?php if (!empty($news['badge'])): ?>
                 <span class="newsdetail__badge newsdetail__badge--onDark"><?= htmlspecialchars((string) $news['badge'], ENT_QUOTES) ?></span>
             <?php endif; ?>
