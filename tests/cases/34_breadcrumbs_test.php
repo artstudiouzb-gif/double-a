@@ -51,6 +51,10 @@ test('Хлебные крошки: рендерит навигацию со сс
     assert_contains('<span>Current</span>', $html);
     // Текущий элемент не должен быть ссылкой.
     assert_not_contains('href="/current"', $html);
+    // SEO: та же навигация в разметке Schema.org BreadcrumbList.
+    assert_contains('application/ld+json', $html);
+    assert_contains('BreadcrumbList', $html);
+    assert_contains('"position":3', $html);
 });
 
 test('Хлебные крошки: скрываются при менее чем двух уровнях', function () {

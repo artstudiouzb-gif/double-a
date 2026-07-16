@@ -426,9 +426,26 @@
             nextBtn.addEventListener('click', function () { go(1); });
             document.addEventListener('keydown', function (e) {
                 if (!box.classList.contains('is-open')) { return; }
-                if (e.key === 'Escape') { close(); }
-                if (e.key === 'ArrowLeft') { go(-1); }
-                if (e.key === 'ArrowRight') { go(1); }
+                if (e.key === 'Escape') { close(); return; }
+                if (e.key === 'ArrowLeft') { go(-1); return; }
+                if (e.key === 'ArrowRight') { go(1); return; }
+                // Focus-trap: Tab не выпускает фокус за пределы модалки (WCAG 2.4.3).
+                if (e.key === 'Tab') {
+                    var focusable = Array.prototype.filter.call(
+                        box.querySelectorAll('button:not([hidden]), a[href], iframe'),
+                        function (el) { return el.offsetParent !== null; }
+                    );
+                    if (!focusable.length) { return; }
+                    var first = focusable[0];
+                    var last = focusable[focusable.length - 1];
+                    if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
             });
         }
 

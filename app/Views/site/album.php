@@ -8,15 +8,15 @@ use App\Core\Locale;
 $metaTitle = (string) $album['title'];
 $metaDescription = mb_substr(trim((string) ($album['description'] ?? '')), 0, 160);
 require __DIR__ . '/_header.php';
+
+$crumbs = [
+    ['label' => t('Главная'), 'url' => Locale::url('/')],
+    ['label' => t('Фотоальбомы'), 'url' => Locale::url('albums')],
+    ['label' => (string) $album['title']],
+];
 ?>
 <div class="content-list">
-    <nav class="content-crumbs" aria-label="<?= htmlspecialchars(t('Хлебные крошки'), ENT_QUOTES) ?>">
-        <a href="<?= htmlspecialchars(Locale::url('/'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Главная'), ENT_QUOTES) ?></a>
-        <span>/</span>
-        <a href="<?= htmlspecialchars(Locale::url('albums'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Фотоальбомы'), ENT_QUOTES) ?></a>
-        <span>/</span>
-        <span><?= htmlspecialchars((string) $album['title'], ENT_QUOTES) ?></span>
-    </nav>
+    <?php require __DIR__ . '/_crumbs.php'; ?>
 
     <header class="content-list__head">
         <h1><?= htmlspecialchars((string) $album['title'], ENT_QUOTES) ?></h1>

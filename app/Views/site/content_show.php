@@ -85,15 +85,10 @@ $sideFields = array_values(array_filter($fields, static fn ($f) => !in_array($f[
         </aside>
     </div>
 </article>
-<?php // Schema.org: хлебные крошки; для мероприятий — карточка события. ?>
+<?php // Schema.org: хлебные крошки выводит _crumbs.php; здесь — карточка события. ?>
 <?php
 $schemaBase = \App\Core\AppUrl::base();
 $schemaUrl = static fn (string $p): string => $schemaBase . \App\Core\Locale::url($p);
-echo \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::breadcrumbs([
-    [t('Главная'), $schemaUrl('/')],
-    [(string) $type['name'], $schemaUrl('catalog/' . $type['slug'])],
-    [(string) $entry['title'], ''],
-])), "\n";
 if ((string) $type['slug'] === 'meropriyatiya') {
     echo \App\Core\SchemaOrg::render(\App\Core\SchemaOrg::event(
         (string) $entry['title'],
