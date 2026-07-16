@@ -954,6 +954,12 @@ body .site-header--mid-bg { background: var(--header-mid-bg) !important; }
 body .site-header--nav-bg .site-nav { background: var(--header-nav-bg) !important; }
 :root[data-theme] .site-header.site-header--shadow,
 body .site-header--shadow { box-shadow: 0 6px var(--header-shadow-size, 14px) rgba(16, 24, 40, .10) !important; }
+/* Прозрачная шапка поверх hero: пока не проскроллено, свои фоны не применяются
+   (иначе перекрашивали бы «прозрачное» состояние); после скролла — применяются. */
+:root[data-theme] .site-header.site-header--transparent.site-header--mid-bg:not(.is-scrolled),
+body .site-header--transparent.site-header--mid-bg:not(.is-scrolled) { background: transparent !important; }
+:root[data-theme] .site-header.site-header--transparent.site-header--nav-bg:not(.is-scrolled) .site-nav,
+body .site-header--transparent.site-header--nav-bg:not(.is-scrolled) .site-nav { background: transparent !important; }
 
 body .site-header--borders-none, body .site-header--borders-none .site-nav { border-top: 0; border-bottom: 0; }
 body:has(.site-header--borders-none) .site-topbar--light { border-bottom: 0; }
