@@ -388,10 +388,18 @@ summary:focus-visible {
 .cookie-banner__decline { background: transparent; color: var(--text-main); }
 
 /* Лайтбокс для блоков галереи */
-.cms-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.85); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+.cms-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
 .cms-lightbox.is-open { display: flex; }
-.cms-lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 8px; }
-.cms-lightbox__close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: #fff; font-size: 40px; line-height: 1; cursor: pointer; }
+.cms-lightbox__stage { display: flex; align-items: center; justify-content: center; max-width: 100%; }
+.cms-lightbox img { max-width: 92vw; max-height: 84vh; border-radius: 8px; }
+.cms-lightbox__video { width: min(92vw, 1100px); aspect-ratio: 16 / 9; max-height: 84vh; border: 0; border-radius: 8px; background: #000; }
+.cms-lightbox__close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: #fff; font-size: 40px; line-height: 1; cursor: pointer; z-index: 2; }
+.cms-lightbox__nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.12); border: 0; color: #fff; font-size: 26px; line-height: 1; width: 46px; height: 46px; border-radius: 50%; cursor: pointer; z-index: 2; }
+.cms-lightbox__nav:hover { background: rgba(255,255,255,.25); }
+.cms-lightbox__nav--prev { left: 14px; }
+.cms-lightbox__nav--next { right: 14px; }
+.cms-lightbox__caption { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; color: rgba(255,255,255,.85); font-size: .95rem; padding: 0 60px; }
+.cms-lightbox__caption[hidden] { display: none; }
 
 /* Полоса предпросмотра (группа 5.2) */
 .preview-bar {
