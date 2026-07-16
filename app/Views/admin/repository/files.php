@@ -93,6 +93,19 @@ $categorySelect = static function (string $name, ?int $selected) use ($categorie
     </form>
 </div>
 
+<div class="form-card" style="margin-bottom:24px;max-width:520px;">
+    <h2 style="margin-top:0;">Оформление портала</h2>
+    <form method="post" action="/admin/repository/settings" enctype="multipart/form-data" class="form-grid">
+        <?= Csrf::field() ?>
+        <?= \App\Core\AdminUi::imageField('repo_logo', (string) ($repoLogo ?? ''), [
+            'label' => 'Логотип портала (шапка и форма входа)',
+            'file' => 'repo_logo_file',
+            'hint' => 'Пусто — стандартная иконка-щит. Лучше светлый/белый логотип: шапка портала тёмная.',
+        ]) ?>
+        <div class="form-actions"><button type="submit" class="btn btn--primary">Сохранить</button></div>
+    </form>
+</div>
+
 <form method="get" action="/admin/repository" style="margin-bottom:16px;display:flex;gap:8px;max-width:420px;">
     <input type="text" name="q" value="<?= htmlspecialchars($query, ENT_QUOTES) ?>" placeholder="Поиск по файлам" style="flex:1;">
     <button type="submit" class="btn btn--small">Найти</button>

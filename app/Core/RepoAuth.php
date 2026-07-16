@@ -45,13 +45,75 @@ final class RepoAuth
         $_SESSION['repo_pending_user_id'] = (int) $user['id'];
         $_SESSION['repo_pending_since'] = time();
 
-        if ((int) $user['totp_enabled'] === 1) {
+        $totpOn = (int) $user['totp_enabled'] === 1;
+        $telegramOn = self::telegramChannelAvailable($user);
+
+        if ($totpOn || $telegramOn) {
+            $sent = $telegramOn && self::sendTelegramCode($user);
+            if ($telegramOn && !$sent && !$totpOn) {
+                // Telegram — единственный второй фактор, а код не ушёл:
+                // не оставляем пользователя на шаге, который нельзя пройти.
+                self::clearPending();
+
+                return ['status' => 'send_failed'];
+            }
+            $_SESSION['repo_2fa_totp'] = $totpOn;
+            $_SESSION['repo_2fa_telegram'] = $sent;
+
             return ['status' => 'needs_2fa'];
         }
 
         self::establishSession($user);
 
         return ['status' => 'ok'];
+    }
+
+    /** Привязан Telegram и настроен бот — второй фактор через Telegram доступен. */
+    private static function telegramChannelAvailable(array $user): bool
+    {
+        return TelegramBot::isConfigured() && (int) ($user['telegram_chat_id'] ?? 0) !== 0;
+    }
+
+    /** Генерирует одноразовый код, хэш — в сессию, код — в Telegram. */
+    private static function sendTelegramCode(array $user): bool
+    {
+        $code = (string) random_int(100000, 999999);
+        $_SESSION['repo_tg_code_hash'] = hash('sha256', $code);
+        $_SESSION['repo_tg_code_expires'] = time() + 300;
+
+        return TelegramBot::sendMessage(
+            (int) $user['telegram_chat_id'],
+            "\u{1F510} Код входа в файловый портал: {$code}\n"
+            . 'Действует 5 минут. Никому не сообщайте этот код.'
+        );
+    }
+
+    /** Повторная отправка кода в Telegram (не чаще 3 раз за 5 минут с IP). */
+    public static function resendTelegramCode(): bool
+    {
+        $userId = self::pendingUserId();
+        if ($userId === null || empty($_SESSION['repo_2fa_telegram'])) {
+            return false;
+        }
+        if (!RateLimiter::throttle('repo_2fa_resend', $_SERVER['REMOTE_ADDR'] ?? 'unknown', 300, 3)) {
+            return false;
+        }
+
+        $user = RepoUser::findById($userId);
+        if (!$user || !self::telegramChannelAvailable($user)) {
+            return false;
+        }
+
+        return self::sendTelegramCode($user);
+    }
+
+    /** Каналы второго фактора текущего ожидающего входа (для вьюхи). */
+    public static function pendingChannels(): array
+    {
+        return [
+            'totp' => !empty($_SESSION['repo_2fa_totp']),
+            'telegram' => !empty($_SESSION['repo_2fa_telegram']),
+        ];
     }
 
     public static function completeTwoFactor(string $code): bool
@@ -63,7 +125,7 @@ final class RepoAuth
         }
 
         $user = RepoUser::findById((int) $userId);
-        if (!$user || empty($user['totp_secret']) || (int) $user['is_active'] !== 1) {
+        if (!$user || (int) $user['is_active'] !== 1) {
             self::clearPending();
             return false;
         }
@@ -73,7 +135,19 @@ final class RepoAuth
             return false;
         }
 
-        if (!TOTP::verify($user['totp_secret'], $code)) {
+        // Принимается код любого включённого канала: TOTP из приложения
+        // или одноразовый код, отправленный в Telegram.
+        $valid = false;
+        if ((int) $user['totp_enabled'] === 1 && !empty($user['totp_secret'])) {
+            $valid = TOTP::verify($user['totp_secret'], $code);
+        }
+        if (!$valid && !empty($_SESSION['repo_2fa_telegram'])) {
+            $hash = (string) ($_SESSION['repo_tg_code_hash'] ?? '');
+            $fresh = time() <= (int) ($_SESSION['repo_tg_code_expires'] ?? 0);
+            $valid = $hash !== '' && $fresh && hash_equals($hash, hash('sha256', $code));
+        }
+
+        if (!$valid) {
             RateLimiter::recordAttempt($identifier, false);
             return false;
         }
@@ -126,7 +200,14 @@ final class RepoAuth
 
     private static function clearPending(): void
     {
-        unset($_SESSION['repo_pending_user_id'], $_SESSION['repo_pending_since']);
+        unset(
+            $_SESSION['repo_pending_user_id'],
+            $_SESSION['repo_pending_since'],
+            $_SESSION['repo_2fa_totp'],
+            $_SESSION['repo_2fa_telegram'],
+            $_SESSION['repo_tg_code_hash'],
+            $_SESSION['repo_tg_code_expires']
+        );
     }
 
     public static function check(): bool
@@ -186,7 +267,12 @@ final class RepoAuth
             $_SESSION['repo_fingerprint'],
             $_SESSION['repo_pending_user_id'],
             $_SESSION['repo_pending_since'],
-            $_SESSION['repo_totp_setup_secret']
+            $_SESSION['repo_totp_setup_secret'],
+            $_SESSION['repo_2fa_totp'],
+            $_SESSION['repo_2fa_telegram'],
+            $_SESSION['repo_tg_code_hash'],
+            $_SESSION['repo_tg_code_expires'],
+            $_SESSION['repo_tg_link_code']
         );
     }
 }

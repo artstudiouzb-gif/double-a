@@ -125,6 +125,12 @@ test('RepoFile: премодерация пользовательских заг
     $user = RepoUser::findById($uid);
     assert_same('ГУП «Центр»', $user['organization'], 'организация сохранена');
 
+    // Привязка Telegram для 2FA: установка и отвязка chat_id.
+    RepoUser::setTelegramChatId($uid, 123456789);
+    assert_same(123456789, (int) RepoUser::findById($uid)['telegram_chat_id']);
+    RepoUser::setTelegramChatId($uid, null);
+    assert_true(RepoUser::findById($uid)['telegram_chat_id'] === null, 'chat_id отвязан');
+
     $insert = $pdo->prepare(
         'INSERT INTO repo_files (title, status, uploaded_by_repo_user, stored_name, original_name, mime_type, size, created_at)
          VALUES (:t, :st, :u, :s, :o, :m, :sz, NOW())'

@@ -10,6 +10,7 @@ use App\Core\Flash;
 use App\Core\Logger;
 use App\Core\RateLimiter;
 use App\Core\RepoAuth;
+use App\Core\TelegramBot;
 use App\Core\TOTP;
 use App\Core\View;
 use App\Models\RepoCategory;
@@ -152,7 +153,73 @@ final class PortalController
             'setupSecret' => $setupSecret,
             'otpauthUri' => $otpauthUri,
             'error' => null,
-        ]);
+        ] + self::telegramViewData($user));
+    }
+
+    /** Данные для блока «Вход через Telegram» на странице безопасности. */
+    private static function telegramViewData(array $user): array
+    {
+        $configured = TelegramBot::isConfigured();
+        $linked = (int) ($user['telegram_chat_id'] ?? 0) !== 0;
+        $botUsername = null;
+        $linkCode = null;
+
+        if ($configured && !$linked) {
+            if (empty($_SESSION['repo_tg_link_code'])) {
+                $_SESSION['repo_tg_link_code'] = 'repo-' . bin2hex(random_bytes(4));
+            }
+            $linkCode = (string) $_SESSION['repo_tg_link_code'];
+            // Username бота — для ссылки t.me (кэш в сессии, чтобы не дёргать API).
+            if (empty($_SESSION['repo_tg_bot_username'])) {
+                $me = TelegramBot::getMe();
+                $_SESSION['repo_tg_bot_username'] = (string) ($me['username'] ?? '');
+            }
+            $botUsername = (string) $_SESSION['repo_tg_bot_username'] ?: null;
+        }
+
+        return [
+            'telegramConfigured' => $configured,
+            'telegramLinked' => $linked,
+            'telegramBotUsername' => $botUsername,
+            'telegramLinkCode' => $linkCode,
+        ];
+    }
+
+    /** «Проверить привязку»: ищем код привязки в сообщениях бота (getUpdates). */
+    public function telegramVerify(): void
+    {
+        RepoAuth::requireLogin();
+        Csrf::verifyRequest();
+
+        $user = RepoAuth::user();
+        $code = (string) ($_SESSION['repo_tg_link_code'] ?? '');
+
+        if (!TelegramBot::isConfigured() || $code === '') {
+            Flash::error('Привязка Telegram недоступна.');
+        } elseif (($chatId = TelegramBot::findChatIdByCode($code)) === null) {
+            Flash::error('Сообщение с кодом не найдено. Отправьте боту код привязки и повторите проверку.');
+        } else {
+            RepoUser::setTelegramChatId((int) $user['id'], $chatId);
+            unset($_SESSION['repo_tg_link_code']);
+            TelegramBot::sendMessage($chatId, '✅ Telegram привязан к файловому порталу. Теперь при входе сюда будет приходить одноразовый код.');
+            Logger::security('Привязан Telegram для 2FA портала', ['user' => (string) $user['username']]);
+            Flash::success('Telegram привязан. При входе будет приходить одноразовый код.');
+        }
+        header('Location: /repo/security');
+        exit;
+    }
+
+    public function telegramDisable(): void
+    {
+        RepoAuth::requireLogin();
+        Csrf::verifyRequest();
+
+        $user = RepoAuth::user();
+        RepoUser::setTelegramChatId((int) $user['id'], null);
+        Logger::security('Отвязан Telegram 2FA портала', ['user' => (string) $user['username']]);
+        Flash::success('Telegram отвязан. Вход по коду из Telegram отключён.');
+        header('Location: /repo/security');
+        exit;
     }
 
     public function enableTotp(): void
@@ -170,7 +237,7 @@ final class PortalController
                 'setupSecret' => $secret,
                 'otpauthUri' => $secret ? TOTP::provisioningUri((string) $secret, (string) $user['username'], self::totpIssuer()) : null,
                 'error' => 'Неверный код. Убедитесь, что время на устройстве синхронизировано.',
-            ]);
+            ] + self::telegramViewData($user));
             return;
         }
 

@@ -7,11 +7,13 @@ namespace App\Controllers\Admin;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Flash;
+use App\Core\ImageField;
 use App\Core\PasswordPolicy;
 use App\Core\View;
 use App\Models\RepoCategory;
 use App\Models\RepoFile;
 use App\Models\RepoUser;
+use App\Models\Setting;
 
 /**
  * Управление защищённым файловым хранилищем из админ-панели: загрузка/удаление
@@ -29,7 +31,21 @@ final class RepositoryController
             'pending' => RepoFile::pending(),
             'query' => $query,
             'categories' => RepoCategory::flatOptions(),
+            'repoLogo' => (string) Setting::get('repo_logo', ''),
         ]);
+    }
+
+    /** Оформление портала: собственный логотип шапки и формы входа. */
+    public function saveSettings(): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+
+        $logo = ImageField::resolve('repo_logo_file', 'repo_logo', (string) Setting::get('repo_logo', ''), Auth::id());
+        Setting::set('repo_logo', trim((string) $logo));
+        Flash::success('Оформление портала сохранено.');
+        header('Location: /admin/repository');
+        exit;
     }
 
     /** Одобрение файла, загруженного пользователем портала. */

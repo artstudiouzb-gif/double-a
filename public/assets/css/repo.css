@@ -227,3 +227,7 @@ a { color: var(--repo-accent); }
 .rd-upload__form input[type="file"] { margin-top: 6px; font-weight: 400; }
 .rd-upload__form button { border: 0; cursor: pointer; width: fit-content; }
 .rd-upload__hint { color: #8a94a6; font-size: .8rem; margin: 0; }
+.repo-hint { color: #8a94a6; font-size: .9rem; }
+/* Свой логотип портала (настраивается в админке, Хранилище → Файлы). */
+.repo-topbar__logo { height: 30px; width: auto; max-width: 220px; display: block; object-fit: contain; }
+.repo-auth__logo { height: 38px; width: auto; max-width: 240px; display: block; object-fit: contain; }

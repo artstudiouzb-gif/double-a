@@ -4,6 +4,7 @@ use App\Core\Csrf;
 
 /** @var string|null $error */
 $repoName = htmlspecialchars((string) \App\Models\Setting::get('site_name', 'Файловый портал'), ENT_QUOTES);
+$repoLogo = trim((string) \App\Models\Setting::get('repo_logo', ''));
 ?><!doctype html>
 <html lang="ru">
 <head>
@@ -16,7 +17,11 @@ $repoName = htmlspecialchars((string) \App\Models\Setting::get('site_name', 'Ф�
 <body class="repo-auth">
 <div class="repo-auth__card">
     <div class="repo-auth__brand">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <?php if ($repoLogo !== ''): ?>
+            <img src="<?= htmlspecialchars($repoLogo, ENT_QUOTES) ?>" alt="<?= $repoName ?>" class="repo-auth__logo">
+        <?php else: ?>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <?php endif; ?>
         <span>Защищённое хранилище</span>
     </div>
     <p class="repo-auth__sub">Вход в файловый портал <?= $repoName ?></p>

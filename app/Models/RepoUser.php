@@ -102,6 +102,13 @@ final class RepoUser
         $stmt->execute([':id' => $id]);
     }
 
+    /** Привязка/отвязка Telegram для 2FA (null — отвязать). */
+    public static function setTelegramChatId(int $id, ?int $chatId): void
+    {
+        $stmt = Database::pdo()->prepare('UPDATE repo_users SET telegram_chat_id = :cid WHERE id = :id');
+        $stmt->execute([':cid' => $chatId, ':id' => $id]);
+    }
+
     public static function touchLastLogin(int $id): void
     {
         $stmt = Database::pdo()->prepare('UPDATE repo_users SET last_login_at = NOW() WHERE id = :id');

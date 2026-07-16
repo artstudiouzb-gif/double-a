@@ -51,6 +51,9 @@ final class AuthController
             case 'disabled':
                 View::render('repo/login', ['error' => 'Учётная запись отключена. Обратитесь к администратору.']);
                 return;
+            case 'send_failed':
+                View::render('repo/login', ['error' => 'Не удалось отправить код подтверждения в Telegram. Попробуйте позже или обратитесь к администратору.']);
+                return;
             default:
                 View::render('repo/login', ['error' => 'Неверный логин или пароль.']);
         }
@@ -62,7 +65,7 @@ final class AuthController
             header('Location: /repo/login');
             exit;
         }
-        View::render('repo/login_2fa', ['error' => null]);
+        View::render('repo/login_2fa', ['error' => null, 'channels' => RepoAuth::pendingChannels()]);
     }
 
     public function verifyTwoFactor(): void
@@ -81,7 +84,27 @@ final class AuthController
             exit;
         }
 
-        View::render('repo/login_2fa', ['error' => 'Неверный код. Попробуйте ещё раз.']);
+        View::render('repo/login_2fa', ['error' => 'Неверный код. Попробуйте ещё раз.', 'channels' => RepoAuth::pendingChannels()]);
+    }
+
+    /** Повторная отправка кода в Telegram со страницы подтверждения. */
+    public function resendTelegramCode(): void
+    {
+        Csrf::verifyRequest();
+
+        if (RepoAuth::pendingUserId() === null) {
+            header('Location: /repo/login');
+            exit;
+        }
+
+        $error = RepoAuth::resendTelegramCode()
+            ? null
+            : 'Не удалось отправить код. Подождите пару минут и попробуйте ещё раз.';
+        View::render('repo/login_2fa', [
+            'error' => $error,
+            'notice' => $error === null ? 'Новый код отправлен в Telegram.' : null,
+            'channels' => RepoAuth::pendingChannels(),
+        ]);
     }
 
     public function logout(): void

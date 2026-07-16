@@ -726,6 +726,7 @@ CREATE TABLE IF NOT EXISTS repo_users (
     password_hash   VARCHAR(255) NOT NULL,
     totp_secret     TEXT         NULL,
     totp_enabled    TINYINT(1)   NOT NULL DEFAULT 0,
+    telegram_chat_id BIGINT      NULL COMMENT '2FA через Telegram-бота (NULL — не привязан)',
     is_active       TINYINT(1)   NOT NULL DEFAULT 1,
     last_login_at   DATETIME NULL,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -877,7 +878,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_13_encrypt_secrets.sql'),
     ('2026_07_16_error_log.sql'),
     ('2026_07_16_repo_categories.sql'),
-    ('2026_07_16_repo_user_uploads.sql')
+    ('2026_07_16_repo_user_uploads.sql'),
+    ('2026_07_16_repo_telegram_2fa.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

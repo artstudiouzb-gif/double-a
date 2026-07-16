@@ -53,4 +53,34 @@ require __DIR__ . '/layout/top.php';
         </div>
     <?php endif; ?>
 </div>
+
+<div class="repo-card">
+    <h2 style="margin-top:0;">Вход с подтверждением в Telegram</h2>
+    <?php if (empty($telegramConfigured)): ?>
+        <p class="repo-hint">Недоступно: на сайте не настроен Telegram-бот. Обратитесь к администратору.</p>
+    <?php elseif (!empty($telegramLinked)): ?>
+        <p><span class="repo-badge repo-badge--ok">Подключено</span> При входе в портал одноразовый код будет отправляться в ваш Telegram.</p>
+        <form method="post" action="/repo/security/telegram/disable" onsubmit="return confirm('Отвязать Telegram? Вход по коду из Telegram отключится.');">
+            <?= Csrf::field() ?>
+            <button type="submit" class="repo-btn repo-btn--danger">Отвязать Telegram</button>
+        </form>
+    <?php else: ?>
+        <p><span class="repo-badge repo-badge--muted">Не подключено</span> Одноразовые коды входа можно получать в Telegram — вместо или вместе с приложением-аутентификатором.</p>
+        <ol style="margin:10px 0 14px;padding-left:20px;line-height:1.7;">
+            <li>
+                <?php if (!empty($telegramBotUsername)): ?>
+                    Откройте бота <a href="https://t.me/<?= htmlspecialchars((string) $telegramBotUsername, ENT_QUOTES) ?>?start=<?= htmlspecialchars((string) $telegramLinkCode, ENT_QUOTES) ?>" target="_blank" rel="noopener">@<?= htmlspecialchars((string) $telegramBotUsername, ENT_QUOTES) ?></a> и нажмите «Start».
+                <?php else: ?>
+                    Откройте Telegram-бота сайта и отправьте ему сообщение.
+                <?php endif; ?>
+            </li>
+            <li>Отправьте боту код привязки: <span class="repo-secret"><?= htmlspecialchars((string) ($telegramLinkCode ?? ''), ENT_QUOTES) ?></span></li>
+            <li>Вернитесь сюда и нажмите «Проверить привязку».</li>
+        </ol>
+        <form method="post" action="/repo/security/telegram/verify">
+            <?= Csrf::field() ?>
+            <button type="submit" class="repo-btn">Проверить привязку</button>
+        </form>
+    <?php endif; ?>
+</div>
 <?php require __DIR__ . '/layout/bottom.php'; ?>
