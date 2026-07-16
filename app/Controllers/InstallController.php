@@ -157,7 +157,7 @@ final class InstallController
 
         $siteName = trim((string) ($_POST['site_name'] ?? ''));
         $description = trim((string) ($_POST['site_description'] ?? ''));
-        $timezone = (string) ($_POST['timezone'] ?? 'UTC');
+        $timezone = (string) ($_POST['timezone'] ?? 'Asia/Tashkent');
         $defaultLang = (string) ($_POST['default_language'] ?? 'ru');
 
         if ($siteName === '') {
@@ -170,7 +170,7 @@ final class InstallController
         }
 
         if (!in_array($timezone, \DateTimeZone::listIdentifiers(), true)) {
-            $timezone = 'UTC';
+            $timezone = 'Asia/Tashkent';
         }
 
         Setting::set('site_name', $siteName);
@@ -259,7 +259,7 @@ final class InstallController
             . "        'env' => getenv('APP_ENV') ?: 'production',\n"
             . "        'debug' => filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOLEAN),\n"
             . "        'url' => getenv('APP_URL') ?: " . var_export($appUrl, true) . ",\n"
-            . "        'timezone' => getenv('APP_TIMEZONE') ?: 'UTC',\n"
+            . "        'timezone' => getenv('APP_TIMEZONE') ?: 'Asia/Tashkent',\n"
             . "    ],\n"
             . "    'crypto' => [\n"
             . "        'encryption_key' => getenv('APP_ENCRYPTION_KEY') ?: " . var_export($encryptionKey, true) . ",\n"

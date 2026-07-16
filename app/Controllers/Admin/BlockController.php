@@ -144,12 +144,14 @@ final class BlockController
 
         // Фон секции и её ширина (полноширинная подложка), а также независимые
         // отступы сверху/снизу — общие оформительские опции для любого блока.
-        $data['_bg'] = in_array($_POST['bg'] ?? 'none', ['none', 'light', 'tint', 'navy'], true)
-            ? $_POST['bg'] : 'none';
+        $bg = (string) ($_POST['bg'] ?? 'none');
+        $data['_bg'] = in_array($bg, ['none', 'light', 'tint', 'navy'], true) ? $bg : 'none';
         $data['_fullwidth'] = !empty($_POST['fullwidth']);
         $padOptions = ['default', 'none', 'small', 'medium', 'large'];
-        $data['_pad_top'] = in_array($_POST['pad_top'] ?? 'default', $padOptions, true) ? $_POST['pad_top'] : 'default';
-        $data['_pad_bottom'] = in_array($_POST['pad_bottom'] ?? 'default', $padOptions, true) ? $_POST['pad_bottom'] : 'default';
+        $padTop = (string) ($_POST['pad_top'] ?? 'default');
+        $padBottom = (string) ($_POST['pad_bottom'] ?? 'default');
+        $data['_pad_top'] = in_array($padTop, $padOptions, true) ? $padTop : 'default';
+        $data['_pad_bottom'] = in_array($padBottom, $padOptions, true) ? $padBottom : 'default';
 
         // История версий (группа 5.1): снимаем текущее состояние ПЕРЕД перезаписью.
         BlockRevision::snapshot(
@@ -593,13 +595,12 @@ final class BlockController
                 // #RRGGBB или пусто; иначе дефолт. Уровень прозрачности 0..100.
                 $hexColor = static fn (string $v, string $def): string => preg_match('/^#[0-9a-fA-F]{6}$/', $v) ? strtolower($v) : $def;
                 $pct = static fn ($v, int $def): int => is_numeric($v) ? max(0, min(100, (int) $v)) : $def;
-                $bgType = in_array($_POST['bg_type'] ?? 'image', ['none', 'image', 'video', 'youtube'], true) ? $_POST['bg_type'] : 'image';
-                $heightMode = in_array($_POST['hero_height'] ?? 'regular', ['regular', 'full', 'custom'], true)
-                    ? (string) $_POST['hero_height']
-                    : 'regular';
-                $heightUnit = in_array($_POST['hero_height_unit'] ?? 'px', ['px', 'vh', 'dvh', 'rem'], true)
-                    ? (string) $_POST['hero_height_unit']
-                    : 'px';
+                $bgType = (string) ($_POST['bg_type'] ?? 'image');
+                $bgType = in_array($bgType, ['none', 'image', 'video', 'youtube'], true) ? $bgType : 'image';
+                $heightMode = (string) ($_POST['hero_height'] ?? 'regular');
+                $heightMode = in_array($heightMode, ['regular', 'full', 'custom'], true) ? $heightMode : 'regular';
+                $heightUnit = (string) ($_POST['hero_height_unit'] ?? 'px');
+                $heightUnit = in_array($heightUnit, ['px', 'vh', 'dvh', 'rem'], true) ? $heightUnit : 'px';
                 $heightValue = is_numeric($_POST['hero_height_value'] ?? null) ? (float) $_POST['hero_height_value'] : 720.0;
                 $heightLimits = $heightUnit === 'px' ? [160.0, 2000.0]
                     : ($heightUnit === 'rem' ? [10.0, 120.0] : [20.0, 150.0]);
@@ -608,9 +609,8 @@ final class BlockController
                 // Ширина текстовой колонки: пусто — по теме; px 200–2000, %/vw 10–100.
                 $textWidth = '';
                 if (is_numeric($_POST['text_width_value'] ?? null)) {
-                    $twUnit = in_array($_POST['text_width_unit'] ?? 'px', ['px', '%', 'vw'], true)
-                        ? (string) $_POST['text_width_unit']
-                        : 'px';
+                    $twUnit = (string) ($_POST['text_width_unit'] ?? 'px');
+                    $twUnit = in_array($twUnit, ['px', '%', 'vw'], true) ? $twUnit : 'px';
                     $twLimits = $twUnit === 'px' ? [200.0, 2000.0] : [10.0, 100.0];
                     $twValue = max($twLimits[0], min($twLimits[1], (float) $_POST['text_width_value']));
                     $textWidth = rtrim(rtrim(number_format($twValue, 1, '.', ''), '0'), '.') . $twUnit;
@@ -628,7 +628,7 @@ final class BlockController
                     'youtube_url' => trim((string) ($_POST['youtube_url'] ?? '')),
                     'overlay_color' => $hexColor(trim((string) ($_POST['overlay_color'] ?? '')), '#0b1a30'),
                     'overlay_opacity' => $pct($_POST['overlay_opacity'] ?? null, 55),
-                    'text_position' => in_array($_POST['text_position'] ?? 'left', ['left', 'center', 'right'], true) ? $_POST['text_position'] : 'left',
+                    'text_position' => in_array($textPosition = (string) ($_POST['text_position'] ?? 'left'), ['left', 'center', 'right'], true) ? $textPosition : 'left',
                     'text_width' => $textWidth,
                     'text_color' => empty($_POST['text_color_off']) ? self::hexOrEmpty($_POST['text_color'] ?? '') : '',
                     'button_color' => empty($_POST['button_color_off']) ? self::hexOrEmpty($_POST['button_color'] ?? '') : '',
@@ -677,7 +677,7 @@ final class BlockController
                 $source = 'manual';
                 if ($type === 'image_cards' && ($_POST['source'] ?? '') === 'projects') {
                     $source = 'projects';
-                } elseif ($type === 'media_gallery' && in_array($_POST['source'] ?? '', ['albums', 'videos'], true)) {
+                } elseif ($type === 'media_gallery' && in_array($_POST['source'] ?? '', ['albums', 'videos', 'media'], true)) {
                     $source = (string) $_POST['source'];
                 }
                 return [

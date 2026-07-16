@@ -10,8 +10,10 @@ use App\Core\Flash;
 use App\Core\Logger;
 use App\Core\RateLimiter;
 use App\Core\RepoAuth;
+use App\Core\TelegramBot;
 use App\Core\TOTP;
 use App\Core\View;
+use App\Models\RepoCategory;
 use App\Models\RepoFile;
 use App\Models\RepoUser;
 
@@ -27,16 +29,16 @@ final class PortalController
         RepoAuth::requireLogin();
 
         $query = trim((string) ($_GET['q'] ?? ''));
-        $category = trim((string) ($_GET['category'] ?? ''));
+        $category = (int) ($_GET['category'] ?? 0);
 
-        $all = RepoFile::all('', '');
+        $all = RepoFile::all();
         // Популярные и последние — для боковых колонок витрины.
         $popular = $all;
         usort($popular, static fn (array $a, array $b) => (int) $b['download_count'] <=> (int) $a['download_count']);
 
         View::render('repo/index', [
             'files' => RepoFile::all($query, $category),
-            'categories' => RepoFile::categories(),
+            'categories' => RepoCategory::flatOptions(),
             'query' => $query,
             'category' => $category,
             'repoUser' => RepoAuth::user(),
@@ -46,13 +48,51 @@ final class PortalController
         ]);
     }
 
+    /** Загрузка файла пользователем портала: публикуется после одобрения админом. */
+    public function upload(): void
+    {
+        RepoAuth::requireLogin();
+        Csrf::verifyRequest();
+
+        // Анти-флуд: не чаще 10 загрузок за 10 минут с одной учётки.
+        if (!RateLimiter::throttle('repo_upload', (string) RepoAuth::id(), 600, 10)) {
+            Flash::error('Слишком много загрузок. Повторите позже.');
+            header('Location: /repo');
+            exit;
+        }
+
+        $title = trim((string) ($_POST['title'] ?? ''));
+        $description = trim((string) ($_POST['description'] ?? ''));
+        $categoryId = (int) ($_POST['category_id'] ?? 0);
+        $categoryId = $categoryId > 0 && RepoCategory::findById($categoryId) !== null ? $categoryId : null;
+        $file = $_FILES['file'] ?? null;
+
+        if ($title === '') {
+            Flash::error('Укажите название файла.');
+        } elseif (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            Flash::error('Выберите файл для загрузки.');
+        } else {
+            try {
+                RepoFile::store($file, $title, $description, $categoryId, null, RepoAuth::id(), 'pending');
+                Logger::security('Файл отправлен на модерацию в репозиторий', [
+                    'repo_user' => (string) ($_SESSION['repo_username'] ?? ''),
+                ]);
+                Flash::success('Файл отправлен. Он появится на портале после одобрения администратором.');
+            } catch (\Throwable $e) {
+                Flash::error('Не удалось загрузить файл: ' . $e->getMessage());
+            }
+        }
+        header('Location: /repo');
+        exit;
+    }
+
     public function download(array $params): void
     {
         RepoAuth::requireLogin();
 
         $id = (int) ($params['id'] ?? 0);
         $file = RepoFile::findById($id);
-        if ($file === null) {
+        if ($file === null || (($file['status'] ?? 'approved') !== 'approved')) {
             http_response_code(404);
             exit('Файл не найден.');
         }
@@ -105,8 +145,7 @@ final class PortalController
                 $_SESSION['repo_totp_setup_secret'] = TOTP::generateSecret();
             }
             $setupSecret = $_SESSION['repo_totp_setup_secret'];
-            $issuer = (string) (Config::get('app.url') ?: 'ArtStudio');
-            $otpauthUri = TOTP::provisioningUri($setupSecret, (string) $user['username'], 'Файловый портал');
+            $otpauthUri = TOTP::provisioningUri($setupSecret, (string) $user['username'], self::totpIssuer());
         }
 
         View::render('repo/security', [
@@ -114,7 +153,73 @@ final class PortalController
             'setupSecret' => $setupSecret,
             'otpauthUri' => $otpauthUri,
             'error' => null,
-        ]);
+        ] + self::telegramViewData($user));
+    }
+
+    /** Данные для блока «Вход через Telegram» на странице безопасности. */
+    private static function telegramViewData(array $user): array
+    {
+        $configured = TelegramBot::isConfigured();
+        $linked = (int) ($user['telegram_chat_id'] ?? 0) !== 0;
+        $botUsername = null;
+        $linkCode = null;
+
+        if ($configured && !$linked) {
+            if (empty($_SESSION['repo_tg_link_code'])) {
+                $_SESSION['repo_tg_link_code'] = 'repo-' . bin2hex(random_bytes(4));
+            }
+            $linkCode = (string) $_SESSION['repo_tg_link_code'];
+            // Username бота — для ссылки t.me (кэш в сессии, чтобы не дёргать API).
+            if (empty($_SESSION['repo_tg_bot_username'])) {
+                $me = TelegramBot::getMe();
+                $_SESSION['repo_tg_bot_username'] = (string) ($me['username'] ?? '');
+            }
+            $botUsername = (string) $_SESSION['repo_tg_bot_username'] ?: null;
+        }
+
+        return [
+            'telegramConfigured' => $configured,
+            'telegramLinked' => $linked,
+            'telegramBotUsername' => $botUsername,
+            'telegramLinkCode' => $linkCode,
+        ];
+    }
+
+    /** «Проверить привязку»: ищем код привязки в сообщениях бота (getUpdates). */
+    public function telegramVerify(): void
+    {
+        RepoAuth::requireLogin();
+        Csrf::verifyRequest();
+
+        $user = RepoAuth::user();
+        $code = (string) ($_SESSION['repo_tg_link_code'] ?? '');
+
+        if (!TelegramBot::isConfigured() || $code === '') {
+            Flash::error('Привязка Telegram недоступна.');
+        } elseif (($chatId = TelegramBot::findChatIdByCode($code)) === null) {
+            Flash::error('Сообщение с кодом не найдено. Отправьте боту код привязки и повторите проверку.');
+        } else {
+            RepoUser::setTelegramChatId((int) $user['id'], $chatId);
+            unset($_SESSION['repo_tg_link_code']);
+            TelegramBot::sendMessage($chatId, '✅ Telegram привязан к файловому порталу. Теперь при входе сюда будет приходить одноразовый код.');
+            Logger::security('Привязан Telegram для 2FA портала', ['user' => (string) $user['username']]);
+            Flash::success('Telegram привязан. При входе будет приходить одноразовый код.');
+        }
+        header('Location: /repo/security');
+        exit;
+    }
+
+    public function telegramDisable(): void
+    {
+        RepoAuth::requireLogin();
+        Csrf::verifyRequest();
+
+        $user = RepoAuth::user();
+        RepoUser::setTelegramChatId((int) $user['id'], null);
+        Logger::security('Отвязан Telegram 2FA портала', ['user' => (string) $user['username']]);
+        Flash::success('Telegram отвязан. Вход по коду из Telegram отключён.');
+        header('Location: /repo/security');
+        exit;
     }
 
     public function enableTotp(): void
@@ -127,13 +232,12 @@ final class PortalController
         $code = preg_replace('/\s+/', '', (string) ($_POST['code'] ?? ''));
 
         if (!$secret || !TOTP::verify((string) $secret, (string) $code)) {
-            $issuer = (string) (Config::get('app.url') ?: 'ArtStudio');
             View::render('repo/security', [
                 'repoUser' => $user,
                 'setupSecret' => $secret,
-                'otpauthUri' => $secret ? TOTP::provisioningUri((string) $secret, (string) $user['username'], 'Файловый портал') : null,
+                'otpauthUri' => $secret ? TOTP::provisioningUri((string) $secret, (string) $user['username'], self::totpIssuer()) : null,
                 'error' => 'Неверный код. Убедитесь, что время на устройстве синхронизировано.',
-            ]);
+            ] + self::telegramViewData($user));
             return;
         }
 
@@ -142,6 +246,18 @@ final class PortalController
         Flash::success('Двухфакторная аутентификация включена.');
         header('Location: /repo/security');
         exit;
+    }
+
+    /**
+     * Issuer для otpauth-URI. Только короткий ASCII (домен сайта): кириллица
+     * раздувает URI percent-кодированием втрое и не помещается в компактный
+     * QR-генератор (QrCode, максимум ~108 байт).
+     */
+    private static function totpIssuer(): string
+    {
+        $host = (string) (parse_url((string) Config::get('app.url'), PHP_URL_HOST) ?: '');
+
+        return $host !== '' && preg_match('/^[\x21-\x7E]{1,40}$/', $host) ? $host : 'Portal';
     }
 
     public function disableTotp(): void

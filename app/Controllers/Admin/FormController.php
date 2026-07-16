@@ -151,7 +151,8 @@ final class FormController
                 continue;
             }
             $fieldName = preg_replace('/[^a-z0-9_]/i', '', $fieldName) ?? '';
-            $type = in_array($field['type'] ?? 'text', ['text', 'email', 'tel', 'textarea', 'file', 'select', 'radio', 'checkbox_group', 'checkbox', 'date'], true) ? $field['type'] : 'text';
+            $type = (string) ($field['type'] ?? 'text');
+            $type = in_array($type, ['text', 'email', 'tel', 'textarea', 'file', 'select', 'radio', 'checkbox_group', 'checkbox', 'date'], true) ? $type : 'text';
             $entry = [
                 'name' => $fieldName,
                 'label' => $fieldLabel,

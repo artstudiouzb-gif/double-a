@@ -11,22 +11,24 @@ require __DIR__ . '/../layout/header.php';
 ?>
 <div style="display:flex;gap:8px;margin-bottom:16px;">
     <a href="/admin/repository" class="btn btn--small">Файлы</a>
+    <a href="/admin/repository/categories" class="btn btn--small">Категории</a>
     <a href="/admin/repository/users" class="btn btn--small btn--primary">Пользователи портала</a>
 </div>
 <p class="form-hint">Учётные записи для входа в файловый портал <code>/repo</code>. Это отдельные аккаунты, не связанные с пользователями админ-панели. 2FA пользователь включает самостоятельно после первого входа.</p>
 
 <table class="data-table" style="margin-bottom:30px;">
     <thead>
-        <tr><th>Логин</th><th>Имя</th><th>Email</th><th>Статус</th><th>2FA</th><th>Последний вход</th><th></th></tr>
+        <tr><th>Логин</th><th>Имя</th><th>Организация</th><th>Email</th><th>Статус</th><th>2FA</th><th>Последний вход</th><th></th></tr>
     </thead>
     <tbody>
         <?php if (empty($users)): ?>
-            <tr><td colspan="7" style="text-align:center;color:#888;padding:24px;">Пользователей пока нет.</td></tr>
+            <tr><td colspan="8" style="text-align:center;color:#888;padding:24px;">Пользователей пока нет.</td></tr>
         <?php else: ?>
             <?php foreach ($users as $u): ?>
                 <tr>
                     <td><strong><?= htmlspecialchars((string) $u['username'], ENT_QUOTES) ?></strong></td>
                     <td><?= $u['full_name'] !== '' ? htmlspecialchars((string) $u['full_name'], ENT_QUOTES) : '—' ?></td>
+                    <td><?= ($u['organization'] ?? '') !== '' ? htmlspecialchars((string) $u['organization'], ENT_QUOTES) : '—' ?></td>
                     <td><?= htmlspecialchars((string) $u['email'], ENT_QUOTES) ?></td>
                     <td>
                         <?php if ((int) $u['is_active'] === 1): ?>
@@ -73,6 +75,10 @@ require __DIR__ . '/../layout/header.php';
         <div class="form-field">
             <label for="full_name">Имя (необязательно)</label>
             <input type="text" id="full_name" name="full_name">
+        </div>
+        <div class="form-field">
+            <label for="organization">Организация (необязательно)</label>
+            <input type="text" id="organization" name="organization" maxlength="190">
         </div>
         <div class="form-field">
             <label for="email">Email</label>

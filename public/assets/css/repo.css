@@ -216,3 +216,18 @@ a { color: var(--repo-accent); }
 .rd-col__body a { color: #1f2b3d; font-weight: 600; font-size: .92rem; line-height: 1.4; text-decoration: none; }
 .rd-col__body a:hover { color: #12807f; }
 .rd-col__meta { color: #8a94a6; font-size: .78rem; }
+
+/* --- Предложить документ (загрузка пользователем, премодерация) --- */
+.rd-upload { margin-bottom: 26px; }
+.rd-upload summary { list-style: none; cursor: pointer; width: fit-content; }
+.rd-upload summary::-webkit-details-marker { display: none; }
+.rd-upload__form { margin-top: 14px; background: #fff; border: 1px solid #e5e9f0; border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; max-width: 560px; }
+.rd-upload__form label { font-weight: 600; color: #1f2b3d; font-size: .9rem; }
+.rd-upload__form input[type="text"], .rd-upload__form select, .rd-upload__form textarea { width: 100%; margin-top: 4px; padding: 9px 12px; border: 1px solid #cdd5e0; border-radius: 8px; font: inherit; font-weight: 400; }
+.rd-upload__form input[type="file"] { margin-top: 6px; font-weight: 400; }
+.rd-upload__form button { border: 0; cursor: pointer; width: fit-content; }
+.rd-upload__hint { color: #8a94a6; font-size: .8rem; margin: 0; }
+.repo-hint { color: #8a94a6; font-size: .9rem; }
+/* Свой логотип портала (настраивается в админке, Хранилище → Файлы). */
+.repo-topbar__logo { height: 30px; width: auto; max-width: 220px; display: block; object-fit: contain; }
+.repo-auth__logo { height: 38px; width: auto; max-width: 240px; display: block; object-fit: contain; }

@@ -430,7 +430,8 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 </select>
             </div>
             <?php
-            $heroHeightMode = in_array($data['height'] ?? 'regular', ['regular', 'full', 'custom'], true) ? $data['height'] : 'regular';
+            $heroHeightMode = (string) ($data['height'] ?? 'regular');
+            $heroHeightMode = in_array($heroHeightMode, ['regular', 'full', 'custom'], true) ? $heroHeightMode : 'regular';
             $heroCustomHeight = (string) ($data['custom_height'] ?? '720px');
             preg_match('/^(\d+(?:\.\d+)?)(px|vh|dvh|rem)$/', $heroCustomHeight, $heroHeightParts);
             $heroHeightValue = $heroHeightParts[1] ?? '720';
@@ -567,7 +568,7 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
                 $srcVal = $data['source'] ?? 'manual';
                 $srcOptions = $type === 'image_cards'
                     ? ['projects' => 'Из раздела «Проекты» (отмеченные «на главной»)']
-                    : ['albums' => 'Из фотоальбомов (отмеченные «на главной»)', 'videos' => 'Из раздела «Видео» (отмеченные «на главной»)'];
+                    : ['media' => 'Видео + фотоальбомы, с вкладками (отмеченные «на главной»)', 'albums' => 'Из фотоальбомов (отмеченные «на главной»)', 'videos' => 'Из раздела «Видео» (отмеченные «на главной»)'];
                 ?>
                 <div class="form-field">
                     <label for="source">Источник данных</label>

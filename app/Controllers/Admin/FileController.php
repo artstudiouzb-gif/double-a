@@ -30,7 +30,8 @@ final class FileController
         header('Content-Type: application/json; charset=UTF-8');
 
         // Фильтр по типу: image (по умолчанию), svg, video, document, all_files, all.
-        $type = in_array($_GET['type'] ?? 'image', ['image', 'svg', 'video', 'document', 'all_files', 'all'], true) ? $_GET['type'] : 'image';
+        $type = (string) ($_GET['type'] ?? 'image');
+        $type = in_array($type, ['image', 'svg', 'video', 'document', 'all_files', 'all'], true) ? $type : 'image';
         $matches = static function (string $mime) use ($type): bool {
             return match ($type) {
                 'svg' => $mime === 'image/svg+xml',

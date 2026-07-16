@@ -1,11 +1,12 @@
 <?php
 
+use App\Core\Csrf;
 use App\Core\Format;
 
 /** @var array $files */
-/** @var list<string> $categories */
+/** @var list<array{id:int, parent_id:?int, label:string, files_count:int}> $categories */
 /** @var string $query */
-/** @var string $category */
+/** @var int $category выбранная категория (0 — все) */
 /** @var array|null $repoUser */
 /** @var int $totalCount */
 /** @var array $popular */
@@ -30,7 +31,7 @@ $extBadge = static function (array $f): string {
             <p class="rd-hero__lead">Единая база официальных документов, стратегий, отчётов, исследований и аналитических материалов Агентства.</p>
             <form method="get" action="/repo" class="rd-search" role="search">
                 <input type="search" name="q" value="<?= htmlspecialchars($query, ENT_QUOTES) ?>" placeholder="Поиск по названию, теме или ключевому слову…" aria-label="Поиск по документам">
-                <?php if ($category !== ''): ?><input type="hidden" name="category" value="<?= htmlspecialchars($category, ENT_QUOTES) ?>"><?php endif; ?>
+                <?php if ($category > 0): ?><input type="hidden" name="category" value="<?= (int) $category ?>"><?php endif; ?>
                 <button type="submit" aria-label="Найти"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
             </form>
         </div>
@@ -44,19 +45,39 @@ $extBadge = static function (array $f): string {
         <div class="rd-stat"><span class="rd-stat__num"><?= count($latest) ?></span><span class="rd-stat__label">новых публикаций</span></div>
     </div>
 
+    <details class="rd-upload">
+        <summary class="rd-btn rd-btn--primary">+ Предложить документ</summary>
+        <form method="post" action="/repo/upload" enctype="multipart/form-data" class="rd-upload__form">
+            <?= Csrf::field() ?>
+            <label>Название<br><input type="text" name="title" required maxlength="255"></label>
+            <label>Категория<br>
+                <select name="category_id">
+                    <option value="0">— Без категории —</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= (int) $cat['id'] ?>"><?= htmlspecialchars((string) $cat['label'], ENT_QUOTES) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label>Описание (необязательно)<br><textarea name="description" rows="2"></textarea></label>
+            <label>Файл (PDF, Office, изображения, ZIP — до 100 МБ)<br><input type="file" name="file" required></label>
+            <p class="rd-upload__hint">Документ появится на портале после проверки и одобрения администратором.</p>
+            <button type="submit" class="rd-btn rd-btn--primary">Отправить на модерацию</button>
+        </form>
+    </details>
+
     <?php if (!empty($categories)): ?>
         <section class="rd-cats">
             <div class="rd-section-head"><h2>Категории документов</h2></div>
             <div class="rd-cats__grid">
-                <a class="rd-cat<?= $category === '' ? ' is-active' : '' ?>" href="/repo<?= $query !== '' ? '?q=' . rawurlencode($query) : '' ?>">
+                <a class="rd-cat<?= $category === 0 ? ' is-active' : '' ?>" href="/repo<?= $query !== '' ? '?q=' . rawurlencode($query) : '' ?>">
                     <span class="rd-cat__icon"><?= $docIcon ?></span>
                     <span class="rd-cat__name">Все документы</span>
                     <span class="rd-cat__count"><?= $totalCount ?></span>
                 </a>
                 <?php foreach ($categories as $cat): ?>
-                    <a class="rd-cat<?= $cat === $category ? ' is-active' : '' ?>" href="/repo?category=<?= rawurlencode($cat) ?><?= $query !== '' ? '&q=' . rawurlencode($query) : '' ?>">
+                    <a class="rd-cat<?= (int) $cat['id'] === $category ? ' is-active' : '' ?>" href="/repo?category=<?= (int) $cat['id'] ?><?= $query !== '' ? '&q=' . rawurlencode($query) : '' ?>">
                         <span class="rd-cat__icon"><?= $docIcon ?></span>
-                        <span class="rd-cat__name"><?= htmlspecialchars($cat, ENT_QUOTES) ?></span>
+                        <span class="rd-cat__name"><?= htmlspecialchars((string) $cat['label'], ENT_QUOTES) ?></span>
                         <span class="rd-cat__arrow">→</span>
                     </a>
                 <?php endforeach; ?>
@@ -66,11 +87,11 @@ $extBadge = static function (array $f): string {
 
     <section class="rd-list">
         <div class="rd-section-head">
-            <h2><?= ($query !== '' || $category !== '') ? 'Найдено: ' . count($files) : 'Все документы' ?></h2>
-            <?php if ($query !== '' || $category !== ''): ?><a class="rd-reset" href="/repo">Сбросить фильтры ↺</a><?php endif; ?>
+            <h2><?= ($query !== '' || $category > 0) ? 'Найдено: ' . count($files) : 'Все документы' ?></h2>
+            <?php if ($query !== '' || $category > 0): ?><a class="rd-reset" href="/repo">Сбросить фильтры ↺</a><?php endif; ?>
         </div>
         <?php if (empty($files)): ?>
-            <div class="rd-empty"><?= ($query !== '' || $category !== '') ? 'По вашему запросу ничего не найдено.' : 'В хранилище пока нет файлов.' ?></div>
+            <div class="rd-empty"><?= ($query !== '' || $category > 0) ? 'По вашему запросу ничего не найдено.' : 'В хранилище пока нет файлов.' ?></div>
         <?php else: ?>
             <div class="rd-grid">
                 <?php foreach ($files as $f): ?>

@@ -159,7 +159,7 @@
             "title": "Медиа",
             "all_text": "Все материалы",
             "all_url": "\/albums",
-            "source": "videos",
+            "source": "media",
             "limit": 8,
             "items": [
                 {

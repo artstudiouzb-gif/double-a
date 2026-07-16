@@ -721,10 +721,12 @@ CREATE TABLE IF NOT EXISTS repo_users (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username        VARCHAR(60)  NOT NULL,
     full_name       VARCHAR(190) NOT NULL DEFAULT '',
+    organization    VARCHAR(190) NOT NULL DEFAULT '',
     email           VARCHAR(190) NOT NULL,
     password_hash   VARCHAR(255) NOT NULL,
     totp_secret     TEXT         NULL,
     totp_enabled    TINYINT(1)   NOT NULL DEFAULT 0,
+    telegram_chat_id BIGINT      NULL COMMENT '2FA через Telegram-бота (NULL — не привязан)',
     is_active       TINYINT(1)   NOT NULL DEFAULT 1,
     last_login_at   DATETIME NULL,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -733,21 +735,35 @@ CREATE TABLE IF NOT EXISTS repo_users (
     UNIQUE KEY uq_repo_users_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS repo_categories (
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    parent_id  BIGINT UNSIGNED NULL,
+    name       VARCHAR(120) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_repo_categories_parent (parent_id),
+    CONSTRAINT fk_repo_categories_parent FOREIGN KEY (parent_id) REFERENCES repo_categories (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS repo_files (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title           VARCHAR(255) NOT NULL,
     description     TEXT NULL,
-    category        VARCHAR(120) NOT NULL DEFAULT '',
+    category_id     BIGINT UNSIGNED NULL,
     stored_name     VARCHAR(255) NOT NULL COMMENT 'случайное имя на диске (без user input)',
     original_name   VARCHAR(255) NOT NULL,
     mime_type       VARCHAR(120) NOT NULL,
     size            BIGINT UNSIGNED NOT NULL,
     download_count  BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    status          VARCHAR(16) NOT NULL DEFAULT 'approved' COMMENT 'pending — ждёт одобрения админа',
     uploaded_by     INT UNSIGNED NULL COMMENT 'id администратора-загрузчика (users.id)',
+    uploaded_by_repo_user INT UNSIGNED NULL COMMENT 'id пользователя портала (repo_users.id)',
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    KEY idx_repo_files_category (category),
+    KEY idx_repo_files_category_id (category_id),
     KEY idx_repo_files_created (created_at),
-    CONSTRAINT fk_repo_files_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users (id) ON DELETE SET NULL
+    KEY idx_repo_files_status (status),
+    CONSTRAINT fk_repo_files_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT fk_repo_files_category FOREIGN KEY (category_id) REFERENCES repo_categories (id) ON DELETE SET NULL,
+    CONSTRAINT fk_repo_files_repo_user FOREIGN KEY (uploaded_by_repo_user) REFERENCES repo_users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
@@ -860,7 +876,10 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_13_content_revisions.sql'),
     ('2026_07_13_content_locking.sql'),
     ('2026_07_13_encrypt_secrets.sql'),
-    ('2026_07_16_error_log.sql')
+    ('2026_07_16_error_log.sql'),
+    ('2026_07_16_repo_categories.sql'),
+    ('2026_07_16_repo_user_uploads.sql'),
+    ('2026_07_16_repo_telegram_2fa.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Core\Database;
+use App\Models\RepoCategory;
 use App\Models\RepoFile;
 use App\Models\RepoUser;
 
@@ -52,38 +53,104 @@ test('RepoUser: создание, поиск, уникальность, акти
     assert_true(RepoUser::findById($id) === null, 'пользователь удалён');
 });
 
-test('RepoFile: поиск по запросу, фильтр по категории и список категорий', function () {
+test('RepoFile: поиск, фильтр по категории/подкатегории, дерево категорий', function () {
     ensure_test_db();
     $pdo = Database::pdo();
     $pdo->exec('DELETE FROM repo_files');
+    $pdo->exec('DELETE FROM repo_categories');
+
+    $orders = RepoCategory::create('Приказы');
+    $reports = RepoCategory::create('Отчёты');
+    $yearly = RepoCategory::create('Годовые', $reports);
+    assert_true($orders > 0 && $yearly > 0, 'категории созданы');
 
     $insert = $pdo->prepare(
-        'INSERT INTO repo_files (title, description, category, stored_name, original_name, mime_type, size, created_at)
+        'INSERT INTO repo_files (title, description, category_id, stored_name, original_name, mime_type, size, created_at)
          VALUES (:t, :d, :c, :s, :o, :m, :sz, NOW())'
     );
-    $insert->execute([':t' => 'Приказ №1', ':d' => 'О назначении', ':c' => 'Приказы', ':s' => 'a.pdf', ':o' => 'prikaz1.pdf', ':m' => 'application/pdf', ':sz' => 1024]);
-    $insert->execute([':t' => 'Отчёт за год', ':d' => 'Финансовый', ':c' => 'Отчёты', ':s' => 'b.pdf', ':o' => 'report.pdf', ':m' => 'application/pdf', ':sz' => 2048]);
-    $insert->execute([':t' => 'Инструкция', ':d' => null, ':c' => '', ':s' => 'c.docx', ':o' => 'guide.docx', ':m' => 'application/octet-stream', ':sz' => 512]);
+    $insert->execute([':t' => 'Приказ №1', ':d' => 'О назначении', ':c' => $orders, ':s' => 'a.pdf', ':o' => 'prikaz1.pdf', ':m' => 'application/pdf', ':sz' => 1024]);
+    $insert->execute([':t' => 'Отчёт за год', ':d' => 'Финансовый', ':c' => $yearly, ':s' => 'b.pdf', ':o' => 'report.pdf', ':m' => 'application/pdf', ':sz' => 2048]);
+    $insert->execute([':t' => 'Инструкция', ':d' => null, ':c' => null, ':s' => 'c.docx', ':o' => 'guide.docx', ':m' => 'application/octet-stream', ':sz' => 512]);
 
     assert_same(3, count(RepoFile::all()));
 
     $byQuery = RepoFile::all('Приказ');
     assert_same(1, count($byQuery));
     assert_same('Приказ №1', $byQuery[0]['title']);
+    assert_same('Приказы', $byQuery[0]['category'], 'computed-имя категории');
 
-    // Поиск также по имени файла и категории.
+    // Поиск также по имени файла и по имени категории (включая родителя).
     assert_same(1, count(RepoFile::all('report.pdf')));
+    assert_same(1, count(RepoFile::all('Годовые')));
     assert_same(1, count(RepoFile::all('Отчёты')));
 
-    $byCat = RepoFile::all('', 'Приказы');
-    assert_same(1, count($byCat));
+    // Фильтр: точная категория и корневая с подкатегориями.
+    assert_same(1, count(RepoFile::all('', $orders)));
+    assert_same(1, count(RepoFile::all('', $yearly)));
+    assert_same(1, count(RepoFile::all('', $reports)), 'корень включает файлы подкатегорий');
+    $sub = RepoFile::all('', $reports)[0];
+    assert_same('Отчёты / Годовые', $sub['category'], 'полное имя «Родитель / Дочка»');
 
-    $cats = RepoFile::categories();
-    assert_true(in_array('Приказы', $cats, true), 'категория Приказы есть');
-    assert_true(in_array('Отчёты', $cats, true), 'категория Отчёты есть');
-    assert_false(in_array('', $cats, true), 'пустая категория исключена');
+    // Дерево и плоский список.
+    $tree = RepoCategory::tree();
+    assert_same(2, count($tree));
+    $flat = RepoCategory::flatOptions();
+    assert_same(3, count($flat));
+    $labels = array_column($flat, 'label');
+    assert_true(in_array('Отчёты / Годовые', $labels, true), 'label подкатегории с родителем');
+
+    // Обновление метаданных файла и снятие категории.
+    RepoFile::updateMeta((int) $byQuery[0]['id'], 'Приказ №1 (ред.)', 'Новое описание', null);
+    $updated = RepoFile::findById((int) $byQuery[0]['id']);
+    assert_same('Приказ №1 (ред.)', $updated['title']);
+    assert_true($updated['category_id'] === null, 'категория снята');
+
+    // Удаление корня: подкатегории каскадом, файлы остаются без категории.
+    RepoCategory::delete($reports);
+    assert_true(RepoCategory::findById($yearly) === null, 'подкатегория удалена каскадом');
+    $orphan = RepoFile::all('report.pdf')[0];
+    assert_true($orphan['category_id'] === null, 'файл остался без категории');
 
     $pdo->exec('DELETE FROM repo_files');
+    $pdo->exec('DELETE FROM repo_categories');
+});
+
+test('RepoFile: премодерация пользовательских загрузок (pending → approved)', function () {
+    ensure_test_db();
+    $pdo = Database::pdo();
+    $pdo->exec('DELETE FROM repo_files');
+    $pdo->exec('DELETE FROM repo_users');
+
+    $uid = RepoUser::create('uploader', 'Пётр Петров', 'uploader@example.com', 'Str0ng-Pass-99', 'ГУП «Центр»');
+    $user = RepoUser::findById($uid);
+    assert_same('ГУП «Центр»', $user['organization'], 'организация сохранена');
+
+    // Привязка Telegram для 2FA: установка и отвязка chat_id.
+    RepoUser::setTelegramChatId($uid, 123456789);
+    assert_same(123456789, (int) RepoUser::findById($uid)['telegram_chat_id']);
+    RepoUser::setTelegramChatId($uid, null);
+    assert_true(RepoUser::findById($uid)['telegram_chat_id'] === null, 'chat_id отвязан');
+
+    $insert = $pdo->prepare(
+        'INSERT INTO repo_files (title, status, uploaded_by_repo_user, stored_name, original_name, mime_type, size, created_at)
+         VALUES (:t, :st, :u, :s, :o, :m, :sz, NOW())'
+    );
+    $insert->execute([':t' => 'Предложенный документ', ':st' => 'pending', ':u' => $uid, ':s' => 'p.pdf', ':o' => 'prop.pdf', ':m' => 'application/pdf', ':sz' => 100]);
+    $insert->execute([':t' => 'Обычный документ', ':st' => 'approved', ':u' => null, ':s' => 'q.pdf', ':o' => 'ok.pdf', ':m' => 'application/pdf', ':sz' => 100]);
+
+    // Портал видит только одобренные; pending() отдаёт ждущие с автором.
+    assert_same(1, count(RepoFile::all()));
+    assert_same(1, RepoFile::pendingCount());
+    $pending = RepoFile::pending();
+    assert_same(1, count($pending));
+    assert_same('uploader', $pending[0]['repo_username'], 'логин автора в модерации');
+
+    RepoFile::approve((int) $pending[0]['id']);
+    assert_same(2, count(RepoFile::all()), 'после одобрения файл виден');
+    assert_same(0, RepoFile::pendingCount());
+
+    $pdo->exec('DELETE FROM repo_files');
+    $pdo->exec('DELETE FROM repo_users');
 });
 
 test('RepoFile::basePath указывает в подкаталог protected_uploads/repo', function () {

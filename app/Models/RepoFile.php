@@ -48,27 +48,43 @@ final class RepoFile
     }
 
     /**
-     * @param string $query поиск по заголовку/описанию/имени файла
-     * @param string $category фильтр по категории ('' — все)
+     * Список файлов; в каждой строке дополнительно computed-поле `category` —
+     * полное имя категории («Родитель / Дочка») для отображения.
+     *
+     * @param string $query поиск по заголовку/описанию/имени файла/категории
+     * @param int $categoryId фильтр по категории (0 — все); для корневой
+     *                        категории включаются и её подкатегории
+     * @param string $status 'approved' (по умолчанию), 'pending' или '' — любые
      */
-    public static function all(string $query = '', string $category = ''): array
+    public static function all(string $query = '', int $categoryId = 0, string $status = 'approved'): array
     {
-        $sql = 'SELECT * FROM repo_files WHERE 1 = 1';
+        $sql = "SELECT f.*, CONCAT_WS(' / ', p.name, c.name) AS category
+                FROM repo_files f
+                LEFT JOIN repo_categories c ON c.id = f.category_id
+                LEFT JOIN repo_categories p ON p.id = c.parent_id
+                WHERE 1 = 1";
         $params = [];
 
+        if ($status !== '') {
+            $sql .= ' AND f.status = :status';
+            $params[':status'] = $status;
+        }
+
         if ($query !== '') {
-            $sql .= ' AND (title LIKE :q1 OR description LIKE :q2 OR original_name LIKE :q3 OR category LIKE :q4)';
+            $sql .= ' AND (f.title LIKE :q1 OR f.description LIKE :q2 OR f.original_name LIKE :q3 OR c.name LIKE :q4 OR p.name LIKE :q5)';
             $like = '%' . $query . '%';
             $params[':q1'] = $like;
             $params[':q2'] = $like;
             $params[':q3'] = $like;
             $params[':q4'] = $like;
+            $params[':q5'] = $like;
         }
-        if ($category !== '') {
-            $sql .= ' AND category = :cat';
-            $params[':cat'] = $category;
+        if ($categoryId > 0) {
+            $sql .= ' AND (f.category_id = :cat OR c.parent_id = :cat2)';
+            $params[':cat'] = $categoryId;
+            $params[':cat2'] = $categoryId;
         }
-        $sql .= ' ORDER BY created_at DESC, id DESC';
+        $sql .= ' ORDER BY f.created_at DESC, f.id DESC';
 
         $stmt = Database::pdo()->prepare($sql);
         $stmt->execute($params);
@@ -89,14 +105,31 @@ final class RepoFile
         return $stmt->fetch() ?: null;
     }
 
-    /** @return list<string> уникальные непустые категории */
-    public static function categories(): array
+    /** Файлы, ждущие одобрения, с логином загрузившего пользователя портала. */
+    public static function pending(): array
     {
-        $rows = Database::pdo()->query(
-            "SELECT DISTINCT category FROM repo_files WHERE category <> '' ORDER BY category ASC"
-        )->fetchAll(\PDO::FETCH_COLUMN);
+        return Database::pdo()->query(
+            "SELECT f.*, CONCAT_WS(' / ', p.name, c.name) AS category, u.username AS repo_username
+             FROM repo_files f
+             LEFT JOIN repo_categories c ON c.id = f.category_id
+             LEFT JOIN repo_categories p ON p.id = c.parent_id
+             LEFT JOIN repo_users u ON u.id = f.uploaded_by_repo_user
+             WHERE f.status = 'pending'
+             ORDER BY f.created_at ASC, f.id ASC"
+        )->fetchAll();
+    }
 
-        return array_values(array_map('strval', $rows));
+    public static function pendingCount(): int
+    {
+        return (int) Database::pdo()->query(
+            "SELECT COUNT(*) FROM repo_files WHERE status = 'pending'"
+        )->fetchColumn();
+    }
+
+    public static function approve(int $id): void
+    {
+        $stmt = Database::pdo()->prepare("UPDATE repo_files SET status = 'approved' WHERE id = :id");
+        $stmt->execute([':id' => $id]);
     }
 
     public static function incrementDownload(int $id): void
@@ -111,7 +144,15 @@ final class RepoFile
      *
      * @param array $fileInput элемент $_FILES
      */
-    public static function store(array $fileInput, string $title, string $description, string $category, ?int $uploadedBy): int
+    public static function store(
+        array $fileInput,
+        string $title,
+        string $description,
+        ?int $categoryId,
+        ?int $uploadedBy,
+        ?int $repoUserId = null,
+        string $status = 'approved'
+    ): int
     {
         if (($fileInput['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             throw new RuntimeException('Ошибка загрузки файла.');
@@ -161,21 +202,37 @@ final class RepoFile
         }
 
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO repo_files (title, description, category, stored_name, original_name, mime_type, size, uploaded_by, created_at)
-             VALUES (:title, :descr, :cat, :stored, :orig, :mime, :size, :by, NOW())'
+            'INSERT INTO repo_files (title, description, category_id, stored_name, original_name, mime_type, size, status, uploaded_by, uploaded_by_repo_user, created_at)
+             VALUES (:title, :descr, :cat, :stored, :orig, :mime, :size, :status, :by, :repo_user, NOW())'
         );
         $stmt->execute([
             ':title' => $title,
             ':descr' => $description !== '' ? $description : null,
-            ':cat' => $category,
+            ':cat' => $categoryId,
             ':stored' => $storedName,
             ':orig' => $originalName,
             ':mime' => $mime,
             ':size' => $size,
+            ':status' => $status === 'pending' ? 'pending' : 'approved',
             ':by' => $uploadedBy,
+            ':repo_user' => $repoUserId,
         ]);
 
         return (int) Database::pdo()->lastInsertId();
+    }
+
+    /** Обновляет название/описание/категорию без перезагрузки самого файла. */
+    public static function updateMeta(int $id, string $title, string $description, ?int $categoryId): void
+    {
+        $stmt = Database::pdo()->prepare(
+            'UPDATE repo_files SET title = :title, description = :descr, category_id = :cat WHERE id = :id'
+        );
+        $stmt->execute([
+            ':title' => $title,
+            ':descr' => $description !== '' ? $description : null,
+            ':cat' => $categoryId,
+            ':id' => $id,
+        ]);
     }
 
     public static function delete(int $id): void

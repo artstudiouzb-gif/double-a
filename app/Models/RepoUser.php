@@ -16,7 +16,7 @@ final class RepoUser
     public static function all(): array
     {
         return Database::pdo()->query(
-            'SELECT id, username, full_name, email, totp_enabled, is_active, last_login_at, created_at
+            'SELECT id, username, full_name, organization, email, totp_enabled, is_active, last_login_at, created_at
              FROM repo_users ORDER BY username ASC'
         )->fetchAll();
     }
@@ -58,15 +58,16 @@ final class RepoUser
         return (int) $stmt->fetchColumn() > 0;
     }
 
-    public static function create(string $username, string $fullName, string $email, string $password): int
+    public static function create(string $username, string $fullName, string $email, string $password, string $organization = ''): int
     {
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO repo_users (username, full_name, email, password_hash, created_at)
-             VALUES (:u, :f, :e, :p, NOW())'
+            'INSERT INTO repo_users (username, full_name, organization, email, password_hash, created_at)
+             VALUES (:u, :f, :o, :e, :p, NOW())'
         );
         $stmt->execute([
             ':u' => $username,
             ':f' => $fullName,
+            ':o' => $organization,
             ':e' => $email,
             ':p' => password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]),
         ]);
@@ -99,6 +100,13 @@ final class RepoUser
     {
         $stmt = Database::pdo()->prepare('UPDATE repo_users SET totp_secret = NULL, totp_enabled = 0 WHERE id = :id');
         $stmt->execute([':id' => $id]);
+    }
+
+    /** Привязка/отвязка Telegram для 2FA (null — отвязать). */
+    public static function setTelegramChatId(int $id, ?int $chatId): void
+    {
+        $stmt = Database::pdo()->prepare('UPDATE repo_users SET telegram_chat_id = :cid WHERE id = :id');
+        $stmt->execute([':cid' => $chatId, ':id' => $id]);
     }
 
     public static function touchLastLogin(int $id): void

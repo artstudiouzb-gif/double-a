@@ -31,7 +31,16 @@ final class TOTP
             'issuer' => $issuer,
         ], '', '&', PHP_QUERY_RFC3986);
 
-        return "otpauth://totp/{$label}?{$params}";
+        $uri = "otpauth://totp/{$label}?{$params}";
+
+        // Компактный QR-генератор (QrCode) вмещает ~106 байт. Если URI длиннее,
+        // убираем дублирующий параметр issuer — приложения-аутентификаторы
+        // берут издателя из префикса label («issuer:account»).
+        if (strlen($uri) > 100) {
+            $uri = "otpauth://totp/{$label}?secret={$secret}";
+        }
+
+        return $uri;
     }
 
     public static function verify(string $secret, string $code, int $windowSteps = 1): bool

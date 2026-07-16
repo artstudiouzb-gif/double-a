@@ -24,7 +24,7 @@ require __DIR__ . '/_header.php';
         <label for="timezone">Часовой пояс</label>
         <select id="timezone" name="timezone">
             <?php foreach ($timezones as $tz): ?>
-                <option value="<?= htmlspecialchars($tz, ENT_QUOTES) ?>" <?= $tz === 'Europe/Moscow' ? 'selected' : '' ?>><?= htmlspecialchars($tz, ENT_QUOTES) ?></option>
+                <option value="<?= htmlspecialchars($tz, ENT_QUOTES) ?>" <?= $tz === 'Asia/Tashkent' ? 'selected' : '' ?>><?= htmlspecialchars($tz, ENT_QUOTES) ?></option>
             <?php endforeach; ?>
         </select>
     </div>

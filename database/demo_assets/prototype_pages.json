@@ -40,7 +40,7 @@
         ["news_feature", "", {"title": "Главное", "all_text": "Все новости", "all_url": "/news", "limit": 6}],
         ["categories_grid", "", {"title": "Категории", "items": [{"title": "Новости", "url": "/news"}, {"title": "Пресс-релизы", "url": "/catalog/documenty"}, {"title": "Мероприятия", "url": "/meropriyatiya"}, {"title": "Интервью", "url": "/news"}, {"title": "Фотогалерея", "url": "/albums"}, {"title": "Видео", "url": "/press-centr"}]}],
         ["docs_list", "", {"title": "Пресс-релизы", "all_text": "Все пресс-релизы", "all_url": "/catalog/documenty", "columns": 3, "items": [{"title": "Пресс-релиз: о результатах заседания межведомственной рабочей группы", "meta": "17 мая 2026 · PDF · 245 КБ", "url": "/catalog/documenty"}, {"title": "Пресс-релиз: о запуске нового инфраструктурного проекта", "meta": "10 мая 2026 · PDF · 198 КБ", "url": "/catalog/documenty"}, {"title": "Пресс-релиз: о сотрудничестве с международными партнёрами", "meta": "5 мая 2026 · PDF · 210 КБ", "url": "/catalog/documenty"}]}],
-        ["media_gallery", "", {"title": "Медиаматериалы", "all_text": "Вся галерея", "all_url": "/albums", "source": "featured", "limit": 8}],
+        ["media_gallery", "", {"title": "Медиаматериалы", "all_text": "Вся галерея", "all_url": "/albums", "source": "media", "limit": 8}],
         ["subscribe", "", {"title": "Подпишитесь на новости", "text": "Получайте самые важные новости и аналитические материалы Агентства прямо на вашу почту.", "button_text": "Подписаться"}]
       ]
     }

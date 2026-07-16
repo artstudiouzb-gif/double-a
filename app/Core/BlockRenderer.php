@@ -367,43 +367,40 @@ final class BlockRenderer
             }
         }
 
-        // Блок «Медиа» (media_gallery) с источником «Фотоальбомы»: карточки-фото
-        // собираются автоматически из опубликованных альбомов, помеченных
-        // «показать на главном».
-        if ($type === 'media_gallery' && ($data['source'] ?? 'manual') === 'albums') {
+        // Блок «Медиа» (media_gallery) с автоисточниками: «Фотоальбомы»,
+        // «Видео» или оба сразу («media» — тогда в шаблоне появляются
+        // вкладки Видео/Фото). Записи берутся из помеченных «показать на главном».
+        $mediaSource = (string) ($data['source'] ?? 'manual');
+        if ($type === 'media_gallery' && in_array($mediaSource, ['albums', 'videos', 'media'], true)) {
             $lang = Locale::current();
             $limit = (int) ($data['limit'] ?? 8);
             $items = [];
-            foreach (\App\Models\PhotoAlbum::forHome($limit) as $a) {
-                $items[] = [
-                    'kind' => 'photo',
-                    'image' => \App\Models\PhotoAlbum::coverFor($a),
-                    'title' => (string) $a['title'],
-                    'meta' => '',
-                    'url' => Locale::url('albums/' . $a['slug'], $lang),
-                ];
+            if ($mediaSource === 'videos' || $mediaSource === 'media') {
+                foreach (\App\Models\Video::forHome($limit) as $v) {
+                    $items[] = [
+                        'kind' => 'video',
+                        'image' => (string) ($v['cover_url'] ?? ''),
+                        'title' => (string) $v['title'],
+                        'meta' => (string) ($v['duration'] ?? ''),
+                        'url' => (string) ($v['video_url'] ?? ''),
+                    ];
+                }
+            }
+            if ($mediaSource === 'albums' || $mediaSource === 'media') {
+                foreach (\App\Models\PhotoAlbum::forHome($limit) as $a) {
+                    $items[] = [
+                        'kind' => 'photo',
+                        'image' => \App\Models\PhotoAlbum::coverFor($a),
+                        'title' => (string) $a['title'],
+                        'meta' => '',
+                        'url' => Locale::url('albums/' . $a['slug'], $lang),
+                    ];
+                }
             }
             $data['items'] = $items;
-            if (($data['all_url'] ?? '') === '') {
+            if ($mediaSource === 'albums' && ($data['all_url'] ?? '') === '') {
                 $data['all_url'] = Locale::url('albums', $lang);
             }
-        }
-
-        // media_gallery с источником «Видео»: карточки собираются из
-        // опубликованных видео, помеченных «показать на главном».
-        if ($type === 'media_gallery' && ($data['source'] ?? 'manual') === 'videos') {
-            $limit = (int) ($data['limit'] ?? 8);
-            $items = [];
-            foreach (\App\Models\Video::forHome($limit) as $v) {
-                $items[] = [
-                    'kind' => 'video',
-                    'image' => (string) ($v['cover_url'] ?? ''),
-                    'title' => (string) $v['title'],
-                    'meta' => (string) ($v['duration'] ?? ''),
-                    'url' => (string) ($v['video_url'] ?? ''),
-                ];
-            }
-            $data['items'] = $items;
         }
 
         return $data;

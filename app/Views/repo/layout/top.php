@@ -6,6 +6,7 @@ use App\Core\Flash;
 /** @var string $pageTitle */
 /** @var array|null $repoUser */
 $repoName = htmlspecialchars((string) \App\Models\Setting::get('site_name', 'Файловый портал'), ENT_QUOTES);
+$repoLogo = trim((string) \App\Models\Setting::get('repo_logo', ''));
 
 // Версия для слабовидящих: состояние из cookie (общая с основным сайтом).
 $a11ySchemes = ['cw', 'wc', 'bb'];
@@ -30,7 +31,11 @@ $a11y = [
 <body>
 <header class="repo-topbar">
     <div class="repo-topbar__brand">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <?php if ($repoLogo !== ''): ?>
+            <img src="<?= htmlspecialchars($repoLogo, ENT_QUOTES) ?>" alt="<?= $repoName ?>" class="repo-topbar__logo">
+        <?php else: ?>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <?php endif; ?>
         <span>Защищённое хранилище</span>
     </div>
     <nav>
