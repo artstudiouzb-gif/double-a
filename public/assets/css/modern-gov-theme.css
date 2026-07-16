@@ -121,7 +121,7 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 
 .site-header__inner { max-width: var(--container-max); padding: 14px 20px !important; }
 .site-header__logo { color: var(--gov-title); font-family: var(--font-family, sans-serif); font-weight: 800; gap: 10px; }
-.site-header__logo span { font-size: 14px; line-height: 1.25; letter-spacing: 0; text-transform: none; max-width: 320px; }
+.site-header__logo span { font-size: 0.875rem; line-height: 1.25; letter-spacing: 0; text-transform: none; max-width: 320px; }
 
 .site-header--logo-left .site-header__logo:not(:has(img))::before,
 .site-header__logo:not(:has(img))::before {
@@ -133,7 +133,7 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 .site-nav { border-top: 1px solid var(--gov-border); }
 .site-menu__link {
     text-transform: none;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--gov-ink);
     padding: 14px 4px;
@@ -349,8 +349,8 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 @media (max-width: 768px) {
     .counter:not(:last-child) { border-right: 0 !important; border-bottom: 1px solid var(--gov-border) !important; padding-bottom: 16px !important; }
 }
-.counter__value { color: var(--gov-title); font-weight: 800; font-size: 2.2rem; line-height: 1.1; margin-bottom: 4px; }
-.counter__label { color: var(--gov-muted); font-size: 14px; font-weight: 500; }
+.counter__value { color: var(--gov-title); font-weight: 800; font-size: 2.2rem; line-height: 1.15; margin-bottom: 4px; }
+.counter__label { color: var(--gov-muted); font-size: 0.875rem; font-weight: 500; }
 
 /* --- Hero баннер --- */
 .block-hero {
