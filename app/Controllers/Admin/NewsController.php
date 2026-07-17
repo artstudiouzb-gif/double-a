@@ -247,10 +247,21 @@ final class NewsController
         }
 
         $count = \App\Core\SocialSettings::enqueueForNews((int) $news['id']);
-        if ($count > 0) {
-            Flash::success("Поставлено в очередь публикации: {$count}. Отправка — по расписанию воркера.");
-        } else {
+        if ($count <= 0) {
             Flash::error('Нет настроенных соцсетей. Включите их в разделе «Соцсети».');
+        } else {
+            // Пытаемся отправить сразу. Что не ушло — остаётся в очереди,
+            // и воркер дошлёт по расписанию.
+            $res = \App\Core\SocialSettings::dispatchPendingForNews((int) $news['id']);
+            if ($res['sent'] > 0 && $res['failed'] === 0) {
+                Flash::success("Опубликовано в соцсети: {$res['sent']}.");
+            } elseif ($res['sent'] > 0) {
+                Flash::success("Опубликовано: {$res['sent']}, не удалось: {$res['failed']} — оставлено в очереди. " . implode('; ', $res['errors']));
+            } elseif ($res['failed'] > 0) {
+                Flash::error('Не удалось опубликовать: ' . implode('; ', $res['errors']) . '. Оставлено в очереди — воркер повторит.');
+            } else {
+                Flash::success("Поставлено в очередь публикации: {$count}. Отправка — по расписанию воркера.");
+            }
         }
         // Из списка возвращаемся в список (с теми же фильтрами), из формы — в форму.
         if (($_POST['from'] ?? '') === 'list') {

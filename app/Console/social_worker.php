@@ -30,7 +30,6 @@ if ($workerLock === null) {
 use App\Core\Logger;
 use App\Core\SocialPublisher;
 use App\Core\SocialSettings;
-use App\Models\News;
 use App\Models\SocialPost;
 
 $batch = SocialPost::pendingBatch(20);
@@ -44,32 +43,15 @@ $sent = 0;
 $failed = 0;
 
 foreach ($batch as $row) {
-    $id = (int) $row['id'];
-    $network = (string) $row['network'];
-    $news = News::findById((int) $row['news_id']);
+    // Единая логика отправки строки очереди (см. SocialSettings::dispatchRow).
+    $res = SocialSettings::dispatchRow($row, $publisher);
 
-    // Новость удалена или снята с публикации — не публикуем.
-    if ($news === null || ($news['status'] ?? '') !== 'published' || !empty($news['deleted_at'])) {
-        SocialPost::markFailed($id, 'Новость недоступна или не опубликована.');
-        $failed++;
-        continue;
-    }
-    if (!SocialSettings::isReady($network)) {
-        SocialPost::markFailed($id, 'Сеть ' . $network . ' не настроена/выключена.');
-        $failed++;
-        continue;
-    }
-
-    $result = $publisher->publish($network, SocialSettings::configFor($network), SocialSettings::buildPost($news));
-
-    if ($result['ok']) {
-        SocialPost::markSent($id, $result['remote_id']);
+    if ($res['ok']) {
         $sent++;
-        fwrite(STDOUT, sprintf("OK %s <- новость #%d (%s)\n", $network, (int) $row['news_id'], (string) $result['remote_id']));
+        fwrite(STDOUT, sprintf("OK %s <- новость #%d\n", (string) $row['network'], (int) $row['news_id']));
     } else {
-        SocialPost::markFailed($id, (string) $result['error']);
         $failed++;
-        Logger::error(sprintf('Social publish failed [%s] news #%d: %s', $network, (int) $row['news_id'], (string) $result['error']));
+        Logger::error(sprintf('Social publish failed [%s] news #%d: %s', (string) $row['network'], (int) $row['news_id'], (string) $res['error']));
     }
 }
 

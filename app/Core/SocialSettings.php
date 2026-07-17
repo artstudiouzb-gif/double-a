@@ -176,4 +176,75 @@ final class SocialSettings
 
         return $count;
     }
+
+    /**
+     * Отправляет одну строку очереди немедленно. Та же логика, что в воркере
+     * (app/Console/social_worker.php) — единый источник правды. Обновляет
+     * статус строки (sent/failed) и возвращает результат.
+     *
+     * @param array<string, mixed> $row
+     * @return array{ok: bool, error: ?string}
+     */
+    public static function dispatchRow(array $row, ?SocialPublisher $publisher = null): array
+    {
+        $id = (int) $row['id'];
+        $network = (string) $row['network'];
+        $news = News::findById((int) $row['news_id']);
+
+        if ($news === null || ($news['status'] ?? '') !== 'published' || !empty($news['deleted_at'])) {
+            $err = 'Новость недоступна или не опубликована.';
+            SocialPost::markFailed($id, $err);
+
+            return ['ok' => false, 'error' => $err];
+        }
+        if (!self::isReady($network)) {
+            $err = 'Сеть ' . $network . ' не настроена/выключена.';
+            SocialPost::markFailed($id, $err);
+
+            return ['ok' => false, 'error' => $err];
+        }
+
+        $publisher ??= new SocialPublisher();
+        $result = $publisher->publish($network, self::configFor($network), self::buildPost($news));
+
+        if ($result['ok']) {
+            SocialPost::markSent($id, $result['remote_id']);
+
+            return ['ok' => true, 'error' => null];
+        }
+
+        SocialPost::markFailed($id, (string) $result['error']);
+
+        return ['ok' => false, 'error' => (string) $result['error']];
+    }
+
+    /**
+     * Немедленная отправка всех pending-публикаций новости (кнопка «в соцсети»).
+     * Что не удалось — остаётся в очереди (status pending) и будет дослано
+     * воркером по расписанию.
+     *
+     * @return array{sent: int, failed: int, errors: array<int, string>}
+     */
+    public static function dispatchPendingForNews(int $newsId): array
+    {
+        $sent = 0;
+        $failed = 0;
+        $errors = [];
+        $publisher = new SocialPublisher();
+
+        foreach (SocialPost::forNews($newsId) as $row) {
+            if ((string) ($row['status'] ?? '') !== 'pending') {
+                continue;
+            }
+            $res = self::dispatchRow($row, $publisher);
+            if ($res['ok']) {
+                $sent++;
+            } else {
+                $failed++;
+                $errors[] = (string) ($row['network'] ?? '') . ': ' . (string) $res['error'];
+            }
+        }
+
+        return ['sent' => $sent, 'failed' => $failed, 'errors' => $errors];
+    }
 }
