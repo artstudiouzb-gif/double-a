@@ -47,7 +47,7 @@ $ftypes = ['text' => 'Текст', 'textarea' => 'Многострочный', '
                         <input type="text" name="fields[<?= $i ?>][relation_type]" placeholder="slug типа" value="<?= htmlspecialchars((string) ($f['options']['relation_type'] ?? ''), ENT_QUOTES) ?>">
                     </div>
                     <div class="form-field form-field--checkbox"><input type="checkbox" name="fields[<?= $i ?>][required]" value="1" <?= !empty($f['required']) ? 'checked' : '' ?>><label>Обязательное</label></div>
-                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -61,11 +61,11 @@ $ftypes = ['text' => 'Текст', 'textarea' => 'Многострочный', '
             </div>
             <div class="form-field"><label>Связь с типом (для «Связь»)</label><input type="text" name="fields[__INDEX__][relation_type]" placeholder="slug типа"></div>
             <div class="form-field form-field--checkbox"><input type="checkbox" name="fields[__INDEX__][required]" value="1"><label>Обязательное</label></div>
-            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
         </template>
-        <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="cfields">+ Добавить поле</button></div>
+        <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="cfields"><?= \App\Core\AdminUi::icon('plus') ?>Добавить поле</button></div>
 
-        <div class="form-actions form-actions--sticky"><button type="submit" class="btn btn--primary">Сохранить поля</button></div>
+        <div class="form-actions form-actions--sticky"><button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить поля</button></div>
     </form>
 </div>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

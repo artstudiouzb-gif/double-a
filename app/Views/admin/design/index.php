@@ -339,7 +339,7 @@ foreach ($options as $key => $opt) {
     <?php endforeach; ?>
 
     <div class="design-actions">
-        <button type="submit" class="btn btn--primary">Сохранить настройки дизайна</button>
+        <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить настройки дизайна</button>
     </div>
 </form>
 

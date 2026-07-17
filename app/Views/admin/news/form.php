@@ -173,7 +173,7 @@ $languages = Language::active();
                                     <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[<?= $i ?>][url]']" data-media-type="all_files">Выбрать</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -187,9 +187,9 @@ $languages = Language::active();
                             <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[__INDEX__][url]']" data-media-type="all_files">Выбрать</button>
                         </div>
                     </div>
-                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
                 </template>
-                <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="docs">+ Добавить документ</button></div>
+                <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="docs"><?= \App\Core\AdminUi::icon('plus') ?>Добавить документ</button></div>
             </div>
         </details>
 
@@ -243,7 +243,7 @@ $languages = Language::active();
                 </div>
             </div>
             <div class="form-actions form-actions--sticky">
-                <button type="submit" class="btn btn--primary">Сохранить</button>
+                <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
                 <a href="/admin/news" class="btn">Отмена</a>
                 <?php if ($isEdit): ?>
                     <a href="/admin/news/<?= (int) $news['id'] ?>/preview" class="btn" target="_blank" rel="noopener">Предпросмотр ↗</a>

@@ -92,7 +92,7 @@ $widgetSelect = function (string $name, string $current) use ($widgets): string 
                 <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить колонку</button>
             </template>
             <div class="repeater-actions">
-                <button type="button" class="btn btn--small" data-repeater-add="footcol">+ Добавить колонку</button>
+                <button type="button" class="btn btn--small" data-repeater-add="footcol"><?= \App\Core\AdminUi::icon('plus') ?>Добавить колонку</button>
             </div>
         </div>
 
@@ -106,7 +106,7 @@ $widgetSelect = function (string $name, string $current) use ($widgets): string 
         </div>
 
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить подвал</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить подвал</button>
         </div>
     </form>
 </div>

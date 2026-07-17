@@ -178,7 +178,7 @@ foreach ($blocks as $b) {
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
             <a href="/admin/pages" class="btn">Отмена</a>
             <?php if ($isEdit): ?>
                 <a href="/admin/pages/<?= (int) $page['id'] ?>/preview?block_lang=<?= urlencode($blockLang) ?>"
@@ -239,7 +239,7 @@ foreach ($blocks as $b) {
                 <a class="btn btn--small" href="/admin/blocks/<?= (int) $block['id'] ?>/edit">Редактировать</a>
                 <form method="post" action="/admin/blocks/<?= (int) $block['id'] ?>/delete" data-confirm="Удалить блок?">
                     <?= Csrf::field() ?>
-                    <button type="submit" class="btn btn--small btn--danger">Удалить</button>
+                    <button type="submit" class="btn btn--small btn--danger"><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
                 </form>
             </div>
         </div>

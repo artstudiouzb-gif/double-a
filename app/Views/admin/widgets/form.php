@@ -117,7 +117,7 @@ $currentType = $widget['type'] ?? 'latest_news';
         </div>
 
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
             <a href="/admin/widgets" class="btn">Отмена</a>
         </div>
     </form>

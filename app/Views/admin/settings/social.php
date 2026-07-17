@@ -75,7 +75,7 @@ $signatureHints = [
             </fieldset>
         <?php endforeach; ?>
         <div class="form-actions">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
         </div>
     </form>
 </div>

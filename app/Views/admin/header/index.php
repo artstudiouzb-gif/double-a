@@ -360,7 +360,7 @@ $heightSelect = function (string $name, string $current): string {
                 <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
             </template>
             <div class="repeater-actions">
-                <button type="button" class="btn btn--small" data-repeater-add="social">+ Добавить соцсеть</button>
+                <button type="button" class="btn btn--small" data-repeater-add="social"><?= \App\Core\AdminUi::icon('plus') ?>Добавить соцсеть</button>
             </div>
         </div>
 
@@ -390,7 +390,7 @@ $heightSelect = function (string $name, string $current): string {
         </div>
 
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить шапку</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить шапку</button>
         </div>
     </form>
 </div>

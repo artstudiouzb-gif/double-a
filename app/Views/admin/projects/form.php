@@ -114,7 +114,7 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
                             <label>Подпись</label>
                             <input type="text" name="gallery[<?= $i ?>][caption]" value="<?= htmlspecialchars($image['caption'] ?? '', ENT_QUOTES) ?>">
                         </div>
-                        <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                        <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -127,10 +127,10 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
                     <label>Подпись</label>
                     <input type="text" name="gallery[__INDEX__][caption]">
                 </div>
-                <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
             </template>
             <div class="repeater-actions">
-                <button type="button" class="btn btn--small" data-repeater-add="gallery">+ Добавить изображение</button>
+                <button type="button" class="btn btn--small" data-repeater-add="gallery"><?= \App\Core\AdminUi::icon('plus') ?>Добавить изображение</button>
             </div>
             <span class="form-hint">Сначала загрузите изображения в разделе «Файлы» (публичный доступ), затем вставьте сюда ссылки.</span>
         </div>
@@ -148,7 +148,7 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
                             <label>Значение</label>
                             <input type="text" name="custom_fields[<?= $i ?>][value]" value="<?= htmlspecialchars($field['field_value'] ?? '', ENT_QUOTES) ?>">
                         </div>
-                        <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                        <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -161,15 +161,15 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
                     <label>Значение</label>
                     <input type="text" name="custom_fields[__INDEX__][value]">
                 </div>
-                <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить</button>
+                <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
             </template>
             <div class="repeater-actions">
-                <button type="button" class="btn btn--small" data-repeater-add="custom_fields">+ Добавить поле</button>
+                <button type="button" class="btn btn--small" data-repeater-add="custom_fields"><?= \App\Core\AdminUi::icon('plus') ?>Добавить поле</button>
             </div>
         </div>
 
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
             <a href="/admin/projects" class="btn">Отмена</a>
         </div>
     </form>

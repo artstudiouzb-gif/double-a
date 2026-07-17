@@ -206,7 +206,7 @@ require __DIR__ . '/../layout/header.php';
         </fieldset>
 
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить настройки</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить настройки</button>
         </div>
     </form>
 </div>

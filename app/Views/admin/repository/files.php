@@ -102,7 +102,7 @@ $categorySelect = static function (string $name, ?int $selected) use ($categorie
             'file' => 'repo_logo_file',
             'hint' => 'Пусто — стандартная иконка-щит. Лучше светлый/белый логотип: шапка портала тёмная.',
         ]) ?>
-        <div class="form-actions"><button type="submit" class="btn btn--primary">Сохранить</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button></div>
     </form>
 </div>
 

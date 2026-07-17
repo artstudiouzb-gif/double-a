@@ -83,7 +83,7 @@ $translationLangs = array_values(array_filter(
             <label for="is_featured">Показать на главной (блок «Медиа»)</label>
         </div>
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
         </div>
     </form>
 </div>

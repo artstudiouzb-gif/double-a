@@ -24,7 +24,7 @@ $langs = Language::active();
     </thead>
     <tbody>
         <?php if (empty($items)): ?>
-            <tr><td colspan="5" class="data-table__empty">Сотрудников пока нет.<br><a href="/admin/team/create" class="btn btn--small">+ Добавить первого сотрудника</a></td></tr>
+            <tr><td colspan="5" class="data-table__empty">Сотрудников пока нет.<br><a href="/admin/team/create" class="btn btn--small"><?= \App\Core\AdminUi::icon('plus') ?>Добавить первого сотрудника</a></td></tr>
         <?php endif; ?>
         <?php
         // Языки контента для всех строк одним запросом (без N+1).

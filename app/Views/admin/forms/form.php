@@ -132,12 +132,12 @@ $fields = $form['fields'] ?? [];
                 <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove>Удалить поле</button>
             </template>
             <div class="repeater-actions">
-                <button type="button" class="btn btn--small" data-repeater-add="fields">+ Добавить поле</button>
+                <button type="button" class="btn btn--small" data-repeater-add="fields"><?= \App\Core\AdminUi::icon('plus') ?>Добавить поле</button>
             </div>
         </div>
 
         <div class="form-actions form-actions--sticky">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
             <a href="/admin/forms" class="btn">Отмена</a>
         </div>
     </form>

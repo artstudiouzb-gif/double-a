@@ -68,7 +68,7 @@ $hasTr = (int) $type['has_translations'] === 1;
                 <option value="published" <?= ($entry['status'] ?? '') === 'published' ? 'selected' : '' ?>>Опубликовано</option>
             </select>
         </div>
-        <div class="form-actions form-actions--sticky"><button type="submit" class="btn btn--primary">Сохранить</button></div>
+        <div class="form-actions form-actions--sticky"><button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button></div>
     </form>
 </div>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

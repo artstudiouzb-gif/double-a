@@ -158,7 +158,7 @@ $renderNode = static function (array $item) use ($urlTypeLabels, $renderFields):
             <?= Csrf::field() ?>
             <?= $renderFields($item) ?>
             <div class="form-actions">
-                <button type="submit" class="btn btn--primary">Сохранить изменения</button>
+                <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить изменения</button>
                 <button type="button" class="btn" data-menu-edit-close>Отмена</button>
             </div>
         </form>

@@ -72,7 +72,7 @@ $translationLangs = array_values(array_filter(
             <label for="is_featured">Показать на главной (блок «Медиа»)</label>
         </div>
         <div class="form-actions">
-            <button type="submit" class="btn btn--primary">Сохранить</button>
+            <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
         </div>
     </form>
 </div>
@@ -109,7 +109,7 @@ $translationLangs = array_values(array_filter(
                 <?php endif; ?>
                 <form method="post" action="/admin/albums/<?= (int) $album['id'] ?>/images/<?= (int) $img['id'] ?>/delete" style="margin-top:8px;">
                     <?= Csrf::field() ?>
-                    <button type="submit" class="btn btn--small btn--danger">Убрать</button>
+                    <button type="submit" class="btn btn--small btn--danger"><?= \App\Core\AdminUi::icon('trash') ?>Убрать</button>
                 </form>
             </div>
         <?php endforeach; ?>
