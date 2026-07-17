@@ -889,6 +889,19 @@ body .site-header--transparent:not(.is-scrolled) { background: transparent; bord
    с «липкой» после прокрутки переключается в fixed со сплошным фоном. */
 body .site-header.site-header--transparent { position: absolute; left: 0; right: 0; top: var(--hdr-top, 0px); z-index: 200; }
 .site-topbar { position: relative; z-index: 210; }
+/* В прозрачном режиме верхняя полоса тоже накладывается на первый экран и
+   становится прозрачной (свой фон/границы убраны, текст и иконки белые) —
+   чтобы hero был виден и под ней, а не только под средней/нижней шапкой. */
+body:has(.site-header--transparent) .site-topbar {
+    position: absolute; left: 0; right: 0; top: var(--hdr-panel-height, 0px);
+    background: transparent; border-bottom: 0; color: #fff;
+}
+body:has(.site-header--transparent) .site-topbar a,
+body:has(.site-header--transparent) .site-topbar .site-lang-switcher__item,
+body:has(.site-header--transparent) .site-topbar .hdr-contact { color: #fff; }
+body:has(.site-header--transparent) .site-topbar .site-search-toggle,
+body:has(.site-header--transparent) .site-topbar .site-theme-toggle,
+body:has(.site-header--transparent) .site-topbar .a11y-toggle { border-color: rgba(255,255,255,.4); color: #fff; }
 body .site-header.site-header--transparent.site-header--sticky.is-scrolled { position: fixed; top: var(--hdr-panel-height, 0px) !important; animation: hdr-slide-down .25s ease; }
 @keyframes hdr-slide-down { from { transform: translateY(-100%); } to { transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { body .site-header.site-header--transparent.site-header--sticky.is-scrolled { animation: none; } }
