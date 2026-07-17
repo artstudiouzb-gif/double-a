@@ -80,7 +80,11 @@ final class SocialPublisher
         $limit = $photos !== [] ? self::TG_CAPTION_LIMIT : self::TG_TEXT_LIMIT;
         $caption = self::telegramCaption($post, (string) ($cfg['signature'] ?? ''), $limit, $esc);
 
-        $api = self::TG_API . '/bot' . rawurlencode((string) $cfg['token']);
+        // Токен используется в URL как есть: rawurlencode ломал бы двоеточие
+        // (12345:AAH… → 12345%3AAAH…), и Bot API отвечал бы 404 «Not Found».
+        // Токен — доверенная настройка суперадмина; лишь срезаем случайные
+        // пробелы/переводы строк от копипаста.
+        $api = self::TG_API . '/bot' . trim((string) $cfg['token']);
         $headers = ['Content-Type: application/json'];
 
         if (count($photos) >= 2) {

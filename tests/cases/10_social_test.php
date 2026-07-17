@@ -108,6 +108,9 @@ test('Social: Telegram без фото — sendMessage с HTML-подписью 
     assert_true($res['ok']);
     assert_same('42', $res['remote_id']);
     assert_contains('/sendMessage', $seen['url']);
+    // Токен идёт в URL как есть: двоеточие НЕ кодируется, иначе Bot API → 404.
+    assert_contains('/botBOT:T/sendMessage', $seen['url']);
+    assert_true(!str_contains($seen['url'], '%3A'), 'двоеточие токена не должно быть закодировано');
     $payload = json_decode($seen['body'], true);
     assert_same('@channel', $payload['chat_id']);
     assert_same('HTML', $payload['parse_mode']);
