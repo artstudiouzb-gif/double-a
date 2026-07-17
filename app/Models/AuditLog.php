@@ -13,6 +13,25 @@ use App\Core\Database;
  */
 final class AuditLog
 {
+    /** Срок хранения журнала действий (дней). */
+    public const RETENTION_DAYS = 180;
+
+    /**
+     * Изредка (в среднем 1 запись из 50) подчищает старьё прямо при записи —
+     * чтобы журнал был самоограничен даже без Cron (gdpr_cleanup). Дублирует
+     * ежесуточную очистку, но не полагается на неё. Тихо глотает ошибки.
+     */
+    private static function maybePurge(): void
+    {
+        try {
+            if (random_int(1, 50) === 1) {
+                self::purgeOlderThan(self::RETENTION_DAYS);
+            }
+        } catch (\Throwable $e) {
+            // Очистка — не критична; не мешаем основному запросу.
+        }
+    }
+
     /**
      * Записывает действие текущего запроса. Вызывается до диспетчеризации;
      * любая ошибка журнала не должна ломать сайт — глотаем с error_log.
@@ -44,6 +63,7 @@ final class AuditLog
                 ':path' => mb_substr($path, 0, 255),
                 ':ip' => mb_substr((string) ($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45),
             ]);
+            self::maybePurge();
         } catch (\Throwable $e) {
             error_log('Audit log failed: ' . $e->getMessage());
         }
@@ -69,6 +89,7 @@ final class AuditLog
                 ':path' => mb_substr('auth/' . $event, 0, 255),
                 ':ip' => mb_substr((string) ($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45),
             ]);
+            self::maybePurge();
         } catch (\Throwable $e) {
             error_log('Audit auth log failed: ' . $e->getMessage());
         }
