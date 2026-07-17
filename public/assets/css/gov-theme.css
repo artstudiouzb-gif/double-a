@@ -281,6 +281,9 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 /* Hero как шапка страницы: убираем верхний отступ контента, чтобы hero стоял
    вплотную под шапкой сайта (без зазора). */
 .site-content:has(> .cms-block--page-hero) { padding-top: 0; }
+/* Премиум-hero новости — полноширинный тёмный экран; прижимаем к шапке,
+   убирая верхний отступ контента (иначе светлая полоса-зазор). */
+.site-content:has(> .newsdetail--premium) { padding-top: 0; }
 
 /* Хлебные крошки как часть hero (шапка-герой): поверх фона, вверху секции,
    вместо отдельной серой полосы над hero. */
@@ -736,8 +739,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .newsdetail-phero { position: relative; left: calc(50% - 50vw); width: 100vw; min-height: 480px; display: flex; align-items: center; background: var(--gov-navy) center/cover no-repeat; color: #fff; }
 .newsdetail-phero__overlay { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(9,22,42,.93) 20%, rgba(9,22,42,.55) 55%, rgba(9,22,42,.25) 100%); }
 .newsdetail-phero__body { position: relative; width: 100%; max-width: var(--container-max); margin: 0 auto; padding: clamp(40px, 6vw, 72px) 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-/* Крошки внутри премиум-hero (вместо серой полосы над ним) — светлые на тёмном фоне. */
-.newsdetail-phero .content-crumbs { margin-bottom: 2px; font-size: .9rem; }
+/* Крошки внутри премиум-hero (вместо серой полосы над ним) — светлые на тёмном фоне.
+   Прижаты к верху секции (как на обычном hero), а не в центрированном теле —
+   иначе они оказываются ниже, чем крошки на остальных страницах. */
+.newsdetail-phero .content-crumbs {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+    width: 100%; max-width: var(--container-max); margin: 0 auto;
+    padding: clamp(14px, 2vw, 22px) 20px 0; font-size: .9rem;
+}
+body:has(.site-header--transparent) .newsdetail--premium .newsdetail-phero .content-crumbs { top: clamp(88px, 11vw, 130px); }
 .newsdetail-phero .content-crumbs a { color: rgba(255, 255, 255, .82); }
 .newsdetail-phero .content-crumbs a:hover { color: #fff; }
 .newsdetail-phero .content-crumbs span { color: rgba(255, 255, 255, .68); }
@@ -889,6 +899,19 @@ body .site-header--transparent:not(.is-scrolled) { background: transparent; bord
    с «липкой» после прокрутки переключается в fixed со сплошным фоном. */
 body .site-header.site-header--transparent { position: absolute; left: 0; right: 0; top: var(--hdr-top, 0px); z-index: 200; }
 .site-topbar { position: relative; z-index: 210; }
+/* В прозрачном режиме верхняя полоса тоже накладывается на первый экран и
+   становится прозрачной (свой фон/границы убраны, текст и иконки белые) —
+   чтобы hero был виден и под ней, а не только под средней/нижней шапкой. */
+body:has(.site-header--transparent) .site-topbar {
+    position: absolute; left: 0; right: 0; top: var(--hdr-panel-height, 0px);
+    background: transparent; border-bottom: 0; color: #fff;
+}
+body:has(.site-header--transparent) .site-topbar a,
+body:has(.site-header--transparent) .site-topbar .site-lang-switcher__item,
+body:has(.site-header--transparent) .site-topbar .hdr-contact { color: #fff; }
+body:has(.site-header--transparent) .site-topbar .site-search-toggle,
+body:has(.site-header--transparent) .site-topbar .site-theme-toggle,
+body:has(.site-header--transparent) .site-topbar .a11y-toggle { border-color: rgba(255,255,255,.4); color: #fff; }
 body .site-header.site-header--transparent.site-header--sticky.is-scrolled { position: fixed; top: var(--hdr-panel-height, 0px) !important; animation: hdr-slide-down .25s ease; }
 @keyframes hdr-slide-down { from { transform: translateY(-100%); } to { transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { body .site-header.site-header--transparent.site-header--sticky.is-scrolled { animation: none; } }
@@ -998,7 +1021,35 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .site-submenu::after { content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 12px; background: transparent; }
 .site-submenu__link { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; color: var(--gov-title); font-weight: 600; font-size: .92rem; text-transform: none; letter-spacing: 0; }
 .site-submenu__link:hover, .site-submenu__link:focus-visible { background: color-mix(in srgb, var(--gov-teal) 9%, var(--gov-surface)); color: var(--gov-teal-text); }
-.site-menu__toggle { color: var(--gov-teal); background: transparent; border: 0; cursor: pointer; font-size: 0.625rem; padding: 4px; }
+.site-submenu__link .site-menu__icon,
+.site-submenu__link svg { color: var(--gov-teal); flex-shrink: 0; transition: transform .18s ease; }
+.site-submenu__link:hover .site-menu__icon,
+.site-submenu__link:hover svg { transform: translateX(2px); }
+/* Индикатор подменю (▾): плавный поворот на 180° при раскрытии. */
+.site-menu__toggle { display: inline-flex; align-items: center; justify-content: center; color: var(--gov-teal); background: transparent; border: 0; cursor: pointer; font-size: 0.7rem; padding: 4px; transition: transform .2s ease; }
+.site-menu__item.is-open > .site-menu__toggle { transform: rotate(180deg); }
+@media (hover: hover) and (min-width: 901px) {
+    .site-menu__item--has-children:hover > .site-menu__toggle,
+    .site-menu__item--has-children:focus-within > .site-menu__toggle { transform: rotate(180deg); }
+}
+
+/* Мягкое появление дропдауна (десктоп): лёгкий сдвиг вниз + fade вместо
+   мгновенного показа. Мобильный аккордеон (static) не трогаем. */
+@media (min-width: 901px) {
+    .site-menu__item--has-children:hover > .site-submenu,
+    .site-menu__item--has-children:focus-within > .site-submenu,
+    .site-menu__item.is-open > .site-submenu { animation: submenu-in .18s ease; }
+}
+@keyframes submenu-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .site-menu__item--has-children:hover > .site-submenu,
+    .site-menu__item--has-children:focus-within > .site-submenu,
+    .site-menu__item.is-open > .site-submenu { animation: none; }
+    .site-menu__toggle { transition: none; }
+}
 
 /* Мобильное меню: вложенные подпункты с отступом и teal-чертой. */
 @media (max-width: 900px) {
@@ -1494,4 +1545,95 @@ a.orgstruct__head:hover .orgstruct__head-name { color: color-mix(in srgb, var(--
 .newsdetail-photos__item > img {
     display: block; width: 100%; height: 100%;
     object-fit: cover; border-radius: inherit;
+}
+
+/* ==========================================================================
+   Статичные размеры заголовков (Дизайн → Типографика → «Статичные»).
+   Плавающие clamp(min, Nvw, max) заменяются фиксированным размером (max)
+   на десктопе и min на узких экранах — «спокойная» типографика без
+   непрерывного масштабирования по ширине. Тело body получает класс
+   .design-type-static из DesignSettings::bodyClasses().
+   ========================================================================== */
+body.design-type-static .counter__value,
+body.design-type-static .counter__suffix { font-size: 2.5rem; }
+body.design-type-static h1 { font-size: 2.5rem; }
+body.design-type-static h2 { font-size: 1.95rem; }
+body.design-type-static h3 { font-size: 1.55rem; }
+body.design-type-static h4 { font-size: 1.25rem; }
+body.design-type-static .block-hero--media .block-hero__title { font-size: 3.7rem; }
+body.design-type-static .block-hero--media .block-hero__subtitle { font-size: 1.18rem; }
+body.design-type-static .block-hero__title { font-size: 3.4rem; }
+body.design-type-static .block-hero__subtitle { font-size: 1.22rem; }
+body.design-type-static .section-head__title { font-size: 2rem; }
+body.design-type-static .timeline-cta__title { font-size: 1.7rem; }
+body.design-type-static .profile__name { font-size: 2.5rem; }
+body.design-type-static .block-featband__title { font-size: 2rem; }
+body.design-type-static .newsdetail__title { font-size: 2.9rem; }
+body.design-type-static .newsdetail-phero__title { font-size: 3rem; }
+body.design-type-static .block-banner--light .block-banner__title { font-size: 2.7rem; }
+body.design-type-static .block-banner__title { font-size: 2.4rem; }
+body.design-type-static .textimage__title,
+body.design-type-static .block-map__title { font-size: 1.9rem; }
+body.design-type-static .listing__title,
+body.design-type-static .content-pagehead__title { font-size: 2.6rem; }
+body.design-type-static .newslist-lead__title { font-size: 1.7rem; }
+body.design-type-static .projdetail__title { font-size: 2.6rem; }
+body.design-type-static .catdetail__title { font-size: 2.4rem; }
+body.design-type-static .block-cta h2 { font-size: 2.8rem; }
+body.design-type-static .cms-columns__col .cms-block--cta .block-cta h2 { font-size: 1.6rem; }
+body.design-type-static .site-content > section.cms-block--cta:first-of-type .block-cta h2,
+body.design-type-static .page-blocks > section.cms-block--cta:first-of-type .block-cta h2 { font-size: 3.4rem; }
+body.design-type-static .site-content > section.cms-block--cta:first-of-type .block-cta p,
+body.design-type-static .page-blocks > section.cms-block--cta:first-of-type .block-cta p { font-size: 1.22rem; }
+body.design-type-static .block-news__title { font-size: 2rem; }
+body.design-type-static .content-list__head h1 { font-size: 2.4rem; }
+body.design-type-static .news-index__title { font-size: 2.5rem; }
+body.design-type-static .news-single h1 { font-size: 2.6rem; }
+body.design-type-static .block-contact-cards__title { font-size: 2rem; }
+body.design-type-static .block-categories__title { font-size: 2rem; }
+body.design-type-static .block-media__title { font-size: 1.8rem; }
+body.design-type-static .block-counters__title,
+body.design-type-static .block-team__title,
+body.design-type-static .block-projects__title,
+body.design-type-static .section-title { font-size: 2.1rem !important; }
+
+/* Узкие экраны: крупные заголовки берут нижнюю границу прежнего clamp,
+   чтобы не переполнять строку (мелкие подзаголовки/h4 не трогаем). */
+@media (max-width: 640px) {
+    body.design-type-static .counter__value,
+    body.design-type-static .counter__suffix { font-size: 1.75rem; }
+    body.design-type-static h1 { font-size: 1.8rem; }
+    body.design-type-static h2 { font-size: 1.45rem; }
+    body.design-type-static h3 { font-size: 1.2rem; }
+    body.design-type-static .block-hero--media .block-hero__title { font-size: 2.2rem; }
+    body.design-type-static .block-hero__title { font-size: 2rem; }
+    body.design-type-static .section-head__title { font-size: 1.5rem; }
+    body.design-type-static .timeline-cta__title { font-size: 1.3rem; }
+    body.design-type-static .profile__name { font-size: 1.8rem; }
+    body.design-type-static .block-featband__title { font-size: 1.5rem; }
+    body.design-type-static .newsdetail__title { font-size: 1.9rem; }
+    body.design-type-static .newsdetail-phero__title { font-size: 1.9rem; }
+    body.design-type-static .block-banner--light .block-banner__title { font-size: 1.9rem; }
+    body.design-type-static .block-banner__title { font-size: 1.6rem; }
+    body.design-type-static .textimage__title,
+    body.design-type-static .block-map__title { font-size: 1.4rem; }
+    body.design-type-static .listing__title,
+    body.design-type-static .content-pagehead__title { font-size: 1.9rem; }
+    body.design-type-static .newslist-lead__title { font-size: 1.3rem; }
+    body.design-type-static .projdetail__title { font-size: 1.8rem; }
+    body.design-type-static .catdetail__title { font-size: 1.7rem; }
+    body.design-type-static .block-cta h2 { font-size: 1.8rem; }
+    body.design-type-static .site-content > section.cms-block--cta:first-of-type .block-cta h2,
+    body.design-type-static .page-blocks > section.cms-block--cta:first-of-type .block-cta h2 { font-size: 2rem; }
+    body.design-type-static .block-news__title { font-size: 1.5rem; }
+    body.design-type-static .content-list__head h1 { font-size: 1.7rem; }
+    body.design-type-static .news-index__title { font-size: 1.8rem; }
+    body.design-type-static .news-single h1 { font-size: 1.7rem; }
+    body.design-type-static .block-contact-cards__title { font-size: 1.5rem; }
+    body.design-type-static .block-categories__title { font-size: 1.4rem; }
+    body.design-type-static .block-media__title { font-size: 1.3rem; }
+    body.design-type-static .block-counters__title,
+    body.design-type-static .block-team__title,
+    body.design-type-static .block-projects__title,
+    body.design-type-static .section-title { font-size: 1.5rem !important; }
 }

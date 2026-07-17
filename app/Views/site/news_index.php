@@ -65,7 +65,6 @@ $pageUrl = static fn (int $p): string => Locale::url('news')
                     <?php if (!empty($featured['published_at'])): ?><time class="newslist__date"><?= htmlspecialchars($fmt((string) $featured['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                     <span class="newslist-lead__title"><?= htmlspecialchars((string) $featured['title'], ENT_QUOTES) ?></span>
                     <?php if (!empty($featured['excerpt'])): ?><span class="newslist-lead__excerpt"><?= htmlspecialchars(mb_substr(strip_tags((string) $featured['excerpt']), 0, 200), ENT_QUOTES) ?></span><?php endif; ?>
-                    <span class="newsfeat__more"><?= htmlspecialchars(t('Читать далее'), ENT_QUOTES) ?> →</span>
                 </span>
             </a>
         <?php endif; ?>

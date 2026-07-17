@@ -268,6 +268,8 @@ $fragments = [
     'email' => $emailHtml,
     'snippet' => $snippetHtml !== '' ? '<span class="hdr-snippet">' . $snippetHtml . '</span>' : '',
     'divider' => '<span class="site-header__divider" aria-hidden="true"></span>',
+    'spacer' => '<span class="site-header__spacer" aria-hidden="true"></span>',
+    'space' => '<span class="site-header__space" aria-hidden="true"></span>',
 ];
 
 // --- Pro Max: верхняя утилитарная полоса (top section) ---

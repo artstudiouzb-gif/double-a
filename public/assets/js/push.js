@@ -22,8 +22,18 @@
     btn.className = 'push-optin';
     var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>';
 
+    var LABELS = window.__pushLabels || {};
+    var LABEL_ON = LABELS.on || 'Уведомления включены';
+    var LABEL_OFF = LABELS.off || 'Уведомления о новостях';
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
     function setState(subscribed) {
-        btn.innerHTML = ICON + (subscribed ? ' Уведомления включены' : ' Уведомления о новостях');
+        btn.innerHTML = ICON + ' ' + escapeHtml(subscribed ? LABEL_ON : LABEL_OFF);
         btn.classList.toggle('is-on', subscribed);
         btn.setAttribute('aria-pressed', subscribed ? 'true' : 'false');
     }

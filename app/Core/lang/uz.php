@@ -158,4 +158,6 @@ return [
     'Поделиться в X' => 'X orqali ulashish',
     'Поделиться в LinkedIn' => 'LinkedIn orqali ulashish',
     'Календарь на' => 'Taqvim:',
+    'Уведомления о новостях' => 'Yangiliklar haqida bildirishnomalar',
+    'Уведомления включены' => 'Bildirishnomalar yoqilgan',
 ];

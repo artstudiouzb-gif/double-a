@@ -164,7 +164,10 @@ $renderFooterWidget = function (array $col) use ($footerLogo, $siteName, $addres
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/forms.js'), ENT_QUOTES) ?>" defer></script>
 <?php $cspNonce = \App\Core\SecurityHeaders::nonce(); ?>
 <?php if (\App\Core\WebPush::isEnabled()): ?>
-<script nonce="<?= $cspNonce ?>">window.__pushEnabled = true;</script>
+<script nonce="<?= $cspNonce ?>">window.__pushEnabled = true; window.__pushLabels = <?= json_encode([
+    'off' => t('Уведомления о новостях'),
+    'on' => t('Уведомления включены'),
+], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;</script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/push.js'), ENT_QUOTES) ?>" defer></script>
 <?php endif; ?>
 <?= \App\Core\AssetCollector::renderScripts() /* JS блоков — по одному разу */ ?>

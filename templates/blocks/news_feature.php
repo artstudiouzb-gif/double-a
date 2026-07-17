@@ -38,7 +38,6 @@ $fmt = static fn (string $d): string => DateFormatter::long($d, $lang);
                 <?php if (!empty($featured['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $featured['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                 <span class="newsfeat-lead__title"><?= htmlspecialchars((string) $featured['title'], ENT_QUOTES) ?></span>
                 <?php if (!empty($featured['excerpt'])): ?><span class="newsfeat-lead__excerpt"><?= htmlspecialchars(mb_substr(strip_tags((string) $featured['excerpt']), 0, 160), ENT_QUOTES) ?></span><?php endif; ?>
-                <span class="newsfeat__more"><?= htmlspecialchars(t('Читать далее'), ENT_QUOTES) ?> →</span>
             </span>
         </a>
 
@@ -55,7 +54,6 @@ $fmt = static fn (string $d): string => DateFormatter::long($d, $lang);
                             <span class="newsfeat-mini__body">
                                 <?php if (!empty($item['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                                 <span class="newsfeat-mini__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
-                                <span class="newsfeat__more"><?= htmlspecialchars(t('Читать далее'), ENT_QUOTES) ?> →</span>
                             </span>
                         </a>
                     <?php endforeach; ?>
@@ -67,7 +65,6 @@ $fmt = static fn (string $d): string => DateFormatter::long($d, $lang);
                         <a class="newsfeat-text" href="<?= htmlspecialchars((string) $item['url'], ENT_QUOTES) ?>">
                             <?php if (!empty($item['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                             <span class="newsfeat-text__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
-                            <span class="newsfeat__more"><?= htmlspecialchars(t('Читать далее'), ENT_QUOTES) ?> →</span>
                         </a>
                     <?php endforeach; ?>
                 </div>

@@ -158,4 +158,6 @@ return [
     'Поделиться в X' => 'Share on X',
     'Поделиться в LinkedIn' => 'Share on LinkedIn',
     'Календарь на' => 'Calendar for',
+    'Уведомления о новостях' => 'News notifications',
+    'Уведомления включены' => 'Notifications enabled',
 ];

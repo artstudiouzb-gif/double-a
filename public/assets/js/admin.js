@@ -740,7 +740,7 @@
    ========================================================================== */
 (function () {
     'use strict';
-    var REPEATABLE = ['divider'];
+    var REPEATABLE = ['divider', 'spacer', 'space'];
     var builders = document.querySelectorAll('[data-hdr-builder]');
     if (!builders.length) { return; }
     // Pro Max: палитра — общий источник (чипы клонируются), секции — приёмники.

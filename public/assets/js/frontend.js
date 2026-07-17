@@ -317,6 +317,8 @@
             if (hdr.classList.contains('site-header--transparent')) {
                 var topbarHeight = topbar ? topbar.offsetHeight : 0;
                 hdr.style.setProperty('--hdr-top', (topbarHeight + panelHeight) + 'px');
+                // Верхняя полоса тоже наложена (absolute) — держим её под a11y-панелью.
+                if (topbar) { topbar.style.setProperty('--hdr-panel-height', panelHeight + 'px'); }
             }
         };
         var apply = function () {

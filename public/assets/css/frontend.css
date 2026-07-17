@@ -1360,6 +1360,10 @@ body.design-header-dark .site-nav { border-top-color: rgba(255, 255, 255, .14); 
 /* Разделитель-спейсер между элементами верхнего ряда шапки. */
 .site-header__divider { display: inline-block; width: 1px; height: 22px; align-self: center; background: color-mix(in srgb, currentColor 28%, transparent); }
 .site-header__zone .site-header__divider { margin: 0 2px; }
+/* Гибкий отступ: растягивается и расталкивает соседние элементы в зоне. */
+.site-header__spacer { flex: 1 1 auto; min-width: 12px; align-self: stretch; }
+/* Пробел: фиксированный горизонтальный зазор между элементами. */
+.site-header__space { display: inline-block; flex: 0 0 auto; width: 24px; align-self: center; }
 
 .site-menu__link, .site-submenu__link { display: inline-flex; align-items: center; gap: 8px; }
 .site-menu__icon { display: inline-flex; align-items: center; }
