@@ -24,41 +24,6 @@ if (!empty($news['published_at'])) {
 $defaultCode = Language::defaultCode();
 $languages = Language::active();
 ?>
-<?php if ($isEdit): ?>
-    <?php
-    $socialPosts = \App\Models\SocialPost::forNews((int) $news['id']);
-    $readyNetworks = \App\Core\SocialSettings::readyNetworks();
-    $netLabels = ['facebook' => 'Facebook', 'linkedin' => 'LinkedIn', 'instagram' => 'Instagram'];
-    ?>
-    <div class="form-card" style="margin-bottom:20px;">
-        <h2 style="margin-top:0;">Соцсети</h2>
-        <?php if (empty($readyNetworks)): ?>
-            <p class="form-hint">Ни одна сеть не настроена. Включите их в разделе
-                <a href="/admin/social">«Соцсети»</a>.</p>
-        <?php else: ?>
-            <?php if (!empty($socialPosts)): ?>
-                <table class="data-table" style="margin-bottom:12px;">
-                    <thead><tr><th>Сеть</th><th>Статус</th><th>Попыток</th><th>Инфо</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($socialPosts as $sp): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($netLabels[$sp['network']] ?? $sp['network'], ENT_QUOTES) ?></td>
-                                <td><span class="badge badge--<?= $sp['status'] === 'sent' ? 'published' : ($sp['status'] === 'failed' ? 'draft' : 'draft') ?>"><?= htmlspecialchars((string) $sp['status'], ENT_QUOTES) ?></span></td>
-                                <td><?= (int) $sp['attempts'] ?></td>
-                                <td><?= htmlspecialchars((string) ($sp['remote_id'] ?: ($sp['last_error'] ?? '')), ENT_QUOTES) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-            <form method="post" action="/admin/news/<?= (int) $news['id'] ?>/social">
-                <?= Csrf::field() ?>
-                <button type="submit" class="btn">Опубликовать в соцсетях сейчас</button>
-                <span class="form-hint">Ставит в очередь; отправку выполняет воркер по Cron.</span>
-            </form>
-        <?php endif; ?>
-    </div>
-<?php endif; ?>
 <?php if ($error): ?><div class="alert alert--error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div><?php endif; ?>
 <?php if ($isEdit): ?>
     <div style="margin-bottom:16px;"><a class="btn btn--small" href="/admin/revisions/news/<?= (int) $news['id'] ?>">История версий</a></div>
@@ -285,7 +250,52 @@ $languages = Language::active();
                 <?php endif; ?>
             </div>
         </div>
+
+        <?php if ($isEdit): ?>
+            <?php
+            // Кнопка публикации отправляет отдельную форму (см. #news-social-form
+            // ниже, вне основной формы — вложенные <form> недопустимы).
+            $socialPosts = \App\Models\SocialPost::forNews((int) $news['id']);
+            $readyNetworks = \App\Core\SocialSettings::readyNetworks();
+            $netLabels = ['telegram' => 'Telegram', 'facebook' => 'Facebook', 'linkedin' => 'LinkedIn', 'instagram' => 'Instagram'];
+            $stBadge = ['sent' => 'published', 'failed' => 'danger', 'pending' => 'draft'];
+            ?>
+            <div class="form-card" style="margin-top:20px;">
+                <h2 style="margin-top:0;">Соцсети</h2>
+                <?php if (empty($readyNetworks)): ?>
+                    <p class="form-hint">Ни одна сеть не настроена. Включите их в разделе
+                        <a href="/admin/social">«Соцсети»</a>.</p>
+                <?php else: ?>
+                    <?php if (!empty($socialPosts)): ?>
+                        <table class="data-table" style="margin-bottom:12px;">
+                            <thead><tr><th>Сеть</th><th>Статус</th><th>Попыток</th><th>Инфо</th></tr></thead>
+                            <tbody>
+                                <?php foreach ($socialPosts as $sp): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($netLabels[$sp['network']] ?? $sp['network'], ENT_QUOTES) ?></td>
+                                        <td><span class="badge badge--<?= $stBadge[$sp['status']] ?? 'draft' ?>"><?= htmlspecialchars((string) $sp['status'], ENT_QUOTES) ?></span></td>
+                                        <td><?= (int) $sp['attempts'] ?></td>
+                                        <td><?= htmlspecialchars((string) ($sp['remote_id'] ?: ($sp['last_error'] ?? '')), ENT_QUOTES) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <button type="submit" form="news-social-form" class="btn btn--social">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Опубликовать в соцсетях сейчас
+                    </button>
+                    <p class="form-hint" style="margin-bottom:0;">Пытается отправить сразу; что не ушло — досылает воркер по Cron.</p>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </aside>
     </div>
 </form>
+<?php if ($isEdit): ?>
+    <?php // Отдельная форма публикации в соцсети — вне основной формы (вложение форм недопустимо). ?>
+    <form id="news-social-form" method="post" action="/admin/news/<?= (int) $news['id'] ?>/social" hidden>
+        <?= Csrf::field() ?>
+    </form>
+<?php endif; ?>
 <?php require __DIR__ . '/../layout/footer.php'; ?>
