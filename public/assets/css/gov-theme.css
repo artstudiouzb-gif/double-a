@@ -599,6 +599,11 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 /* --- Доступность (WCAG, гос-требования): фокус-кольца, контраст, touch-цели --- */
 :root { --gov-teal-text: #117978; } /* teal для мелкого текста: ≥4.5:1 на белом, светло-сером и бирюзовом тинте бейджей */
 :root[data-theme="dark"] { --gov-teal-text: #3fc1c0; }
+/* Альтернативный фон-подложка (карточки-выноски в контенте, напр. .gov-card из
+   демо). Раньше был не определён — везде брался светлый фолбэк #f8f9fa, из-за
+   чего в тёмной теме подложка оставалась белой. */
+:root { --gov-bg-alt: #f8f9fa; }
+:root[data-theme="dark"] { --gov-bg-alt: #1c2942; }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
     outline: 3px solid var(--gov-teal); outline-offset: 2px; border-radius: 4px;
 }
