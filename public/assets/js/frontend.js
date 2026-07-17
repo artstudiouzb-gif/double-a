@@ -331,6 +331,27 @@
         apply();
     })();
 
+    // Плавающая кнопка «Наверх»: активна только при включённом тумблере
+    // (body.design-scrolltop), появляется после прокрутки, скроллит вверх.
+    (function () {
+        if (!document.body.classList.contains('design-scrolltop')) { return; }
+        var btn = document.querySelector('[data-scroll-top]');
+        if (!btn) { return; }
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var shown = false;
+        var toggle = function () {
+            var need = window.scrollY > 600;
+            if (need === shown) { return; }
+            shown = need;
+            btn.classList.toggle('is-visible', need);
+        };
+        window.addEventListener('scroll', toggle, { passive: true });
+        btn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+        });
+        toggle();
+    })();
+
     // Делегированные обработчики вместо инлайн-атрибутов (CSP без 'unsafe-inline'):
     // [data-auto-submit] — селект отправляет свою форму; [data-captcha-refresh] —
     // кнопка обновляет картинку капчи рядом с собой.

@@ -1656,3 +1656,26 @@ body.design-type-static .section-title { font-size: 2.1rem !important; }
     body.design-type-static .block-projects__title,
     body.design-type-static .section-title { font-size: 1.5rem !important; }
 }
+
+/* ==========================================================================
+   Плавающая кнопка «Наверх» (Дизайн → Общие → Кнопка «Наверх»).
+   Показывается только при включённом тумблере (body.design-scrolltop) и
+   после прокрутки (класс .is-visible от frontend.js). Тема-зависимая.
+   ========================================================================== */
+.scroll-top { display: none; }
+body.design-scrolltop .scroll-top {
+    position: fixed; right: clamp(16px, 3vw, 28px); bottom: clamp(16px, 3vw, 28px); z-index: 300;
+    display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid var(--gov-border); background: var(--gov-surface); color: var(--gov-title);
+    box-shadow: 0 8px 24px rgba(11, 26, 48, .18); cursor: pointer;
+    opacity: 0; visibility: hidden; transform: translateY(10px); pointer-events: none;
+    transition: opacity .2s ease, visibility .2s ease, transform .2s ease, background .15s ease, color .15s ease, border-color .15s ease;
+}
+body.design-scrolltop .scroll-top.is-visible { opacity: 1; visibility: visible; transform: none; pointer-events: auto; }
+body.design-scrolltop .scroll-top:hover { background: var(--gov-teal); color: #fff; border-color: var(--gov-teal); }
+body.design-scrolltop .scroll-top:focus-visible { outline: 2px solid var(--gov-teal); outline-offset: 2px; }
+@media print { .scroll-top { display: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+    body.design-scrolltop .scroll-top { transition: opacity .2s ease, visibility .2s ease; transform: none; }
+    body.design-scrolltop .scroll-top.is-visible { transform: none; }
+}

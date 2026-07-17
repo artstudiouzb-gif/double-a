@@ -160,4 +160,5 @@ return [
     'Календарь на' => 'Taqvim:',
     'Уведомления о новостях' => 'Yangiliklar haqida bildirishnomalar',
     'Уведомления включены' => 'Bildirishnomalar yoqilgan',
+    'Наверх' => 'Yuqoriga',
 ];
