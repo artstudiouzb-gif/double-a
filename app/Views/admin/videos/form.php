@@ -2,12 +2,20 @@
 
 use App\Core\AdminUi;
 use App\Core\Csrf;
+use App\Models\Language;
 
 /** @var array $video */
+/** @var array $translations */
 
 $pageTitle = 'Видео: ' . $video['title'];
 $activeNav = 'videos';
 require __DIR__ . '/../layout/header.php';
+
+$defaultCode = Language::defaultCode();
+$translationLangs = array_values(array_filter(
+    Language::active(),
+    static fn (array $l): bool => (string) $l['code'] !== $defaultCode
+));
 ?>
 <p><a href="/admin/videos" class="btn btn--small">← Все видео</a></p>
 
@@ -20,9 +28,34 @@ require __DIR__ . '/../layout/header.php';
             <input type="text" id="title" name="title" value="<?= htmlspecialchars((string) $video['title'], ENT_QUOTES) ?>" required>
         </div>
         <div class="form-field">
-            <label for="description">Описание</label>
+            <label for="description">Описание<?php if ($translationLangs): ?> <span class="form-hint" style="font-weight:400;">(основной язык)</span><?php endif; ?></label>
             <textarea id="description" name="description" rows="3"><?= htmlspecialchars((string) ($video['description'] ?? ''), ENT_QUOTES) ?></textarea>
         </div>
+        <?php if ($translationLangs): ?>
+            <div data-lang-tabs style="border:1px solid var(--admin-border,#e3e6ea);border-radius:8px;padding:12px;">
+                <div class="lang-tabs">
+                    <?php foreach ($translationLangs as $i => $lang): ?>
+                        <button type="button" class="lang-tab-btn <?= $i === 0 ? 'is-active' : '' ?>" data-lang-target="<?= htmlspecialchars($lang['code'], ENT_QUOTES) ?>">
+                            <?= htmlspecialchars($lang['name'], ENT_QUOTES) ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+                <?php foreach ($translationLangs as $i => $lang): ?>
+                    <?php $code = (string) $lang['code']; $t = $translations[$code] ?? []; ?>
+                    <div class="lang-tab-panel <?= $i === 0 ? 'is-active' : '' ?>" data-lang-panel="<?= htmlspecialchars($code, ENT_QUOTES) ?>">
+                        <p class="form-hint">Перевод для языка «<?= htmlspecialchars($lang['name'], ENT_QUOTES) ?>». Пустые поля на сайте заменяются версией основного языка.</p>
+                        <div class="form-field">
+                            <label>Название</label>
+                            <input type="text" name="translations[<?= $code ?>][title]" value="<?= htmlspecialchars((string) ($t['title'] ?? ''), ENT_QUOTES) ?>">
+                        </div>
+                        <div class="form-field">
+                            <label>Описание</label>
+                            <textarea name="translations[<?= $code ?>][description]" rows="3"><?= htmlspecialchars((string) ($t['description'] ?? ''), ENT_QUOTES) ?></textarea>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
         <?= AdminUi::imageField('cover_url', (string) ($video['cover_url'] ?? ''), [
             'label' => 'Обложка',
             'file' => 'cover_file',

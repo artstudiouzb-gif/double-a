@@ -9,7 +9,9 @@ use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\ImageField;
 use App\Core\View;
+use App\Models\Language;
 use App\Models\Video;
+use App\Models\VideoTranslation;
 
 /**
  * Управление видео: список + создание, редактирование (обложка, ссылка,
@@ -49,7 +51,10 @@ final class VideoController
             View::render('errors/404');
             return;
         }
-        View::render('admin/videos/form', ['video' => $video]);
+        View::render('admin/videos/form', [
+            'video' => $video,
+            'translations' => VideoTranslation::forVideo((int) $video['id']),
+        ]);
     }
 
     public function update(array $params): void
@@ -78,9 +83,31 @@ final class VideoController
             !empty($_POST['is_featured']),
             (int) ($_POST['sort_order'] ?? 0)
         );
+        $this->saveTranslations($id);
         Flash::success('Видео сохранено.');
         header('Location: /admin/videos/' . $id . '/edit');
         exit;
+    }
+
+    /**
+     * Сохраняет переводы (title, description) для всех НЕ-основных активных
+     * языков из полей translations[<lang>][...].
+     */
+    private function saveTranslations(int $videoId): void
+    {
+        $defaultCode = Language::defaultCode();
+        $input = (array) ($_POST['translations'] ?? []);
+        foreach (Language::active() as $lang) {
+            $code = (string) $lang['code'];
+            if ($code === $defaultCode) {
+                continue;
+            }
+            $t = (array) ($input[$code] ?? []);
+            VideoTranslation::upsert($videoId, $code, [
+                'title' => trim((string) ($t['title'] ?? '')),
+                'description' => trim((string) ($t['description'] ?? '')),
+            ]);
+        }
     }
 
     public function destroy(array $params): void

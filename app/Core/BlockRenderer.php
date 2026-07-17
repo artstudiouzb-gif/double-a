@@ -265,12 +265,12 @@ final class BlockRenderer
         // Блоки-обёртки над существующими сущностями (группа 4): выводят
         // опубликованные записи команды/проектов, ограниченные limit (0 = все).
         if ($type === 'team_list') {
-            $items = \App\Models\TeamMember::published();
+            $items = \App\Models\TeamMember::published(Locale::current());
             $limit = (int) ($data['limit'] ?? 0);
             $data['members'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
         }
         if ($type === 'projects_list') {
-            $items = \App\Models\Project::published();
+            $items = \App\Models\Project::published(Locale::current());
             $limit = (int) ($data['limit'] ?? 0);
             $data['projects'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
         }
@@ -353,7 +353,7 @@ final class BlockRenderer
             $lang = Locale::current();
             $limit = (int) ($data['limit'] ?? 6);
             $items = [];
-            foreach (\App\Models\Project::forHome($limit) as $p) {
+            foreach (\App\Models\Project::forHome($limit, $lang) as $p) {
                 $items[] = [
                     'image' => (string) ($p['cover_image'] ?? ''),
                     'title' => (string) $p['title'],
@@ -376,7 +376,7 @@ final class BlockRenderer
             $limit = (int) ($data['limit'] ?? 8);
             $items = [];
             if ($mediaSource === 'videos' || $mediaSource === 'media') {
-                foreach (\App\Models\Video::forHome($limit) as $v) {
+                foreach (\App\Models\Video::forHome($limit, $lang) as $v) {
                     $items[] = [
                         'kind' => 'video',
                         'image' => (string) ($v['cover_url'] ?? ''),
@@ -387,7 +387,7 @@ final class BlockRenderer
                 }
             }
             if ($mediaSource === 'albums' || $mediaSource === 'media') {
-                foreach (\App\Models\PhotoAlbum::forHome($limit) as $a) {
+                foreach (\App\Models\PhotoAlbum::forHome($limit, $lang) as $a) {
                     $items[] = [
                         'kind' => 'photo',
                         'image' => \App\Models\PhotoAlbum::coverFor($a),

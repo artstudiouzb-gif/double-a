@@ -75,18 +75,7 @@ $langs = Language::active();
             <tr>
                 <td><input type="checkbox" name="ids[]" value="<?= (int) $item['id'] ?>" form="bulkform" data-bulk-item></td>
                 <td><a class="data-table__primary" href="/admin/news/<?= (int) $item['id'] ?>/edit"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></a></td>
-                <td style="white-space:nowrap;">
-                    <?php
-                    $has = $langMap[(int) $item['id']] ?? [];
-                    foreach ($siteLangs as $code):
-                        $on = in_array($code, $has, true);
-                        ?>
-                        <span title="<?= $on ? 'Контент на этом языке есть' : 'Перевода нет' ?>"
-                              style="display:inline-block;margin-right:4px;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;<?= $on
-                                  ? 'background:#e6f4ea;color:#1e7e34;'
-                                  : 'background:#f1f2f4;color:#9aa0a6;' ?>"><?= htmlspecialchars($code, ENT_QUOTES) ?></span>
-                    <?php endforeach; ?>
-                </td>
+                <td style="white-space:nowrap;"><?= \App\Core\View::renderPartial('admin/layout/lang_badges', ['siteLangs' => $siteLangs, 'has' => $langMap[(int) $item['id']] ?? []]) ?></td>
                 <td>
                     <span class="badge badge--<?= $item['status'] ?>">
                         <?= $item['status'] === 'published' ? 'Опубликовано' : 'Черновик' ?>

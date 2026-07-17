@@ -47,6 +47,7 @@ $langs = Language::active();
             <th style="width:32px;"><input type="checkbox" data-select-all aria-label="Выбрать все"></th>
             <th>Заголовок</th>
             <th>URL</th>
+            <th>Языки</th>
             <th>Статус</th>
             <th>Главная</th>
             <th></th>
@@ -54,13 +55,20 @@ $langs = Language::active();
     </thead>
     <tbody>
         <?php if (empty($items)): ?>
-            <tr><td colspan="6" class="data-table__empty">Страниц не найдено.</td></tr>
+            <tr><td colspan="7" class="data-table__empty">Страниц не найдено.</td></tr>
         <?php endif; ?>
+        <?php
+        // Языки контента для всех строк одним запросом (без N+1) и список
+        // активных языков сайта — чтобы показать и недостающие переводы.
+        $langMap = \App\Models\Page::availableLangsForIds(array_map(static fn ($i): int => (int) $i['id'], $items));
+        $siteLangs = array_map(static fn (array $l): string => (string) $l['code'], $langs);
+        ?>
         <?php foreach ($items as $item): ?>
             <tr>
                 <td><input type="checkbox" name="ids[]" value="<?= (int) $item['id'] ?>" form="bulkform" data-bulk-item></td>
                 <td><a class="data-table__primary" href="/admin/pages/<?= (int) $item['id'] ?>/edit"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></a></td>
                 <td>/<?= htmlspecialchars($item['slug'], ENT_QUOTES) ?></td>
+                <td style="white-space:nowrap;"><?= \App\Core\View::renderPartial('admin/layout/lang_badges', ['siteLangs' => $siteLangs, 'has' => $langMap[(int) $item['id']] ?? []]) ?></td>
                 <td>
                     <span class="badge badge--<?= $item['status'] ?>">
                         <?= $item['status'] === 'published' ? 'Опубликовано' : 'Черновик' ?>

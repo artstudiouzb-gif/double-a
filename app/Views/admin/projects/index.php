@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Csrf;
+use App\Models\Language;
 
 $pageTitle = 'Проекты';
 $activeNav = 'projects';
@@ -12,6 +13,7 @@ require __DIR__ . '/../layout/header.php';
 /** @var array $filterParams */
 /** @var int $total */
 /** @var int $pages */
+$langs = Language::active();
 ?>
 
 <form method="get" action="/admin/projects" class="list-filters list-filters--panel">
@@ -43,6 +45,7 @@ require __DIR__ . '/../layout/header.php';
         <tr>
             <th style="width:32px;"><input type="checkbox" data-select-all aria-label="Выбрать все"></th>
             <th>Название</th>
+            <th>Языки</th>
             <th>Статус</th>
             <th>Порядок</th>
             <th></th>
@@ -50,8 +53,13 @@ require __DIR__ . '/../layout/header.php';
     </thead>
     <tbody>
         <?php if (empty($items)): ?>
-            <tr><td colspan="5" class="data-table__empty">Проектов не найдено.</td></tr>
+            <tr><td colspan="6" class="data-table__empty">Проектов не найдено.</td></tr>
         <?php endif; ?>
+        <?php
+        // Языки контента для всех строк одним запросом (без N+1).
+        $langMap = \App\Models\Project::availableLangsForIds(array_map(static fn ($i): int => (int) $i['id'], $items));
+        $siteLangs = array_map(static fn (array $l): string => (string) $l['code'], $langs);
+        ?>
         <?php foreach ($items as $item): ?>
             <tr>
                 <td><input type="checkbox" name="ids[]" value="<?= (int) $item['id'] ?>" form="bulkform" data-bulk-item></td>
@@ -59,6 +67,7 @@ require __DIR__ . '/../layout/header.php';
                     <a class="data-table__primary" href="/admin/projects/<?= (int) $item['id'] ?>/edit"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></a>
                     <?php if (!empty($item['is_featured'])): ?><span class="badge badge--success" title="Показывается в блоке «Проекты» на главной">★ на главной</span><?php endif; ?>
                 </td>
+                <td style="white-space:nowrap;"><?= \App\Core\View::renderPartial('admin/layout/lang_badges', ['siteLangs' => $siteLangs, 'has' => $langMap[(int) $item['id']] ?? []]) ?></td>
                 <td>
                     <span class="badge badge--<?= $item['status'] ?>">
                         <?= $item['status'] === 'published' ? 'Опубликовано' : 'Черновик' ?>

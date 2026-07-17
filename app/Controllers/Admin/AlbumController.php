@@ -8,7 +8,9 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\View;
+use App\Models\Language;
 use App\Models\PhotoAlbum;
+use App\Models\PhotoAlbumTranslation;
 
 /**
  * Управление фотоальбомами: список + создание, редактирование с составом
@@ -52,6 +54,7 @@ final class AlbumController
         View::render('admin/albums/form', [
             'album' => $album,
             'images' => PhotoAlbum::images((int) $album['id']),
+            'translations' => PhotoAlbumTranslation::forAlbum((int) $album['id']),
         ]);
     }
 
@@ -75,9 +78,31 @@ final class AlbumController
             !empty($_POST['is_published']),
             !empty($_POST['is_featured'])
         );
+        $this->saveTranslations($id);
         Flash::success('Альбом сохранён.');
         header('Location: /admin/albums/' . $id . '/edit');
         exit;
+    }
+
+    /**
+     * Сохраняет переводы (title, description) для всех НЕ-основных активных
+     * языков из полей translations[<lang>][...].
+     */
+    private function saveTranslations(int $albumId): void
+    {
+        $defaultCode = Language::defaultCode();
+        $input = (array) ($_POST['translations'] ?? []);
+        foreach (Language::active() as $lang) {
+            $code = (string) $lang['code'];
+            if ($code === $defaultCode) {
+                continue;
+            }
+            $t = (array) ($input[$code] ?? []);
+            PhotoAlbumTranslation::upsert($albumId, $code, [
+                'title' => trim((string) ($t['title'] ?? '')),
+                'description' => trim((string) ($t['description'] ?? '')),
+            ]);
+        }
     }
 
     public function destroy(array $params): void

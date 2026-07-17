@@ -230,6 +230,44 @@ final class Page
      *
      * @return string[]
      */
+    /**
+     * Языки контента для набора страниц одним запросом (без N+1).
+     * Контент на языке = перевод заголовка ИЛИ блоки на этом языке.
+     *
+     * @param array<int|string> $ids
+     * @return array<int, array<int, string>>
+     */
+    public static function availableLangsForIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $default = Language::defaultCode();
+        $map = [];
+        foreach ($ids as $id) {
+            $map[$id] = [$default];
+        }
+        if ($ids === []) {
+            return $map;
+        }
+
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT page_id, lang FROM page_translations
+             WHERE page_id IN ($in) AND TRIM(COALESCE(title, '')) <> ''
+             UNION
+             SELECT DISTINCT page_id, lang FROM blocks WHERE page_id IN ($in)"
+        );
+        $stmt->execute(array_merge($ids, $ids));
+        foreach ($stmt->fetchAll() as $row) {
+            $id = (int) $row['page_id'];
+            $lang = (string) $row['lang'];
+            if (isset($map[$id]) && !in_array($lang, $map[$id], true)) {
+                $map[$id][] = $lang;
+            }
+        }
+
+        return $map;
+    }
+
     public static function availableLangs(int $id): array
     {
         $langs = [Language::defaultCode()];

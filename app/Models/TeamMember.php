@@ -15,13 +15,91 @@ final class TeamMember
         return $stmt->fetchAll();
     }
 
-    public static function published(): array
+    public static function published(?string $lang = null): array
     {
         $stmt = Database::pdo()->query(
             "SELECT * FROM team_members WHERE status = 'published' ORDER BY sort_order ASC, id ASC"
         );
+        $rows = $stmt->fetchAll();
 
-        return $stmt->fetchAll();
+        if ($lang === null || $lang === Language::defaultCode()) {
+            return $rows;
+        }
+
+        return self::localizeRows($rows, $lang);
+    }
+
+    /**
+     * Накладывает перевод указанного языка на базовую строку. Пустые поля
+     * перевода откатываются к значению основного языка (graceful fallback).
+     */
+    public static function localize(array $row, string $lang): array
+    {
+        return self::applyTranslation($row, TeamMemberTranslation::find((int) $row['id'], $lang));
+    }
+
+    /** @param array<int, array<string, mixed>> $rows @return array<int, array<string, mixed>> */
+    private static function localizeRows(array $rows, string $lang): array
+    {
+        $translations = TeamMemberTranslation::forMemberIds(
+            array_map(static fn (array $row): int => (int) $row['id'], $rows),
+            $lang
+        );
+        return array_map(
+            static fn (array $row): array => self::applyTranslation($row, $translations[(int) $row['id']] ?? null),
+            $rows
+        );
+    }
+
+    private static function applyTranslation(array $row, ?array $translation): array
+    {
+        if ($translation === null) {
+            return $row;
+        }
+        foreach (['name', 'position'] as $field) {
+            if (isset($translation[$field]) && trim((string) $translation[$field]) !== '') {
+                $row[$field] = $translation[$field];
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * Языки контента для набора сотрудников одним запросом (без N+1).
+     * Контент на языке = непустой перевод имени или должности.
+     *
+     * @param array<int|string> $ids
+     * @return array<int, array<int, string>>
+     */
+    public static function availableLangsForIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $default = Language::defaultCode();
+        $map = [];
+        foreach ($ids as $id) {
+            $map[$id] = [$default];
+        }
+        if ($ids === []) {
+            return $map;
+        }
+
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT member_id, lang FROM team_member_translations
+             WHERE member_id IN ($in)
+               AND (TRIM(COALESCE(name, '')) <> '' OR TRIM(COALESCE(position, '')) <> '')"
+        );
+        $stmt->execute($ids);
+        foreach ($stmt->fetchAll() as $row) {
+            $id = (int) $row['member_id'];
+            $lang = (string) $row['lang'];
+            if (isset($map[$id]) && !in_array($lang, $map[$id], true)) {
+                $map[$id][] = $lang;
+            }
+        }
+
+        return $map;
     }
 
     public static function findById(int $id): ?array

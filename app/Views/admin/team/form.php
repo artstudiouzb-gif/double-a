@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Csrf;
+use App\Models\Language;
 
 $isEdit = !empty($member['id']);
 $pageTitle = $isEdit ? 'Редактирование сотрудника' : 'Новый сотрудник';
@@ -8,10 +9,16 @@ $activeNav = 'team';
 require __DIR__ . '/../layout/header.php';
 
 /** @var array|null $member */
+/** @var array $translations */
 /** @var string|null $error */
 
 $action = $isEdit ? '/admin/team/' . (int) $member['id'] . '/edit' : '/admin/team/create';
 $socials = $member['socials'] ?? [];
+$defaultCode = Language::defaultCode();
+$translationLangs = array_values(array_filter(
+    Language::active(),
+    static fn (array $l): bool => (string) $l['code'] !== $defaultCode
+));
 ?>
 <div class="form-card">
     <?php if ($error): ?><div class="alert alert--error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div><?php endif; ?>
@@ -24,9 +31,35 @@ $socials = $member['socials'] ?? [];
         </div>
 
         <div class="form-field">
-            <label for="position">Должность</label>
+            <label for="position">Должность<?php if ($translationLangs): ?> <span class="form-hint" style="font-weight:400;">(основной язык)</span><?php endif; ?></label>
             <input type="text" id="position" name="position" value="<?= htmlspecialchars($member['position'] ?? '', ENT_QUOTES) ?>">
         </div>
+
+        <?php if ($translationLangs): ?>
+            <div data-lang-tabs style="border:1px solid var(--admin-border,#e3e6ea);border-radius:8px;padding:12px;">
+                <div class="lang-tabs">
+                    <?php foreach ($translationLangs as $i => $lang): ?>
+                        <button type="button" class="lang-tab-btn <?= $i === 0 ? 'is-active' : '' ?>" data-lang-target="<?= htmlspecialchars($lang['code'], ENT_QUOTES) ?>">
+                            <?= htmlspecialchars($lang['name'], ENT_QUOTES) ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+                <?php foreach ($translationLangs as $i => $lang): ?>
+                    <?php $code = (string) $lang['code']; $t = $translations[$code] ?? []; ?>
+                    <div class="lang-tab-panel <?= $i === 0 ? 'is-active' : '' ?>" data-lang-panel="<?= htmlspecialchars($code, ENT_QUOTES) ?>">
+                        <p class="form-hint">Перевод для языка «<?= htmlspecialchars($lang['name'], ENT_QUOTES) ?>». Пустые поля на сайте заменяются версией основного языка.</p>
+                        <div class="form-field">
+                            <label>Имя</label>
+                            <input type="text" name="translations[<?= $code ?>][name]" value="<?= htmlspecialchars($t['name'] ?? '', ENT_QUOTES) ?>">
+                        </div>
+                        <div class="form-field">
+                            <label>Должность</label>
+                            <input type="text" name="translations[<?= $code ?>][position]" value="<?= htmlspecialchars($t['position'] ?? '', ENT_QUOTES) ?>">
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
         <?= \App\Core\AdminUi::imageField('photo_url', $member['photo'] ?? '', [
             'label' => 'Фото сотрудника',

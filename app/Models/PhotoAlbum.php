@@ -14,7 +14,7 @@ use App\Core\Slug;
 final class PhotoAlbum
 {
     /** @return array<int, array<string, mixed>> */
-    public static function all(bool $publishedOnly = false): array
+    public static function all(bool $publishedOnly = false, ?string $lang = null): array
     {
         $sql = 'SELECT a.*, (SELECT COUNT(*) FROM photo_album_images i WHERE i.album_id = a.id) AS images_count
                 FROM photo_albums a';
@@ -23,7 +23,13 @@ final class PhotoAlbum
         }
         $sql .= ' ORDER BY a.created_at DESC, a.id DESC';
 
-        return Database::pdo()->query($sql)->fetchAll();
+        $rows = Database::pdo()->query($sql)->fetchAll();
+
+        if ($lang === null || $lang === Language::defaultCode()) {
+            return $rows;
+        }
+
+        return self::localizeRows($rows, $lang);
     }
 
     public static function findById(int $id): ?array
@@ -35,7 +41,7 @@ final class PhotoAlbum
         return $row ?: null;
     }
 
-    public static function findPublishedBySlug(string $slug): ?array
+    public static function findPublishedBySlug(string $slug, ?string $lang = null): ?array
     {
         $stmt = Database::pdo()->prepare(
             'SELECT * FROM photo_albums WHERE slug = :slug AND is_published = 1 LIMIT 1'
@@ -43,7 +49,88 @@ final class PhotoAlbum
         $stmt->execute([':slug' => $slug]);
         $row = $stmt->fetch();
 
-        return $row ?: null;
+        if (!$row) {
+            return null;
+        }
+
+        if ($lang === null || $lang === Language::defaultCode()) {
+            return $row;
+        }
+
+        return self::localize($row, $lang);
+    }
+
+    /**
+     * Накладывает перевод указанного языка на базовую строку. Пустые поля
+     * перевода откатываются к значению основного языка (graceful fallback).
+     */
+    public static function localize(array $row, string $lang): array
+    {
+        return self::applyTranslation($row, PhotoAlbumTranslation::find((int) $row['id'], $lang));
+    }
+
+    /** @param array<int, array<string, mixed>> $rows @return array<int, array<string, mixed>> */
+    private static function localizeRows(array $rows, string $lang): array
+    {
+        $translations = PhotoAlbumTranslation::forAlbumIds(
+            array_map(static fn (array $row): int => (int) $row['id'], $rows),
+            $lang
+        );
+        return array_map(
+            static fn (array $row): array => self::applyTranslation($row, $translations[(int) $row['id']] ?? null),
+            $rows
+        );
+    }
+
+    private static function applyTranslation(array $row, ?array $translation): array
+    {
+        if ($translation === null) {
+            return $row;
+        }
+        foreach (['title', 'description'] as $field) {
+            if (isset($translation[$field]) && trim((string) $translation[$field]) !== '') {
+                $row[$field] = $translation[$field];
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * Языки контента для набора альбомов одним запросом (без N+1).
+     * Контент на языке = непустой перевод заголовка или описания.
+     *
+     * @param array<int|string> $ids
+     * @return array<int, array<int, string>>
+     */
+    public static function availableLangsForIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $default = Language::defaultCode();
+        $map = [];
+        foreach ($ids as $id) {
+            $map[$id] = [$default];
+        }
+        if ($ids === []) {
+            return $map;
+        }
+
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT album_id, lang FROM photo_album_translations
+             WHERE album_id IN ($in)
+               AND (TRIM(COALESCE(title, '')) <> '' OR TRIM(COALESCE(description, '')) <> '')"
+        );
+        $stmt->execute($ids);
+        foreach ($stmt->fetchAll() as $row) {
+            $id = (int) $row['album_id'];
+            $lang = (string) $row['lang'];
+            if (isset($map[$id]) && !in_array($lang, $map[$id], true)) {
+                $map[$id][] = $lang;
+            }
+        }
+
+        return $map;
     }
 
     /** Создаёт альбом; slug — из названия, при коллизии добавляется суффикс. */
@@ -96,7 +183,7 @@ final class PhotoAlbum
      *
      * @return array<int, array<string, mixed>>
      */
-    public static function forHome(int $limit = 8): array
+    public static function forHome(int $limit = 8, ?string $lang = null): array
     {
         $limit = max(1, min(24, $limit));
         $stmt = Database::pdo()->prepare(
@@ -105,16 +192,20 @@ final class PhotoAlbum
         );
         $stmt->execute();
         $rows = $stmt->fetchAll();
-        if (!empty($rows)) {
+        if (empty($rows)) {
+            $stmt = Database::pdo()->prepare(
+                'SELECT * FROM photo_albums WHERE is_published = 1
+                 ORDER BY created_at DESC, id DESC LIMIT ' . $limit
+            );
+            $stmt->execute();
+            $rows = $stmt->fetchAll();
+        }
+
+        if ($lang === null || $lang === Language::defaultCode()) {
             return $rows;
         }
-        $stmt = Database::pdo()->prepare(
-            'SELECT * FROM photo_albums WHERE is_published = 1
-             ORDER BY created_at DESC, id DESC LIMIT ' . $limit
-        );
-        $stmt->execute();
 
-        return $stmt->fetchAll();
+        return self::localizeRows($rows, $lang);
     }
 
     public static function delete(int $id): void

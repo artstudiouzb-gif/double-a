@@ -253,6 +253,17 @@ CREATE TABLE IF NOT EXISTS project_fields (
     CONSTRAINT fk_project_fields_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Переводы проектов (заголовок и описание на неосновных языках)
+CREATE TABLE IF NOT EXISTS project_translations (
+    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    project_id   INT UNSIGNED NOT NULL,
+    lang         VARCHAR(8) NOT NULL,
+    title        VARCHAR(255) NULL,
+    description  LONGTEXT NULL,
+    UNIQUE KEY uq_project_translations (project_id, lang),
+    CONSTRAINT fk_project_translations_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ---------------------------------------------------------------------------
 -- Команда
 -- ---------------------------------------------------------------------------
@@ -268,6 +279,17 @@ CREATE TABLE IF NOT EXISTS team_members (
     sort_order      INT NOT NULL DEFAULT 0,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Переводы сотрудников команды (имя и должность на неосновных языках)
+CREATE TABLE IF NOT EXISTS team_member_translations (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    member_id   INT UNSIGNED NOT NULL,
+    lang        VARCHAR(8) NOT NULL,
+    name        VARCHAR(190) NULL,
+    position    VARCHAR(190) NULL,
+    UNIQUE KEY uq_team_member_translations (member_id, lang),
+    CONSTRAINT fk_team_member_translations_member FOREIGN KEY (member_id) REFERENCES team_members(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
@@ -571,6 +593,17 @@ CREATE TABLE IF NOT EXISTS photo_album_images (
     CONSTRAINT fk_album_images FOREIGN KEY (album_id) REFERENCES photo_albums (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Переводы фотоальбомов (заголовок и описание на неосновных языках)
+CREATE TABLE IF NOT EXISTS photo_album_translations (
+    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    album_id     INT UNSIGNED NOT NULL,
+    lang         VARCHAR(8) NOT NULL,
+    title        VARCHAR(255) NULL,
+    description  TEXT NULL,
+    UNIQUE KEY uq_photo_album_translations (album_id, lang),
+    CONSTRAINT fk_photo_album_translations_album FOREIGN KEY (album_id) REFERENCES photo_albums(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Видеозаписи: обложка + ссылка на видео (YouTube/внешнее). Блок «Медиа» на
 -- главной собирает отмеченные (is_featured) автоматически.
 CREATE TABLE IF NOT EXISTS videos (
@@ -586,6 +619,17 @@ CREATE TABLE IF NOT EXISTS videos (
     sort_order   INT NOT NULL DEFAULT 0,
     created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uniq_videos_slug (slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Переводы видео (заголовок и описание на неосновных языках)
+CREATE TABLE IF NOT EXISTS video_translations (
+    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    video_id     INT UNSIGNED NOT NULL,
+    lang         VARCHAR(8) NOT NULL,
+    title        VARCHAR(255) NULL,
+    description  TEXT NULL,
+    UNIQUE KEY uq_video_translations (video_id, lang),
+    CONSTRAINT fk_video_translations_video FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
@@ -879,7 +923,11 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_16_error_log.sql'),
     ('2026_07_16_repo_categories.sql'),
     ('2026_07_16_repo_user_uploads.sql'),
-    ('2026_07_16_repo_telegram_2fa.sql')
+    ('2026_07_16_repo_telegram_2fa.sql'),
+    ('2026_07_17_project_translations.sql'),
+    ('2026_07_17_team_translations.sql'),
+    ('2026_07_17_album_translations.sql'),
+    ('2026_07_17_video_translations.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

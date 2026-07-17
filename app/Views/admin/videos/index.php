@@ -1,12 +1,16 @@
 <?php
 
 use App\Core\Csrf;
+use App\Models\Language;
 
 $pageTitle = 'Видео';
 $activeNav = 'videos';
 require __DIR__ . '/../layout/header.php';
 
 /** @var array $items */
+$langs = Language::active();
+$siteLangs = array_map(static fn (array $l): string => (string) $l['code'], $langs);
+$langMap = \App\Models\Video::availableLangsForIds(array_map(static fn ($i): int => (int) $i['id'], $items));
 ?>
 <p class="form-hint">Видео можно выводить на главной в блоке «Медиа» (источник «Видео») — отмеченные галочкой «Показать на главной» подтягиваются автоматически.</p>
 
@@ -29,12 +33,13 @@ require __DIR__ . '/../layout/header.php';
 <?php else: ?>
     <table class="data-table">
         <thead>
-            <tr><th>Название</th><th>Длительность</th><th>Статус</th><th>Создано</th><th></th></tr>
+            <tr><th>Название</th><th>Языки</th><th>Длительность</th><th>Статус</th><th>Создано</th><th></th></tr>
         </thead>
         <tbody>
             <?php foreach ($items as $item): ?>
                 <tr>
                     <td><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></td>
+                    <td style="white-space:nowrap;"><?= \App\Core\View::renderPartial('admin/layout/lang_badges', ['siteLangs' => $siteLangs, 'has' => $langMap[(int) $item['id']] ?? []]) ?></td>
                     <td><?= htmlspecialchars((string) ($item['duration'] ?? ''), ENT_QUOTES) ?></td>
                     <td>
                         <?php if ((int) $item['is_published'] === 1): ?>

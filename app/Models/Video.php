@@ -14,7 +14,7 @@ use App\Core\Slug;
 final class Video
 {
     /** @return array<int, array<string, mixed>> */
-    public static function all(bool $publishedOnly = false): array
+    public static function all(bool $publishedOnly = false, ?string $lang = null): array
     {
         $sql = 'SELECT * FROM videos';
         if ($publishedOnly) {
@@ -22,7 +22,86 @@ final class Video
         }
         $sql .= ' ORDER BY sort_order ASC, created_at DESC, id DESC';
 
-        return Database::pdo()->query($sql)->fetchAll();
+        $rows = Database::pdo()->query($sql)->fetchAll();
+
+        if ($lang === null || $lang === Language::defaultCode()) {
+            return $rows;
+        }
+
+        return self::localizeRows($rows, $lang);
+    }
+
+    /**
+     * Накладывает перевод указанного языка на базовую строку. Пустые поля
+     * перевода откатываются к значению основного языка (graceful fallback).
+     */
+    public static function localize(array $row, string $lang): array
+    {
+        return self::applyTranslation($row, VideoTranslation::find((int) $row['id'], $lang));
+    }
+
+    /** @param array<int, array<string, mixed>> $rows @return array<int, array<string, mixed>> */
+    private static function localizeRows(array $rows, string $lang): array
+    {
+        $translations = VideoTranslation::forVideoIds(
+            array_map(static fn (array $row): int => (int) $row['id'], $rows),
+            $lang
+        );
+        return array_map(
+            static fn (array $row): array => self::applyTranslation($row, $translations[(int) $row['id']] ?? null),
+            $rows
+        );
+    }
+
+    private static function applyTranslation(array $row, ?array $translation): array
+    {
+        if ($translation === null) {
+            return $row;
+        }
+        foreach (['title', 'description'] as $field) {
+            if (isset($translation[$field]) && trim((string) $translation[$field]) !== '') {
+                $row[$field] = $translation[$field];
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * Языки контента для набора видео одним запросом (без N+1).
+     * Контент на языке = непустой перевод заголовка или описания.
+     *
+     * @param array<int|string> $ids
+     * @return array<int, array<int, string>>
+     */
+    public static function availableLangsForIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $default = Language::defaultCode();
+        $map = [];
+        foreach ($ids as $id) {
+            $map[$id] = [$default];
+        }
+        if ($ids === []) {
+            return $map;
+        }
+
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT video_id, lang FROM video_translations
+             WHERE video_id IN ($in)
+               AND (TRIM(COALESCE(title, '')) <> '' OR TRIM(COALESCE(description, '')) <> '')"
+        );
+        $stmt->execute($ids);
+        foreach ($stmt->fetchAll() as $row) {
+            $id = (int) $row['video_id'];
+            $lang = (string) $row['lang'];
+            if (isset($map[$id]) && !in_array($lang, $map[$id], true)) {
+                $map[$id][] = $lang;
+            }
+        }
+
+        return $map;
     }
 
     public static function findById(int $id): ?array
@@ -105,7 +184,7 @@ final class Video
      *
      * @return array<int, array<string, mixed>>
      */
-    public static function forHome(int $limit = 8): array
+    public static function forHome(int $limit = 8, ?string $lang = null): array
     {
         $limit = max(1, min(24, $limit));
         $stmt = Database::pdo()->prepare(
@@ -114,16 +193,20 @@ final class Video
         );
         $stmt->execute();
         $rows = $stmt->fetchAll();
-        if (!empty($rows)) {
+        if (empty($rows)) {
+            $stmt = Database::pdo()->prepare(
+                'SELECT * FROM videos WHERE is_published = 1
+                 ORDER BY sort_order ASC, created_at DESC, id DESC LIMIT ' . $limit
+            );
+            $stmt->execute();
+            $rows = $stmt->fetchAll();
+        }
+
+        if ($lang === null || $lang === Language::defaultCode()) {
             return $rows;
         }
-        $stmt = Database::pdo()->prepare(
-            'SELECT * FROM videos WHERE is_published = 1
-             ORDER BY sort_order ASC, created_at DESC, id DESC LIMIT ' . $limit
-        );
-        $stmt->execute();
 
-        return $stmt->fetchAll();
+        return self::localizeRows($rows, $lang);
     }
 
     private static function bustPageCache(): void
