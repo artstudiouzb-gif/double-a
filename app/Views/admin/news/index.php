@@ -54,6 +54,7 @@ $langs = Language::active();
         <tr>
             <th style="width:32px;"><input type="checkbox" data-select-all aria-label="Выбрать все"></th>
             <th>Заголовок</th>
+            <th>Языки</th>
             <th>Статус</th>
             <th>Дата публикации</th>
             <th></th>
@@ -61,12 +62,31 @@ $langs = Language::active();
     </thead>
     <tbody>
         <?php if (empty($items)): ?>
-            <tr><td colspan="5" class="data-table__empty">Новостей не найдено.</td></tr>
+            <tr><td colspan="6" class="data-table__empty">Новостей не найдено.</td></tr>
         <?php endif; ?>
+        <?php
+        // Языки контента для всех строк одним запросом (без N+1) и список
+        // активных языков сайта — чтобы показать и недостающие переводы.
+        $langMap = \App\Models\News::availableLangsForIds(array_map(static fn ($i): int => (int) $i['id'], $items));
+        $siteLangs = array_map(static fn (array $l): string => (string) $l['code'], $langs);
+        $socialReady = \App\Core\SocialSettings::readyNetworks() !== [];
+        ?>
         <?php foreach ($items as $item): ?>
             <tr>
                 <td><input type="checkbox" name="ids[]" value="<?= (int) $item['id'] ?>" form="bulkform" data-bulk-item></td>
                 <td><a class="data-table__primary" href="/admin/news/<?= (int) $item['id'] ?>/edit"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></a></td>
+                <td style="white-space:nowrap;">
+                    <?php
+                    $has = $langMap[(int) $item['id']] ?? [];
+                    foreach ($siteLangs as $code):
+                        $on = in_array($code, $has, true);
+                        ?>
+                        <span title="<?= $on ? 'Контент на этом языке есть' : 'Перевода нет' ?>"
+                              style="display:inline-block;margin-right:4px;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;<?= $on
+                                  ? 'background:#e6f4ea;color:#1e7e34;'
+                                  : 'background:#f1f2f4;color:#9aa0a6;' ?>"><?= htmlspecialchars($code, ENT_QUOTES) ?></span>
+                    <?php endforeach; ?>
+                </td>
                 <td>
                     <span class="badge badge--<?= $item['status'] ?>">
                         <?= $item['status'] === 'published' ? 'Опубликовано' : 'Черновик' ?>
@@ -75,6 +95,16 @@ $langs = Language::active();
                 <td><?= $item['published_at'] ? htmlspecialchars($item['published_at'], ENT_QUOTES) : '—' ?></td>
                 <td class="data-table__actions">
                     <a class="btn btn--small" href="/admin/news/<?= (int) $item['id'] ?>/edit">Редактировать</a>
+                    <?php // В соцсети — только для опубликованных и когда сети настроены. ?>
+                    <?php if ($socialReady && $item['status'] === 'published'): ?>
+                        <form method="post" action="/admin/news/<?= (int) $item['id'] ?>/social"
+                              data-confirm="Опубликовать «<?= htmlspecialchars($item['title'], ENT_QUOTES) ?>» в соцсети?">
+                            <?= Csrf::field() ?>
+                            <input type="hidden" name="from" value="list">
+                            <input type="hidden" name="return_query" value="<?= htmlspecialchars(http_build_query($filterParams), ENT_QUOTES) ?>">
+                            <button type="submit" class="btn btn--small">В соцсети</button>
+                        </form>
+                    <?php endif; ?>
                     <form method="post" action="/admin/news/<?= (int) $item['id'] ?>/duplicate">
                         <?= Csrf::field() ?>
                         <button type="submit" class="btn btn--small">Дублировать</button>

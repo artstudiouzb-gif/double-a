@@ -368,6 +368,43 @@ final class News
      *
      * @return string[]
      */
+    /**
+     * Языки с контентом сразу для списка новостей — одним запросом, чтобы
+     * список не делал по запросу на строку (N+1).
+     *
+     * @param list<int> $ids
+     * @return array<int, list<string>> id => коды языков (базовый всегда первым)
+     */
+    public static function availableLangsForIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $default = Language::defaultCode();
+        $map = [];
+        foreach ($ids as $id) {
+            $map[$id] = [$default];
+        }
+        if ($ids === []) {
+            return $map;
+        }
+
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT news_id, lang FROM news_translations
+             WHERE news_id IN ($in)
+               AND (TRIM(COALESCE(title, '')) <> '' OR TRIM(COALESCE(content, '')) <> '')"
+        );
+        $stmt->execute($ids);
+        foreach ($stmt->fetchAll() as $row) {
+            $id = (int) $row['news_id'];
+            $lang = (string) $row['lang'];
+            if (isset($map[$id]) && !in_array($lang, $map[$id], true)) {
+                $map[$id][] = $lang;
+            }
+        }
+
+        return $map;
+    }
+
     public static function availableLangs(int $id): array
     {
         $langs = [Language::defaultCode()];

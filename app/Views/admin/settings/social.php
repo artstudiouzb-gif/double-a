@@ -19,6 +19,15 @@ $fieldLabels = [
     'page_id' => 'ID страницы',
     'author' => 'Author URN (напр. urn:li:organization:123)',
     'user_id' => 'IG User ID',
+    'signature' => 'Подпись под постом (необязательно)',
+];
+// Подсказки к подписи: формат у сетей разный.
+$signatureHints = [
+    'telegram' => 'Допустима HTML-разметка Telegram: &lt;b&gt;, &lt;i&gt;, &lt;a href="https://…"&gt;текст&lt;/a&gt;. '
+        . 'Например: 🌐 &lt;a href="https://asr.artstudio.uz"&gt;Сайт&lt;/a&gt; | 📘 &lt;a href="https://facebook.com/…"&gt;Facebook&lt;/a&gt;',
+    'facebook' => 'Только обычный текст — HTML не поддерживается. Ссылки пишите голыми URL, Facebook сам сделает их кликабельными.',
+    'linkedin' => 'Только обычный текст — HTML не поддерживается. Ссылки пишите голыми URL, LinkedIn сам сделает их кликабельными.',
+    'instagram' => 'Только обычный текст. Ссылки в подписи Instagram НЕ кликабельны — здесь имеют смысл хештеги и @упоминания.',
 ];
 ?>
 <div class="form-card">
@@ -50,9 +59,17 @@ $fieldLabels = [
                 <?php foreach ($c['fields'] as $field => $value): ?>
                     <div class="form-field">
                         <label for="<?= $net ?>_<?= $field ?>"><?= htmlspecialchars($fieldLabels[$field] ?? $field, ENT_QUOTES) ?></label>
-                        <input type="<?= $field === 'token' ? 'password' : 'text' ?>" id="<?= $net ?>_<?= $field ?>"
-                               name="<?= $net ?>[<?= $field ?>]" value="<?= htmlspecialchars((string) $value, ENT_QUOTES) ?>"
-                               autocomplete="off">
+                        <?php if (in_array($field, \App\Core\SocialSettings::TEXTAREA_FIELDS, true)): ?>
+                            <textarea id="<?= $net ?>_<?= $field ?>" name="<?= $net ?>[<?= $field ?>]" rows="3"
+                                      style="font-family:monospace;"><?= htmlspecialchars((string) $value, ENT_QUOTES) ?></textarea>
+                            <?php if (!empty($signatureHints[$net])): ?>
+                                <span class="form-hint"><?= $signatureHints[$net] ?></span>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <input type="<?= $field === 'token' ? 'password' : 'text' ?>" id="<?= $net ?>_<?= $field ?>"
+                                   name="<?= $net ?>[<?= $field ?>]" value="<?= htmlspecialchars((string) $value, ENT_QUOTES) ?>"
+                                   autocomplete="off">
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             </fieldset>

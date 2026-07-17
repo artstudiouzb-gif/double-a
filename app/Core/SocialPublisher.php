@@ -63,13 +63,7 @@ final class SocialPublisher
             return self::err('Не заданы токен бота или chat_id канала Telegram.');
         }
 
-        $title = trim((string) ($post['title'] ?? ''));
-        $body = trim((string) $post['message']);
-        if ($title !== '' && str_starts_with($body, $title)) {
-            $body = trim(substr($body, strlen($title)));
-        }
         $esc = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $linkHtml = '<a href="' . $esc((string) $post['link']) . '">Читать на сайте →</a>';
 
         // Публичные https-изображения: обложка + галерея, максимум 10 (лимит API).
         $photos = [];
@@ -83,17 +77,8 @@ final class SocialPublisher
         }
         $photos = array_slice($photos, 0, 10);
 
-        $caption = ($title !== '' ? '<b>' . $esc($title) . '</b>' : '')
-            . ($body !== '' ? "\n\n" . $esc($body) : '');
         $limit = $photos !== [] ? self::TG_CAPTION_LIMIT : self::TG_TEXT_LIMIT;
-        // Обрезаем с запасом под ссылку, не разрывая HTML-сущности.
-        $tail = "\n\n" . $linkHtml;
-        if (mb_strlen(strip_tags($caption . $tail)) > $limit) {
-            $keep = $limit - mb_strlen(strip_tags($tail)) - 1;
-            $caption = ($title !== '' ? '<b>' . $esc($title) . '</b>' : '')
-                . "\n\n" . $esc(mb_substr($body, 0, max(0, $keep - mb_strlen($title))) . '…');
-        }
-        $caption .= $tail;
+        $caption = self::telegramCaption($post, (string) ($cfg['signature'] ?? ''), $limit, $esc);
 
         $api = self::TG_API . '/bot' . rawurlencode((string) $cfg['token']);
         $headers = ['Content-Type: application/json'];
@@ -153,6 +138,94 @@ final class SocialPublisher
         return self::err($error);
     }
 
+    /**
+     * Подпись поста Telegram: блоки языков (узбекский, затем русский),
+     * ссылки на обе версии и подпись из настроек (HTML). Лимит жёсткий —
+     * 1024 символа с фото, поэтому фиксированная часть (заголовки, ссылки,
+     * подпись) резервируется, а остаток делится поровну между анонсами.
+     *
+     * @param array<string,mixed> $post
+     * @param callable(string):string $esc
+     */
+    private static function telegramCaption(array $post, string $signature, int $limit, callable $esc): string
+    {
+        $langs = (array) ($post['langs'] ?? []);
+        if ($langs === []) {
+            // Запасной вариант для старых вызовов без языковых блоков.
+            $langs = [[
+                'title' => (string) ($post['title'] ?? ''),
+                'excerpt' => trim((string) ($post['message'] ?? '')),
+                'link' => (string) ($post['link'] ?? ''),
+                'read_more' => 'Читать на сайте →',
+            ]];
+        }
+
+        $sep = "\n\n———\n\n";
+        $links = [];
+        foreach ($langs as $l) {
+            if (($l['link'] ?? '') !== '') {
+                $links[] = '<a href="' . $esc((string) $l['link']) . '">' . $esc((string) $l['read_more']) . '</a>';
+            }
+        }
+        $tail = ($links !== [] ? "\n\n" . implode(' | ', $links) : '')
+            . ($signature !== '' ? "\n\n" . $signature : '');
+
+        // Считаем фиксированную часть: заголовки + разделители + хвост.
+        $fixed = mb_strlen(strip_tags($tail)) + (count($langs) - 1) * mb_strlen(strip_tags($sep));
+        foreach ($langs as $l) {
+            $fixed += mb_strlen((string) $l['title']) + 2; // +2 — перенос строки после заголовка
+        }
+        $available = max(0, $limit - $fixed - 4);
+        $perLang = count($langs) > 0 ? (int) floor($available / count($langs)) : 0;
+
+        $parts = [];
+        foreach ($langs as $l) {
+            $title = trim((string) $l['title']);
+            $excerpt = trim((string) ($l['excerpt'] ?? ''));
+            if ($perLang > 0 && mb_strlen($excerpt) > $perLang) {
+                $excerpt = rtrim(mb_substr($excerpt, 0, max(0, $perLang - 1))) . '…';
+            } elseif ($perLang <= 0) {
+                $excerpt = '';
+            }
+            $parts[] = ($title !== '' ? '<b>' . $esc($title) . '</b>' : '')
+                . ($excerpt !== '' ? "\n\n" . $esc($excerpt) : '');
+        }
+
+        return implode($sep, $parts) . $tail;
+    }
+
+    /**
+     * Текст поста для сетей без разметки (Facebook/LinkedIn/Instagram):
+     * блоки языков подряд и голые URL — платформы линкуют их сами
+     * (в Instagram ссылки некликабельны, там подпись обычно с хештегами).
+     *
+     * @param array<string,mixed> $post
+     */
+    private static function plainMessage(array $post, string $signature, int $limit = 0): string
+    {
+        $langs = (array) ($post['langs'] ?? []);
+        if ($langs === []) {
+            $text = trim((string) ($post['message'] ?? '')) . "\n\n" . (string) ($post['link'] ?? '');
+        } else {
+            $parts = [];
+            foreach ($langs as $l) {
+                $title = trim((string) $l['title']);
+                $excerpt = trim((string) ($l['excerpt'] ?? ''));
+                $parts[] = $title . ($excerpt !== '' ? "\n\n" . $excerpt : '') . "\n" . (string) $l['link'];
+            }
+            $text = implode("\n\n———\n\n", $parts);
+        }
+        if ($signature !== '') {
+            $text .= "\n\n" . $signature;
+        }
+        $text = trim($text);
+        if ($limit > 0 && mb_strlen($text) > $limit) {
+            $text = rtrim(mb_substr($text, 0, $limit - 1)) . '…';
+        }
+
+        return $text;
+    }
+
     private function facebook(array $cfg, array $post): array
     {
         if (empty($cfg['token']) || empty($cfg['page_id'])) {
@@ -160,7 +233,7 @@ final class SocialPublisher
         }
         $url = self::GRAPH . '/' . rawurlencode($cfg['page_id']) . '/feed';
         $body = http_build_query([
-            'message' => trim($post['message'] . "\n\n" . $post['link']),
+            'message' => self::plainMessage($post, (string) ($cfg['signature'] ?? '')),
             'link' => $post['link'],
             'access_token' => $cfg['token'],
         ]);
@@ -179,7 +252,8 @@ final class SocialPublisher
             'lifecycleState' => 'PUBLISHED',
             'specificContent' => [
                 'com.linkedin.ugc.ShareContent' => [
-                    'shareCommentary' => ['text' => $post['message']],
+                    // LinkedIn: лимит текста поста — 3000 символов.
+                    'shareCommentary' => ['text' => self::plainMessage($post, (string) ($cfg['signature'] ?? ''), 3000)],
                     'shareMediaCategory' => 'ARTICLE',
                     'media' => [[
                         'status' => 'READY',
@@ -221,7 +295,8 @@ final class SocialPublisher
         $createUrl = self::GRAPH . '/' . rawurlencode($cfg['user_id']) . '/media';
         $createBody = http_build_query([
             'image_url' => $post['image_url'],
-            'caption' => trim($post['message'] . "\n\n" . $post['link']),
+            // Instagram: лимит подписи — 2200 символов.
+            'caption' => self::plainMessage($post, (string) ($cfg['signature'] ?? ''), 2200),
             'access_token' => $cfg['token'],
         ]);
         $c = ($this->http)('POST', $createUrl, $createBody, ['Content-Type: application/x-www-form-urlencoded']);

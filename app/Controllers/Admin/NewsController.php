@@ -252,6 +252,12 @@ final class NewsController
         } else {
             Flash::error('Нет настроенных соцсетей. Включите их в разделе «Соцсети».');
         }
+        // Из списка возвращаемся в список (с теми же фильтрами), из формы — в форму.
+        if (($_POST['from'] ?? '') === 'list') {
+            $query = trim((string) ($_POST['return_query'] ?? ''));
+            header('Location: /admin/news' . ($query !== '' ? '?' . $query : ''));
+            exit;
+        }
         header('Location: /admin/news/' . (int) $news['id'] . '/edit');
         exit;
     }

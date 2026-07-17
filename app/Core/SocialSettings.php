@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Models\Language;
 use App\Models\News;
+use App\Models\NewsTranslation;
 use App\Models\SocialPost;
 
 /**
@@ -22,13 +24,21 @@ final class SocialSettings
         'instagram' => ['token', 'user_id'],
     ];
 
-    /** Ключи настроек по сетям (кроме флага *_enabled). */
+    /**
+     * Ключи настроек по сетям (кроме флага *_enabled). signature — подпись
+     * под постом; в Telegram допускает HTML-разметку (<b>, <a href>), в
+     * остальных сетях API принимает только обычный текст (голые URL там
+     * становятся кликабельными сами; в Instagram ссылки не кликабельны).
+     */
     public const FIELDS = [
-        'telegram' => ['token', 'chat_id'],
-        'facebook' => ['token', 'page_id'],
-        'linkedin' => ['token', 'author'],
-        'instagram' => ['token', 'user_id'],
+        'telegram' => ['token', 'chat_id', 'signature'],
+        'facebook' => ['token', 'page_id', 'signature'],
+        'linkedin' => ['token', 'author', 'signature'],
+        'instagram' => ['token', 'user_id', 'signature'],
     ];
+
+    /** Поля-подписи выводятся в админке многострочным полем. */
+    public const TEXTAREA_FIELDS = ['signature'];
 
     public static function isEnabled(string $network): bool
     {
@@ -83,6 +93,7 @@ final class SocialSettings
         $title = trim((string) ($news['title'] ?? ''));
         $excerpt = trim((string) ($news['excerpt'] ?? ''));
         $message = $excerpt !== '' ? $title . "\n\n" . $excerpt : $title;
+        $langs = self::languageBlocks($news, $base);
 
         $cover = News::getCoverImage($news) ?? '';
         if ($cover !== '') {
@@ -96,7 +107,62 @@ final class SocialSettings
             }
         }
 
-        return ['message' => $message, 'link' => $link, 'image_url' => $cover, 'title' => $title, 'gallery' => $gallery];
+        return [
+            'message' => $message,
+            'link' => $link,
+            'image_url' => $cover,
+            'title' => $title,
+            'gallery' => $gallery,
+            'langs' => $langs,
+        ];
+    }
+
+    /**
+     * Блоки новости по языкам для двуязычного поста: сначала узбекский
+     * (гос. язык), затем русский. Язык попадает в список только если у него
+     * есть собственный заголовок — localize() при отсутствии перевода
+     * возвращает базовую строку, и без этой проверки текст задвоился бы.
+     *
+     * @param array<string,mixed> $news
+     * @return list<array{code:string,label:string,title:string,excerpt:string,link:string,read_more:string}>
+     */
+    private static function languageBlocks(array $news, string $base): array
+    {
+        $default = Language::defaultCode();
+        $slug = rawurlencode((string) $news['slug']);
+        // Метки языков и надпись «читать дальше» на соответствующем языке.
+        $meta = [
+            'uz' => ['label' => "O‘zbekcha", 'read_more' => "Saytda o‘qish →"],
+            'ru' => ['label' => 'Русский', 'read_more' => 'Читать на сайте →'],
+            'en' => ['label' => 'English', 'read_more' => 'Read on the site →'],
+        ];
+
+        $blocks = [];
+        foreach (['uz', 'ru'] as $code) {
+            if ($code === $default) {
+                $row = $news;
+            } else {
+                $translation = NewsTranslation::find((int) ($news['id'] ?? 0), $code);
+                if ($translation === null || trim((string) ($translation['title'] ?? '')) === '') {
+                    continue; // перевода нет — язык пропускаем, дубля не будет
+                }
+                $row = News::localize($news, $code);
+            }
+            $title = trim((string) ($row['title'] ?? ''));
+            if ($title === '') {
+                continue;
+            }
+            $blocks[] = [
+                'code' => $code,
+                'label' => $meta[$code]['label'] ?? strtoupper($code),
+                'title' => $title,
+                'excerpt' => trim((string) ($row['excerpt'] ?? '')),
+                'link' => $base . ($code === $default ? '' : '/' . $code) . '/news/' . $slug,
+                'read_more' => $meta[$code]['read_more'] ?? 'Читать →',
+            ];
+        }
+
+        return $blocks;
     }
 
     /** Ставит новость в очередь публикации во все готовые сети. */
