@@ -101,6 +101,18 @@ php scripts/smoke.php http://127.0.0.1:8000 --admin admin:ПАРОЛЬ
   «Видео» или «media» = оба сразу с вкладками Видео/Фото)
   собирают отмеченные записи автоматически; нет отмеченных → откат на последние.
 - i18n публички, переводимые вводные тексты разделов, per-language логотипы.
+- **Переводы контента (per-language) у всех текстовых сущностей**: новости
+  (`news_translations`), страницы (`page_translations` + блоки), проекты
+  (`project_translations`: title, description), команда
+  (`team_member_translations`: name, position — переводится и имя!), альбомы
+  (`photo_album_translations`), видео (`video_translations`), контент-записи
+  (`content_entry_translations`). Паттерн един: RU=база, перевод накладывается
+  `Model::localize()`/`localizeRows()` с graceful-fallback к основному языку
+  при пустом поле; `Model::published/all/forHome/findPublishedBySlug` принимают
+  `?string $lang`. В админ-списках — колонка «Языки» (partial
+  `admin/layout/lang_badges`, данные из `Model::availableLangsForIds()`), в
+  формах — вкладки перевода (`data-lang-tabs`). Одноязычны только служебные
+  разделы (меню, формы, редиректы, пользователи).
 - Лид/описание страниц, цвета фона/текста/кнопок у блоков.
 - Telegram-публикация новостей, webpush, email-дайджест, формы, редиректы,
   открытые данные, календарь мероприятий, каталоги (`/catalog/{type}`),
