@@ -332,9 +332,14 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 .btn--primary .btn__icon, .btn--danger .btn__icon { opacity: 1; }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; transform: none; }
 /* Кнопка публикации в соцсети — выделена своим (Telegram-синим) цветом. */
-.btn--social { background: #2ca5e0; border-color: #2ca5e0; color: #fff; box-shadow: 0 1px 2px rgba(44, 165, 224, .35); }
-.btn--social:hover { background: #1c93cf; border-color: #1c93cf; color: #fff; }
+.btn--social { background: #2ca5e0; border-color: #2ca5e0; color: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.btn--social:hover { filter: brightness(0.94); color: #fff; }
 .btn--social svg { flex: 0 0 auto; }
+/* Цвет кнопки — по бренду соцсети. */
+.btn--social-telegram { background: #2ca5e0; border-color: #2ca5e0; }
+.btn--social-facebook { background: #1877f2; border-color: #1877f2; }
+.btn--social-linkedin { background: #0a66c2; border-color: #0a66c2; }
+.btn--social-instagram { background: linear-gradient(45deg, #f09433, #e6683c 30%, #dc2743 55%, #cc2366 75%, #bc1888); border-color: #cc2366; }
 
 /* Колонка «Соцсети» в списке новостей. */
 /* Гибкая колонка заголовка забирает лишнюю ширину таблицы (width:100%), поэтому
@@ -342,6 +347,8 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
    ними не появляется провал в браузерах, размазывающих свободное место. */
 .data-table__flex { width: 100%; }
 .news-social { white-space: nowrap; }
+.news-social__btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.news-social__btns form { margin: 0; }
 .news-social__state { display: flex; flex-direction: column; gap: 3px; margin-bottom: 6px; }
 .news-social__meta { font-size: 12px; color: var(--admin-muted); }
 

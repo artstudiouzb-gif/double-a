@@ -165,11 +165,17 @@ final class SocialSettings
         return $blocks;
     }
 
-    /** Ставит новость в очередь публикации во все готовые сети. */
-    public static function enqueueForNews(int $newsId): int
+    /**
+     * Ставит новость в очередь публикации в готовые сети. Если задан $only —
+     * только в эту сеть (кнопка конкретной соцсети), иначе во все готовые.
+     */
+    public static function enqueueForNews(int $newsId, ?string $only = null): int
     {
         $count = 0;
         foreach (self::readyNetworks() as $network) {
+            if ($only !== null && $network !== $only) {
+                continue;
+            }
             SocialPost::enqueue($newsId, $network);
             $count++;
         }
@@ -254,7 +260,7 @@ final class SocialSettings
      *
      * @return array{sent: int, failed: int, errors: array<int, string>}
      */
-    public static function dispatchPendingForNews(int $newsId): array
+    public static function dispatchPendingForNews(int $newsId, ?string $only = null): array
     {
         $sent = 0;
         $failed = 0;
@@ -263,6 +269,9 @@ final class SocialSettings
 
         foreach (SocialPost::forNews($newsId) as $row) {
             if ((string) ($row['status'] ?? '') !== 'pending') {
+                continue;
+            }
+            if ($only !== null && (string) ($row['network'] ?? '') !== $only) {
                 continue;
             }
             $res = self::dispatchRow($row, $publisher);

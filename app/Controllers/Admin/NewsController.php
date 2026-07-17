@@ -246,13 +246,19 @@ final class NewsController
             return;
         }
 
-        $count = \App\Core\SocialSettings::enqueueForNews((int) $news['id']);
+        // Кнопка конкретной сети передаёт network; пусто — во все готовые.
+        $only = trim((string) ($_POST['network'] ?? ''));
+        $only = in_array($only, \App\Core\SocialPublisher::NETWORKS, true) ? $only : null;
+
+        $count = \App\Core\SocialSettings::enqueueForNews((int) $news['id'], $only);
         if ($count <= 0) {
-            Flash::error('Нет настроенных соцсетей. Включите их в разделе «Соцсети».');
+            Flash::error($only !== null
+                ? 'Сеть не настроена. Проверьте её в разделе «Соцсети».'
+                : 'Нет настроенных соцсетей. Включите их в разделе «Соцсети».');
         } else {
             // Пытаемся отправить сразу. Что не ушло — остаётся в очереди,
             // и воркер дошлёт по расписанию.
-            $res = \App\Core\SocialSettings::dispatchPendingForNews((int) $news['id']);
+            $res = \App\Core\SocialSettings::dispatchPendingForNews((int) $news['id'], $only);
             if ($res['sent'] > 0 && $res['failed'] === 0) {
                 Flash::success("Опубликовано в соцсети: {$res['sent']}.");
             } elseif ($res['sent'] > 0) {

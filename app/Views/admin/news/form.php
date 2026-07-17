@@ -281,10 +281,18 @@ $languages = Language::active();
                             </tbody>
                         </table>
                     <?php endif; ?>
-                    <button type="submit" form="news-social-form" class="btn btn--social">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                        Опубликовать в соцсетях сейчас
-                    </button>
+                    <?php // Кнопка на каждую готовую сеть — значение сабмиттера (name=network) уходит в #news-social-form. ?>
+                    <div class="news-social__btns" style="margin-bottom:8px;">
+                        <?php foreach ($readyNetworks as $net): ?>
+                            <button type="submit" form="news-social-form" name="network" value="<?= htmlspecialchars($net, ENT_QUOTES) ?>"
+                                    class="btn btn--small btn--social btn--social-<?= htmlspecialchars($net, ENT_QUOTES) ?>">
+                                <?= \App\Core\AdminUi::icon($net) ?><?= htmlspecialchars($netLabels[$net] ?? ucfirst($net), ENT_QUOTES) ?>
+                            </button>
+                        <?php endforeach; ?>
+                        <?php if (count($readyNetworks) > 1): ?>
+                            <button type="submit" form="news-social-form" class="btn btn--small"><?= \App\Core\AdminUi::icon('send') ?>Во все сети</button>
+                        <?php endif; ?>
+                    </div>
                     <p class="form-hint" style="margin-bottom:0;">Пытается отправить сразу; что не ушло — досылает воркер по Cron.</p>
                 <?php endif; ?>
             </div>

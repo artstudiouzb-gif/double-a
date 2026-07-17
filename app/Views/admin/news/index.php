@@ -71,7 +71,7 @@ $langs = Language::active();
         $itemIds = array_map(static fn ($i): int => (int) $i['id'], $items);
         $langMap = \App\Models\News::availableLangsForIds($itemIds);
         $siteLangs = array_map(static fn (array $l): string => (string) $l['code'], $langs);
-        $socialReady = \App\Core\SocialSettings::readyNetworks() !== [];
+        $readyNets = \App\Core\SocialSettings::readyNetworks();
         // Статус публикации в соцсети по всем строкам одним запросом (без N+1).
         $socialStatus = \App\Models\SocialPost::statusForNewsIds($itemIds);
         $socialNetNames = ['telegram' => 'Telegram', 'facebook' => 'Facebook', 'linkedin' => 'LinkedIn', 'instagram' => 'Instagram'];
@@ -110,20 +110,27 @@ $langs = Language::active();
                                 <span class="news-social__meta">не публиковалось</span>
                             <?php endif; ?>
                         </div>
-                        <?php if ($socialReady): ?>
-                            <?php $socialConfirm = $alreadySent
-                                ? 'Новость «' . $item['title'] . '» уже публиковалась в соцсети' . ($lastSent !== '' ? ' (' . $lastSent . ')' : '') . '. Отправить повторно?'
-                                : 'Опубликовать «' . $item['title'] . '» в соцсети?'; ?>
-                            <form method="post" action="/admin/news/<?= (int) $item['id'] ?>/social"
-                                  data-confirm="<?= htmlspecialchars($socialConfirm, ENT_QUOTES) ?>">
-                                <?= Csrf::field() ?>
-                                <input type="hidden" name="from" value="list">
-                                <input type="hidden" name="return_query" value="<?= htmlspecialchars(http_build_query($filterParams), ENT_QUOTES) ?>">
-                                <button type="submit" class="btn btn--small btn--social">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                    <?= $alreadySent ? 'Опубликовать снова' : 'В соцсети' ?>
-                                </button>
-                            </form>
+                        <?php if (!empty($readyNets)): ?>
+                            <div class="news-social__btns">
+                                <?php foreach ($readyNets as $net): ?>
+                                    <?php
+                                    $netLabel = $socialNetNames[$net] ?? ucfirst($net);
+                                    $netSent = $ss !== null && in_array($net, $ss['networks'], true);
+                                    $netConfirm = $netSent
+                                        ? 'Новость «' . $item['title'] . '» уже публиковалась в ' . $netLabel . '. Отправить повторно?'
+                                        : 'Опубликовать «' . $item['title'] . '» в ' . $netLabel . '?';
+                                    ?>
+                                    <form method="post" action="/admin/news/<?= (int) $item['id'] ?>/social" data-confirm="<?= htmlspecialchars($netConfirm, ENT_QUOTES) ?>">
+                                        <?= Csrf::field() ?>
+                                        <input type="hidden" name="from" value="list">
+                                        <input type="hidden" name="network" value="<?= htmlspecialchars($net, ENT_QUOTES) ?>">
+                                        <input type="hidden" name="return_query" value="<?= htmlspecialchars(http_build_query($filterParams), ENT_QUOTES) ?>">
+                                        <button type="submit" class="btn btn--small btn--social btn--social-<?= htmlspecialchars($net, ENT_QUOTES) ?>" title="<?= $netSent ? 'Опубликовать снова' : 'Опубликовать' ?>">
+                                            <?= \App\Core\AdminUi::icon($net) ?><?= htmlspecialchars($netLabel, ENT_QUOTES) ?><?= $netSent ? ' ✓' : '' ?>
+                                        </button>
+                                    </form>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endif; ?>
                     <?php endif; ?>
                 </td>
