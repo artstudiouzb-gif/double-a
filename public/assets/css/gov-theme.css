@@ -1546,3 +1546,94 @@ a.orgstruct__head:hover .orgstruct__head-name { color: color-mix(in srgb, var(--
     display: block; width: 100%; height: 100%;
     object-fit: cover; border-radius: inherit;
 }
+
+/* ==========================================================================
+   Статичные размеры заголовков (Дизайн → Типографика → «Статичные»).
+   Плавающие clamp(min, Nvw, max) заменяются фиксированным размером (max)
+   на десктопе и min на узких экранах — «спокойная» типографика без
+   непрерывного масштабирования по ширине. Тело body получает класс
+   .design-type-static из DesignSettings::bodyClasses().
+   ========================================================================== */
+body.design-type-static .counter__value,
+body.design-type-static .counter__suffix { font-size: 2.5rem; }
+body.design-type-static h1 { font-size: 2.5rem; }
+body.design-type-static h2 { font-size: 1.95rem; }
+body.design-type-static h3 { font-size: 1.55rem; }
+body.design-type-static h4 { font-size: 1.25rem; }
+body.design-type-static .block-hero--media .block-hero__title { font-size: 3.7rem; }
+body.design-type-static .block-hero--media .block-hero__subtitle { font-size: 1.18rem; }
+body.design-type-static .block-hero__title { font-size: 3.4rem; }
+body.design-type-static .block-hero__subtitle { font-size: 1.22rem; }
+body.design-type-static .section-head__title { font-size: 2rem; }
+body.design-type-static .timeline-cta__title { font-size: 1.7rem; }
+body.design-type-static .profile__name { font-size: 2.5rem; }
+body.design-type-static .block-featband__title { font-size: 2rem; }
+body.design-type-static .newsdetail__title { font-size: 2.9rem; }
+body.design-type-static .newsdetail-phero__title { font-size: 3rem; }
+body.design-type-static .block-banner--light .block-banner__title { font-size: 2.7rem; }
+body.design-type-static .block-banner__title { font-size: 2.4rem; }
+body.design-type-static .textimage__title,
+body.design-type-static .block-map__title { font-size: 1.9rem; }
+body.design-type-static .listing__title,
+body.design-type-static .content-pagehead__title { font-size: 2.6rem; }
+body.design-type-static .newslist-lead__title { font-size: 1.7rem; }
+body.design-type-static .projdetail__title { font-size: 2.6rem; }
+body.design-type-static .catdetail__title { font-size: 2.4rem; }
+body.design-type-static .block-cta h2 { font-size: 2.8rem; }
+body.design-type-static .cms-columns__col .cms-block--cta .block-cta h2 { font-size: 1.6rem; }
+body.design-type-static .site-content > section.cms-block--cta:first-of-type .block-cta h2,
+body.design-type-static .page-blocks > section.cms-block--cta:first-of-type .block-cta h2 { font-size: 3.4rem; }
+body.design-type-static .site-content > section.cms-block--cta:first-of-type .block-cta p,
+body.design-type-static .page-blocks > section.cms-block--cta:first-of-type .block-cta p { font-size: 1.22rem; }
+body.design-type-static .block-news__title { font-size: 2rem; }
+body.design-type-static .content-list__head h1 { font-size: 2.4rem; }
+body.design-type-static .news-index__title { font-size: 2.5rem; }
+body.design-type-static .news-single h1 { font-size: 2.6rem; }
+body.design-type-static .block-contact-cards__title { font-size: 2rem; }
+body.design-type-static .block-categories__title { font-size: 2rem; }
+body.design-type-static .block-media__title { font-size: 1.8rem; }
+body.design-type-static .block-counters__title,
+body.design-type-static .block-team__title,
+body.design-type-static .block-projects__title,
+body.design-type-static .section-title { font-size: 2.1rem !important; }
+
+/* Узкие экраны: крупные заголовки берут нижнюю границу прежнего clamp,
+   чтобы не переполнять строку (мелкие подзаголовки/h4 не трогаем). */
+@media (max-width: 640px) {
+    body.design-type-static .counter__value,
+    body.design-type-static .counter__suffix { font-size: 1.75rem; }
+    body.design-type-static h1 { font-size: 1.8rem; }
+    body.design-type-static h2 { font-size: 1.45rem; }
+    body.design-type-static h3 { font-size: 1.2rem; }
+    body.design-type-static .block-hero--media .block-hero__title { font-size: 2.2rem; }
+    body.design-type-static .block-hero__title { font-size: 2rem; }
+    body.design-type-static .section-head__title { font-size: 1.5rem; }
+    body.design-type-static .timeline-cta__title { font-size: 1.3rem; }
+    body.design-type-static .profile__name { font-size: 1.8rem; }
+    body.design-type-static .block-featband__title { font-size: 1.5rem; }
+    body.design-type-static .newsdetail__title { font-size: 1.9rem; }
+    body.design-type-static .newsdetail-phero__title { font-size: 1.9rem; }
+    body.design-type-static .block-banner--light .block-banner__title { font-size: 1.9rem; }
+    body.design-type-static .block-banner__title { font-size: 1.6rem; }
+    body.design-type-static .textimage__title,
+    body.design-type-static .block-map__title { font-size: 1.4rem; }
+    body.design-type-static .listing__title,
+    body.design-type-static .content-pagehead__title { font-size: 1.9rem; }
+    body.design-type-static .newslist-lead__title { font-size: 1.3rem; }
+    body.design-type-static .projdetail__title { font-size: 1.8rem; }
+    body.design-type-static .catdetail__title { font-size: 1.7rem; }
+    body.design-type-static .block-cta h2 { font-size: 1.8rem; }
+    body.design-type-static .site-content > section.cms-block--cta:first-of-type .block-cta h2,
+    body.design-type-static .page-blocks > section.cms-block--cta:first-of-type .block-cta h2 { font-size: 2rem; }
+    body.design-type-static .block-news__title { font-size: 1.5rem; }
+    body.design-type-static .content-list__head h1 { font-size: 1.7rem; }
+    body.design-type-static .news-index__title { font-size: 1.8rem; }
+    body.design-type-static .news-single h1 { font-size: 1.7rem; }
+    body.design-type-static .block-contact-cards__title { font-size: 1.5rem; }
+    body.design-type-static .block-categories__title { font-size: 1.4rem; }
+    body.design-type-static .block-media__title { font-size: 1.3rem; }
+    body.design-type-static .block-counters__title,
+    body.design-type-static .block-team__title,
+    body.design-type-static .block-projects__title,
+    body.design-type-static .section-title { font-size: 1.5rem !important; }
+}

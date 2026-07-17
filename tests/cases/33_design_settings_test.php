@@ -52,6 +52,16 @@ test('DesignSettings::bodyClasses включает тип поиска, шабл
     assert_contains('design-footer-minimal', $min);
 });
 
+test('DesignSettings: масштаб заголовков — статичный режим даёт класс, плавающий нет', function () {
+    assert_same('static', DesignSettings::sanitize('type_scale', 'static'));
+    assert_same('fluid', DesignSettings::sanitize('type_scale', 'bogus')); // default
+
+    $base = DesignSettings::PRESETS['classic']['values'];
+    assert_not_contains('design-type-static', DesignSettings::bodyClasses($base)); // без ключа — плавающие
+    assert_contains('design-type-static', DesignSettings::bodyClasses(['type_scale' => 'static'] + $base));
+    assert_not_contains('design-type-static', DesignSettings::bodyClasses(['type_scale' => 'fluid'] + $base));
+});
+
 test('DesignSettings::cssVariables задаёт тень карточек по стилю', function () {
     $flat = DesignSettings::cssVariables(DesignSettings::PRESETS['minimal']['values']);
     assert_contains('--card-shadow:none', $flat);
