@@ -446,7 +446,7 @@ final class News
             ':slug' => $data['slug'],
             ':excerpt' => $data['excerpt'],
             ':content' => $data['content'],
-            ':image' => $data['image'],
+            ':image' => $data['image'] ?? null,
             ':video_url' => $data['video_url'] ?? null,
             ':layout_type' => self::normalizeLayout($data['layout_type'] ?? 'standard'),
             ':focal_x' => $data['focal_x'] ?? null,
@@ -454,8 +454,8 @@ final class News
             ':meta_title' => $data['meta_title'] ?? null,
             ':meta_description' => $data['meta_description'] ?? null,
             ':status' => $data['status'],
-            ':published_at' => $data['published_at'],
-            ':author_id' => $data['author_id'],
+            ':published_at' => $data['published_at'] ?? null,
+            ':author_id' => $data['author_id'] ?? null,
         ]);
 
         // id читаем до сброса кэша: bustPageCache() делает запрос к settings,
@@ -481,7 +481,7 @@ final class News
             ':slug' => $data['slug'],
             ':excerpt' => $data['excerpt'],
             ':content' => $data['content'],
-            ':image' => $data['image'],
+            ':image' => $data['image'] ?? null,
             ':video_url' => $data['video_url'] ?? null,
             ':layout_type' => self::normalizeLayout($data['layout_type'] ?? 'standard'),
             ':focal_x' => $data['focal_x'] ?? null,

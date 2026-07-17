@@ -168,7 +168,8 @@ final class Language
         }
     }
 
-    private static function flush(): void
+    /** Сбрасывает кэш языков в текущем процессе (после правки списка языков). */
+    public static function flush(): void
     {
         self::$activeCache = null;
         self::$defaultCache = null;

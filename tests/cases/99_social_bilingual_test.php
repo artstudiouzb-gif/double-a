@@ -119,6 +119,49 @@ test('Подпись — отдельное поле у каждой сети и
     assert_contains('Заголовок', (string) $seen['text']);
 });
 
+test('Двуязычие при узбекском основном языке: база — узбекский, русский из перевода (БД)', function () {
+    ensure_test_db();
+    \App\Models\Setting::set('app_url', 'https://site.uz');
+    $pdo = \App\Core\Database::pdo();
+
+    // Боевая конфигурация сайта: основной язык — узбекский.
+    $pdo->exec('UPDATE languages SET is_default = 0');
+    $pdo->exec("UPDATE languages SET is_default = 1 WHERE code = 'uz'");
+    \App\Models\Language::flush();
+
+    try {
+        assert_same('uz', \App\Models\Language::defaultCode(), 'основной язык — узбекский');
+
+        // Основное поле — узбекский, вкладка перевода — русский.
+        $id = \App\Models\News::create([
+            'title' => 'Uzbek sarlavha', 'slug' => 'uz-main-' . uniqid(), 'excerpt' => 'Uzbek anons',
+            'content' => 'matn', 'status' => 'published', 'published_at' => date('Y-m-d H:i:s'),
+        ]);
+        \App\Models\NewsTranslation::upsert($id, 'ru', [
+            'title' => 'Русский заголовок', 'excerpt' => 'Русский анонс', 'content' => 'текст',
+        ]);
+
+        $post = SocialSettings::buildPost(\App\Models\News::findById($id));
+        assert_same(2, count($post['langs']));
+
+        // Узбекский идёт первым и берётся из базовой строки, ссылка — без префикса.
+        assert_same('uz', $post['langs'][0]['code']);
+        assert_same('Uzbek sarlavha', $post['langs'][0]['title']);
+        assert_same('Uzbek anons', $post['langs'][0]['excerpt']);
+        assert_true(!str_contains($post['langs'][0]['link'], '/uz/'), 'основной язык — без префикса в URL');
+
+        // Русский — из перевода, со своим префиксом.
+        assert_same('ru', $post['langs'][1]['code']);
+        assert_same('Русский заголовок', $post['langs'][1]['title']);
+        assert_contains('/ru/news/', $post['langs'][1]['link']);
+    } finally {
+        // Возвращаем основной язык, иначе следующие тесты получат чужую конфигурацию.
+        $pdo->exec('UPDATE languages SET is_default = 0');
+        $pdo->exec("UPDATE languages SET is_default = 1 WHERE code = 'ru'");
+        \App\Models\Language::flush();
+    }
+});
+
 test('Список новостей: языки контента одним запросом, без N+1 (БД)', function () {
     ensure_test_db();
 
