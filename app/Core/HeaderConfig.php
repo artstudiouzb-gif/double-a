@@ -33,6 +33,8 @@ final class HeaderConfig
         'email' => 'E-mail',
         'snippet' => 'Сниппет (текст/HTML)',
         'divider' => 'Разделитель',
+        'spacer' => 'Гибкий отступ',
+        'space' => 'Пробел',
     ];
 
     /** Стили верхней/утилитарной полосы шапки. */
@@ -46,7 +48,7 @@ final class HeaderConfig
 
     /** Элементы, которые можно повторять в зонах (визуальные). Прочие — уникальны
      *  в пределах одной секции (но могут повторяться в разных секциях). */
-    private const REPEATABLE = ['divider'];
+    private const REPEATABLE = ['divider', 'spacer', 'space'];
 
     public const DEFAULTS = [
         'layout' => 'stacked',                // stacked | inline | centered | drawer
