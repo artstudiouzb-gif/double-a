@@ -20,13 +20,16 @@ foreach ($options as $key => $opt) {
 ?>
 <p class="form-hint">Готовые конфигурации применяют набор настроек одним кликом. Ниже — точная настройка: выберите вариант для каждого параметра. Изменения сразу применяются к сайту.</p>
 
-<?php // Страница длинная (9 секций) — липкие якоря избавляют от слепой прокрутки. ?>
-<nav class="design-anchors" aria-label="Разделы настроек дизайна">
-    <a href="#design-presets">Конфигурации</a>
-    <?php $gi = 0; foreach (array_keys($grouped) as $gname): ?>
-        <a href="#design-g<?= $gi ?>"><?= htmlspecialchars($gname, ENT_QUOTES) ?></a>
-    <?php $gi++; endforeach; ?>
-</nav>
+<?php // Секции точной настройки свёрнуты — якоря открывают нужную и прокручивают к ней. ?>
+<div class="design-nav">
+    <nav class="design-anchors" aria-label="Разделы настроек дизайна">
+        <a href="#design-presets">Конфигурации</a>
+        <?php $gi = 0; foreach (array_keys($grouped) as $gname): ?>
+            <a href="#design-g<?= $gi ?>"><?= htmlspecialchars($gname, ENT_QUOTES) ?></a>
+        <?php $gi++; endforeach; ?>
+    </nav>
+    <button type="button" class="btn btn--small" data-design-toggle-all>Развернуть всё</button>
+</div>
 
 <section class="design-section" id="design-presets">
     <h2 class="design-section__title">Готовые конфигурации</h2>
@@ -86,8 +89,8 @@ foreach ($options as $key => $opt) {
 <form method="post" action="/admin/design" class="design-fine">
     <?= Csrf::field() ?>
     <?php $gi = 0; foreach ($grouped as $groupName => $groupOpts): ?>
-        <section class="design-section" id="design-g<?= $gi; $gi++; ?>">
-            <h2 class="design-section__title"><?= htmlspecialchars($groupName, ENT_QUOTES) ?></h2>
+        <details class="design-section design-section--collapsible" id="design-g<?= $gi; $gi++; ?>">
+            <summary class="design-section__title"><?= htmlspecialchars($groupName, ENT_QUOTES) ?></summary>
             <?php foreach ($groupOpts as $key => $opt): ?>
                 <?php if ($key === 'font_style') { continue; } // Ниже выводится единый выбор всех источников шрифта. ?>
                 <?php if ($key === 'font_size' || $key === 'line_height') { continue; } // Типографика управляется точными числами ниже. ?>
@@ -269,71 +272,71 @@ foreach ($options as $key => $opt) {
                     </div>
                 </div>
             <?php endif; ?>
-        </section>
+
+            <?php if ($groupName === 'Общие'): ?>
+                <?php // Точные значения — рядом со своими пресетами (ширина, скругление). ?>
+                <div class="design-opt">
+                    <div class="design-opt__label">
+                        <span>Точная ширина</span>
+                        <small>Перекрывает выбор «Ширина контейнера» выше. Напр. <code>1440px</code>, <code>90%</code> или число <code>1440</code> (px). Пусто — использовать пресет.</small>
+                    </div>
+                    <div class="design-opt__choices">
+                        <input type="text" name="container_custom" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_container_custom', ''), ENT_QUOTES) ?>" placeholder="напр. 1440px" style="max-width:220px;" data-design-preview-field>
+                    </div>
+                </div>
+                <div class="design-opt">
+                    <div class="design-opt__label">
+                        <span>Точное скругление</span>
+                        <small>От 0 до 48 px. Применяется к карточкам и полям, а также к кнопкам с формой «Скруглённые». Пусто — использовать вариант выше.</small>
+                    </div>
+                    <div class="design-opt__choices">
+                        <?php $radiusCustom = preg_replace('/px$/', '', \App\Core\DesignSettings::radiusCustom()); ?>
+                        <input type="number" name="radius_custom" min="0" max="48" step="0.5" inputmode="decimal"
+                               value="<?= htmlspecialchars((string) $radiusCustom, ENT_QUOTES) ?>" placeholder="напр. 12" style="max-width:220px;" data-design-preview-field>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($groupName === 'Шапка'): ?>
+                <?php // Разделители главного меню — часть настроек шапки. ?>
+                <div class="design-opt">
+                    <div class="design-opt__label">
+                        <span>Цвет разделителей меню</span>
+                        <small>Цвет вертикальных разделительных линий в главном меню.</small>
+                    </div>
+                    <div class="design-opt__choices" style="display:flex;align-items:center;gap:12px;">
+                        <input type="color" name="menu_divider_color" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_menu_divider_color', '#ffffff'), ENT_QUOTES) ?>" style="width:64px;height:38px;padding:4px;" data-design-preview-field>
+                        <label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;">
+                            <input type="checkbox" name="menu_divider_color_use" value="1" <?= \App\Models\Setting::get('design_menu_divider_color_use', '') === '1' ? 'checked' : '' ?> data-design-preview-field>
+                            Использовать свой цвет (иначе автоматический)
+                        </label>
+                    </div>
+                </div>
+                <div class="design-opt">
+                    <div class="design-opt__label">
+                        <span>Толщина разделителей меню</span>
+                        <small>Ширина разделительной линии в пикселях. От 0 до 10 px. Пусто — 1px.</small>
+                    </div>
+                    <div class="design-opt__choices">
+                        <?php $divThickness = preg_replace('/px$/', '', (string) \App\Models\Setting::get('design_menu_divider_thickness', '')); ?>
+                        <input type="number" name="menu_divider_thickness" min="0" max="10" step="0.5" inputmode="decimal"
+                               value="<?= htmlspecialchars((string) $divThickness, ENT_QUOTES) ?>" placeholder="напр. 1" style="max-width:220px;" data-design-preview-field>
+                    </div>
+                </div>
+                <div class="design-opt">
+                    <div class="design-opt__label">
+                        <span>Высота разделителей меню</span>
+                        <small>Высота разделительной линии в пикселях. От 2 до 100 px. Пусто — 18px.</small>
+                    </div>
+                    <div class="design-opt__choices">
+                        <?php $divHeight = preg_replace('/px$/', '', (string) \App\Models\Setting::get('design_menu_divider_height', '')); ?>
+                        <input type="number" name="menu_divider_height" min="2" max="100" step="1" inputmode="numeric"
+                               value="<?= htmlspecialchars((string) $divHeight, ENT_QUOTES) ?>" placeholder="напр. 18" style="max-width:220px;" data-design-preview-field>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </details>
     <?php endforeach; ?>
-
-    <section class="design-section">
-        <h2 class="design-section__title">Точные размеры</h2>
-        <div class="design-opt">
-            <div class="design-opt__label">
-                <span>Точная ширина</span>
-                <small>Перекрывает выбор «Ширина контейнера» выше. Напр. <code>1440px</code>, <code>90%</code> или число <code>1440</code> (px). Пусто — использовать пресет.</small>
-            </div>
-            <div class="design-opt__choices">
-                <input type="text" name="container_custom" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_container_custom', ''), ENT_QUOTES) ?>" placeholder="напр. 1440px" style="max-width:220px;" data-design-preview-field>
-            </div>
-        </div>
-        <div class="design-opt">
-            <div class="design-opt__label">
-                <span>Точное скругление</span>
-                <small>От 0 до 48 px. Применяется к карточкам и полям, а также к кнопкам с формой «Скруглённые». Пусто — использовать вариант выше.</small>
-            </div>
-            <div class="design-opt__choices">
-                <?php $radiusCustom = preg_replace('/px$/', '', \App\Core\DesignSettings::radiusCustom()); ?>
-                <input type="number" name="radius_custom" min="0" max="48" step="0.5" inputmode="decimal"
-                       value="<?= htmlspecialchars((string) $radiusCustom, ENT_QUOTES) ?>" placeholder="напр. 12" style="max-width:220px;" data-design-preview-field>
-            </div>
-        </div>
-    </section>
-
-    <section class="design-section">
-        <h2 class="design-section__title">Разделители меню</h2>
-        <div class="design-opt">
-            <div class="design-opt__label">
-                <span>Цвет разделителей</span>
-                <small>Цвет вертикальных разделительных линий в главном меню.</small>
-            </div>
-            <div class="design-opt__choices" style="display:flex;align-items:center;gap:12px;">
-                <input type="color" name="menu_divider_color" value="<?= htmlspecialchars((string) \App\Models\Setting::get('design_menu_divider_color', '#ffffff'), ENT_QUOTES) ?>" style="width:64px;height:38px;padding:4px;" data-design-preview-field>
-                <label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;">
-                    <input type="checkbox" name="menu_divider_color_use" value="1" <?= \App\Models\Setting::get('design_menu_divider_color_use', '') === '1' ? 'checked' : '' ?> data-design-preview-field>
-                    Использовать свой цвет (иначе автоматический)
-                </label>
-            </div>
-        </div>
-        <div class="design-opt">
-            <div class="design-opt__label">
-                <span>Толщина разделителей</span>
-                <small>Ширина разделительной линии в пикселях. От 0 до 10 px. Пусто — 1px.</small>
-            </div>
-            <div class="design-opt__choices">
-                <?php $divThickness = preg_replace('/px$/', '', (string) \App\Models\Setting::get('design_menu_divider_thickness', '')); ?>
-                <input type="number" name="menu_divider_thickness" min="0" max="10" step="0.5" inputmode="decimal"
-                       value="<?= htmlspecialchars((string) $divThickness, ENT_QUOTES) ?>" placeholder="напр. 1" style="max-width:220px;" data-design-preview-field>
-            </div>
-        </div>
-        <div class="design-opt">
-            <div class="design-opt__label">
-                <span>Высота разделителей</span>
-                <small>Высота разделительной линии в пикселях. От 2 до 100 px. Пусто — 18px.</small>
-            </div>
-            <div class="design-opt__choices">
-                <?php $divHeight = preg_replace('/px$/', '', (string) \App\Models\Setting::get('design_menu_divider_height', '')); ?>
-                <input type="number" name="menu_divider_height" min="2" max="100" step="1" inputmode="numeric"
-                       value="<?= htmlspecialchars((string) $divHeight, ENT_QUOTES) ?>" placeholder="напр. 18" style="max-width:220px;" data-design-preview-field>
-            </div>
-        </div>
-    </section>
 
     <div class="design-actions">
         <button type="submit" class="btn btn--primary">Сохранить настройки дизайна</button>
@@ -352,6 +355,33 @@ foreach ($options as $key => $opt) {
     }
     if (fontChoice) { fontChoice.addEventListener('change', syncCustomFontFields); }
     syncCustomFontFields();
+
+    // Сворачиваемые секции: клик по якорю открывает нужную и прокручивает к ней.
+    function openFromHash() {
+        var id = (location.hash || '').slice(1);
+        if (!id) { return; }
+        var el = document.getElementById(id);
+        if (el && el.tagName === 'DETAILS') { el.open = true; }
+    }
+    document.querySelectorAll('.design-anchors a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function () {
+            var el = document.getElementById(a.getAttribute('href').slice(1));
+            if (el && el.tagName === 'DETAILS') { el.open = true; }
+        });
+    });
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+
+    // Кнопка «развернуть/свернуть всё».
+    var toggleAll = document.querySelector('[data-design-toggle-all]');
+    if (toggleAll) {
+        toggleAll.addEventListener('click', function () {
+            var sections = document.querySelectorAll('details.design-section--collapsible');
+            var anyClosed = [].some.call(sections, function (d) { return !d.open; });
+            sections.forEach(function (d) { d.open = anyClosed; });
+            toggleAll.textContent = anyClosed ? 'Свернуть всё' : 'Развернуть всё';
+        });
+    }
 })();
 </script>
 <?php require __DIR__ . '/../layout/footer.php'; ?>
