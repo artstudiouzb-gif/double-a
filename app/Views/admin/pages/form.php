@@ -236,7 +236,7 @@ foreach ($blocks as $b) {
                     <?= Csrf::field() ?>
                     <button type="submit" class="btn btn--small"><?= $blockActive ? '👁 Скрыть' : '🚫 Показать' ?></button>
                 </form>
-                <a class="btn btn--small" href="/admin/blocks/<?= (int) $block['id'] ?>/edit">Редактировать</a>
+                <a class="btn btn--small" href="/admin/blocks/<?= (int) $block['id'] ?>/edit"><?= \App\Core\AdminUi::icon('edit') ?>Редактировать</a>
                 <form method="post" action="/admin/blocks/<?= (int) $block['id'] ?>/delete" data-confirm="Удалить блок?">
                     <?= Csrf::field() ?>
                     <button type="submit" class="btn btn--small btn--danger"><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
@@ -258,9 +258,9 @@ foreach ($blocks as $b) {
                             <div class="columns-editor__child">
                                 <span><?= htmlspecialchars($kid['title'] ?: ($blockTypeLabels[$kid['type']] ?? $kid['type']), ENT_QUOTES) ?></span>
                                 <span class="columns-editor__child-actions">
-                                    <a class="btn btn--small" href="/admin/blocks/<?= (int) $kid['id'] ?>/edit">✎</a>
+                                    <a class="btn btn--small" href="/admin/blocks/<?= (int) $kid['id'] ?>/edit" title="Редактировать" aria-label="Редактировать"><?= \App\Core\AdminUi::icon('edit') ?></a>
                                     <form method="post" action="/admin/blocks/<?= (int) $kid['id'] ?>/delete" data-confirm="Удалить вложенный блок?">
-                                        <?= Csrf::field() ?><button class="btn btn--small btn--danger">×</button>
+                                        <?= Csrf::field() ?><button class="btn btn--small btn--danger" title="Удалить" aria-label="Удалить"><?= \App\Core\AdminUi::icon('trash') ?></button>
                                     </form>
                                 </span>
                             </div>
@@ -278,7 +278,7 @@ foreach ($blocks as $b) {
                                     <option value="<?= htmlspecialchars($t, ENT_QUOTES) ?>"><?= htmlspecialchars($lbl, ENT_QUOTES) ?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <button class="btn btn--small">+ блок</button>
+                            <button class="btn btn--small"><?= \App\Core\AdminUi::icon('plus') ?>блок</button>
                         </form>
                     </div>
                 <?php endfor; ?>
@@ -312,7 +312,7 @@ foreach ($blocks as $b) {
                 <?= Csrf::field() ?>
                 <input type="hidden" name="block_lang" value="<?= htmlspecialchars($blockLang, ENT_QUOTES) ?>">
                 <input type="text" name="snippet_name" placeholder="Название шаблона" required>
-                <button type="submit" class="btn btn--small">Сохранить страницу как шаблон</button>
+                <button type="submit" class="btn btn--small"><?= \App\Core\AdminUi::icon('save') ?>Сохранить страницу как шаблон</button>
             </form>
             <?php if (!empty($snippets)): ?>
                 <form method="post" action="/admin/pages/<?= (int) $page['id'] ?>/snippets/insert" class="snippet-tools__row" data-snippet-insert>
@@ -328,7 +328,7 @@ foreach ($blocks as $b) {
                         <option value="append">Добавить к текущим</option>
                         <option value="replace">Заменить текущие блоки</option>
                     </select>
-                    <button type="submit" class="btn btn--small">Применить шаблон</button>
+                    <button type="submit" class="btn btn--small"><?= \App\Core\AdminUi::icon('layout') ?>Применить шаблон</button>
                 </form>
             <?php else: ?>
                 <p class="form-hint">Пока нет сохранённых шаблонов.</p>
@@ -356,7 +356,7 @@ foreach ($blocks as $b) {
                 <input type="text" id="block_title" name="title" placeholder="например: Слайдер на главной">
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn btn--primary">Добавить блок</button>
+                <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('plus') ?>Добавить блок</button>
             </div>
         </form>
     </div>

@@ -35,11 +35,11 @@ $sections = [
                     <td class="data-table__actions">
                         <form method="post" action="/admin/trash/<?= $section['type'] ?>/<?= (int) $item['id'] ?>/restore">
                             <?= Csrf::field() ?>
-                            <button type="submit" class="btn btn--small">Восстановить</button>
+                            <button type="submit" class="btn btn--small"><?= \App\Core\AdminUi::icon('reset') ?>Восстановить</button>
                         </form>
                         <form method="post" action="/admin/trash/<?= $section['type'] ?>/<?= (int) $item['id'] ?>/force-delete" data-confirm="Удалить навсегда? Это действие необратимо.">
                             <?= Csrf::field() ?>
-                            <button type="submit" class="btn btn--small btn--danger">Удалить навсегда</button>
+                            <button type="submit" class="btn btn--small btn--danger"><?= \App\Core\AdminUi::icon('trash') ?>Удалить навсегда</button>
                         </form>
                     </td>
                 </tr>
