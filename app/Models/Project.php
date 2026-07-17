@@ -123,6 +123,7 @@ final class Project
             ]);
             \App\Core\Duplicator::copyChildren('project_images', 'project_id', $id, $newId);
             \App\Core\Duplicator::copyChildren('project_fields', 'project_id', $id, $newId);
+            \App\Core\Duplicator::copyChildren('project_translations', 'project_id', $id, $newId);
 
             $pdo->commit();
 
@@ -148,13 +149,18 @@ final class Project
         self::bustPageCache();
     }
 
-    public static function published(): array
+    public static function published(?string $lang = null): array
     {
         $stmt = Database::pdo()->query(
             "SELECT * FROM projects WHERE status = 'published' AND deleted_at IS NULL ORDER BY sort_order ASC, created_at DESC"
         );
+        $rows = $stmt->fetchAll();
 
-        return $stmt->fetchAll();
+        if ($lang === null || $lang === Language::defaultCode()) {
+            return $rows;
+        }
+
+        return self::localizeRows($rows, $lang);
     }
 
     /**
@@ -164,7 +170,7 @@ final class Project
      *
      * @return array<int, array<string, mixed>>
      */
-    public static function forHome(int $limit = 6): array
+    public static function forHome(int $limit = 6, ?string $lang = null): array
     {
         $limit = max(1, min(24, $limit));
         $stmt = Database::pdo()->prepare(
@@ -173,16 +179,20 @@ final class Project
         );
         $stmt->execute();
         $rows = $stmt->fetchAll();
-        if (!empty($rows)) {
+        if (empty($rows)) {
+            $stmt = Database::pdo()->prepare(
+                "SELECT * FROM projects WHERE status = 'published' AND deleted_at IS NULL
+                 ORDER BY sort_order ASC, created_at DESC LIMIT {$limit}"
+            );
+            $stmt->execute();
+            $rows = $stmt->fetchAll();
+        }
+
+        if ($lang === null || $lang === Language::defaultCode()) {
             return $rows;
         }
-        $stmt = Database::pdo()->prepare(
-            "SELECT * FROM projects WHERE status = 'published' AND deleted_at IS NULL
-             ORDER BY sort_order ASC, created_at DESC LIMIT {$limit}"
-        );
-        $stmt->execute();
 
-        return $stmt->fetchAll();
+        return self::localizeRows($rows, $lang);
     }
 
     public static function findById(int $id): ?array
@@ -194,7 +204,7 @@ final class Project
         return $row ?: null;
     }
 
-    public static function findPublishedBySlug(string $slug): ?array
+    public static function findPublishedBySlug(string $slug, ?string $lang = null): ?array
     {
         $stmt = Database::pdo()->prepare(
             "SELECT * FROM projects WHERE slug = :slug AND status = 'published' AND deleted_at IS NULL LIMIT 1"
@@ -202,7 +212,88 @@ final class Project
         $stmt->execute([':slug' => $slug]);
         $row = $stmt->fetch();
 
-        return $row ?: null;
+        if (!$row) {
+            return null;
+        }
+
+        if ($lang === null || $lang === Language::defaultCode()) {
+            return $row;
+        }
+
+        return self::localize($row, $lang);
+    }
+
+    /**
+     * Накладывает перевод указанного языка на базовую строку. Пустые поля
+     * перевода откатываются к значению основного языка (graceful fallback).
+     */
+    public static function localize(array $row, string $lang): array
+    {
+        return self::applyTranslation($row, ProjectTranslation::find((int) $row['id'], $lang));
+    }
+
+    /** @param array<int, array<string, mixed>> $rows @return array<int, array<string, mixed>> */
+    private static function localizeRows(array $rows, string $lang): array
+    {
+        $translations = ProjectTranslation::forProjectIds(
+            array_map(static fn (array $row): int => (int) $row['id'], $rows),
+            $lang
+        );
+        return array_map(
+            static fn (array $row): array => self::applyTranslation($row, $translations[(int) $row['id']] ?? null),
+            $rows
+        );
+    }
+
+    private static function applyTranslation(array $row, ?array $translation): array
+    {
+        if ($translation === null) {
+            return $row;
+        }
+        foreach (['title', 'description'] as $field) {
+            if (isset($translation[$field]) && trim((string) $translation[$field]) !== '') {
+                $row[$field] = $translation[$field];
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * Языки контента для набора проектов одним запросом (без N+1).
+     * Контент на языке = непустой перевод заголовка или описания.
+     *
+     * @param array<int|string> $ids
+     * @return array<int, array<int, string>>
+     */
+    public static function availableLangsForIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $default = Language::defaultCode();
+        $map = [];
+        foreach ($ids as $id) {
+            $map[$id] = [$default];
+        }
+        if ($ids === []) {
+            return $map;
+        }
+
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT project_id, lang FROM project_translations
+             WHERE project_id IN ($in)
+               AND (TRIM(COALESCE(title, '')) <> '' OR TRIM(COALESCE(description, '')) <> '')"
+        );
+        $stmt->execute($ids);
+        foreach ($stmt->fetchAll() as $row) {
+            $id = (int) $row['project_id'];
+            $lang = (string) $row['lang'];
+            if (isset($map[$id]) && !in_array($lang, $map[$id], true)) {
+                $map[$id][] = $lang;
+            }
+        }
+
+        return $map;
     }
 
     public static function slugExists(string $slug, ?int $excludeId = null): bool

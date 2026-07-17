@@ -270,7 +270,7 @@ final class BlockRenderer
             $data['members'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
         }
         if ($type === 'projects_list') {
-            $items = \App\Models\Project::published();
+            $items = \App\Models\Project::published(Locale::current());
             $limit = (int) ($data['limit'] ?? 0);
             $data['projects'] = $limit > 0 ? array_slice($items, 0, $limit) : $items;
         }
@@ -353,7 +353,7 @@ final class BlockRenderer
             $lang = Locale::current();
             $limit = (int) ($data['limit'] ?? 6);
             $items = [];
-            foreach (\App\Models\Project::forHome($limit) as $p) {
+            foreach (\App\Models\Project::forHome($limit, $lang) as $p) {
                 $items[] = [
                     'image' => (string) ($p['cover_image'] ?? ''),
                     'title' => (string) $p['title'],

@@ -253,6 +253,17 @@ CREATE TABLE IF NOT EXISTS project_fields (
     CONSTRAINT fk_project_fields_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Переводы проектов (заголовок и описание на неосновных языках)
+CREATE TABLE IF NOT EXISTS project_translations (
+    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    project_id   INT UNSIGNED NOT NULL,
+    lang         VARCHAR(8) NOT NULL,
+    title        VARCHAR(255) NULL,
+    description  LONGTEXT NULL,
+    UNIQUE KEY uq_project_translations (project_id, lang),
+    CONSTRAINT fk_project_translations_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ---------------------------------------------------------------------------
 -- Команда
 -- ---------------------------------------------------------------------------
@@ -879,7 +890,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_16_error_log.sql'),
     ('2026_07_16_repo_categories.sql'),
     ('2026_07_16_repo_user_uploads.sql'),
-    ('2026_07_16_repo_telegram_2fa.sql')
+    ('2026_07_16_repo_telegram_2fa.sql'),
+    ('2026_07_17_project_translations.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;
