@@ -62,6 +62,16 @@ test('DesignSettings: масштаб заголовков — статичный
     assert_not_contains('design-type-static', DesignSettings::bodyClasses(['type_scale' => 'fluid'] + $base));
 });
 
+test('DesignSettings: кнопка «Наверх» — тумблер даёт/убирает класс design-scrolltop', function () {
+    assert_same('on', DesignSettings::sanitize('scroll_top', 'on'));
+    assert_same('on', DesignSettings::sanitize('scroll_top', 'bogus')); // default — включена
+
+    $base = DesignSettings::PRESETS['classic']['values'];
+    assert_contains('design-scrolltop', DesignSettings::bodyClasses($base)); // в пресетах включена
+    assert_contains('design-scrolltop', DesignSettings::bodyClasses(['scroll_top' => 'on'] + $base));
+    assert_not_contains('design-scrolltop', DesignSettings::bodyClasses(['scroll_top' => 'off'] + $base));
+});
+
 test('DesignSettings::cssVariables задаёт тень карточек по стилю', function () {
     $flat = DesignSettings::cssVariables(DesignSettings::PRESETS['minimal']['values']);
     assert_contains('--card-shadow:none', $flat);

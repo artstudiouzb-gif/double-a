@@ -160,4 +160,5 @@ return [
     'Календарь на' => 'Calendar for',
     'Уведомления о новостях' => 'News notifications',
     'Уведомления включены' => 'Notifications enabled',
+    'Наверх' => 'To top',
 ];
