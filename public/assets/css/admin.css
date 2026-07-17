@@ -246,13 +246,23 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
     scrollbar-width: thin;
 }
 .admin-sidebar__label {
-    font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
     color: var(--admin-sidebar-muted); padding: 16px 14px 6px;
 }
+/* Заголовок группы как кнопка-переключатель (сворачивание раздела). */
+.admin-sidebar__label--toggle {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; background: none; border: 0; text-align: left; cursor: pointer;
+    font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+}
+.admin-sidebar__label--toggle:hover { color: var(--admin-accent-hover); }
+.admin-sidebar__chevron { flex: none; opacity: .7; transition: transform .18s ease; }
+.admin-nav-group.is-collapsed .admin-sidebar__chevron { transform: rotate(-90deg); }
+.admin-nav-group.is-collapsed .admin-nav-group__items { display: none; }
 .admin-nav-item {
     display: flex; align-items: center; gap: 10px;
-    min-height: 40px; padding: 8px 14px; border-radius: 0; color: var(--admin-sidebar-text); text-decoration: none;
-    font-size: 14px; font-weight: 500; border-left: 4px solid transparent;
+    min-height: 40px; padding: 9px 14px; border-radius: 0; color: var(--admin-sidebar-text); text-decoration: none;
+    font-size: 15px; font-weight: 500; border-left: 4px solid transparent;
 }
 .admin-nav-item:hover { background: var(--admin-sidebar-hover); color: var(--admin-accent-hover); text-decoration: none; }
 .admin-nav-item.is-active { background: var(--admin-sidebar-active); color: var(--admin-accent-hover); border-left-color: var(--admin-accent); font-weight: 600; }
@@ -628,6 +638,8 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
     .admin-nav-collapsed .admin-sidebar__label,
     .admin-nav-collapsed .admin-nav-item span,
     .admin-nav-collapsed .admin-sidebar__collapse span { display: none; }
+    /* В иконочном режиме заголовки-переключатели скрыты, а пункты видны всегда. */
+    .admin-nav-collapsed .admin-nav-group.is-collapsed .admin-nav-group__items { display: block; }
     .admin-nav-collapsed .admin-nav-item,
     .admin-nav-collapsed .admin-sidebar__collapse { justify-content: center; padding-left: 8px; padding-right: 8px; }
     .admin-nav-collapsed .admin-nav-item { border-left-width: 3px; }

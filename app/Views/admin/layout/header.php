@@ -219,13 +219,20 @@ try {
         </a>
         <?php foreach ($navGroups as $navGroupLabel => $navGroupItems): ?>
             <?php if (empty($navGroupItems)) { continue; } ?>
-            <div class="admin-sidebar__label"><?= htmlspecialchars($navGroupLabel, ENT_QUOTES) ?></div>
-            <?php foreach ($navGroupItems as $navKey => [$navUrl, $navText]): ?>
-                <?php $navIc = str_starts_with($navKey, 'content:') ? 'content_types' : $navKey; ?>
-                <a href="<?= $navUrl ?>" class="admin-nav-item <?= $activeNav === $navKey ? 'is-active' : '' ?>" title="<?= htmlspecialchars($navText, ENT_QUOTES) ?>"<?= $activeNav === $navKey ? ' aria-current="page"' : '' ?>>
-                    <?= $navIcon($navIc) ?><span><?= htmlspecialchars($navText, ENT_QUOTES) ?></span>
-                </a>
-            <?php endforeach; ?>
+            <div class="admin-nav-group" data-nav-group="<?= htmlspecialchars($navGroupLabel, ENT_QUOTES) ?>">
+                <button type="button" class="admin-sidebar__label admin-sidebar__label--toggle" data-nav-toggle aria-expanded="true">
+                    <span><?= htmlspecialchars($navGroupLabel, ENT_QUOTES) ?></span>
+                    <svg class="admin-sidebar__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="admin-nav-group__items">
+                    <?php foreach ($navGroupItems as $navKey => [$navUrl, $navText]): ?>
+                        <?php $navIc = str_starts_with($navKey, 'content:') ? 'content_types' : $navKey; ?>
+                        <a href="<?= $navUrl ?>" class="admin-nav-item <?= $activeNav === $navKey ? 'is-active' : '' ?>" title="<?= htmlspecialchars($navText, ENT_QUOTES) ?>"<?= $activeNav === $navKey ? ' aria-current="page"' : '' ?>>
+                            <?= $navIcon($navIc) ?><span><?= htmlspecialchars($navText, ENT_QUOTES) ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         <?php endforeach; ?>
         <div class="admin-sidebar__label">Аккаунт</div>
         <a href="/admin/profile" class="admin-nav-item <?= $activeNav === 'profile' ? 'is-active' : '' ?>" title="Профиль"<?= $activeNav === 'profile' ? ' aria-current="page"' : '' ?>>
@@ -236,6 +243,37 @@ try {
             <span>Свернуть меню</span>
         </button>
     </aside>
+    <script nonce="<?= \App\Core\SecurityHeaders::nonce() ?>">
+    (function () {
+        'use strict';
+        var KEY = 'admin_nav_collapsed';
+        var collapsed = [];
+        try { collapsed = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) {}
+        var groups = document.querySelectorAll('.admin-nav-group');
+        function save() {
+            var set = [];
+            document.querySelectorAll('.admin-nav-group.is-collapsed').forEach(function (x) {
+                set.push(x.getAttribute('data-nav-group'));
+            });
+            try { localStorage.setItem(KEY, JSON.stringify(set)); } catch (e) {}
+        }
+        groups.forEach(function (g) {
+            var name = g.getAttribute('data-nav-group');
+            var btn = g.querySelector('[data-nav-toggle]');
+            if (collapsed.indexOf(name) >= 0) {
+                g.classList.add('is-collapsed');
+                if (btn) { btn.setAttribute('aria-expanded', 'false'); }
+            }
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    var isColl = g.classList.toggle('is-collapsed');
+                    btn.setAttribute('aria-expanded', isColl ? 'false' : 'true');
+                    save();
+                });
+            }
+        });
+    })();
+    </script>
     <button type="button" class="admin-sidebar-backdrop" data-sidebar-backdrop aria-label="Закрыть меню" tabindex="-1"></button>
 
     <main class="admin-main" id="admin-content" tabindex="-1">
