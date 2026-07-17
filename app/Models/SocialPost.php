@@ -84,6 +84,44 @@ final class SocialPost
     }
 
     /**
+     * Лента последних публикаций всех статусов — для журнала очереди в админке
+     * (что делает воркер: что ушло, что ждёт, что упало и почему).
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function recent(int $limit = 40): array
+    {
+        $stmt = Database::pdo()->prepare(
+            "SELECT sp.*, n.title AS news_title FROM social_posts sp
+             LEFT JOIN news n ON n.id = sp.news_id
+             ORDER BY COALESCE(sp.sent_at, sp.created_at) DESC, sp.id DESC LIMIT :limit"
+        );
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Счётчики очереди по статусам (для сводки в шапке журнала).
+     *
+     * @return array{pending: int, sent: int, failed: int}
+     */
+    public static function counts(): array
+    {
+        $out = ['pending' => 0, 'sent' => 0, 'failed' => 0];
+        $rows = Database::pdo()->query('SELECT status, COUNT(*) AS c FROM social_posts GROUP BY status')->fetchAll();
+        foreach ($rows as $row) {
+            $status = (string) ($row['status'] ?? '');
+            if (array_key_exists($status, $out)) {
+                $out[$status] = (int) $row['c'];
+            }
+        }
+
+        return $out;
+    }
+
+    /**
      * Публикации, «застрявшие» в failed после исчерпания ретраев (группа 2.2).
      *
      * @return array<int, array<string, mixed>>

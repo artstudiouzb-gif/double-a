@@ -7,10 +7,12 @@ namespace App\Controllers\Admin;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Flash;
+use App\Core\Heartbeat;
 use App\Core\SocialPublisher;
 use App\Core\SocialSettings;
 use App\Core\View;
 use App\Models\Setting;
+use App\Models\SocialPost;
 
 /**
  * Настройки авто-публикации в соцсети (Facebook / LinkedIn / Instagram).
@@ -34,8 +36,35 @@ final class SocialController
 
         View::render('admin/settings/social', [
             'config' => $config,
-            'failedPosts' => \App\Models\SocialPost::recentFailed(30),
+            'queueLog' => SocialPost::recent(40),
+            'queueCounts' => SocialPost::counts(),
+            'workerStatus' => Heartbeat::status()['social'] ?? null,
         ]);
+    }
+
+    /**
+     * Запуск обработки очереди публикаций прямо из админки — то же, что делает
+     * Cron-воркер. Полезно, если Cron ещё не настроен на хостинге или нужно
+     * дослать «зависшие» pending без ожидания расписания.
+     */
+    public function runNow(): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+
+        $res = SocialSettings::dispatchQueue(50);
+        if ($res['taken'] === 0) {
+            Flash::success('Очередь пуста — отправлять нечего.');
+        } elseif ($res['failed'] === 0) {
+            Flash::success("Отправлено: {$res['sent']}.");
+        } elseif ($res['sent'] === 0) {
+            Flash::error("Не удалось отправить: {$res['failed']}. Подробности — в журнале ниже.");
+        } else {
+            Flash::success("Отправлено: {$res['sent']}, с ошибкой: {$res['failed']} (см. журнал).");
+        }
+
+        header('Location: /admin/social');
+        exit;
     }
 
     public function update(): void

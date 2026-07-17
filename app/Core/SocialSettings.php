@@ -219,6 +219,35 @@ final class SocialSettings
     }
 
     /**
+     * Обрабатывает очередь публикаций — та же работа, что воркер по Cron:
+     * забирает порцию pending и отправляет. Используется и кнопкой «запустить
+     * сейчас» в админке, и CLI-воркером.
+     *
+     * @return array{sent: int, failed: int, taken: int}
+     */
+    public static function dispatchQueue(int $limit = 20): array
+    {
+        $batch = SocialPost::pendingBatch($limit);
+        if ($batch === []) {
+            return ['sent' => 0, 'failed' => 0, 'taken' => 0];
+        }
+
+        $publisher = new SocialPublisher();
+        $sent = 0;
+        $failed = 0;
+        foreach ($batch as $row) {
+            $res = self::dispatchRow($row, $publisher);
+            if ($res['ok']) {
+                $sent++;
+            } else {
+                $failed++;
+            }
+        }
+
+        return ['sent' => $sent, 'failed' => $failed, 'taken' => count($batch)];
+    }
+
+    /**
      * Немедленная отправка всех pending-публикаций новости (кнопка «в соцсети»).
      * Что не удалось — остаётся в очереди (status pending) и будет дослано
      * воркером по расписанию.

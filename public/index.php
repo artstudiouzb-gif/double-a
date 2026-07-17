@@ -266,6 +266,7 @@ $router->post('/admin/settings/demo-content', [SettingsController::class, 'seedD
 // --- Admin: авто-публикация в соцсети (только супер-админ) ---
 $router->get('/admin/social', [\App\Controllers\Admin\SocialController::class, 'index']);
 $router->post('/admin/social', [\App\Controllers\Admin\SocialController::class, 'update']);
+$router->post('/admin/social/run', [\App\Controllers\Admin\SocialController::class, 'runNow']);
 
 // --- Admin: исходящие вебхуки (только супер-админ) ---
 $router->get('/admin/webhooks', [\App\Controllers\Admin\WebhookController::class, 'index']);

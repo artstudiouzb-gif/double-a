@@ -31,11 +31,61 @@
         }
     });
 
+    // Стилизованное модальное подтверждение — замена нативного window.confirm.
+    // Возвращает Promise<boolean>. Доступно и другим скриптам как window.adminConfirm.
+    function adminConfirm(message) {
+        return new Promise(function (resolve) {
+            var overlay = document.createElement('div');
+            overlay.className = 'admin-modal-overlay';
+            overlay.innerHTML =
+                '<div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-msg">'
+                + '<div class="admin-modal__body">'
+                + '<div class="admin-modal__icon" aria-hidden="true">?</div>'
+                + '<p class="admin-modal__msg" id="admin-modal-msg"></p>'
+                + '</div>'
+                + '<div class="admin-modal__actions">'
+                + '<button type="button" class="btn admin-modal__cancel">Отмена</button>'
+                + '<button type="button" class="btn btn--primary admin-modal__ok">Подтвердить</button>'
+                + '</div>'
+                + '</div>';
+            overlay.querySelector('.admin-modal__msg').textContent = message;
+            document.body.appendChild(overlay);
+            document.body.style.overflow = 'hidden';
+            requestAnimationFrame(function () { overlay.classList.add('is-open'); });
+
+            var okBtn = overlay.querySelector('.admin-modal__ok');
+            var cancelBtn = overlay.querySelector('.admin-modal__cancel');
+            okBtn.focus();
+
+            function close(result) {
+                overlay.classList.remove('is-open');
+                document.removeEventListener('keydown', onKey);
+                document.body.style.overflow = '';
+                setTimeout(function () { overlay.remove(); }, 150);
+                resolve(result);
+            }
+            function onKey(e) {
+                if (e.key === 'Escape') { close(false); }
+                else if (e.key === 'Enter') { close(true); }
+            }
+            okBtn.addEventListener('click', function () { close(true); });
+            cancelBtn.addEventListener('click', function () { close(false); });
+            overlay.addEventListener('click', function (e) { if (e.target === overlay) { close(false); } });
+            document.addEventListener('keydown', onKey);
+        });
+    }
+    window.adminConfirm = adminConfirm;
+
     document.querySelectorAll('[data-confirm]').forEach(function (form) {
         form.addEventListener('submit', function (event) {
-            if (!window.confirm(form.getAttribute('data-confirm'))) {
-                event.preventDefault();
-            }
+            if (form.dataset.confirmed === '1') { return; } // уже подтверждено — пропускаем
+            event.preventDefault();
+            adminConfirm(form.getAttribute('data-confirm')).then(function (ok) {
+                if (!ok) { return; }
+                form.dataset.confirmed = '1';
+                if (typeof form.requestSubmit === 'function') { form.requestSubmit(); }
+                else { form.submit(); }
+            });
         });
     });
 

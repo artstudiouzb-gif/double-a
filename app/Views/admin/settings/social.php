@@ -80,22 +80,104 @@ $signatureHints = [
     </form>
 </div>
 
-<?php /** @var array $failedPosts */ $failedPosts = $failedPosts ?? []; ?>
+<?php
+/** @var array<int, array<string, mixed>> $queueLog */
+/** @var array{pending:int,sent:int,failed:int} $queueCounts */
+/** @var array{last:?int,age:?int,stale:bool,expected:int}|null $workerStatus */
+$queueLog = $queueLog ?? [];
+$queueCounts = $queueCounts ?? ['pending' => 0, 'sent' => 0, 'failed' => 0];
+$workerStatus = $workerStatus ?? null;
+
+$fmtAge = static function (?int $sec): string {
+    if ($sec === null) {
+        return '';
+    }
+    if ($sec < 60) {
+        return $sec . ' с назад';
+    }
+    if ($sec < 3600) {
+        return intdiv($sec, 60) . ' мин назад';
+    }
+    if ($sec < 86400) {
+        return intdiv($sec, 3600) . ' ч назад';
+    }
+
+    return intdiv($sec, 86400) . ' дн назад';
+};
+$statusMap = [
+    'sent' => ['success', 'отправлено'],
+    'pending' => ['draft', 'в очереди'],
+    'failed' => ['danger', 'ошибка'],
+];
+$appRoot = defined('APP_ROOT') ? APP_ROOT : '/path/to/site';
+$cronBroken = $workerStatus !== null && ($workerStatus['last'] === null || !empty($workerStatus['stale']));
+?>
 <div class="form-card" style="margin-top:24px;">
-    <h2 style="margin-top:0;">Проблемные публикации (dead-letter)</h2>
-    <p class="form-hint">Публикации, не отправленные после всех попыток. О переходе в этот статус приходит алерт в Telegram.</p>
-    <table class="data-table">
-        <thead><tr><th>Новость</th><th>Сеть</th><th>Попыток</th><th>Ошибка</th></tr></thead>
-        <tbody>
-            <?php if (empty($failedPosts)): ?>
-                <tr><td colspan="4" class="data-table__empty">Проблемных публикаций нет.</td></tr>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <div>
+            <h2 style="margin-top:0;">Очередь публикаций и воркер</h2>
+            <p class="form-hint" style="margin:0;">
+                Публикации отправляет фоновый воркер по Cron (каждые ~5 минут). Здесь
+                видно, что он делает; кнопкой можно обработать очередь вручную,
+                не дожидаясь расписания.
+            </p>
+        </div>
+        <form method="post" action="/admin/social/run"
+              data-confirm="Отправить сейчас всё, что находится в очереди?">
+            <?= Csrf::field() ?>
+            <button type="submit" class="btn btn--primary">Запустить отправку сейчас</button>
+        </form>
+    </div>
+
+    <div style="display:flex;gap:28px;flex-wrap:wrap;margin:18px 0 4px;">
+        <div>
+            <div class="form-hint" style="margin-bottom:4px;">Последний запуск воркера</div>
+            <?php if ($workerStatus === null || $workerStatus['last'] === null): ?>
+                <span class="badge badge--draft">ни разу не запускался</span>
+            <?php elseif (!empty($workerStatus['stale'])): ?>
+                <span class="badge badge--danger">молчит</span>
+                <span style="color:var(--admin-muted);"><?= htmlspecialchars(date('d.m.Y H:i', (int) $workerStatus['last']), ENT_QUOTES) ?> · <?= $fmtAge($workerStatus['age']) ?></span>
+            <?php else: ?>
+                <span class="badge badge--success">активен</span>
+                <span style="color:var(--admin-muted);"><?= htmlspecialchars(date('d.m.Y H:i', (int) $workerStatus['last']), ENT_QUOTES) ?> · <?= $fmtAge($workerStatus['age']) ?></span>
             <?php endif; ?>
-            <?php foreach ($failedPosts as $fp): ?>
+        </div>
+        <div>
+            <div class="form-hint" style="margin-bottom:4px;">Очередь</div>
+            <span class="badge badge--draft">в очереди: <?= (int) $queueCounts['pending'] ?></span>
+            <span class="badge badge--success">отправлено: <?= (int) $queueCounts['sent'] ?></span>
+            <span class="badge badge--danger">ошибок: <?= (int) $queueCounts['failed'] ?></span>
+        </div>
+    </div>
+
+    <?php if ($cronBroken): ?>
+        <p class="form-hint" style="background:var(--admin-danger-soft);border:1px solid var(--admin-danger-border);border-radius:var(--admin-radius);padding:10px 12px;margin-top:12px;">
+            Похоже, Cron не настроен или воркер остановлен. Добавьте задание на хостинге (каждые 5 минут):<br>
+            <code>*/5 * * * * php <?= htmlspecialchars($appRoot, ENT_QUOTES) ?>/app/Console/social_worker.php &gt;&gt; <?= htmlspecialchars($appRoot, ENT_QUOTES) ?>/storage/logs/social_worker.log 2&gt;&amp;1</code><br>
+            Пока Cron нет — публикуйте и жмите «Запустить отправку сейчас».
+        </p>
+    <?php endif; ?>
+
+    <h3 style="margin:20px 0 8px;">Журнал очереди</h3>
+    <table class="data-table">
+        <thead><tr><th>Новость</th><th>Сеть</th><th>Статус</th><th>Попыток</th><th>Обновлено</th><th>Ошибка</th></tr></thead>
+        <tbody>
+            <?php if (empty($queueLog)): ?>
+                <tr><td colspan="6" class="data-table__empty">Публикаций пока не было.</td></tr>
+            <?php endif; ?>
+            <?php foreach ($queueLog as $row): ?>
+                <?php
+                $st = (string) ($row['status'] ?? '');
+                [$cls, $label] = $statusMap[$st] ?? ['draft', $st];
+                $when = $row['sent_at'] ?? $row['created_at'] ?? null;
+                ?>
                 <tr>
-                    <td><?= htmlspecialchars((string) ($fp['news_title'] ?? ('#' . (int) $fp['news_id'])), ENT_QUOTES) ?></td>
-                    <td><?= htmlspecialchars((string) $fp['network'], ENT_QUOTES) ?></td>
-                    <td><?= (int) ($fp['attempts'] ?? 0) ?></td>
-                    <td><?= htmlspecialchars((string) ($fp['last_error'] ?? ''), ENT_QUOTES) ?></td>
+                    <td><?= htmlspecialchars((string) ($row['news_title'] ?? ('#' . (int) $row['news_id'])), ENT_QUOTES) ?></td>
+                    <td><?= htmlspecialchars((string) $row['network'], ENT_QUOTES) ?></td>
+                    <td><span class="badge badge--<?= $cls ?>"><?= htmlspecialchars($label, ENT_QUOTES) ?></span></td>
+                    <td><?= (int) ($row['attempts'] ?? 0) ?></td>
+                    <td style="white-space:nowrap;color:var(--admin-muted);"><?= $when ? htmlspecialchars((string) $when, ENT_QUOTES) : '—' ?></td>
+                    <td style="color:var(--admin-danger);"><?= htmlspecialchars((string) ($row['last_error'] ?? ''), ENT_QUOTES) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

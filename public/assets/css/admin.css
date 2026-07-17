@@ -1283,4 +1283,56 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
     color: var(--admin-accent);
 }
 
+/* --- Модальное подтверждение (замена нативного window.confirm) --- */
+.admin-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: color-mix(in srgb, #1d2327 55%, transparent);
+    opacity: 0;
+    transition: opacity .15s ease;
+}
+.admin-modal-overlay.is-open { opacity: 1; }
+.admin-modal {
+    width: 100%;
+    max-width: 440px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    box-shadow: var(--admin-shadow-lg);
+    transform: translateY(10px) scale(.98);
+    transition: transform .15s ease;
+    overflow: hidden;
+}
+.admin-modal-overlay.is-open .admin-modal { transform: none; }
+.admin-modal__body { display: flex; gap: 14px; padding: 24px 24px 4px; }
+.admin-modal__icon {
+    flex: 0 0 auto;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700;
+    background: var(--admin-accent-soft);
+    color: var(--admin-accent);
+}
+.admin-modal__msg {
+    margin: 7px 0 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--admin-text);
+}
+.admin-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 24px 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+    .admin-modal-overlay, .admin-modal { transition: none; }
+}
+
 
