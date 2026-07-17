@@ -268,7 +268,9 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 .admin-sidebar__collapse svg { flex: none; transition: transform .18s ease; }
 .admin-sidebar-backdrop { display: none; }
 
-.admin-main { flex: 1; min-width: 0; padding: 24px 28px 40px; }
+/* Единая ширина контента во всех разделах: не на всю ширину экрана и не узкие
+   760px — максимум 1400px (на широких мониторах контент не растягивается). */
+.admin-main { flex: 1; min-width: 0; max-width: 1400px; padding: 24px 28px 40px; }
 .admin-main__header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
 .admin-main__header h1 { margin: 0; font-size: 23px; font-weight: 500; }
 .admin-main__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -396,7 +398,23 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:
 /* ============================================================================
    Карточки-формы и поля
    ============================================================================ */
-.form-card { background: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-lg); padding: 24px; max-width: 760px; box-shadow: 0 4px 12px rgba(0, 0, 0, .05), var(--admin-shadow); }
+.form-card { background: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-lg); padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, .05), var(--admin-shadow); }
+/* Карточка формы больше не режется до 760 (тянется до ширины контента, 1400),
+   но одиночные поля ввода держим читаемой ширины — иначе на широкой карточке
+   поле под «Название сайта» растянулось бы на весь экран. Редактор (wysiwyg)
+   и служебные поля (color/checkbox/radio/range) не трогаем. */
+.form-grid input[type="text"],
+.form-grid input[type="url"],
+.form-grid input[type="email"],
+.form-grid input[type="tel"],
+.form-grid input[type="password"],
+.form-grid input[type="number"],
+.form-grid input[type="search"],
+.form-grid input[type="date"],
+.form-grid input[type="datetime-local"],
+.form-grid input:not([type]),
+.form-grid select,
+.form-grid textarea:not([data-wysiwyg]) { max-width: 640px; }
 .admin-builder-workspace { width: 100%; }
 .admin-builder-workspace > .form-grid { gap: 0; }
 .form-grid { display: flex; flex-direction: column; gap: 18px; }
