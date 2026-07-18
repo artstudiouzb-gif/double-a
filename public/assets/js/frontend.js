@@ -729,3 +729,77 @@
             });
         });
     })();
+
+    // Живой поиск: под полем в шапке показываем несколько найденных страниц,
+    // не уходя на страницу результатов. Прогрессивное улучшение — форма
+    // остаётся обычной формой и без JS работает как раньше.
+    (function () {
+        var inputs = document.querySelectorAll('.site-search input[type="search"], .site-search-overlay__form input[type="search"]');
+        if (!inputs.length || !window.fetch) { return; }
+
+        inputs.forEach(function (input) {
+            var form = input.form;
+            if (!form) { return; }
+
+            var panel = document.createElement('div');
+            panel.className = 'search-suggest';
+            panel.hidden = true;
+            form.appendChild(panel);
+            form.classList.add('has-suggest');
+            input.setAttribute('aria-expanded', 'false');
+
+            var timer = null;
+            var controller = null;
+
+            var close = function () {
+                panel.hidden = true;
+                panel.innerHTML = '';
+                input.setAttribute('aria-expanded', 'false');
+            };
+
+            var load = function (query) {
+                if (controller) { controller.abort(); }
+                controller = ('AbortController' in window) ? new AbortController() : null;
+
+                // Адрес подсказок наследует язык от action формы (/uz/search).
+                var url = form.getAttribute('action') + '/suggest?q=' + encodeURIComponent(query);
+                fetch(url, {
+                    credentials: 'same-origin',
+                    signal: controller ? controller.signal : undefined
+                }).then(function (r) {
+                    return r.ok ? r.text() : '';
+                }).then(function (html) {
+                    if (!html) { close(); return; }
+                    panel.innerHTML = html;
+                    panel.hidden = false;
+                    input.setAttribute('aria-expanded', 'true');
+                }).catch(function (err) {
+                    // Отмена — норма; всё остальное просто оставляет форму
+                    // обычной формой, поиск по Enter продолжает работать.
+                    if (!err || err.name !== 'AbortError') { close(); }
+                });
+            };
+
+            input.addEventListener('input', function () {
+                var query = input.value.trim();
+                if (timer) { clearTimeout(timer); }
+                if (query.length < 2) { close(); return; }
+                timer = setTimeout(function () { load(query); }, 250);
+            });
+
+            input.addEventListener('focus', function () {
+                if (input.value.trim().length >= 2 && panel.innerHTML !== '') {
+                    panel.hidden = false;
+                    input.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !panel.hidden) { close(); }
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!form.contains(e.target)) { close(); }
+            });
+        });
+    })();

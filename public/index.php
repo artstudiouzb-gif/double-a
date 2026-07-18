@@ -346,6 +346,7 @@ $router->get('/news/rss.xml', [SiteNewsController::class, 'feed']);
 $router->get('/news/{slug}/photos.zip', [SiteNewsController::class, 'photosZip']);
 $router->get('/news/{slug}', [SiteNewsController::class, 'show']);
 $router->get('/search', [\App\Controllers\Site\SearchController::class, 'index']);
+$router->get('/search/suggest', [\App\Controllers\Site\SearchController::class, 'suggest']);
 $router->get('/calendar', [\App\Controllers\Site\CalendarController::class, 'index']);
 $router->get('/albums', [\App\Controllers\Site\AlbumController::class, 'index']);
 $router->get('/albums/{slug}', [\App\Controllers\Site\AlbumController::class, 'show']);

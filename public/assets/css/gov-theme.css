@@ -1044,6 +1044,83 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .site-submenu__link svg { color: var(--gov-teal); flex-shrink: 0; transition: transform .18s ease; }
 .site-submenu__link:hover .site-menu__icon,
 .site-submenu__link:hover svg { transform: translateX(2px); }
+/* --- Мега-меню: подменю в несколько колонок --- */
+/* Панель прижата к краям контента, а не к пункту: при 3-4 колонках выпадашка
+   у правого пункта иначе уезжала бы за экран. На мобильных раскладка
+   схлопывается в один столбец — там меню и так вертикальное. */
+@media (min-width: 901px) {
+    .site-menu__item--mega { position: static; }
+    /* Геометрия — на самой панели, а вот display трогать здесь нельзя:
+       скрытием/раскрытием управляет frontend.css, и display:grid без условия
+       сделал бы подменю всегда видимым. */
+    .site-submenu--mega {
+        grid-template-columns: repeat(var(--mega-cols, 3), minmax(0, 1fr));
+        gap: 2px 10px;
+        left: 0;
+        right: 0;
+        width: min(100%, var(--container-max));
+        margin-inline: auto;
+        padding: 14px;
+    }
+    /* Раскрытая панель — сетка вместо колонки (перекрываем display:flex). */
+    .site-menu__item--mega:hover > .site-submenu--mega,
+    .site-menu__item--mega:focus-within > .site-submenu--mega,
+    .site-menu__item--mega.is-open > .site-submenu--mega { display: grid; }
+    /* Стрелка-указатель у широкой панели не к месту — она ни на что не указывает. */
+    .site-submenu--mega::before { display: none; }
+}
+
+/* --- Живой поиск: подсказки под полем --- */
+.site-search.has-suggest, .site-search-overlay__form.has-suggest { position: relative; }
+.search-suggest {
+    position: absolute;
+    top: calc(100% + 6px);
+    /* Поле в шапке бывает узким (в свёрнутом виде — с иконку), поэтому панель
+       не наследует его ширину, а растёт влево от правого края формы. */
+    right: 0;
+    left: auto;
+    width: max(100%, 340px);
+    max-width: 92vw;
+    z-index: 60;
+    background: var(--gov-surface);
+    border: 1px solid var(--gov-border);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(11,26,48,.16);
+    padding: 6px;
+    max-height: min(60vh, 420px);
+    overflow-y: auto;
+}
+.search-suggest__list { list-style: none; margin: 0; padding: 0; }
+.search-suggest__item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: var(--gov-title);
+    text-decoration: none;
+}
+.search-suggest__item:hover, .search-suggest__item:focus-visible {
+    background: color-mix(in srgb, var(--gov-teal) 9%, var(--gov-surface));
+    color: var(--gov-teal-text);
+}
+.search-suggest__title { font-weight: 600; font-size: .92rem; }
+/* Тип записи — подсказка, а не заголовок: приглушаем и не даём переносить. */
+.search-suggest__type { flex-shrink: 0; font-size: .75rem; color: var(--gov-muted, #6b7a90); white-space: nowrap; }
+.search-suggest__empty { margin: 0; padding: 12px; font-size: .9rem; color: var(--gov-muted, #6b7a90); }
+.search-suggest__all {
+    display: block;
+    padding: 9px 12px;
+    border-top: 1px solid var(--gov-border);
+    margin-top: 4px;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--gov-teal-text);
+    text-decoration: none;
+}
+.search-suggest__all:hover { text-decoration: underline; }
+
 /* Индикатор подменю (▾): плавный поворот на 180° при раскрытии. */
 .site-menu__toggle { display: inline-flex; align-items: center; justify-content: center; color: var(--gov-teal); background: transparent; border: 0; cursor: pointer; font-size: 0.7rem; padding: 4px; transition: transform .2s ease; }
 .site-menu__item.is-open > .site-menu__toggle { transform: rotate(180deg); }

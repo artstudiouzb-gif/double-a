@@ -81,8 +81,8 @@ final class MenuItem
         $nextOrder = (int) $stmt->fetchColumn();
 
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO menu_items (lang, title, icon_svg, is_divider, url_type, url_value, parent_id, sort_order, is_active, created_at)
-             VALUES (:lang, :title, :icon_svg, :is_divider, :url_type, :url_value, :parent_id, :sort_order, :is_active, NOW())'
+            'INSERT INTO menu_items (lang, title, icon_svg, is_divider, url_type, url_value, parent_id, mega_columns, sort_order, is_active, created_at)
+             VALUES (:lang, :title, :icon_svg, :is_divider, :url_type, :url_value, :parent_id, :mega_columns, :sort_order, :is_active, NOW())'
         );
         $stmt->execute([
             ':lang' => $data['lang'],
@@ -92,6 +92,7 @@ final class MenuItem
             ':url_type' => $data['url_type'],
             ':url_value' => $data['url_value'],
             ':parent_id' => $parentId,
+            ':mega_columns' => self::megaColumns($data['mega_columns'] ?? 0, $parentId),
             ':sort_order' => $nextOrder,
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
         ]);
@@ -122,7 +123,8 @@ final class MenuItem
         $stmt = Database::pdo()->prepare(
             'UPDATE menu_items SET lang = :lang, title = :title, icon_svg = :icon_svg,
              is_divider = :is_divider, url_type = :url_type, url_value = :url_value,
-             parent_id = :parent_id, sort_order = :sort_order, is_active = :is_active WHERE id = :id'
+             parent_id = :parent_id, mega_columns = :mega_columns,
+             sort_order = :sort_order, is_active = :is_active WHERE id = :id'
         );
         $stmt->execute([
             ':lang' => $data['lang'],
@@ -132,11 +134,26 @@ final class MenuItem
             ':url_type' => $data['url_type'],
             ':url_value' => $data['url_value'],
             ':parent_id' => $parentId,
+            ':mega_columns' => self::megaColumns($data['mega_columns'] ?? 0, $parentId),
             ':sort_order' => $sortOrder,
             ':is_active' => !empty($data['is_active']) ? 1 : 0,
             ':id' => $id,
         ]);
         self::$activeRequestCache = [];
+    }
+
+    /**
+     * Число колонок мега-меню: 0 (обычная выпадашка) либо 2..4. У вложенного
+     * пункта мега-меню быть не может — раскладку задаёт только верхний уровень.
+     */
+    public static function megaColumns(mixed $value, ?int $parentId = null): int
+    {
+        if ($parentId !== null) {
+            return 0;
+        }
+        $columns = (int) $value;
+
+        return $columns >= 2 && $columns <= 4 ? $columns : 0;
     }
 
     /**

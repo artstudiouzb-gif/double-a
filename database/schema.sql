@@ -377,6 +377,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
     url_type        ENUM('page', 'news_index', 'custom') NOT NULL DEFAULT 'custom',
     url_value       VARCHAR(500) NULL COMMENT 'slug страницы или произвольный URL',
     parent_id       INT UNSIGNED NULL,
+    mega_columns    TINYINT NOT NULL DEFAULT 0 COMMENT '0 — обычное подменю, 2..4 — мега-меню в N колонок',
     sort_order      INT NOT NULL DEFAULT 0,
     is_active       TINYINT(1) NOT NULL DEFAULT 1,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -928,7 +929,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_17_team_translations.sql'),
     ('2026_07_17_album_translations.sql'),
     ('2026_07_17_video_translations.sql'),
-    ('2026_07_18_menu_per_language.sql')
+    ('2026_07_18_menu_per_language.sql'),
+    ('2026_07_18_menu_mega.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

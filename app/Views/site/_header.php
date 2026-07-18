@@ -121,11 +121,16 @@ if (!empty($menuItems)) {
         }
 
         // Пункт с выпадающим подменю (dropdown на desktop hover/focus, tap на мобильных).
-        $menuHtml .= '<div class="site-menu__item site-menu__item--has-children">';
+        // mega_columns 2..4 — широкая панель в несколько колонок вместо столбца.
+        $megaCols = MenuItem::megaColumns($mi['mega_columns'] ?? 0);
+        $menuHtml .= '<div class="site-menu__item site-menu__item--has-children'
+            . ($megaCols > 0 ? ' site-menu__item--mega' : '') . '">';
         $menuHtml .= '<a class="site-menu__link" href="' . htmlspecialchars($url, ENT_QUOTES) . '">'
             . $label . '</a>';
         $menuHtml .= '<button type="button" class="site-menu__toggle" aria-expanded="false" aria-label="' . $et('Открыть подменю') . '">▾</button>';
-        $menuHtml .= '<div class="site-submenu">';
+        $menuHtml .= $megaCols > 0
+            ? '<div class="site-submenu site-submenu--mega" style="--mega-cols:' . $megaCols . ';">'
+            : '<div class="site-submenu">';
         foreach ($children as $child) {
             $childUrl = MenuItem::resolveUrl($child, $currentLang);
             $childIcon = $renderMenuIcon($child['icon_svg'] ?? '');

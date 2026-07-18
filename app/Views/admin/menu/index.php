@@ -97,6 +97,19 @@ $renderFields = static function (?array $item) use ($languages, $pages, $parentC
             <span class="form-hint">Вложенность ограничена одним уровнем; язык родителя должен совпадать.</span>
         </div>
 
+        <?php // Мега-меню задаётся только у пункта верхнего уровня. ?>
+        <?php $mega = (int) ($item['mega_columns'] ?? 0); ?>
+        <div class="form-field">
+            <label for="<?= $prefix ?>_mega">Вид подменю</label>
+            <select id="<?= $prefix ?>_mega" name="mega_columns">
+                <option value="0" <?= $mega === 0 ? 'selected' : '' ?>>Обычное — один столбец</option>
+                <option value="2" <?= $mega === 2 ? 'selected' : '' ?>>Мега-меню, 2 колонки</option>
+                <option value="3" <?= $mega === 3 ? 'selected' : '' ?>>Мега-меню, 3 колонки</option>
+                <option value="4" <?= $mega === 4 ? 'selected' : '' ?>>Мега-меню, 4 колонки</option>
+            </select>
+            <span class="form-hint">Широкая панель во всю ширину контента — удобно, когда вложенных пунктов много. Работает только у пункта верхнего уровня.</span>
+        </div>
+
         <div class="form-field">
             <label for="<?= $prefix ?>_icon">SVG-иконка <span class="form-hint">(необязательно)</span></label>
             <textarea id="<?= $prefix ?>_icon" name="icon_svg" rows="3" placeholder="<svg viewBox=&quot;0 0 24 24&quot;>…</svg>"><?= htmlspecialchars((string) ($item['icon_svg'] ?? ''), ENT_QUOTES) ?></textarea>

@@ -208,6 +208,8 @@ final class MenuController
             'url_type' => $urlType,
             'url_value' => $urlValue !== '' ? $urlValue : null,
             'parent_id' => $parentId,
+            // Раскладка подменю: 0 — обычная выпадашка, 2..4 — мега-меню.
+            'mega_columns' => \App\Models\MenuItem::megaColumns($_POST['mega_columns'] ?? 0, $parentId),
             'is_active' => !empty($_POST['is_active']),
         ], null];
     }
