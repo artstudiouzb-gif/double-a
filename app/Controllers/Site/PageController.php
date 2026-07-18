@@ -39,6 +39,13 @@ final class PageController
             return;
         }
 
+        // Главная доступна по «/», а не «/{slug}» — со slug'ом это дубль
+        // контента. Постоянный редирект на канонический корневой URL.
+        if (!empty($page['is_home'])) {
+            header('Location: ' . Locale::url('/'), true, 301);
+            exit;
+        }
+
         $this->renderPage($page, $lang);
     }
 

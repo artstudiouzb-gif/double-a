@@ -9,6 +9,9 @@ use App\Core\ConcurrencyException;
 
 final class Page
 {
+    /** Кэш slug главной страницы на время запроса (см. homeSlug()). */
+    private static ?string $homeSlugCache = null;
+
     public static function all(): array
     {
         $stmt = Database::pdo()->query('SELECT * FROM pages WHERE deleted_at IS NULL ORDER BY created_at DESC');
@@ -186,6 +189,22 @@ final class Page
         }
 
         return $lang !== null ? self::localize($row, $lang) : $row;
+    }
+
+    /**
+     * Slug опубликованной главной страницы (кэш на запрос). Нужен, чтобы ссылки
+     * на главную вели на «/», а не на «/{slug}». Пусто — главная не задана.
+     */
+    public static function homeSlug(): string
+    {
+        if (self::$homeSlugCache === null) {
+            $slug = Database::pdo()->query(
+                "SELECT slug FROM pages WHERE is_home = 1 AND status = 'published' AND deleted_at IS NULL LIMIT 1"
+            )->fetchColumn();
+            self::$homeSlugCache = $slug !== false ? (string) $slug : '';
+        }
+
+        return self::$homeSlugCache;
     }
 
     /**

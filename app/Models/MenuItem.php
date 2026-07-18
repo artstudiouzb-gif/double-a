@@ -423,8 +423,23 @@ final class MenuItem
 
         return match ($item['url_type']) {
             'news_index' => $prefix . '/news',
-            'page' => $prefix . '/' . ltrim((string) $item['url_value'], '/'),
+            'page' => self::pageUrl((string) $item['url_value'], $prefix),
             default => (string) $item['url_value'],
         };
+    }
+
+    /**
+     * URL страницы: главная ведёт на корень («/» или «/{lang}»), остальные —
+     * на «/{slug}». Иначе ссылка на главную выглядела бы как «/home».
+     */
+    private static function pageUrl(string $slug, string $prefix): string
+    {
+        $slug = ltrim($slug, '/');
+        $home = Page::homeSlug();
+        if ($home !== '' && $slug === $home) {
+            return $prefix !== '' ? $prefix : '/';
+        }
+
+        return $prefix . '/' . $slug;
     }
 }
