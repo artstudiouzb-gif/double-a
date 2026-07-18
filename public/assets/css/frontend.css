@@ -370,6 +370,31 @@ summary:focus-visible {
     .news-single__back, .newsdetail-share, .catdetail__download,
     .catdetail__back, .no-print { display: none !important; }
 
+    /* Страница новости: печатаем саму статью, а не всё, что под ней.
+       Служебные блоки помечены классом no-print прямо в шаблоне (подписка,
+       похожие новости, соседние, кнопки «Поделиться») — так пометка переживает
+       переименование CSS-классов при следующем редизайне. Здесь добиваем то,
+       что относится к интерактиву внутри самой статьи. */
+    .crumbs, .content-crumbs,
+    .newsdetail-gallery__nav, .newsdetail-gallery__thumbs, .newsdetail-gallery__counter,
+    .newsdetail-toc, .newsdetail-photos .newsdetail__btn,
+    .newsdetail-phero__video, .scroll-top, .search-suggest { display: none !important; }
+
+    /* Обложка-hero: на бумаге белый текст на фото нечитаем, поэтому печатаем
+       заголовок и мету обычным чёрным по белому, без подложки. */
+    .newsdetail-phero { background-image: none !important; min-height: 0 !important; padding: 0 !important; }
+    .newsdetail-phero__overlay { display: none !important; }
+    .newsdetail-phero__title, .newsdetail-phero__lead,
+    .newsdetail__meta--onDark, .newsdetail__badge--onDark,
+    .newsdetail__source--onDark { color: #000 !important; background: none !important; }
+
+    /* Колонки статьи на A4 не нужны — один поток. */
+    .newsdetail-body, .newsdetail-head { display: block !important; }
+    .newsdetail-card { border: 0 !important; padding: 0 !important; margin: 12px 0 !important; }
+    /* Заголовок не должен отрываться от текста. */
+    .newsdetail-card__title, .newsdetail__body h2, .newsdetail__body h3 { break-after: avoid; }
+    .newsdetail-photos__grid img, .newsdetail-gallery__slide { break-inside: avoid; }
+
     html, body { background: #fff !important; color: #000 !important; }
     a { color: #000 !important; text-decoration: none; }
     .site-content, .layout { max-width: none; margin: 0; padding: 0; display: block; }

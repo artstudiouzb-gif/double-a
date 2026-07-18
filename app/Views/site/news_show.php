@@ -111,7 +111,7 @@ if ($isPremium) {
 }
 
 $shareBlock = static function (string $extraClass) use ($shareUrl, $shareTitle, $pageUrl): void { ?>
-            <div class="newsdetail-share<?= $extraClass ?>">
+            <div class="newsdetail-share no-print<?= $extraClass ?>">
                 <h2 class="newsdetail-share__title"><?= htmlspecialchars(t('Поделиться'), ENT_QUOTES) ?></h2>
                 <div class="newsdetail-share__row">
                     <a class="newsdetail-share__btn" href="https://t.me/share/url?url=<?= $shareUrl ?>&text=<?= $shareTitle ?>" target="_blank" rel="noopener" aria-label="<?= htmlspecialchars(t('Поделиться в Telegram'), ENT_QUOTES) ?>"><svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M21.9 4.6 19 19.3c-.2 1-.8 1.2-1.6.8l-4.5-3.3-2.2 2.1c-.2.2-.4.4-.9.4l.3-4.6 8.4-7.6c.4-.3-.1-.5-.6-.2L7.6 13.4l-4.5-1.4c-1-.3-1-1 .2-1.4l17.3-6.7c.8-.3 1.5.2 1.3 1.3z"/></svg></a>
@@ -298,7 +298,7 @@ if (!$isPremium) {
                     </div>
                 </div>
             <?php endif; ?>
-            <div class="newsdetail-subscribe">
+            <div class="newsdetail-subscribe no-print">
                 <h2 class="newsdetail-subscribe__title"><?= htmlspecialchars(t('Подпишитесь на новости Агентства'), ENT_QUOTES) ?></h2>
                 <p class="newsdetail-subscribe__text"><?= htmlspecialchars(t('Получайте самые важные новости и аналитические материалы на почту.'), ENT_QUOTES) ?></p>
                 <form class="newsdetail-subscribe__form" method="post" action="<?= htmlspecialchars(Locale::url('subscribe'), ENT_QUOTES) ?>">
@@ -340,7 +340,7 @@ if (!$isPremium) {
     <?php endif; ?>
 
     <?php if (!empty($related)): ?>
-        <section class="newsdetail-related">
+        <section class="newsdetail-related no-print">
             <div class="section-head">
                 <h2 class="section-head__title"><?= htmlspecialchars(t('Другие новости по теме'), ENT_QUOTES) ?></h2>
                 <a class="section-head__all" href="<?= htmlspecialchars(Locale::url('news'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Все новости'), ENT_QUOTES) ?> →</a>
@@ -364,7 +364,7 @@ if (!$isPremium) {
     <?php endif; ?>
 
     <?php if ($prevNews !== null || $nextNews !== null || ($isPremium && !empty($toc))): ?>
-        <nav class="newsdetail-adjacent<?= $isPremium && !empty($toc) ? ' newsdetail-adjacent--with-toc' : '' ?>" aria-label="<?= htmlspecialchars(t('Соседние новости'), ENT_QUOTES) ?>">
+        <nav class="newsdetail-adjacent no-print<?= $isPremium && !empty($toc) ? ' newsdetail-adjacent--with-toc' : '' ?>" aria-label="<?= htmlspecialchars(t('Соседние новости'), ENT_QUOTES) ?>">
             <?php if ($isPremium && !empty($toc)): ?>
                 <div class="newsdetail-toc">
                     <span class="newsdetail-toc__title"><?= htmlspecialchars(t('Навигация по статье'), ENT_QUOTES) ?></span>
