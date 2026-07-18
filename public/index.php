@@ -267,6 +267,7 @@ $router->post('/admin/settings/demo-content', [SettingsController::class, 'seedD
 $router->get('/admin/social', [\App\Controllers\Admin\SocialController::class, 'index']);
 $router->post('/admin/social', [\App\Controllers\Admin\SocialController::class, 'update']);
 $router->post('/admin/social/run', [\App\Controllers\Admin\SocialController::class, 'runNow']);
+$router->post('/admin/social/check-telegram', [\App\Controllers\Admin\SocialController::class, 'checkTelegram']);
 
 // --- Admin: исходящие вебхуки (только супер-админ) ---
 $router->get('/admin/webhooks', [\App\Controllers\Admin\WebhookController::class, 'index']);

@@ -78,6 +78,16 @@ $signatureHints = [
             <button type="submit" class="btn btn--primary"><?= \App\Core\AdminUi::icon('save') ?>Сохранить</button>
         </div>
     </form>
+
+    <?php // Диагностика вместо гадания по ошибке в журнале очереди. ?>
+    <form method="post" action="/admin/social/check-telegram" style="margin-top:12px;">
+        <?= Csrf::field() ?>
+        <button type="submit" class="btn">Проверить подключение к Telegram</button>
+        <span class="form-hint" style="display:block;margin-top:6px;">
+            Проверяет по шагам токен бота, канал и права бота в нём. Ничего не публикует.
+            Сначала сохраните настройки — проверяются сохранённые значения.
+        </span>
+    </form>
 </div>
 
 <?php

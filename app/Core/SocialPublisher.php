@@ -125,6 +125,132 @@ final class SocialPublisher
         return $this->interpretTelegram($res);
     }
 
+    /**
+     * Проверка подключения к Telegram без публикации: токен (getMe), канал
+     * (getChat) и права бота в нём (getChatMember). Диагностика по шагам —
+     * иначе единственное «Not Found» в журнале ничего не объясняет.
+     *
+     * @param array<string,string> $cfg
+     * @return array{ok:bool, steps:list<array{name:string, ok:bool, text:string}>}
+     */
+    public function checkTelegram(array $cfg): array
+    {
+        $token = trim((string) ($cfg['token'] ?? ''));
+        $chatId = trim((string) ($cfg['chat_id'] ?? ''));
+        $steps = [];
+
+        if ($token === '' || $chatId === '') {
+            $steps[] = ['name' => 'Настройки', 'ok' => false, 'text' => 'Не заполнены токен бота или chat_id канала.'];
+
+            return ['ok' => false, 'steps' => $steps];
+        }
+
+        $api = self::TG_API . '/bot' . $token;
+        // Транспортную ошибку (нет сети, закрытый исходящий доступ на хостинге)
+        // важно не смешивать с ответом API: иначе «нет интернета» выглядело бы
+        // как «неверный токен», и чинили бы не то.
+        $call = function (string $method, array $payload = []) use ($api): array {
+            $res = ($this->http)(
+                'POST',
+                $api . '/' . $method,
+                (string) json_encode($payload, JSON_UNESCAPED_UNICODE),
+                ['Content-Type: application/json']
+            );
+            $data = json_decode((string) ($res['body'] ?? ''), true);
+            if (is_array($data)) {
+                return $data;
+            }
+
+            $transport = trim((string) ($res['error'] ?? ''));
+
+            return ['ok' => false, 'description' => $transport !== ''
+                ? 'Нет связи с api.telegram.org: ' . $transport
+                : 'Пустой ответ от api.telegram.org (HTTP ' . (int) ($res['status'] ?? 0) . '). '
+                    . 'Возможно, хостинг блокирует исходящие запросы.'];
+        };
+
+        // 1. Токен. Bot API отдаёт 404 «Not Found» именно на неверный токен:
+        // /bot<токен>/ — часть адреса, у несуществующего бота нет такого пути.
+        $me = $call('getMe');
+        if (empty($me['ok'])) {
+            $steps[] = [
+                'name' => 'Токен бота',
+                'ok' => false,
+                'text' => self::telegramHint((string) ($me['description'] ?? 'нет ответа')),
+            ];
+
+            return ['ok' => false, 'steps' => $steps];
+        }
+        $botId = (int) ($me['result']['id'] ?? 0);
+        $botName = (string) ($me['result']['username'] ?? '');
+        $steps[] = ['name' => 'Токен бота', 'ok' => true, 'text' => 'Бот найден: @' . $botName];
+
+        // 2. Канал.
+        $chat = $call('getChat', ['chat_id' => $chatId]);
+        if (empty($chat['ok'])) {
+            $steps[] = [
+                'name' => 'Канал',
+                'ok' => false,
+                'text' => self::telegramHint((string) ($chat['description'] ?? 'нет ответа')),
+            ];
+
+            return ['ok' => false, 'steps' => $steps];
+        }
+        $steps[] = [
+            'name' => 'Канал',
+            'ok' => true,
+            'text' => 'Канал найден: ' . (string) ($chat['result']['title'] ?? $chatId),
+        ];
+
+        // 3. Права: писать в канал может только администратор.
+        $member = $call('getChatMember', ['chat_id' => $chatId, 'user_id' => $botId]);
+        $status = (string) ($member['result']['status'] ?? '');
+        if (empty($member['ok']) || !in_array($status, ['administrator', 'creator'], true)) {
+            $steps[] = [
+                'name' => 'Права бота',
+                'ok' => false,
+                'text' => 'Бот @' . $botName . ' не администратор канала'
+                    . ($status !== '' ? ' (статус: ' . $status . ')' : '')
+                    . '. Откройте канал → «Администраторы» → добавьте бота с правом публикации сообщений.',
+            ];
+
+            return ['ok' => false, 'steps' => $steps];
+        }
+        $steps[] = ['name' => 'Права бота', 'ok' => true, 'text' => 'Бот — администратор канала, публикация разрешена.'];
+
+        return ['ok' => true, 'steps' => $steps];
+    }
+
+    /**
+     * Перевод ответа Bot API в понятное действие. Сухие описания Telegram
+     * («Not Found», «chat not found») ничего не говорят редактору о том, что
+     * именно чинить.
+     */
+    public static function telegramHint(string $description): string
+    {
+        $d = mb_strtolower($description);
+
+        if (str_contains($d, 'not found') && !str_contains($d, 'chat')) {
+            return 'Токен бота неверен или отозван (Telegram отвечает «Not Found»). '
+                . 'Проверьте токен у @BotFather: он выглядит как 1234567890:AA… — целиком, без слова «bot» и пробелов.';
+        }
+        if (str_contains($d, 'chat not found')) {
+            return 'Канал не найден: проверьте chat_id. Для публичного канала — @имя_канала, '
+                . 'для приватного — числовой id вида -100…, и бот должен быть добавлен в канал.';
+        }
+        if (str_contains($d, 'not enough rights') || str_contains($d, 'not a member') || str_contains($d, 'chat_write_forbidden')) {
+            return 'У бота нет прав на публикацию: добавьте его администратором канала с правом отправки сообщений.';
+        }
+        if (str_contains($d, 'unauthorized')) {
+            return 'Telegram отклонил токен (401 Unauthorized). Выпустите новый токен у @BotFather и сохраните здесь.';
+        }
+        if (str_contains($d, "can't parse entities") || str_contains($d, 'can\'t parse')) {
+            return 'Telegram не принял разметку сообщения: проверьте HTML в подписи (допустимы <b>, <i>, <a href>).';
+        }
+
+        return $description;
+    }
+
     /** Разбор ответа Bot API; для sendMediaGroup result — массив сообщений. */
     private function interpretTelegram(array $res, bool $group = false): array
     {
@@ -135,9 +261,15 @@ final class SocialPublisher
 
             return ['ok' => true, 'remote_id' => $remoteId, 'error' => null];
         }
-        $error = is_array($data) && isset($data['description'])
-            ? (string) $data['description']
-            : (!empty($res['error']) ? (string) $res['error'] : 'HTTP ' . (int) ($res['status'] ?? 0));
+        if (is_array($data) && isset($data['description'])) {
+            // В журнал очереди пишем и подсказку, и исходный ответ Telegram:
+            // первое нужно редактору, второе — при разборе нетипичных случаев.
+            $raw = (string) $data['description'];
+            $hint = self::telegramHint($raw);
+
+            return self::err($hint === $raw ? $raw : $hint . ' (ответ Telegram: ' . $raw . ')');
+        }
+        $error = !empty($res['error']) ? (string) $res['error'] : 'HTTP ' . (int) ($res['status'] ?? 0);
 
         return self::err($error);
     }

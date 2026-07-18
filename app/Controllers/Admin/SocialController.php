@@ -67,6 +67,33 @@ final class SocialController
         exit;
     }
 
+    /**
+     * Проверка подключения к Telegram без публикации: отвечает, что именно не
+     * так — токен, канал или права бота. Ответ Bot API «Not Found» в журнале
+     * очереди сам по себе не подсказывает, где чинить.
+     */
+    public function checkTelegram(): void
+    {
+        Auth::requireSuperAdmin();
+        Csrf::verifyRequest();
+
+        $result = (new SocialPublisher())->checkTelegram(SocialSettings::configFor('telegram'));
+        foreach ($result['steps'] as $step) {
+            $line = $step['name'] . ': ' . $step['text'];
+            if ($step['ok']) {
+                Flash::success($line);
+            } else {
+                Flash::error($line);
+            }
+        }
+        if ($result['ok']) {
+            Flash::success('Telegram настроен верно — можно публиковать.');
+        }
+
+        header('Location: /admin/social');
+        exit;
+    }
+
     public function update(): void
     {
         Auth::requireSuperAdmin();
@@ -80,6 +107,19 @@ final class SocialController
         }
 
         Flash::success('Настройки соцсетей сохранены.');
+
+        // Токен Telegram — часть адреса запроса, поэтому мусор в нём даёт не
+        // внятную ошибку, а сухое «Not Found» из Bot API. Предупреждаем сразу
+        // при сохранении, а не после неудачной публикации.
+        $token = trim((string) ($_POST['telegram']['token'] ?? ''));
+        if ($token !== '' && !preg_match('/^\d{6,}:[A-Za-z0-9_-]{30,}$/', $token)) {
+            Flash::error(
+                'Токен Telegram выглядит неверно: ожидается вид 1234567890:AA… (цифры, двоеточие, ключ). '
+                . 'Часто по ошибке копируют слово «bot» в начале или имя бота вместо токена. '
+                . 'Проверьте кнопкой «Проверить подключение к Telegram».'
+            );
+        }
+
         header('Location: /admin/social');
         exit;
     }
