@@ -191,7 +191,7 @@ $heightSelect = function (string $name, string $current): string {
                     <?php foreach ($hdrLangs as $hlang): $hc = htmlspecialchars((string) $hlang['code'], ENT_QUOTES); ?>
                         <div class="hb-langlogo" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--admin-border);">
                             <div class="hb-langlogo__name" style="font-weight:600; margin-bottom:8px;"><?= htmlspecialchars((string) $hlang['name'], ENT_QUOTES) ?> <span style="color:var(--admin-muted); font-weight:400;">(<?= $hc ?>)</span></div>
-                            <div class="hb-inline-fields">
+                            <div class="hb-inline-fields hb-inline-fields--logos">
                                 <?= \App\Core\AdminUi::imageField('logo_lang_' . $hc, (string) ($config['logo_by_lang'][$hlang['code']] ?? ''), [
                                     'label' => 'Логотип',
                                     'file' => 'logo_lang_' . $hc . '_file',

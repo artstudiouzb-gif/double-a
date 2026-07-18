@@ -1082,6 +1082,12 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 /* Строка базовых настроек: поля уже, числовые «px» — совсем компактные. */
 .hb-inline-fields--settings { grid-template-columns: repeat(auto-fit, minmax(180px, 230px)); }
 .hb-inline-fields--settings input[type="number"] { max-width: 130px; }
+/* Поля логотипов (превью + URL + кнопки) требуют места — широкие колонки,
+   контролы переносятся, чтобы «Файл не выбран» не обрезался до «Ф...н». */
+.hb-inline-fields--logos { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.hb-inline-fields--logos .image-field__controls { flex-wrap: wrap; }
+.hb-inline-fields--logos .image-field__controls input[type="text"] { flex: 1 1 170px; }
+.hb-inline-fields--logos .image-field__upload { min-width: 0; }
 
 /* Конструктор футера Pro Max: колонки-карточки с перестановкой. */
 .fb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
