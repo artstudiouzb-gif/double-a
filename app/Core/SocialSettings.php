@@ -53,6 +53,13 @@ final class SocialSettings
             $cfg[$field] = \App\Models\Setting::get('social_' . $network . '_' . $field, '');
         }
 
+        // Один бот на всё: если отдельный токен для публикаций не задан, берём
+        // основной токен бота из раздела «Telegram». Раньше два независимых
+        // поля расходились, и публикация падала с «Not Found» при рабочем входе.
+        if ($network === 'telegram' && trim((string) ($cfg['token'] ?? '')) === '') {
+            $cfg['token'] = trim((string) \App\Models\Setting::get('telegram_bot_token', ''));
+        }
+
         return $cfg;
     }
 

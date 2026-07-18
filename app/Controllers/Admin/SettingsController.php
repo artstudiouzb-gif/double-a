@@ -19,11 +19,15 @@ use App\Models\Setting;
 final class SettingsController
 {
     private const DEMO_CONFIRM_CODE = 'DEMO';
+    /**
+     * Ключи Telegram сюда НЕ входят: их полей в этой форме больше нет (раздел
+     * «Telegram»), а сохранение по списку затёрло бы токены пустой строкой и
+     * выключило коды входа всем администраторам.
+     */
     private const TEXT_KEYS = [
         'site_name',
         'contact_phone', 'contact_email', 'contact_address',
         'default_meta_description',
-        'telegram_gateway_token', 'telegram_bot_token', 'telegram_notify_chat_ids',
     ];
 
     public function index(): void

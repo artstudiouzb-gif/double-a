@@ -32,11 +32,8 @@ final class ProfileController
         $botLinked = (int) ($profileUser['telegram_chat_id'] ?? 0) > 0;
         $botUsername = null;
         if ($botConfigured && !$botLinked) {
-            if (empty($_SESSION['tg_link_code'])) {
-                $_SESSION['tg_link_code'] = 'link-' . bin2hex(random_bytes(4));
-            }
-            $me = \App\Core\TelegramBot::getMe();
-            $botUsername = is_array($me) ? (string) ($me['username'] ?? '') : '';
+            \App\Core\TelegramLink::code();
+            $botUsername = \App\Core\TelegramLink::botUsername();
         }
 
         View::render('admin/profile/index', [
@@ -60,28 +57,14 @@ final class ProfileController
         Auth::requireLogin();
         Csrf::verifyRequest();
 
-        $code = (string) ($_SESSION['tg_link_code'] ?? '');
-        if ($code === '' || !\App\Core\TelegramBot::isConfigured()) {
-            Flash::error('Привязка недоступна: бот не настроен.');
-            header('Location: /admin/profile');
-            exit;
+        // Общая с разделом «Telegram» логика — чтобы два места не разъезжались.
+        $res = \App\Core\TelegramLink::confirm((int) Auth::id());
+        if ($res['ok']) {
+            Flash::success($res['message']);
+        } else {
+            Flash::error($res['message']);
         }
 
-        $chatId = \App\Core\TelegramBot::findChatIdByCode($code);
-        if ($chatId === null) {
-            Flash::error('Код не найден. Отправьте код боту в Telegram и нажмите «Проверить привязку» ещё раз.');
-            header('Location: /admin/profile');
-            exit;
-        }
-
-        User::updateTelegramChatId((int) Auth::id(), $chatId);
-        Auth::completeTwoFactorSetup();
-        unset($_SESSION['tg_link_code']);
-        \App\Core\Logger::security('Привязан Telegram для кодов входа', [
-            'user' => (string) ($_SESSION['username'] ?? ''),
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
-        ]);
-        Flash::success('Telegram привязан. Теперь коды входа будут приходить от бота — бесплатно.');
         header('Location: /admin/profile');
         exit;
     }

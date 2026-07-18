@@ -130,14 +130,17 @@ php scripts/smoke.php http://127.0.0.1:8000 --admin admin:ПАРОЛЬ
 - Доступность: WCAG 2.1 AA (контраст, aria) — 0 нарушений axe на ключевых страницах.
 
 ## Грабли (уже наступали)
-- **Три разных токена Telegram**: коды входа (2FA) — `telegram_bot_token`
-  (`TelegramBot`) или `telegram_gateway_token` (`TelegramGateway`, это вообще
-  другой сервис gatewayapi.telegram.org); публикация в канал —
-  `social_telegram_token`. «Вход работает, публикация нет» = заполнено не то
-  поле. Ответ Bot API **`Not Found` означает неверный токен** (токен — часть
-  URL `/bot<токен>/`), `chat not found` — неверный chat_id, `not enough rights`
-  — бот не админ канала. Диагностика: кнопка «Проверить подключение к Telegram»
-  в разделе «Соцсети» (`SocialPublisher::checkTelegram()`).
+- **Telegram — один раздел `/admin/telegram`** (`TelegramController`): бот →
+  привязка админа (коды входа) → канал → уведомления. Токен бота живёт в
+  `telegram_bot_token`; `social_telegram_token` — необязательное
+  переопределение (отдельный бот-публикатор), при пустом значении
+  `SocialSettings::configFor('telegram')` берёт основной. Gateway
+  (`telegram_gateway_token`) — другой платный сервис, к Bot API отношения не
+  имеет. Ответ Bot API **`Not Found` = неверный токен** (токен — часть URL
+  `/bot<токен>/`), `chat not found` — неверный chat_id, `not enough rights` —
+  бот не админ канала; диагностика — `SocialPublisher::checkTelegram()`.
+  **Не добавляй ключи Telegram в `SettingsController::TEXT_KEYS`**: их полей в
+  той форме нет, и сохранение затрёт токены пустой строкой.
 - **`lastInsertId()` после `bustPageCache()` = 0**: `bustPageCache()` делает запрос
   к settings (CDN/Cloudflare), обнуляющий last insert id при холодном кэше. В
   `create()` читай id **до** сброса кэша. (Исправлено в Project/News/TeamMember.)

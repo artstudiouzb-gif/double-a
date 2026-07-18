@@ -267,8 +267,15 @@ $router->post('/admin/settings/demo-content', [SettingsController::class, 'seedD
 $router->get('/admin/social', [\App\Controllers\Admin\SocialController::class, 'index']);
 $router->post('/admin/social', [\App\Controllers\Admin\SocialController::class, 'update']);
 $router->post('/admin/social/run', [\App\Controllers\Admin\SocialController::class, 'runNow']);
-$router->post('/admin/social/check-telegram', [\App\Controllers\Admin\SocialController::class, 'checkTelegram']);
-$router->post('/admin/social/use-login-bot-token', [\App\Controllers\Admin\SocialController::class, 'useLoginBotToken']);
+
+// --- Admin: Telegram — бот, коды входа, канал, уведомления (супер-админ) ---
+$router->get('/admin/telegram', [\App\Controllers\Admin\TelegramController::class, 'index']);
+$router->post('/admin/telegram/bot', [\App\Controllers\Admin\TelegramController::class, 'saveBot']);
+$router->post('/admin/telegram/bot/check', [\App\Controllers\Admin\TelegramController::class, 'checkBot']);
+$router->post('/admin/telegram/link', [\App\Controllers\Admin\TelegramController::class, 'link']);
+$router->post('/admin/telegram/channel', [\App\Controllers\Admin\TelegramController::class, 'saveChannel']);
+$router->post('/admin/telegram/channel/check', [\App\Controllers\Admin\TelegramController::class, 'checkChannel']);
+$router->post('/admin/telegram/extras', [\App\Controllers\Admin\TelegramController::class, 'saveExtras']);
 
 // --- Admin: исходящие вебхуки (только супер-админ) ---
 $router->get('/admin/webhooks', [\App\Controllers\Admin\WebhookController::class, 'index']);

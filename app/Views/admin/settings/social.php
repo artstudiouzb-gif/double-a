@@ -69,17 +69,6 @@ $signatureHints = [
                             <input type="<?= $field === 'token' ? 'password' : 'text' ?>" id="<?= $net ?>_<?= $field ?>"
                                    name="<?= $net ?>[<?= $field ?>]" value="<?= htmlspecialchars((string) $value, ENT_QUOTES) ?>"
                                    autocomplete="off">
-                            <?php if ($net === 'telegram' && $field === 'token'): ?>
-                                <span class="form-hint">
-                                    Это <b>отдельная</b> настройка от токена бота, которым приходят коды входа
-                                    в админку. Формат: <code>1234567890:AA…</code> (из @BotFather, без слова «bot»).
-                                </span>
-                            <?php elseif ($net === 'telegram' && $field === 'chat_id'): ?>
-                                <span class="form-hint">
-                                    Публичный канал — <code>@имя_канала</code>, приватный — числовой
-                                    <code>-100…</code>. Бот должен быть администратором канала.
-                                </span>
-                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
@@ -90,28 +79,21 @@ $signatureHints = [
         </div>
     </form>
 
-    <?php // Диагностика вместо гадания по ошибке в журнале очереди. ?>
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-        <form method="post" action="/admin/social/check-telegram">
-            <?= Csrf::field() ?>
-            <button type="submit" class="btn">Проверить подключение к Telegram</button>
-        </form>
-        <?php if (!empty($hasLoginBotToken)): ?>
-            <form method="post" action="/admin/social/use-login-bot-token"
-                  data-confirm="Заменить токен публикации на токен бота из настроек входа?">
-                <?= Csrf::field() ?>
-                <button type="submit" class="btn">Взять токен бота из настроек входа</button>
-            </form>
+    <?php // Telegram настраивается в своём разделе — вместе с ботом и кодами входа. ?>
+    <div class="form-hint" style="margin-top:16px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);padding:12px;">
+        <strong>Telegram-канал</strong>
+        <?php if (!empty($telegramReady)): ?>
+            <span class="badge badge--published">публикуется</span>
+        <?php elseif (!empty($telegramEnabled)): ?>
+            <span class="badge badge--danger">включён, но не настроен</span>
+        <?php else: ?>
+            <span class="badge badge--draft">выключен</span>
         <?php endif; ?>
+        <div style="margin-top:6px;">
+            Настраивается в разделе <a href="/admin/telegram">Telegram</a> — там же бот, коды входа
+            в панель и проверка прав бота в канале.
+        </div>
     </div>
-    <span class="form-hint" style="display:block;margin-top:6px;">
-        Проверка идёт по шагам: токен бота, канал, права бота в канале. Ничего не публикует.
-        Сначала сохраните настройки — проверяются сохранённые значения.
-        <?php if (!empty($hasLoginBotToken)): ?>
-            Вторая кнопка подставит сюда тот же токен бота, которым приходят коды входа
-            (руками его не скопировать — поле скрыто).
-        <?php endif; ?>
-    </span>
 </div>
 
 <?php

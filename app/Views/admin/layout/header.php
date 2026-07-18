@@ -89,6 +89,7 @@ if ($navIsSuper) {
     $navSystem = [
         'languages' => ['/admin/languages', 'Языки'],
         'content_types' => ['/admin/content-types', 'Типы контента'],
+        'telegram' => ['/admin/telegram', 'Telegram'],
         'social' => ['/admin/social', 'Соцсети'],
         'webhooks' => ['/admin/webhooks', 'Вебхуки'],
         'redirects' => ['/admin/redirects', 'Редиректы'],
