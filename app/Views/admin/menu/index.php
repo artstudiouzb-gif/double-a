@@ -61,10 +61,10 @@ $renderFields = static function (?array $item) use ($languages, $pages, $parentC
 
         <div class="form-field" data-menu-url-field="page">
             <label for="<?= $prefix ?>_page">Страница</label>
-            <select id="<?= $prefix ?>_page" name="page_slug">
+            <select id="<?= $prefix ?>_page" name="page_slug" data-menu-page-select>
                 <option value="">— выберите страницу —</option>
                 <?php foreach ($pages as $page): ?>
-                    <option value="<?= htmlspecialchars((string) $page['slug'], ENT_QUOTES) ?>"<?= $urlType === 'page' && $urlValue === (string) $page['slug'] ? ' selected' : '' ?>>
+                    <option value="<?= htmlspecialchars((string) $page['slug'], ENT_QUOTES) ?>" data-title="<?= htmlspecialchars((string) $page['title'], ENT_QUOTES) ?>"<?= $urlType === 'page' && $urlValue === (string) $page['slug'] ? ' selected' : '' ?>>
                         <?= htmlspecialchars((string) $page['title'], ENT_QUOTES) ?>
                         (/<?= htmlspecialchars((string) $page['slug'], ENT_QUOTES) ?>)
                     </option>

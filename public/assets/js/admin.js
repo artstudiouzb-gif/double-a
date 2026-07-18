@@ -697,6 +697,28 @@
             if (form) syncMenuForm(form);
         });
 
+        // Название пункта меню подставляется из заголовка выбранной страницы,
+        // пока его не отредактировали вручную (флаг data-autofilled).
+        document.addEventListener('change', function (e) {
+            if (!e.target.matches('[data-menu-page-select]')) { return; }
+            var form = e.target.closest('[data-menu-link-form]');
+            if (!form) { return; }
+            var titleInput = form.querySelector('input[name="title"]');
+            if (!titleInput) { return; }
+            var opt = e.target.options[e.target.selectedIndex];
+            var pageTitle = opt ? (opt.getAttribute('data-title') || '') : '';
+            if (pageTitle === '') { return; }
+            if (titleInput.value.trim() === '' || titleInput.dataset.autofilled === '1') {
+                titleInput.value = pageTitle;
+                titleInput.dataset.autofilled = '1';
+            }
+        });
+        document.addEventListener('input', function (e) {
+            if (e.target.matches('[data-menu-link-form] input[name="title"]')) {
+                delete e.target.dataset.autofilled;
+            }
+        });
+
         document.addEventListener('click', function (e) {
             var toggle = e.target.closest('[data-menu-edit-toggle]');
             if (toggle) {
