@@ -250,7 +250,10 @@ final class NewsController
         $only = trim((string) ($_POST['network'] ?? ''));
         $only = in_array($only, \App\Core\SocialPublisher::NETWORKS, true) ? $only : null;
 
-        $count = \App\Core\SocialSettings::enqueueForNews((int) $news['id'], $only);
+        // Кнопка публикации в админке — осознанное действие человека, поэтому
+        // публикуем и повторно. Автопубликация при сохранении новости (выше по
+        // коду) остаётся идемпотентной, иначе правки плодили бы посты.
+        $count = \App\Core\SocialSettings::enqueueForNews((int) $news['id'], $only, true);
         if ($count <= 0) {
             Flash::error($only !== null
                 ? 'Сеть не настроена. Проверьте её в разделе «Соцсети».'

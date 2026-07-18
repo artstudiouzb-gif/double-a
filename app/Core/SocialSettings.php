@@ -176,14 +176,14 @@ final class SocialSettings
      * Ставит новость в очередь публикации в готовые сети. Если задан $only —
      * только в эту сеть (кнопка конкретной соцсети), иначе во все готовые.
      */
-    public static function enqueueForNews(int $newsId, ?string $only = null): int
+    public static function enqueueForNews(int $newsId, ?string $only = null, bool $force = false): int
     {
         $count = 0;
         foreach (self::readyNetworks() as $network) {
             if ($only !== null && $network !== $only) {
                 continue;
             }
-            SocialPost::enqueue($newsId, $network);
+            SocialPost::enqueue($newsId, $network, $force);
             $count++;
         }
 

@@ -15,15 +15,26 @@ final class SocialPost
 {
     private const MAX_ATTEMPTS = 3;
 
-    /** Ставит публикацию в очередь (idempotent по паре news_id+network). */
-    public static function enqueue(int $newsId, string $network): void
+    /**
+     * Ставит публикацию в очередь.
+     *
+     * По умолчанию идемпотентна по паре news_id+network: уже отправленная
+     * запись остаётся 'sent', иначе правка новости плодила бы посты в канале.
+     * $force — явное «опубликовать заново» из админки: человек нажал кнопку
+     * осознанно, и в канал уйдёт ещё одно сообщение.
+     */
+    public static function enqueue(int $newsId, string $network, bool $force = false): void
     {
         $stmt = Database::pdo()->prepare(
-            "INSERT INTO social_posts (news_id, network, status, created_at)
-             VALUES (:nid, :net, 'pending', NOW())
-             ON DUPLICATE KEY UPDATE
-                status = IF(status = 'sent', 'sent', 'pending'),
-                attempts = IF(status = 'sent', attempts, 0)"
+            $force
+                ? "INSERT INTO social_posts (news_id, network, status, created_at)
+                   VALUES (:nid, :net, 'pending', NOW())
+                   ON DUPLICATE KEY UPDATE status = 'pending', attempts = 0, last_error = NULL"
+                : "INSERT INTO social_posts (news_id, network, status, created_at)
+                   VALUES (:nid, :net, 'pending', NOW())
+                   ON DUPLICATE KEY UPDATE
+                      status = IF(status = 'sent', 'sent', 'pending'),
+                      attempts = IF(status = 'sent', attempts, 0)"
         );
         $stmt->execute([':nid' => $newsId, ':net' => $network]);
     }

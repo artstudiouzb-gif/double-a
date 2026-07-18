@@ -297,19 +297,20 @@ final class SocialPublisher
         }
 
         $sep = "\n\n———\n\n";
-        $links = [];
-        foreach ($langs as $l) {
-            if (($l['link'] ?? '') !== '') {
-                $links[] = '<a href="' . $esc((string) $l['link']) . '">' . $esc((string) $l['read_more']) . '</a>';
-            }
-        }
-        $tail = ($links !== [] ? "\n\n" . implode(' | ', $links) : '')
-            . ($signature !== '' ? "\n\n" . $signature : '');
+        // Ссылка идёт сразу за своим языковым блоком: сваленные в конец ссылки
+        // читателю приходилось сопоставлять с языком по догадке.
+        $linkFor = static function (array $l) use ($esc): string {
+            return ($l['link'] ?? '') !== ''
+                ? "\n\n" . '<a href="' . $esc((string) $l['link']) . '">' . $esc((string) $l['read_more']) . '</a>'
+                : '';
+        };
+        $tail = $signature !== '' ? "\n\n" . $signature : '';
 
-        // Считаем фиксированную часть: заголовки + разделители + хвост.
+        // Считаем фиксированную часть: заголовки, ссылки, разделители, подпись.
         $fixed = mb_strlen(strip_tags($tail)) + (count($langs) - 1) * mb_strlen(strip_tags($sep));
         foreach ($langs as $l) {
             $fixed += mb_strlen((string) $l['title']) + 2; // +2 — перенос строки после заголовка
+            $fixed += mb_strlen(strip_tags($linkFor($l)));
         }
         $available = max(0, $limit - $fixed - 4);
         $perLang = count($langs) > 0 ? (int) floor($available / count($langs)) : 0;
@@ -324,7 +325,8 @@ final class SocialPublisher
                 $excerpt = '';
             }
             $parts[] = ($title !== '' ? '<b>' . $esc($title) . '</b>' : '')
-                . ($excerpt !== '' ? "\n\n" . $esc($excerpt) : '');
+                . ($excerpt !== '' ? "\n\n" . $esc($excerpt) : '')
+                . $linkFor($l);
         }
 
         return implode($sep, $parts) . $tail;
