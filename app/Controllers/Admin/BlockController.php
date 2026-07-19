@@ -10,6 +10,7 @@ use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\View;
 use App\Core\TextProcessor;
+use App\Core\Video;
 use App\Models\Block;
 use App\Models\BlockRevision;
 use App\Models\FormDef;
@@ -638,10 +639,16 @@ final class BlockController
                 $pct = static fn ($v, int $def): int => is_numeric($v) ? max(0, min(100, (int) $v)) : $def;
                 $bgType = (string) ($_POST['bg_type'] ?? 'image');
                 $bgType = in_array($bgType, ['none', 'image', 'video', 'youtube'], true) ? $bgType : 'image';
+                $youtubeUrl = trim((string) ($_POST['youtube_url'] ?? ''));
+                $videoUrl = trim((string) ($_POST['video_url'] ?? ''));
                 // Редактор загрузил фото, но список «Фон секции» остался на
                 // «Без фона» — и снимок молча пропадал. Загруженное фото и есть
                 // явное намерение: включаем фон-изображение сами.
-                if ($bgType === 'none' && trim((string) ($_POST['image'] ?? '')) !== '') {
+                if ($bgType === 'none' && Video::youtubeId($youtubeUrl) !== null) {
+                    $bgType = 'youtube';
+                } elseif ($bgType === 'none' && $videoUrl !== '') {
+                    $bgType = 'video';
+                } elseif ($bgType === 'none' && trim((string) ($_POST['image'] ?? '')) !== '') {
                     $bgType = 'image';
                 }
                 $heightMode = (string) ($_POST['hero_height'] ?? 'regular');
@@ -671,8 +678,8 @@ final class BlockController
                     'subtitle' => TextProcessor::typographPlain(trim((string) ($_POST['subtitle'] ?? '')), $locale),
                     'bg_type' => $bgType,
                     'image' => trim((string) ($_POST['image'] ?? '')),
-                    'video_url' => trim((string) ($_POST['video_url'] ?? '')),
-                    'youtube_url' => trim((string) ($_POST['youtube_url'] ?? '')),
+                    'video_url' => $videoUrl,
+                    'youtube_url' => $youtubeUrl,
                     'overlay_color' => $hexColor(trim((string) ($_POST['overlay_color'] ?? '')), '#0b1a30'),
                     'overlay_opacity' => $pct($_POST['overlay_opacity'] ?? null, 55),
                     'text_position' => in_array($textPosition = (string) ($_POST['text_position'] ?? 'left'), ['left', 'center', 'right'], true) ? $textPosition : 'left',

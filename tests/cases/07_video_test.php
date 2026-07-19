@@ -9,6 +9,7 @@ test('Video: извлекает id из разных форматов YouTube', 
     assert_same('dQw4w9WgXcQ', Video::youtubeId('https://youtu.be/dQw4w9WgXcQ'));
     assert_same('dQw4w9WgXcQ', Video::youtubeId('https://www.youtube.com/embed/dQw4w9WgXcQ'));
     assert_same('dQw4w9WgXcQ', Video::youtubeId('https://youtube.com/shorts/dQw4w9WgXcQ'));
+    assert_same('s_lKTkRGKc8', Video::youtubeId('https://www.youtube.com/watch?v=s_lKTkRGKc8'));
 });
 
 test('Video: не-YouTube и мусор -> null', function () {

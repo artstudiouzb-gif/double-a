@@ -579,7 +579,17 @@
         // сами, чтобы редактор видел, что фон стал фотографией.
         var syncHeroBg = function (target) {
             var bgSelect = document.querySelector('[data-hero-bg]');
-            if (!bgSelect || bgSelect.value !== 'none') { return; }
+            if (!bgSelect) { return; }
+            if (target.matches('[name="youtube_url"]')
+                && /(?:youtu\.be\/|youtube\.com\/(?:watch\?[^\s]*v=|embed\/|shorts\/))[A-Za-z0-9_-]{11}/i.test(target.value.trim())) {
+                bgSelect.value = 'youtube';
+                return;
+            }
+            if (target.matches('[name="video_url"]') && target.value.trim() !== '') {
+                bgSelect.value = 'video';
+                return;
+            }
+            if (bgSelect.value !== 'none') { return; }
             var field = target.closest('[data-image-field]');
             var input = field ? field.querySelector('[data-image-input]') : null;
             // Только поле фонового изображения обложки, не прочие картинки блока.
@@ -589,10 +599,13 @@
             if (hasImage) { bgSelect.value = 'image'; }
         };
         document.addEventListener('input', function (e) {
-            if (e.target.closest('[data-image-input]')) { syncHeroBg(e.target); }
+            if (e.target.closest('[data-image-input]') || e.target.matches('[name="youtube_url"], [name="video_url"]')) {
+                syncHeroBg(e.target);
+            }
         });
         document.addEventListener('change', function (e) {
-            if (e.target.closest('[data-image-input]') || e.target.closest('[data-image-file]')) {
+            if (e.target.closest('[data-image-input]') || e.target.closest('[data-image-file]')
+                || e.target.matches('[name="youtube_url"], [name="video_url"]')) {
                 syncHeroBg(e.target);
             }
         });

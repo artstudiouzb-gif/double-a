@@ -22,7 +22,20 @@ test('Hero: YouTube-фон рендерит iframe с nocookie-доменом и
     assert_true(str_contains($html, 'block-hero--video'), 'класс видео-героя');
     assert_true(str_contains($html, 'autoplay=1&mute=1&loop=1'), 'автозапуск без звука, цикл');
     assert_true(str_contains($html, 'loading="eager"'), 'фон первого экрана загружается сразу');
+    assert_contains('referrerpolicy="strict-origin-when-cross-origin"', $html, 'YouTube получает origin сайта для проверки embed');
     assert_true(!str_contains($html, 'loading="lazy"'), 'YouTube hero не откладывается lazy-loading');
+});
+
+test('Hero: сохранённая ссылка YouTube включает фон даже при старом bg_type none', function () {
+    $html = render_hero([
+        'title' => 'Заголовок',
+        'bg_type' => 'none',
+        'youtube_url' => 'https://www.youtube.com/watch?v=s_lKTkRGKc8',
+    ]);
+
+    assert_contains('youtube-nocookie.com/embed/s_lKTkRGKc8', $html);
+    assert_contains('block-hero--video', $html);
+    assert_not_contains('block-hero--plain', $html);
 });
 
 test('Hero: overlay использует заданный цвет и прозрачность', function () {

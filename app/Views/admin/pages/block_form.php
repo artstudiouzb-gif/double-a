@@ -494,7 +494,7 @@ $backUrl = '/admin/pages/' . (int) $block['page_id'] . '/edit?block_lang=' . url
             <div class="form-field">
                 <label for="youtube_url">Ссылка на YouTube</label>
                 <input type="text" id="youtube_url" name="youtube_url" value="<?= htmlspecialchars($data['youtube_url'] ?? '', ENT_QUOTES) ?>" placeholder="https://www.youtube.com/watch?v=…">
-                <span class="form-hint">Ролик проигрывается фоном без звука, зациклено. Загрузка идёт с серверов YouTube.</span>
+                <span class="form-hint">После вставки корректной ссылки фон автоматически переключается на YouTube. Ролик проигрывается без звука и зациклено.</span>
             </div>
             <div class="form-field"><label for="overlay_color">Затемнение фона (overlay) — цвет</label>
                 <input type="color" id="overlay_color" name="overlay_color" value="<?= htmlspecialchars($data['overlay_color'] ?? '#0b1a30', ENT_QUOTES) ?>">
