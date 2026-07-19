@@ -203,7 +203,10 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
    карточка: убираем подложку и рамку, оставляя только отступы и типографику. */
 .block-hero--plain { background: transparent; border: 0; }
 .block-hero__title { color: var(--hero-text, var(--gov-title)); }
-.block-hero__subtitle { color: var(--hero-text, var(--gov-muted)); }
+/* Лид героя набирается тем же кеглем, что и лиды разделов
+   (.listing__lead, .newsdetail-phero__lead) — 1.02rem. Раньше он
+   дорастал до 1.18–1.22rem и выбивался из общей шкалы. */
+.block-hero__subtitle { color: var(--hero-text, var(--gov-muted)); font-size: 1.02rem; }
 
 /* --- Сетка категорий: активная плитка teal --- */
 .cat-tile.is-active { background: color-mix(in srgb, var(--gov-teal) 10%, var(--gov-surface)); border-color: var(--gov-teal); }
@@ -262,7 +265,7 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .block-hero__eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--gov-teal-text); font-family: var(--font-family, 'PT Sans', sans-serif); font-weight: 700; font-size: 0.8125rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 18px; }
 .block-hero__eyebrow::before { content: ''; width: 34px; height: 2px; background: var(--gov-teal); }
 .block-hero--media .block-hero__title { color: var(--hero-text, #fff); font-size: clamp(2.2rem, 4.6vw, 3.7rem); line-height: 1.15; margin: 0 0 20px; }
-.block-hero--media .block-hero__subtitle { color: var(--hero-text, rgba(255,255,255,.85)); font-size: clamp(1.02rem, 1.5vw, 1.18rem); max-width: 520px; }
+.block-hero--media .block-hero__subtitle { color: var(--hero-text, rgba(255,255,255,.85)); font-size: 1.02rem; max-width: 520px; }
 .block-hero__actions { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 16px !important; margin-top: 30px; }
 .block-hero__button { display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 14px 26px; background: var(--gov-navy); color: #fff; text-transform: uppercase; font-size: 0.8125rem; letter-spacing: .06em; font-weight: 700; border-radius: var(--btn-radius, 8px); text-decoration: none; }
 .block-hero--media .block-hero__button { background: var(--hero-btn, #16406e); }
@@ -1739,9 +1742,9 @@ body.design-type-static h2 { font-size: 1.95rem; }
 body.design-type-static h3 { font-size: 1.55rem; }
 body.design-type-static h4 { font-size: 1.25rem; }
 body.design-type-static .block-hero--media .block-hero__title { font-size: 3.7rem; }
-body.design-type-static .block-hero--media .block-hero__subtitle { font-size: 1.18rem; }
+body.design-type-static .block-hero--media .block-hero__subtitle { font-size: 1.02rem; }
 body.design-type-static .block-hero__title { font-size: 3.4rem; }
-body.design-type-static .block-hero__subtitle { font-size: 1.22rem; }
+body.design-type-static .block-hero__subtitle { font-size: 1.02rem; }
 body.design-type-static .section-head__title { font-size: 2rem; }
 body.design-type-static .timeline-cta__title { font-size: 1.7rem; }
 body.design-type-static .profile__name { font-size: 2.5rem; }
