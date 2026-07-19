@@ -524,15 +524,58 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 .mediagallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 @media (max-width: 1000px) { .mediagallery-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .mediagallery-grid { grid-template-columns: 1fr; } }
-.mediacard { text-decoration: none; color: var(--gov-ink); }
-.mediacard__media { position: relative; display: grid; place-items: center; aspect-ratio: 16/10; border-radius: var(--radius); overflow: hidden; background: #24425f center/cover no-repeat; margin-bottom: 12px; }
-.mediacard__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mediacard { 
+    text-decoration: none; color: var(--gov-ink); 
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.mediacard:hover {
+    transform: translateY(-2px);
+}
+.mediacard__media { 
+    position: relative; display: grid; place-items: center; aspect-ratio: 16/10; 
+    border-radius: var(--radius); overflow: hidden; background: #24425f center/cover no-repeat; 
+    margin-bottom: 12px; 
+    box-shadow: 0 4px 14px rgba(19, 42, 92, 0.03);
+    transition: box-shadow 0.4s ease;
+}
+.mediacard:hover .mediacard__media {
+    box-shadow: 0 12px 28px rgba(19, 42, 92, 0.08);
+}
+.mediacard__img { 
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.mediacard:hover .mediacard__img {
+    transform: scale(1.05);
+}
 .mediacard__play, .mediacard__duration { position: relative; z-index: 1; }
-.mediacard__play { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.9); color: var(--gov-navy); }
+.mediacard__play { 
+    display: grid; 
+    place-items: center; 
+    width: 52px; 
+    height: 52px; 
+    border-radius: 50%; 
+    background: rgba(255,255,255,.9); 
+    color: var(--gov-navy); 
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, color 0.3s, box-shadow 0.3s;
+}
 .mediacard__play svg { width: 22px; height: 22px; margin-left: 2px; }
-.mediacard:hover .mediacard__play { background: var(--gov-teal); color: #fff; }
+.mediacard:hover .mediacard__play { 
+    background: var(--gov-teal); 
+    color: #fff; 
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--gov-teal);
+}
 .mediacard__duration { position: absolute; right: 10px; bottom: 10px; background: rgba(11,26,48,.8); color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; }
-.mediacard__title { display: block; font-weight: 700; font-family: var(--font-heading, 'PT Serif', serif); color: var(--gov-title); line-height: 1.35; }
+.mediacard__title { 
+    display: block; font-weight: 700; font-family: var(--font-heading, 'PT Serif', serif); 
+    color: var(--gov-title); line-height: 1.35; 
+    transition: color 0.3s ease;
+}
+.mediacard:hover .mediacard__title {
+    color: var(--gov-teal-text);
+}
 .mediacard__date { display: block; color: var(--gov-muted); font-size: .85rem; margin-top: 4px; }
 
 /* --- Блок «Новости и аналитика»: крупная + список (по эскизу) --- */
@@ -607,9 +650,28 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 @media (max-width: 560px) { .newsfeat-lead__over { padding: 14px; } .newsfeat-lead__title { font-size: 1.12rem; } }
 
 /* --- Медиа-галерея: переключатели --- */
-.media-tabs { display: inline-flex; gap: 22px; margin-right: auto; margin-left: 24px; }
-.media-tabs__tab { border: 0; background: transparent; padding: 4px 0; cursor: pointer; text-transform: uppercase; font-size: 0.8125rem; letter-spacing: .06em; font-weight: 700; color: var(--gov-muted); border-bottom: 2px solid transparent; font-family: var(--font-family, 'PT Sans', sans-serif); }
-.media-tabs__tab.is-active { color: var(--gov-teal); border-bottom-color: var(--gov-teal); }
+.media-tabs { 
+    display: inline-flex; gap: 8px; margin-right: auto; margin-left: 24px; 
+    background: color-mix(in srgb, var(--gov-navy) 4%, var(--gov-surface));
+    padding: 4px;
+    border-radius: 99px;
+    border: 1px solid var(--gov-border);
+}
+.media-tabs__tab { 
+    border: 0; background: transparent; padding: 6px 16px; cursor: pointer; 
+    text-transform: uppercase; font-size: 0.75rem; letter-spacing: .06em; font-weight: 700; 
+    color: var(--gov-muted); border-radius: 99px; border: 0;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    font-family: var(--font-family, 'PT Sans', sans-serif); 
+}
+.media-tabs__tab.is-active { 
+    color: #fff; 
+    background-color: var(--gov-teal); 
+}
+.media-tabs__tab:hover:not(.is-active) {
+    color: var(--gov-teal-text);
+    background-color: color-mix(in srgb, var(--gov-teal) 8%, transparent);
+}
 .mediacard__play--photo svg { width: 22px; height: 22px; }
 
 /* --- Форма подписки в подвале --- */
