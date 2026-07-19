@@ -56,6 +56,10 @@ $languages = Language::active();
                             <input type="text" name="title" value="<?= htmlspecialchars($news['title'] ?? '', ENT_QUOTES) ?>" required>
                         </div>
                         <div class="form-field">
+                            <label for="badge">Бейдж категории</label>
+                            <input type="text" id="badge" name="badge" value="<?= htmlspecialchars($news['badge'] ?? '', ENT_QUOTES) ?>" placeholder="Например: Мероприятие">
+                        </div>
+                        <div class="form-field">
                             <label>Краткое описание</label>
                             <textarea name="excerpt"><?= htmlspecialchars($news['excerpt'] ?? '', ENT_QUOTES) ?></textarea>
                         </div>
@@ -137,66 +141,6 @@ $languages = Language::active();
             <span class="form-hint">Для типа «Видео»: обложка берётся с YouTube, плеер загружается только по клику.</span>
         </div>
 
-        <details class="form-field" style="border:1px solid var(--admin-border,#e1e3e8);border-radius:8px;padding:14px;">
-            <summary style="cursor:pointer;font-weight:700;">Детальная страница: тезисы, мероприятие, документы</summary>
-            <div class="form-field" style="margin-top:14px;">
-                <label for="badge">Бейдж категории (напр. МЕРОПРИЯТИЕ)</label>
-                <input type="text" id="badge" name="badge" value="<?= htmlspecialchars($news['badge'] ?? '', ENT_QUOTES) ?>">
-            </div>
-            <div class="form-field">
-                <label for="source_note">Подпись источника</label>
-                <input type="text" id="source_note" name="source_note" value="<?= htmlspecialchars($news['source_note'] ?? '', ENT_QUOTES) ?>" placeholder="Подготовлено пресс-службой Агентства">
-            </div>
-            <div class="form-field">
-                <label for="press_release_url">Пресс-релиз (URL файла)</label>
-                <div style="display:flex;gap:8px;">
-                    <input type="text" id="press_release_url" name="press_release_url" value="<?= htmlspecialchars($news['press_release_url'] ?? '', ENT_QUOTES) ?>" placeholder="/uploads/public/press.pdf" style="flex:1;">
-                    <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="#press_release_url" data-media-type="all_files">Выбрать из медиа</button>
-                </div>
-            </div>
-            <div class="form-field">
-                <label for="key_points">Ключевые тезисы (по одному на строку)</label>
-                <textarea id="key_points" name="key_points" rows="4"><?= htmlspecialchars($news['key_points'] ?? '', ENT_QUOTES) ?></textarea>
-            </div>
-            <div class="form-field">
-                <label for="event_meta">О мероприятии (по одной строке: дата, место, участники, теги)</label>
-                <textarea id="event_meta" name="event_meta" rows="4"><?= htmlspecialchars($news['event_meta'] ?? '', ENT_QUOTES) ?></textarea>
-            </div>
-            <div>
-                <label>Документы</label>
-                <?php $ndDocs = json_decode((string) ($news['docs'] ?? '[]'), true) ?: []; ?>
-                <div data-repeater="docs">
-                    <?php foreach ($ndDocs as $i => $doc): ?>
-                        <div class="repeater-row">
-                            <div class="form-field"><label>Название</label><input type="text" name="docs[<?= $i ?>][title]" value="<?= htmlspecialchars($doc['title'] ?? '', ENT_QUOTES) ?>"></div>
-                            <div class="form-field"><label>Мета (PDF · 2.4 МБ)</label><input type="text" name="docs[<?= $i ?>][meta]" value="<?= htmlspecialchars($doc['meta'] ?? '', ENT_QUOTES) ?>"></div>
-                            <div class="form-field">
-                                <label>Ссылка</label>
-                                <div style="display:flex;gap:8px;">
-                                    <input type="text" name="docs[<?= $i ?>][url]" value="<?= htmlspecialchars($doc['url'] ?? '', ENT_QUOTES) ?>" style="flex:1;">
-                                    <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[<?= $i ?>][url]']" data-media-type="all_files">Выбрать</button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <template data-repeater-template="docs">
-                    <div class="form-field"><label>Название</label><input type="text" name="docs[__INDEX__][title]"></div>
-                    <div class="form-field"><label>Мета (PDF · 2.4 МБ)</label><input type="text" name="docs[__INDEX__][meta]"></div>
-                    <div class="form-field">
-                        <label>Ссылка</label>
-                        <div style="display:flex;gap:8px;">
-                            <input type="text" name="docs[__INDEX__][url]" style="flex:1;">
-                            <button type="button" class="btn btn--secondary btn--small" data-media-pick data-media-target="[name='docs[__INDEX__][url]']" data-media-type="all_files">Выбрать</button>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn--small btn--danger repeater-row__remove" data-repeater-remove><?= \App\Core\AdminUi::icon('trash') ?>Удалить</button>
-                </template>
-                <div class="repeater-actions"><button type="button" class="btn btn--small" data-repeater-add="docs"><?= \App\Core\AdminUi::icon('plus') ?>Добавить документ</button></div>
-            </div>
-        </details>
-
         <div class="form-field">
             <label>Галерея фотографий</label>
             <?php if (!empty($gallery)): ?>
@@ -262,6 +206,8 @@ $languages = Language::active();
                 <?php endif; ?>
             </div>
         </div>
+
+        <?php require __DIR__ . '/_detail_sidebar.php'; ?>
 
         <?php if ($isEdit): ?>
             <?php

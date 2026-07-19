@@ -735,6 +735,12 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 .entry-main .form-card { max-width: none; }
 .entry-side { display: flex; flex-direction: column; gap: 20px; position: sticky; top: calc(var(--admin-topbar-h) + 20px); }
 .entry-side .form-card { max-width: none; }
+.news-detail-sidebar h2 { margin: 0; }
+.news-detail-sidebar__hint { margin: -12px 0 18px; }
+.news-detail-sidebar__pick { align-self: flex-start; }
+.news-detail-sidebar__docs > h3 { margin: 0 0 12px; font-size: 14px; }
+.news-detail-sidebar .repeater-row { padding: 12px; }
+.news-detail-sidebar .repeater-actions { margin: 4px 0 0; }
 /* Поля внутри языковых панелей получают вертикальный ритм. */
 .lang-tab-panel.is-active { display: flex; flex-direction: column; gap: 16px; }
 @media (max-width: 900px) {
