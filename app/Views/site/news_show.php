@@ -60,7 +60,21 @@ $eventMeta = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n
 $docs = json_decode((string) ($news['docs'] ?? '[]'), true);
 $docs = is_array($docs) ? $docs : [];
 $videoUrl = trim((string) ($news['video_url'] ?? ''));
-$pressUrl = trim((string) ($news['press_release_url'] ?? ''));
+$legacyPressUrl = trim((string) ($news['press_release_url'] ?? ''));
+if ($legacyPressUrl !== '') {
+    $alreadyInDocs = false;
+    foreach ($docs as $doc) {
+        if (is_array($doc) && trim((string) ($doc['url'] ?? '')) === $legacyPressUrl) {
+            $alreadyInDocs = true;
+            break;
+        }
+    }
+    if (!$alreadyInDocs) {
+        // Старые записи показываем в едином разделе документов до их сохранения
+        // в обновлённой форме админки.
+        $docs[] = ['title' => t('Пресс-релиз'), 'meta' => '', 'url' => $legacyPressUrl];
+    }
+}
 
 $base = \App\Core\AppUrl::base();
 $pageUrl = $base . Locale::url('news/' . $news['slug'], $lang);
@@ -196,19 +210,12 @@ $hasSidebar = $sidebar !== null && trim($sidebar['html']) !== '';
             <?php if (!empty($news['source_note'])): ?>
                 <p class="newsdetail__source"><?= htmlspecialchars((string) $news['source_note'], ENT_QUOTES) ?></p>
             <?php endif; ?>
-            <?php if ($videoUrl !== '' || $pressUrl !== ''): ?>
+            <?php if ($videoUrl !== ''): ?>
                 <div class="newsdetail__actions">
-                    <?php if ($videoUrl !== ''): ?>
-                        <a class="newsdetail__btn newsdetail__btn--primary" href="<?= htmlspecialchars($videoUrl, ENT_QUOTES) ?>" target="_blank" rel="noopener">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5.5v13l11-6.5z"/></svg>
-                            <?= htmlspecialchars(t('Смотреть видео'), ENT_QUOTES) ?>
-                        </a>
-                    <?php endif; ?>
-                    <?php if ($pressUrl !== ''): ?>
-                        <a class="newsdetail__btn newsdetail__btn--ghost" href="<?= htmlspecialchars($pressUrl, ENT_QUOTES) ?>" download>
-                            <?= htmlspecialchars(t('Скачать пресс-релиз'), ENT_QUOTES) ?> <?= $dlIcon ?>
-                        </a>
-                    <?php endif; ?>
+                    <a class="newsdetail__btn newsdetail__btn--primary" href="<?= htmlspecialchars($videoUrl, ENT_QUOTES) ?>" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5.5v13l11-6.5z"/></svg>
+                        <?= htmlspecialchars(t('Смотреть видео'), ENT_QUOTES) ?>
+                    </a>
                 </div>
             <?php endif; ?>
         </div>

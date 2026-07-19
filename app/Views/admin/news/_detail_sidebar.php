@@ -2,6 +2,21 @@
 
 /** @var array|null $news */
 $ndDocs = json_decode((string) ($news['docs'] ?? '[]'), true) ?: [];
+$legacyPressUrl = trim((string) ($news['press_release_url'] ?? ''));
+if ($legacyPressUrl !== '') {
+    $alreadyInDocs = false;
+    foreach ($ndDocs as $doc) {
+        if (is_array($doc) && trim((string) ($doc['url'] ?? '')) === $legacyPressUrl) {
+            $alreadyInDocs = true;
+            break;
+        }
+    }
+    if (!$alreadyInDocs) {
+        // Старое отдельное поле упразднено: переносим его значение в документы
+        // при следующем сохранении новости, не теряя ранее загруженный файл.
+        $ndDocs[] = ['title' => 'Пресс-релиз', 'meta' => '', 'url' => $legacyPressUrl];
+    }
+}
 ?>
 <div class="form-card news-detail-sidebar">
     <h2>Детальная страница</h2>
@@ -11,12 +26,6 @@ $ndDocs = json_decode((string) ($news['docs'] ?? '[]'), true) ?: [];
         <div class="form-field">
             <label for="source_note">Подпись источника</label>
             <input type="text" id="source_note" name="source_note" value="<?= htmlspecialchars($news['source_note'] ?? '', ENT_QUOTES) ?>" placeholder="Подготовлено пресс-службой Агентства">
-        </div>
-
-        <div class="form-field">
-            <label for="press_release_url">Пресс-релиз</label>
-            <input type="text" id="press_release_url" name="press_release_url" value="<?= htmlspecialchars($news['press_release_url'] ?? '', ENT_QUOTES) ?>" placeholder="URL файла">
-            <button type="button" class="btn btn--secondary btn--small news-detail-sidebar__pick" data-media-pick data-media-target="#press_release_url" data-media-type="all_files">Выбрать из медиа</button>
         </div>
 
         <div class="form-field">

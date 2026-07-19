@@ -14,7 +14,10 @@ test('Настройки детальной новости находятся в
     assert_contains('name="translations[<?= $code ?>][badge]"', $form, 'переводные бейджи сохраняются');
     assert_not_contains('name="badge"', $sidebar, 'в деталке нет второго поля бейджа');
 
-    foreach (['source_note', 'press_release_url', 'key_points', 'event_meta', 'docs'] as $field) {
+    assert_not_contains('name="press_release_url"', $sidebar, 'отдельное поле пресс-релиза убрано');
+    assert_contains('$legacyPressUrl', $sidebar, 'старый файл переносится в документы');
+
+    foreach (['source_note', 'key_points', 'event_meta', 'docs'] as $field) {
         assert_contains($field, $sidebar, $field);
     }
 });

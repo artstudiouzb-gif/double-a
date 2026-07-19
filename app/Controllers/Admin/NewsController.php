@@ -343,7 +343,6 @@ final class NewsController
 
         return [
             'badge' => trim((string) ($_POST['badge'] ?? '')),
-            'press_release_url' => $safeUrl(trim((string) ($_POST['press_release_url'] ?? ''))),
             'key_points' => trim((string) ($_POST['key_points'] ?? '')),
             'event_meta' => trim((string) ($_POST['event_meta'] ?? '')),
             'docs' => $docs,

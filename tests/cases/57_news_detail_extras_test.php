@@ -65,3 +65,10 @@ test('YouTube-видео новости: рекомендации перекры
     assert_contains('data-replay-label', $view);
     assert_contains('.news-video__end[hidden]', $css);
 });
+
+test('Пресс-релиз не дублирует документы на сайте', function () {
+    $view = (string) file_get_contents(APP_ROOT . '/app/Views/site/news_show.php');
+
+    assert_not_contains("t('Скачать пресс-релиз')", $view);
+    assert_contains('$docs[] = [\'title\' => t(\'Пресс-релиз\')', $view);
+});
