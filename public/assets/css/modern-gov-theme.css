@@ -311,17 +311,21 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 
 /* --- Блок счетчиков (Полоса статистики) --- */
 .block-counters {
-    background: rgba(255, 255, 255, 0.65) !important;
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    background: #fff !important;
+    border: 1px solid var(--gov-border) !important;
     border-radius: 18px;
     padding: clamp(20px, 3vw, 32px);
-    box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.04);
+    box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.04) !important;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease !important;
+}
+.block-counters:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1) !important;
+    border-color: var(--color-accent, var(--gov-teal)) !important;
 }
 :root[data-theme="dark"] .block-counters {
-    background: rgba(30, 41, 59, 0.65) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: var(--gov-surface) !important;
+    border: 1px solid var(--gov-border) !important;
 }
 .block-counters__grid {
     display: flex;
