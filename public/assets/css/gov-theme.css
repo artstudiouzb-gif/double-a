@@ -1232,8 +1232,40 @@ body:has(.site-header--transparent) .newsdetail--premium .newsdetail-phero .cont
 .block-map__frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .block-map__image { position: absolute; inset: 0; background: center/cover no-repeat; }
 .block-map__image--empty { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--gov-navy) 5%, var(--gov-bg)), color-mix(in srgb, var(--gov-navy) 5%, var(--gov-bg)) 14px, color-mix(in srgb, var(--gov-navy) 8%, var(--gov-bg)) 14px, color-mix(in srgb, var(--gov-navy) 8%, var(--gov-bg)) 28px) ; }
-.block-map__pin { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -100%); color: var(--gov-title); pointer-events: none; }
-.block-map__card { position: absolute; left: 24px; bottom: 24px; max-width: 300px; background: var(--gov-surface); border-radius: 12px; padding: 18px 20px; box-shadow: 0 14px 34px rgba(19,42,92,.16); display: flex; flex-direction: column; gap: 8px; }
+.block-map__pin { 
+    position: absolute; left: 50%; top: 42%; transform: translate(-50%, -100%); 
+    color: var(--gov-teal); pointer-events: none; 
+    z-index: 2;
+}
+.block-map__pin::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 8px;
+    background: rgba(19, 153, 155, 0.45);
+    border-radius: 50%;
+    animation: pin-pulse 2.2s infinite ease-out;
+    z-index: -1;
+}
+@keyframes pin-pulse {
+    0% { transform: translateX(-50%) scale(0.6); opacity: 1; }
+    100% { transform: translateX(-50%) scale(2.4); opacity: 0; }
+}
+.block-map__card { 
+    position: absolute; left: 24px; bottom: 24px; max-width: 300px; 
+    background: var(--gov-surface); border: 1px solid var(--gov-border); border-radius: 12px; 
+    padding: 18px 20px; box-shadow: 0 10px 28px rgba(19,42,92,.08); 
+    display: flex; flex-direction: column; gap: 8px; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.block-map__card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(19,42,92,.12);
+    border-color: var(--gov-teal);
+}
 .block-map__card-title { font-weight: 700; color: var(--gov-title); font-size: .95rem; line-height: 1.35; }
 .block-map__card-address { color: var(--gov-muted); font-size: .86rem; line-height: 1.5; }
 .block-map__card-link { color: var(--gov-teal-text); font-size: 0.85rem; font-weight: 700; text-decoration: none; }
