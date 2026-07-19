@@ -38,6 +38,19 @@ test('Hero: сохранённая ссылка YouTube включает фон 
     assert_not_contains('block-hero--plain', $html);
 });
 
+test('Hero: сохранённый MP4 включает фон даже при старом bg_type none', function () {
+    $html = render_hero([
+        'title' => 'Заголовок',
+        'bg_type' => 'none',
+        'video_url' => '/uploads/public/hero.mp4',
+    ]);
+
+    assert_contains('<video class="block-hero__video" autoplay muted loop playsinline', $html);
+    assert_contains('<source src="/uploads/public/hero.mp4" type="video/mp4">', $html);
+    assert_contains('block-hero--video', $html);
+    assert_not_contains('block-hero--plain', $html);
+});
+
 test('Hero: overlay использует заданный цвет и прозрачность', function () {
     $html = render_hero([
         'title' => 'X', 'bg_type' => 'image', 'image' => '/uploads/public/x.jpg',

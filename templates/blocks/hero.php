@@ -17,10 +17,15 @@ $videoFile = trim((string) ($data['video_url'] ?? ''));
 $youtubeId = Video::youtubeId((string) ($data['youtube_url'] ?? ''));
 if ($bgType === '') {
     $bgType = $youtubeId !== null ? 'youtube' : ($videoFile !== '' ? 'video' : ($image !== '' ? 'image' : 'none'));
-} elseif ($bgType === 'none' && $youtubeId !== null) {
+} elseif ($bgType === 'none') {
     // Старые сохранения могли оставить режим «Без фона», хотя редактор уже
-    // вставил валидную ссылку YouTube. Ссылка — явный источник фона.
-    $bgType = 'youtube';
+    // вставил источник видео. Ссылка — явный источник фона. YouTube имеет
+    // тот же приоритет, что и при определении старого блока без bg_type.
+    if ($youtubeId !== null) {
+        $bgType = 'youtube';
+    } elseif ($videoFile !== '') {
+        $bgType = 'video';
+    }
 }
 
 $hasMedia = ($bgType === 'image' && $image !== '')
