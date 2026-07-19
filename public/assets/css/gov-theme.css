@@ -495,11 +495,56 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 .cards-grid { display: grid; grid-template-columns: repeat(var(--cards-cols, 5), 1fr); gap: 20px; }
 @media (max-width: 1000px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .cards-grid { grid-template-columns: 1fr; } }
-.feature-card { display: flex; flex-direction: column; gap: 12px; padding: 26px 22px; background: var(--gov-surface); border: 1px solid var(--gov-border); border-radius: var(--radius); text-decoration: none; color: var(--gov-ink); transition: box-shadow .15s ease, transform .15s ease; }
-.feature-card:hover { box-shadow: 0 12px 32px rgba(19,42,92,.1); transform: translateY(-3px); }
-.feature-card__icon { color: var(--gov-teal); }
-.feature-card__icon svg { width: 34px; height: 34px; }
-.feature-card__title { font-family: var(--font-heading, 'PT Serif', serif); font-weight: 700; font-size: 1.12rem; color: var(--gov-title); line-height: 1.25; }
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 26px 22px;
+    background: var(--gov-surface);
+    border: 1px solid var(--gov-border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gov-ink);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease;
+}
+.feature-card:hover {
+    box-shadow: 0 16px 36px rgba(19, 42, 92, 0.06);
+    transform: translateY(-4px);
+    border-color: var(--color-accent, var(--gov-teal));
+}
+.feature-card__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    background: color-mix(in srgb, var(--gov-navy) 7%, transparent);
+    color: var(--gov-title);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, color 0.3s;
+    align-self: flex-start;
+}
+.feature-card__icon svg {
+    width: 22px !important;
+    height: 22px !important;
+    margin: 0 !important;
+}
+.feature-card:hover .feature-card__icon {
+    transform: scale(1.1);
+    background-color: var(--color-accent, var(--gov-teal));
+    color: #fff;
+}
+.feature-card__title {
+    font-family: var(--font-heading, 'PT Serif', serif);
+    font-weight: 700;
+    font-size: 1.12rem;
+    color: var(--gov-title);
+    line-height: 1.25;
+    transition: color 0.3s ease;
+}
+.feature-card:hover .feature-card__title {
+    color: var(--color-accent, var(--gov-teal));
+}
 .feature-card__text { color: var(--gov-muted); font-size: .92rem; line-height: 1.5; flex: 1; }
 
 /* Проекты — карточки с фото и тёмным градиентом. */

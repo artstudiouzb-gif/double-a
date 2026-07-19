@@ -276,7 +276,7 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
 
 /* --- Карточки контента (Трендовый стеклянный стиль) --- */
 .news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item,
-.block-testimonials__item, .testimonial, .team-card, .project-card {
+.block-testimonials__item, .testimonial, .team-card, .project-card, .feature-card {
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -286,18 +286,18 @@ a:hover { color: color-mix(in srgb, var(--gov-teal) 80%, #000); }
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     padding: 22px !important;
 }
-:root[data-theme="dark"] :where(.news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item, .block-testimonials__item, .testimonial, .team-card, .project-card) {
+:root[data-theme="dark"] :where(.news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item, .block-testimonials__item, .testimonial, .team-card, .project-card, .feature-card) {
     background: rgba(30, 41, 59, 0.65) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-.news-card:hover, .content-card:hover, .contact-card:hover, .cat-tile:hover, .team-card:hover, .project-card:hover {
+.news-card:hover, .content-card:hover, .contact-card:hover, .cat-tile:hover, .team-card:hover, .project-card:hover, .feature-card:hover {
     transform: translateY(-4px) !important;
     background: rgba(255, 255, 255, 0.8) !important;
     box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08) !important;
     border-color: var(--gov-teal) !important;
 }
-:root[data-theme="dark"] :where(.news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item, .block-testimonials__item, .testimonial, .team-card, .project-card):hover {
+:root[data-theme="dark"] :where(.news-card, .content-card, .contact-card, .counter, .cat-tile, .site-search-results__item, .block-testimonials__item, .testimonial, .team-card, .project-card, .feature-card):hover {
     background: rgba(30, 41, 59, 0.8) !important;
 }
 

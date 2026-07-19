@@ -1841,7 +1841,7 @@ body.mobile-menu-open .site-drawer__panel { transform: translateX(0); }
 }
 .contact-card__icon svg { width: 22px; height: 22px; }
 .contact-card:hover .contact-card__icon {
-    transform: scale(1.1) rotate(6deg);
+    transform: scale(1.1);
     background-color: var(--color-accent, #2f6fed);
     color: #fff;
 }
@@ -1953,7 +1953,7 @@ body.mobile-menu-open .site-drawer__panel { transform: translateX(0); }
 }
 .cat-tile__icon svg { width: 24px; height: 24px; }
 .cat-tile:hover .cat-tile__icon {
-    transform: scale(1.08) rotate(4deg);
+    transform: scale(1.08);
     background-color: var(--color-accent, #2f6fed);
     color: #fff;
 }
