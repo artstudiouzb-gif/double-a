@@ -112,8 +112,10 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .site-lang-switcher__item { color: var(--gov-title); font-weight: 700; font-size: 0.8125rem; transition: color 0.25s ease, opacity 0.25s ease !important; }
 .site-lang-switcher__item.is-active { color: var(--gov-teal); }
 .site-lang-switcher__item:not(.is-active):hover { color: var(--color-accent, var(--gov-teal)) !important; opacity: 0.85; }
-.a11y-toggle, .site-theme-toggle, .site-search input, .site-search-toggle { color: var(--gov-title); }
-.site-search input { border-color: var(--gov-border); border-radius: 999px; }
+.a11y-toggle, .site-theme-toggle, .site-search, .site-search input, .site-search-toggle { color: var(--gov-title); }
+.site-search { border: 1px solid var(--gov-border); border-radius: 999px; background: var(--gov-surface); padding-inline: 14px 4px; }
+.site-search input { border: 0 !important; background: transparent !important; border-radius: 0 !important; }
+.site-search button { border: 0 !important; background: transparent !important; }
 .site-burger { color: var(--gov-title); border-color: var(--gov-border); }
 
 /* Тёмная тема: элементы управления в сплошной (непрозрачной) шапке. Без этих
@@ -125,12 +127,12 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 :root[data-theme="dark"] .a11y-toggle,
 :root[data-theme="dark"] .site-theme-toggle,
 :root[data-theme="dark"] .site-search-toggle,
-:root[data-theme="dark"] .site-search input,
+:root[data-theme="dark"] .site-search,
 :root[data-theme="dark"] .site-menu__link,
 :root[data-theme="dark"] .site-lang-switcher__item { color: var(--gov-ink); }
 :root[data-theme="dark"] .site-lang-switcher__item.is-active { color: var(--gov-teal-text, #3fc1c0); }
 :root[data-theme="dark"] .site-burger { color: var(--gov-ink); border-color: var(--gov-border); }
-:root[data-theme="dark"] .site-search input { background: color-mix(in srgb, var(--gov-surface) 70%, #000); }
+:root[data-theme="dark"] .site-search { background: color-mix(in srgb, var(--gov-surface) 70%, #000); }
 /* Свой цвет шапки (конструктор: middlebar/bottombar bg) не зависит от темы —
    в ночном режиме фон остаётся заданным (обычно светлым). Возвращаем шапке
    светлые значения токенов, чтобы текст/иконки/лого не перекрашивались в
