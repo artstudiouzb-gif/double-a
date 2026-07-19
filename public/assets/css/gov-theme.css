@@ -1789,8 +1789,7 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .catlist-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .catlist-toolbar__search { position: relative; flex: 1 1 260px; max-width: 460px; }
 .catlist-toolbar__search svg { position: absolute; left: 14px; top: 50%; translate: 0 -50%; color: var(--gov-muted); pointer-events: none; }
-.catlist-toolbar__search input { width: 100%; height: 46px; padding: 0 14px 0 42px; border: 1px solid var(--gov-border); border-radius: 10px; background: var(--gov-surface); color: var(--gov-title); font: inherit; }
-.catlist-toolbar__search input:focus-visible { outline: 2px solid var(--gov-teal); outline-offset: 1px; }
+.catlist-toolbar__search input { width: 100%; height: 46px; padding: 0 14px 0 42px; border: 1px solid var(--gov-border); border-radius: 10px; background: var(--gov-surface); color: var(--gov-title); font: inherit; outline: none; }
 .catlist-toolbar__sort { height: 46px; padding: 0 12px; border: 1px solid var(--gov-border); border-radius: 10px; background: var(--gov-surface); color: var(--gov-title); font: inherit; }
 .catlist-toolbar__btn { height: 46px; padding: 0 22px; border: 0; border-radius: 10px; background: var(--gov-navy); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
 .catlist-toolbar__btn:hover { background: var(--gov-teal); }
@@ -2451,4 +2450,19 @@ body.design-scrolltop .scroll-top:focus-visible { outline: 2px solid var(--gov-t
     animation: submit-btn-pulse 1.4s infinite ease-in-out !important;
     cursor: progress !important;
     pointer-events: none !important;
+}
+
+/* Анимация фокуса для фильтров, поиска и полей ввода */
+.catlist-toolbar__search input, .catlist-toolbar__sort, .site-search input {
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important;
+}
+.catlist-toolbar__search input:focus,
+.catlist-toolbar__search input:focus-visible,
+.catlist-toolbar__sort:focus,
+.catlist-toolbar__sort:focus-visible,
+.site-search input:focus,
+.site-search input:focus-visible {
+    border-color: var(--color-accent, var(--gov-teal)) !important;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent, var(--gov-teal)) 15%, transparent) !important;
+    outline: none !important;
 }
