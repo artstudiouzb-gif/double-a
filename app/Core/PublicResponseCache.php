@@ -61,7 +61,10 @@ final class PublicResponseCache
             $browserTtl,
             $sharedTtl
         ));
-        header('Vary: Accept-Encoding', false);
+        // Один и тот же URL может быть запрошен с разным сохранённым языком.
+        // Без Vary браузер повторно показывает ранее закешированную языковую
+        // копию и запрос не доходит до редиректа в Router::resolveLocale().
+        header('Vary: Accept-Encoding, Cookie');
     }
 
     public static function isCacheableRequest(
