@@ -431,7 +431,6 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
     color: rgba(255,255,255,.86); line-height: 1.5; font-size: .93rem;
     display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
 }
-.newsfeat__date--on-media { color: rgba(255,255,255,.88); }
 /* На широком экране плитка тянется ровно на высоту правой колонки — колонки
    всегда заканчиваются вровень, независимо от длины заголовков. */
 @media (min-width: 901px) { .newsfeat-grid { align-items: stretch; } }
@@ -447,6 +446,8 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 .newsfeat-side__texts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; border-top: 1px solid color-mix(in srgb, var(--gov-border) 55%, transparent); padding-top: 20px; }
 @media (max-width: 560px) { .newsfeat-side__texts { grid-template-columns: 1fr; } }
 .newsfeat__date { color: var(--gov-muted); font-size: .82rem; }
+/* Обязательно ПОСЛЕ базового правила: специфичность одинаковая, решает порядок. */
+.newsfeat__date--on-media { color: rgba(255,255,255,.88); }
 .newsfeat__more { color: var(--gov-teal-text); text-transform: uppercase; font-size: 0.75rem; letter-spacing: .05em; font-weight: 700; }
 .newsfeat-mini { display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: var(--gov-ink); }
 .newsfeat-mini__frame { position: relative; display: block; border-radius: 8px; overflow: hidden; }
