@@ -1200,6 +1200,9 @@ body.design-header-dark .site-burger, body.design-header-accent .site-burger { c
     background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent, #e63946) 4%, var(--surface, #fff)) 0%, color-mix(in srgb, var(--color-primary, #1f4b8e) 2%, var(--surface, #fff)) 100%); 
     box-shadow: 0 10px 30px rgba(19,42,92,.03);
 }
+@media (max-width: 560px) {
+    .subscribe-block { padding: 30px 20px; }
+}
 .subscribe-block__title { margin: 0 0 8px; }
 .subscribe-block__text { margin: 0 0 18px; color: var(--text-muted); }
 .subscribe-block__form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
