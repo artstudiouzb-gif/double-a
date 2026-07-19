@@ -524,6 +524,13 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 .media-modal__dialog { background: #fff; border-radius: 14px; width: min(860px, 100%); max-height: 82vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
 .media-modal__head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--admin-border); }
 .media-modal__close { border: none; background: none; font-size: 26px; line-height: 1; cursor: pointer; color: var(--admin-muted); }
+.media-modal__upload { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto; align-items: end; gap: 8px 12px; padding: 14px 18px; background: var(--admin-bg, #f7f8fa); border-bottom: 1px solid var(--admin-border); }
+.media-modal__upload-field { display: grid; gap: 6px; min-width: 0; font-size: 13px; font-weight: 600; }
+.media-modal__upload-field input { width: 100%; min-width: 0; font-weight: 400; }
+.media-modal__upload-hint { align-self: center; color: var(--admin-muted); white-space: nowrap; }
+.media-modal__upload-status { grid-column: 1 / -1; min-height: 18px; color: var(--admin-muted); font-size: 12px; }
+.media-modal__upload-status.is-error { color: #b42318; }
+.media-modal__upload-status.is-success { color: #067647; }
 .media-modal__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding: 16px; overflow-y: auto; }
 .media-modal__item { border: 1px solid var(--admin-border); border-radius: 8px; padding: 0; cursor: pointer; overflow: hidden; background: #fff; aspect-ratio: 1; }
 .media-modal__item:hover { border-color: var(--admin-accent); box-shadow: 0 4px 14px rgba(0,0,0,.12); }
@@ -532,6 +539,12 @@ body.has-sticky-actions .admin-main { padding-bottom: 108px; }
 .media-modal__fileicon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--admin-accent-soft, #eef0fe); color: var(--admin-accent, #5b52e5); font-size: 15px; }
 .media-modal__filename { font-size: 12px; color: var(--admin-text, #1f2b3d); word-break: break-word; line-height: 1.3; }
 .media-modal__empty { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--admin-muted); }
+@media (max-width: 640px) {
+    .media-modal { padding: 8px; }
+    .media-modal__dialog { max-height: 94vh; }
+    .media-modal__upload { grid-template-columns: 1fr auto; }
+    .media-modal__upload-hint { display: none; }
+}
 
 /* ============================================================================
    Репитеры, список блоков, дерево меню, колонки, вкладки, шапка, виджеты

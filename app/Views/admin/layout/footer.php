@@ -7,6 +7,15 @@
             <strong id="media-modal-title">Медиабиблиотека</strong>
             <button type="button" class="media-modal__close" data-media-close aria-label="Закрыть">×</button>
         </div>
+        <div class="media-modal__upload" data-media-upload data-csrf="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES) ?>">
+            <label class="media-modal__upload-field">
+                <span>Загрузить новый файл</span>
+                <input type="file" data-media-upload-input>
+            </label>
+            <button type="button" class="btn btn-primary" data-media-upload-button>Загрузить</button>
+            <small class="media-modal__upload-hint">До 200 МБ</small>
+            <div class="media-modal__upload-status" data-media-upload-status aria-live="polite"></div>
+        </div>
         <div class="media-modal__grid" data-media-grid aria-busy="true">
             <div class="media-modal__empty">Загрузка…</div>
         </div>

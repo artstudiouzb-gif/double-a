@@ -250,26 +250,62 @@
         });
     })();
 
-    // --- Медиабиблиотека: выбор уже загруженного файла (задача 90) ---
+    // --- Медиабиблиотека: выбор или загрузка файла прямо из формы ---
     (function () {
         var modal = document.querySelector('[data-media-modal]');
         if (!modal) { return; }
         var grid = modal.querySelector('[data-media-grid]');
+        var uploadBox = modal.querySelector('[data-media-upload]');
+        var uploadInput = modal.querySelector('[data-media-upload-input]');
+        var uploadButton = modal.querySelector('[data-media-upload-button]');
+        var uploadStatus = modal.querySelector('[data-media-upload-status]');
         var currentTarget = null;
         var currentCallback = null; // режим выбора для WYSIWYG (вставка URL в контент)
         var loaded = false;
-
         var loadedType = null;
+        var currentType = 'image';
 
-        function open(targetSelector, callback, type) {
-            currentTarget = targetSelector ? document.querySelector(targetSelector) : null;
-            currentCallback = callback || null;
-            type = type || 'image';
-            modal.hidden = false;
-            if (loaded && loadedType === type) { return; }
+        var typeOptions = {
+            image: { accept: '.jpg,.jpeg,.png,.gif,.webp,.svg', label: 'изображение' },
+            svg: { accept: '.svg,image/svg+xml', label: 'SVG-файл' },
+            video: { accept: '.mp4,video/mp4', label: 'видео MP4' },
+            document: { accept: '.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip', label: 'документ' },
+            all_files: { accept: '', label: 'файл' },
+            all: { accept: '', label: 'файл' }
+        };
+
+        function setUploadStatus(message, state) {
+            if (!uploadStatus) { return; }
+            uploadStatus.textContent = message || '';
+            uploadStatus.classList.toggle('is-error', state === 'error');
+            uploadStatus.classList.toggle('is-success', state === 'success');
+        }
+
+        function selectUrl(url) {
+            if (currentCallback) {
+                currentCallback(url);
+            } else if (currentTarget) {
+                currentTarget.value = url;
+                currentTarget.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            close();
+        }
+
+        function fileMatchesType(file, type) {
+            var name = file.name.toLowerCase();
+            if (type === 'image') { return /\.(jpe?g|png|gif|webp|svg)$/.test(name); }
+            if (type === 'svg') { return /\.svg$/.test(name); }
+            if (type === 'video') { return /\.mp4$/.test(name); }
+            if (type === 'document') { return /\.(pdf|docx?|xlsx?|txt|zip)$/.test(name); }
+            return true;
+        }
+
+        function loadLibrary(type, force) {
+            if (!force && loaded && loadedType === type) { return Promise.resolve(); }
             loaded = false; loadedType = type;
+            grid.setAttribute('aria-busy', 'true');
             grid.innerHTML = '<div class="media-modal__empty">Загрузка…</div>';
-            fetch('/admin/media/list?type=' + encodeURIComponent(type), { credentials: 'same-origin' })
+            return fetch('/admin/media/list?type=' + encodeURIComponent(type), { credentials: 'same-origin' })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     loaded = true;
@@ -285,13 +321,11 @@
                         var isVideo = /\.(mp4|webm|ogg|mov|m4v)$/i.test(it.url);
                         var isImage = /\.(jpe?g|png|gif|svg|webp)$/i.test(it.url);
                         if (isVideo) {
-                            // Видео не рисуем картинкой — плитка с названием файла.
                             fig.classList.add('media-modal__item--file');
                             fig.innerHTML = '<span class="media-modal__fileicon" aria-hidden="true">▶</span>'
                                 + '<span class="media-modal__filename"></span>';
                             fig.querySelector('.media-modal__filename').textContent = it.name;
                         } else if (!isImage) {
-                            // Документы не рисуем картинкой — плитка с иконкой документа.
                             fig.classList.add('media-modal__item--file');
                             fig.innerHTML = '<span class="media-modal__fileicon" aria-hidden="true">📄</span>'
                                 + '<span class="media-modal__filename"></span>';
@@ -301,21 +335,106 @@
                             img.src = it.url; img.alt = it.name; img.loading = 'lazy';
                             fig.appendChild(img);
                         }
-                        fig.addEventListener('click', function () {
-                            if (currentCallback) {
-                                currentCallback(it.url);
-                            } else if (currentTarget) {
-                                currentTarget.value = it.url;
-                                currentTarget.dispatchEvent(new Event('change', { bubbles: true }));
-                            }
-                            close();
-                        });
+                        fig.addEventListener('click', function () { selectUrl(it.url); });
                         grid.appendChild(fig);
                     });
                 })
-                .catch(function () { grid.innerHTML = '<div class="media-modal__empty">Ошибка загрузки.</div>'; });
+                .catch(function () {
+                    grid.setAttribute('aria-busy', 'false');
+                    grid.innerHTML = '<div class="media-modal__empty">Ошибка загрузки.</div>';
+                });
+        }
+
+        function open(targetSelector, callback, type) {
+            currentTarget = targetSelector ? document.querySelector(targetSelector) : null;
+            currentCallback = callback || null;
+            currentType = type || 'image';
+            var options = typeOptions[currentType] || typeOptions.all;
+            if (uploadInput) {
+                uploadInput.value = '';
+                uploadInput.accept = options.accept;
+            }
+            setUploadStatus('Можно загрузить ' + options.label + ' прямо здесь. Максимальный размер — 200 МБ.');
+            modal.hidden = false;
+            loadLibrary(currentType, false);
         }
         function close() { modal.hidden = true; currentCallback = null; }
+
+        if (uploadButton && uploadInput && uploadBox) {
+            uploadButton.addEventListener('click', function () {
+                if (!uploadInput.files || !uploadInput.files.length) {
+                    setUploadStatus('Сначала выберите файл.', 'error');
+                    return;
+                }
+                var file = uploadInput.files[0];
+                var options = typeOptions[currentType] || typeOptions.all;
+                if (!file.size) {
+                    setUploadStatus('Нельзя загрузить пустой файл.', 'error');
+                    return;
+                }
+                if (file.size > 200 * 1024 * 1024) {
+                    setUploadStatus('Файл превышает максимальный размер 200 МБ.', 'error');
+                    return;
+                }
+                if (!fileMatchesType(file, currentType)) {
+                    setUploadStatus('Для этого поля нужен ' + options.label + '.', 'error');
+                    return;
+                }
+
+                var chunkSize = 1024 * 1024;
+                var total = Math.ceil(file.size / chunkSize);
+                var uploadId = '';
+                if (window.crypto && window.crypto.getRandomValues) {
+                    var random = new Uint8Array(16);
+                    window.crypto.getRandomValues(random);
+                    random.forEach(function (value) { uploadId += value.toString(16).padStart(2, '0'); });
+                } else {
+                    for (var i = 0; i < 32; i++) { uploadId += Math.floor(Math.random() * 16).toString(16); }
+                }
+                uploadButton.disabled = true;
+                uploadInput.disabled = true;
+                setUploadStatus('Загрузка… 0%');
+
+                function finish() {
+                    uploadButton.disabled = false;
+                    uploadInput.disabled = false;
+                }
+
+                function sendChunk(index) {
+                    var fd = new FormData();
+                    fd.append('csrf_token', uploadBox.getAttribute('data-csrf'));
+                    fd.append('upload_id', uploadId);
+                    fd.append('index', String(index));
+                    fd.append('total', String(total));
+                    fd.append('name', file.name);
+                    fd.append('access_type', 'public');
+                    fd.append('chunk', file.slice(index * chunkSize, Math.min((index + 1) * chunkSize, file.size)));
+
+                    fetch('/admin/files/chunk', { method: 'POST', body: fd, credentials: 'same-origin' })
+                        .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'HTTP ' + r.status }; }); })
+                        .then(function (res) {
+                            if (!res.ok) { throw new Error(res.error || 'Не удалось загрузить файл.'); }
+                            if (res.done) {
+                                finish();
+                                setUploadStatus('Файл загружен и выбран.', 'success');
+                                loaded = false;
+                                loadLibrary(currentType, true).then(function () {
+                                    if (res.url) { selectUrl(res.url); }
+                                });
+                                return;
+                            }
+                            setUploadStatus('Загрузка… ' + Math.round(((index + 1) / total) * 100) + '%');
+                            sendChunk(index + 1);
+                        })
+                        .catch(function (error) {
+                            finish();
+                            setUploadStatus('Ошибка: ' + error.message, 'error');
+                        });
+                }
+
+                sendChunk(0);
+            });
+        }
 
         // Публичный API для редактора: выбор изображения/SVG с колбэком.
         window.MediaPicker = {

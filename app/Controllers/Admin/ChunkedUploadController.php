@@ -8,6 +8,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\RateLimiter;
 use App\Core\Uploader;
+use App\Models\FileEntry;
 
 /**
  * Приём файлов по частям (chunked upload) через нативный JS File API. Позволяет
@@ -148,7 +149,14 @@ final class ChunkedUploadController
         fclose($lock);
         @unlink($lockPath);
 
-        $this->json(['ok' => true, 'done' => true, 'file_id' => (int) $file['id'], 'name' => $file['original_name']]);
+        $this->json([
+            'ok' => true,
+            'done' => true,
+            'file_id' => (int) $file['id'],
+            'name' => $file['original_name'],
+            'url' => $accessType === 'public' ? FileEntry::publicUrl($file) : null,
+            'mime_type' => (string) ($file['mime_type'] ?? ''),
+        ]);
     }
 
     /** Удаляет брошенные загрузки старше суток, не трогая активные lock-файлы. */
