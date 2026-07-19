@@ -257,8 +257,27 @@ summary:focus-visible {
     transition: transform 0.3s ease, background 0.3s ease;
 }
 .block-advantages__item:hover .block-advantages__icon {
-    transform: scale(1.1);
     background: color-mix(in srgb, var(--gov-teal) 15%, transparent);
+}
+@keyframes advantages-icon-float {
+    0%, 100% { transform: translateY(0) scale(1.08); }
+    50% { transform: translateY(-7px) scale(1.08); }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .block-advantages__item:hover .block-advantages__icon,
+    .block-advantages__item:focus-within .block-advantages__icon {
+        animation: advantages-icon-float 1.8s ease-in-out infinite;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .block-advantages__item,
+    .block-advantages__icon { transition: none; }
+    .block-advantages__item:hover { transform: none; }
+    .block-advantages__item:hover .block-advantages__icon,
+    .block-advantages__item:focus-within .block-advantages__icon {
+        animation: none;
+        transform: none;
+    }
 }
 
 .block-slider { position: relative; overflow: hidden; border-radius: 12px; }
@@ -1860,6 +1879,32 @@ body.mobile-menu-open .site-drawer__panel { transform: translateX(0); }
     transition: transform .15s ease, box-shadow .15s ease;
 }
 .block-hero__button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+@keyframes hero-button-sheen {
+    0%, 62% { transform: translateX(-320%) skewX(-20deg); opacity: 0; }
+    68% { opacity: .72; }
+    84%, 100% { transform: translateX(520%) skewX(-20deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .block-hero__button:not(.block-hero__button--ghost) {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+    }
+    .block-hero__button:not(.block-hero__button--ghost)::after {
+        content: '';
+        position: absolute;
+        inset: -35% auto -35% -20%;
+        width: 22%;
+        pointer-events: none;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.62), transparent);
+        filter: blur(.3px);
+        animation: hero-button-sheen 4.2s ease-in-out infinite;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .block-hero__button { transition: none; }
+    .block-hero__button::after { content: none; animation: none; }
+}
 :root[data-theme="dark"] .block-hero__title { color: var(--text-main); }
 @media (max-width: 720px) {
     .block-hero__media { inset: 0; opacity: .16; }
