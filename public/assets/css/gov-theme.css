@@ -186,20 +186,18 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
     border-color: var(--gov-teal);
 }
 
-/* --- Полоса статистики (counters): белая карта с плитками и кружком-иконкой --- */
+/* --- Полоса статистики (counters): спокойная цельная карта без стекла --- */
 .block-counters { 
-    background: var(--counters-bg, rgba(255, 255, 255, 0.84)); 
-    border: 1px solid rgba(255, 255, 255, 0.45); 
+    background: var(--counters-bg, var(--gov-surface));
+    border: 1px solid var(--gov-border);
     border-radius: 16px; 
     padding: clamp(20px, 3vw, 34px); 
-    box-shadow: 0 20px 45px rgba(19, 42, 92, 0.08); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 14px 34px rgba(19, 42, 92, 0.08);
     transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 :root[data-theme="dark"] .block-counters {
-    background: var(--counters-bg, rgba(11, 26, 48, 0.72)); 
-    border-color: rgba(255, 255, 255, 0.08); 
+    background: var(--counters-bg, var(--gov-surface));
+    border-color: var(--gov-border);
 }
 .block-counters__title { color: var(--counters-text, var(--gov-title)); }
 .block-counters__grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0; }
@@ -445,10 +443,9 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
     flex-shrink: 0; 
     background: color-mix(in srgb, var(--counters-text, var(--gov-title)) 8%, transparent); 
     color: var(--counters-text, var(--gov-title)); 
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease, color 0.3s ease;
+    transition: background 0.35s ease, color 0.35s ease;
 }
 .counter:hover .counter__icon {
-    transform: scale(1.1) rotate(6deg);
     background: var(--gov-teal);
     color: #fff;
 }
@@ -1672,7 +1669,7 @@ body:has(.site-header--transparent) .cms-block--hero:first-child .block-hero--h-
 .projdetail-head--no-media { grid-template-columns: 1fr; }
 .projdetail__title { font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.15; margin: 14px 0 0; }
 .projdetail__media { display: block; aspect-ratio: 16/9; border-radius: 14px; background: #24425f center/cover no-repeat; width: 100%; object-fit: cover; }
-.projdetail__content { max-width: 76ch; }
+.projdetail__content { width: 100%; max-width: none; }
 
 /* ===== Рубрикатор по бейджам (страница «Новости») ===== */
 .listing-filter { display: flex; flex-wrap: wrap; gap: 10px; margin-top: -8px; }
@@ -1849,6 +1846,13 @@ button.catdetail__download { border: none; cursor: pointer; font-family: inherit
         border-color .18s ease, background-color .18s ease, color .18s ease;
 }
 
+/* Новостям нужна более спокойная реакция: короткий быстрый подъём выглядел
+   дёргано рядом с крупной обложкой и плотной правой колонкой. */
+:where(.news-card, .news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text) {
+    transition: transform .38s cubic-bezier(.22, 1, .36, 1),
+        box-shadow .38s ease, border-color .38s ease, color .28s ease;
+}
+
 :where(
     .news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
     .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item, .mediacard
@@ -1871,6 +1875,12 @@ button.catdetail__download { border: none; cursor: pointer; font-family: inherit
         .newsdocs-item, .doc-card, .album-card, .cat-tile, .mediacard
     ):hover {
         transform: translateY(-3px);
+    }
+    :where(.newsfeat-lead, .newsfeat-mini, .newsfeat-text):hover {
+        transform: translateY(-1px);
+    }
+    .news-card:hover {
+        transform: translateY(-2px);
     }
     :where(.news-card__link, .newsfeat-lead, .newsfeat-mini, .newsfeat-text,
         .newsdocs-item, .doc-card, .album-card, .cat-tile, .media-item,

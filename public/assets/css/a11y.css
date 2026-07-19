@@ -98,6 +98,7 @@ html[data-a11y="1"] .layout__sidebar { margin-top: 24px; }
 }
 .a11y-panel {
     display: none; position: sticky; top: 0; z-index: 600; isolation: isolate;
+    width: calc(100% - 40px); max-width: var(--container-max, 1200px); margin: 0 auto;
     grid-template-columns: repeat(3, max-content) minmax(max-content, 1fr);
     background: #0f172a; color: #f1f5f9; padding: 12px clamp(16px, 3vw, 48px); gap: 12px 24px;
     align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -146,7 +147,7 @@ html[data-a11y="1"] .a11y-panel__off { color: var(--a11y-fg) !important; border-
     .a11y-panel__off { grid-column: 1 / -1; justify-self: center; margin-top: 4px; }
 }
 @media (max-width: 560px) {
-    .a11y-panel { grid-template-columns: minmax(0, 1fr); justify-items: stretch; padding: 12px 16px; }
+    .a11y-panel { width: calc(100% - 24px); grid-template-columns: minmax(0, 1fr); justify-items: stretch; padding: 12px 16px; }
     .a11y-panel__group { min-width: 0; justify-content: space-between; }
     .a11y-panel__off { grid-column: auto; justify-self: stretch; text-align: center; }
 }

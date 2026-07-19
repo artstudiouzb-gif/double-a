@@ -203,6 +203,13 @@ summary:focus-visible {
    САМ JS — без JS (или при reduced-motion) карточки просто видны. */
 .anim-card { opacity: 0; transform: translateY(18px) scale(.99); transition: opacity .65s ease, transform .7s cubic-bezier(.22, 1, .36, 1); }
 .anim-card.is-inview { opacity: 1; transform: none; }
+/* У новостного блока крупные колонки проявляются почти на месте: так движение
+   читается как мягкое появление, а не как резкий прыжок всего макета. */
+.newsfeat-grid > .anim-card {
+    transform: translateY(8px) scale(.995);
+    transition: opacity .75s ease, transform .85s cubic-bezier(.22, 1, .36, 1);
+}
+.newsfeat-grid > .anim-card.is-inview { transform: none; }
 @media (prefers-reduced-motion: reduce) {
     .anim-card { opacity: 1 !important; transform: none !important; transition: none; }
 }
@@ -1901,7 +1908,7 @@ body.mobile-menu-open .site-drawer__panel { transform: translateX(0); }
         pointer-events: none;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,.62), transparent);
         filter: blur(.3px);
-        animation: hero-button-sheen 4.2s ease-in-out infinite;
+        animation: hero-button-sheen 6s ease-in-out infinite;
     }
 }
 @media (prefers-reduced-motion: reduce) {

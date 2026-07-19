@@ -34,6 +34,13 @@ test('rich content stylesheet covers editorial elements and responsive tables', 
     assert_contains("Asset::url('/assets/css/rich-content.css')", $header);
 });
 
+test('детальный проект использует всю ширину контейнера для rich-content', function (): void {
+    $css = (string) file_get_contents(dirname(__DIR__, 2) . '/public/assets/css/gov-theme.css');
+
+    assert_contains('.projdetail__content { width: 100%; max-width: none; }', $css);
+    assert_false(str_contains($css, '.projdetail__content { max-width: 76ch; }'));
+});
+
 test('TinyMCE: стандартный вид без узкой колонки и без редакционных стилей', function (): void {
     $editor = file_get_contents(dirname(__DIR__, 2) . '/public/assets/js/vendor/editor.js');
 
