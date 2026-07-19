@@ -39,3 +39,14 @@ test('HtmlSanitizer: target=_blank получает rel=noopener', function () {
     $out = HtmlSanitizer::sanitize('<a href="https://example.com" target="_blank">x</a>');
     assert_contains('noopener', $out);
 });
+
+test('HtmlSanitizer: вырезает скрипты, вложенные в запрещённые теги (svg/math)', function () {
+    $out = HtmlSanitizer::sanitize('<div><svg><script>alert(1)</script></svg></div>');
+    assert_not_contains('<script', $out);
+    assert_not_contains('alert', $out);
+
+    $out2 = HtmlSanitizer::sanitize('<div><math><script>alert(2)</script></math></div>');
+    assert_not_contains('<script', $out2);
+    assert_not_contains('alert', $out2);
+});
+

@@ -335,6 +335,25 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
     border-radius: var(--btn-radius, 8px); 
     text-decoration: none; 
     transition: background 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.block-hero__button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    animation: button-shimmer 6s infinite ease-in-out;
+    pointer-events: none;
+}
+@keyframes button-shimmer {
+    0% { left: -150%; }
+    30% { left: 150%; }
+    100% { left: 150%; }
 }
 .block-hero--media .block-hero__button:not(.block-hero__button--ghost) { background: var(--hero-btn, #16406e) !important; }
 .block-hero:not(.block-hero--media) .block-hero__button:not(.block-hero__button--ghost) { background: var(--hero-btn, var(--gov-navy)) !important; }

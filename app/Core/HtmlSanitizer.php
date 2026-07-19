@@ -118,6 +118,7 @@ final class HtmlSanitizer
                     if (in_array($tag, ['script', 'style'], true)) {
                         $child->parentNode?->removeChild($child);
                     } else {
+                        self::cleanNode($child, $allowedTags, $allowedAttrs);
                         self::unwrap($child);
                     }
                     continue;

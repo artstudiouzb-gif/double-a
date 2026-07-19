@@ -256,8 +256,8 @@ summary:focus-visible {
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--gov-teal) 8%, transparent);
-    color: var(--gov-teal-text);
+    background: color-mix(in srgb, var(--color-accent, #2f6fed) 8%, transparent);
+    color: var(--color-accent, #2f6fed);
     margin-bottom: 16px;
     font-size: 28px;
     transition: transform 0.3s ease, background 0.3s ease;
