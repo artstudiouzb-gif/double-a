@@ -1,13 +1,12 @@
 <?php
 
 use App\Core\DateFormatter;
-use App\Core\Locale;
 
 /** @var array $data */
 $news = $data['news'] ?? [];
 $docs = $data['docs'] ?? [];
-$lang = Locale::current();
-$fmt = static fn (string $d): string => DateFormatter::long($d, $lang);
+// Дата — единым числовым форматом на всех языках: 19.07.2026.
+$fmt = static fn (string $d): string => DateFormatter::short($d);
 ?>
 <div class="block-newsdocs">
     <div class="newsdocs-col">

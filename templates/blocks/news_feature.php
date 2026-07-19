@@ -1,14 +1,12 @@
 <?php
 
 use App\Core\DateFormatter;
-use App\Core\Locale;
 
 /** @var array $data */
 $title = $data['title'] ?? '';
 $allText = trim((string) ($data['all_text'] ?? ''));
 $allUrl = trim((string) ($data['all_url'] ?? ''));
 $news = $data['news'] ?? [];
-$lang = Locale::current();
 
 $featured = $news[0] ?? null;
 $rest = array_slice($news, 1);
@@ -16,7 +14,8 @@ $rest = array_slice($news, 1);
 $withThumb = array_slice($rest, 0, 2);
 $textOnly = array_slice($rest, 2);
 
-$fmt = static fn (string $d): string => DateFormatter::long($d, $lang);
+// Дата — единым числовым форматом на всех языках: 19.07.2026.
+$fmt = static fn (string $d): string => DateFormatter::short($d);
 ?>
 <div class="block-newsfeat">
     <div class="section-head">

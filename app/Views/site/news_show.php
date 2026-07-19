@@ -35,7 +35,8 @@ $crumbs = [
 ];
 
 $date = (string) ($news['published_at'] ?? '');
-$dateLong = $date !== '' ? DateFormatter::long($date, $lang) : '';
+// Дата — единым числовым форматом на всех языках: 19.07.2026.
+$dateLong = $date !== '' ? DateFormatter::short($date) : '';
 // Время чтения: ~180 слов в минуту по тексту статьи (юникод-подсчёт слов).
 preg_match_all('/[\p{L}\p{N}]+/u', strip_tags((string) ($news['content'] ?? '')), $m);
 $readMin = max(1, (int) ceil(count($m[0]) / 180));
@@ -354,7 +355,7 @@ if (!$isPremium) {
                         <?php else: ?>
                             <span class="relnews-card__media relnews-card__media--empty" aria-hidden="true"></span>
                         <?php endif; ?>
-                        <?php if (!empty($item['published_at'])): ?><time class="relnews-card__date"><?= htmlspecialchars(DateFormatter::long((string) $item['published_at'], $lang), ENT_QUOTES) ?></time><?php endif; ?>
+                        <?php if (!empty($item['published_at'])): ?><time class="relnews-card__date"><?= htmlspecialchars(DateFormatter::short((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                         <span class="relnews-card__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
                         <span class="relnews-card__arrow">→</span>
                     </a>
@@ -386,7 +387,7 @@ if (!$isPremium) {
                     <?php endif; ?>
                     <span class="adjnews__body">
                         <span class="adjnews__label"><?= htmlspecialchars(t('Предыдущая новость'), ENT_QUOTES) ?></span>
-                        <?php if (!empty($prevNews['published_at'])): ?><time class="adjnews__date"><?= htmlspecialchars(DateFormatter::long((string) $prevNews['published_at'], $lang), ENT_QUOTES) ?></time><?php endif; ?>
+                        <?php if (!empty($prevNews['published_at'])): ?><time class="adjnews__date"><?= htmlspecialchars(DateFormatter::short((string) $prevNews['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                         <span class="adjnews__title"><?= htmlspecialchars((string) $prevNews['title'], ENT_QUOTES) ?></span>
                     </span>
                 </a>
@@ -401,7 +402,7 @@ if (!$isPremium) {
                     <?php endif; ?>
                     <span class="adjnews__body">
                         <span class="adjnews__label"><?= htmlspecialchars(t('Следующая новость'), ENT_QUOTES) ?></span>
-                        <?php if (!empty($nextNews['published_at'])): ?><time class="adjnews__date"><?= htmlspecialchars(DateFormatter::long((string) $nextNews['published_at'], $lang), ENT_QUOTES) ?></time><?php endif; ?>
+                        <?php if (!empty($nextNews['published_at'])): ?><time class="adjnews__date"><?= htmlspecialchars(DateFormatter::short((string) $nextNews['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                         <span class="adjnews__title"><?= htmlspecialchars((string) $nextNews['title'], ENT_QUOTES) ?></span>
                     </span>
                     <span class="adjnews__arrow">→</span>

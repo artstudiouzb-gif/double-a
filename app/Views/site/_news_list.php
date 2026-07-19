@@ -20,7 +20,8 @@ $pages = $pages ?? 1;
 $badge = $badge ?? '';
 
 $lang = Locale::current();
-$fmt = static fn (string $d): string => DateFormatter::long($d, $lang);
+// Дата — единым числовым форматом на всех языках: 19.07.2026.
+$fmt = static fn (string $d): string => DateFormatter::short($d);
 // Крупная первая новость — только на первой странице общего списка.
 $featured = ($page === 1 && $badge === '' && !empty($items)) ? $items[0] : null;
 $grid = $featured !== null ? array_slice($items, 1) : $items;
