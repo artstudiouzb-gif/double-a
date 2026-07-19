@@ -351,7 +351,7 @@ final class News
             return $row;
         }
 
-        foreach (['title', 'excerpt', 'content'] as $field) {
+        foreach (['title', 'badge', 'excerpt', 'content'] as $field) {
             if (isset($translation[$field]) && trim((string) $translation[$field]) !== '') {
                 $row[$field] = $translation[$field];
             }

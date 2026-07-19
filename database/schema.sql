@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS news_translations (
     news_id         INT UNSIGNED NOT NULL,
     lang            VARCHAR(8) NOT NULL,
     title           VARCHAR(255) NULL,
+    badge           VARCHAR(100) NULL COMMENT 'бейдж категории',
     excerpt         TEXT NULL,
     content         LONGTEXT NULL,
     meta_title      VARCHAR(255) NULL,
@@ -930,7 +931,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_17_album_translations.sql'),
     ('2026_07_17_video_translations.sql'),
     ('2026_07_18_menu_per_language.sql'),
-    ('2026_07_18_menu_mega.sql')
+    ('2026_07_18_menu_mega.sql'),
+    ('2026_07_19_news_translation_badge.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

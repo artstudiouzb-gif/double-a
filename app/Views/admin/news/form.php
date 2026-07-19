@@ -79,6 +79,10 @@ $languages = Language::active();
                             <input type="text" name="translations[<?= $code ?>][title]" value="<?= htmlspecialchars($t['title'] ?? '', ENT_QUOTES) ?>">
                         </div>
                         <div class="form-field">
+                            <label>Бейдж категории</label>
+                            <input type="text" name="translations[<?= $code ?>][badge]" value="<?= htmlspecialchars($t['badge'] ?? '', ENT_QUOTES) ?>">
+                        </div>
+                        <div class="form-field">
                             <label>Краткое описание</label>
                             <textarea name="translations[<?= $code ?>][excerpt]"><?= htmlspecialchars($t['excerpt'] ?? '', ENT_QUOTES) ?></textarea>
                         </div>

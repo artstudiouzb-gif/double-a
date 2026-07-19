@@ -63,15 +63,16 @@ final class NewsTranslation
     public static function upsert(int $newsId, string $lang, array $data): void
     {
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO news_translations (news_id, lang, title, excerpt, content, meta_title, meta_description)
-             VALUES (:news_id, :lang, :title, :excerpt, :content, :meta_title, :meta_description)
-             ON DUPLICATE KEY UPDATE title = VALUES(title), excerpt = VALUES(excerpt),
+            'INSERT INTO news_translations (news_id, lang, title, badge, excerpt, content, meta_title, meta_description)
+             VALUES (:news_id, :lang, :title, :badge, :excerpt, :content, :meta_title, :meta_description)
+             ON DUPLICATE KEY UPDATE title = VALUES(title), badge = VALUES(badge), excerpt = VALUES(excerpt),
                 content = VALUES(content), meta_title = VALUES(meta_title), meta_description = VALUES(meta_description)'
         );
         $stmt->execute([
             ':news_id' => $newsId,
             ':lang' => $lang,
             ':title' => $data['title'] ?? null,
+            ':badge' => $data['badge'] ?? null,
             ':excerpt' => $data['excerpt'] ?? null,
             ':content' => $data['content'] ?? null,
             ':meta_title' => $data['meta_title'] ?? null,

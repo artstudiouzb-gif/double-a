@@ -299,6 +299,7 @@ final class NewsController
             $t = (array) ($input[$code] ?? []);
             NewsTranslation::upsert($newsId, $code, [
                 'title' => trim((string) ($t['title'] ?? '')),
+                'badge' => trim((string) ($t['badge'] ?? '')),
                 'excerpt' => trim((string) ($t['excerpt'] ?? '')),
                 'content' => TextProcessor::process((string) ($t['content'] ?? ''), $code),
                 'meta_title' => trim((string) ($t['meta_title'] ?? '')),
