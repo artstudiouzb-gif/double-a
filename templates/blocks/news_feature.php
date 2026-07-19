@@ -38,10 +38,12 @@ $badge = static fn (array $i): string => trim((string) ($i['badge'] ?? ''));
                     <span class="newsfeat-lead__media newsfeat-lead__media--empty" aria-hidden="true"></span>
                 <?php endif; ?>
                 <span class="newsfeat-lead__over">
-                    <?php if ($badge($featured) !== ''): ?><span class="news-badge"><?= htmlspecialchars($badge($featured), ENT_QUOTES) ?></span><?php endif; ?>
+                    <span class="news-meta">
+                        <?php if ($badge($featured) !== ''): ?><span class="news-badge news-badge--on-media"><?= htmlspecialchars($badge($featured), ENT_QUOTES) ?></span><?php endif; ?>
+                        <?php if (!empty($featured['published_at'])): ?><time class="newsfeat__date newsfeat__date--on-media"><?= htmlspecialchars($fmt((string) $featured['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
+                    </span>
                     <span class="newsfeat-lead__title"><?= htmlspecialchars((string) $featured['title'], ENT_QUOTES) ?></span>
                     <?php if (!empty($featured['excerpt'])): ?><span class="newsfeat-lead__excerpt"><?= htmlspecialchars(excerpt((string) $featured['excerpt'], 160), ENT_QUOTES) ?></span><?php endif; ?>
-                    <?php if (!empty($featured['published_at'])): ?><time class="newsfeat__date newsfeat__date--on-media"><?= htmlspecialchars($fmt((string) $featured['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
                 </span>
             </span>
         </a>
@@ -51,16 +53,16 @@ $badge = static fn (array $i): string => trim((string) ($i['badge'] ?? ''));
                 <div class="newsfeat-side__thumbs">
                     <?php foreach ($withThumb as $item): ?>
                         <a class="newsfeat-mini" href="<?= htmlspecialchars((string) $item['url'], ENT_QUOTES) ?>">
-                            <span class="newsfeat-mini__frame">
-                                <?php if (!empty($item['cover'])): ?>
-                                    <img class="newsfeat-mini__media" src="<?= htmlspecialchars((string) $item['cover'], ENT_QUOTES) ?>" alt="<?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?>" loading="lazy" decoding="async">
-                                <?php else: ?>
-                                    <span class="newsfeat-mini__media newsfeat-mini__media--empty" aria-hidden="true"></span>
-                                <?php endif; ?>
-                                <?php if ($badge($item) !== ''): ?><span class="news-badge news-badge--corner"><?= htmlspecialchars($badge($item), ENT_QUOTES) ?></span><?php endif; ?>
-                            </span>
+                            <?php if (!empty($item['cover'])): ?>
+                                <img class="newsfeat-mini__media" src="<?= htmlspecialchars((string) $item['cover'], ENT_QUOTES) ?>" alt="<?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?>" loading="lazy" decoding="async">
+                            <?php else: ?>
+                                <span class="newsfeat-mini__media newsfeat-mini__media--empty" aria-hidden="true"></span>
+                            <?php endif; ?>
                             <span class="newsfeat-mini__body">
-                                <?php if (!empty($item['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
+                                <span class="news-meta">
+                                    <?php if ($badge($item) !== ''): ?><span class="news-badge"><?= htmlspecialchars($badge($item), ENT_QUOTES) ?></span><?php endif; ?>
+                                    <?php if (!empty($item['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
+                                </span>
                                 <span class="newsfeat-mini__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
                             </span>
                         </a>
@@ -71,8 +73,10 @@ $badge = static fn (array $i): string => trim((string) ($i['badge'] ?? ''));
                 <div class="newsfeat-side__texts">
                     <?php foreach ($textOnly as $item): ?>
                         <a class="newsfeat-text" href="<?= htmlspecialchars((string) $item['url'], ENT_QUOTES) ?>">
-                            <?php if ($badge($item) !== ''): ?><span class="news-badge news-badge--plain"><?= htmlspecialchars($badge($item), ENT_QUOTES) ?></span><?php endif; ?>
-                            <?php if (!empty($item['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
+                            <span class="news-meta">
+                                <?php if ($badge($item) !== ''): ?><span class="news-badge"><?= htmlspecialchars($badge($item), ENT_QUOTES) ?></span><?php endif; ?>
+                                <?php if (!empty($item['published_at'])): ?><time class="newsfeat__date"><?= htmlspecialchars($fmt((string) $item['published_at']), ENT_QUOTES) ?></time><?php endif; ?>
+                            </span>
                             <span class="newsfeat-text__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
                         </a>
                     <?php endforeach; ?>

@@ -459,8 +459,7 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 .newsfeat__date--on-media { color: rgba(255,255,255,.88); }
 .newsfeat__more { color: var(--gov-teal-text); text-transform: uppercase; font-size: 0.75rem; letter-spacing: .05em; font-weight: 700; }
 .newsfeat-mini { display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: var(--gov-ink); }
-.newsfeat-mini__frame { position: relative; display: block; border-radius: 8px; overflow: hidden; }
-.newsfeat-mini__media { display: block; width: 100%; aspect-ratio: 16/10; min-height: 150px; background: #24425f center/cover no-repeat; object-fit: cover; }
+.newsfeat-mini__media { display: block; width: 100%; aspect-ratio: 16/10; min-height: 150px; border-radius: 8px; background: #24425f center/cover no-repeat; object-fit: cover; }
 .newsfeat-mini__media--empty { background: linear-gradient(120deg, color-mix(in srgb, var(--gov-navy) 14%, var(--gov-surface)), var(--gov-surface)); }
 .newsfeat-mini__body { display: flex; flex-direction: column; gap: 6px; }
 .newsfeat-mini__title { font-weight: 700; color: var(--gov-title); line-height: 1.35; font-size: .95rem; }
@@ -468,17 +467,20 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 
 /* Рубрика карточки. На фото — плашка (нужен свой фон для читаемости),
    без фото — просто набранная метка. */
+/* Рубрика — типографская метка с акцентной чертой, а не залитая плашка:
+   цветной прямоугольник в углу обложки — узнаваемый приём новостных
+   порталов. Метка стоит на одной строке с датой, поэтому не занимает
+   отдельную строку и не сдвигает соседей по ряду, у которых рубрики нет. */
+.news-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-width: 0; }
 .news-badge {
-    display: inline-block; max-width: 100%; border-radius: 4px; padding: 4px 9px;
-    background: color-mix(in srgb, var(--gov-navy) 92%, transparent); color: #fff;
-    font-size: .68rem; font-weight: 700; line-height: 1.25;
-    text-transform: uppercase; letter-spacing: .04em;
+    display: inline-flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%;
+    color: var(--gov-teal-text); font-size: .7rem; font-weight: 700; line-height: 1.3;
+    text-transform: uppercase; letter-spacing: .07em;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.news-badge--corner { position: absolute; top: 10px; left: 10px; max-width: calc(100% - 20px); }
-.news-badge--plain {
-    padding: 0; background: none; color: var(--gov-teal-text); letter-spacing: .05em;
-}
+.news-badge::before { content: ""; flex: none; width: 14px; height: 2px; background: currentColor; }
+/* На обложке акцентный цвет не держит контраст — метка становится белой. */
+.news-badge--on-media { color: #fff; }
 .newsfeat-text__title { font-weight: 700; color: var(--gov-title); line-height: 1.35; font-size: .95rem; }
 .newsfeat-mini:hover .newsfeat-mini__title, .newsfeat-text:hover .newsfeat-text__title { color: var(--gov-teal); }
 /* Заголовок лида белый на фото — подсвечиваем подчёркиванием, не цветом. */
@@ -775,9 +777,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 1000px) { .newsdetail-related__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .newsdetail-related__grid { grid-template-columns: 1fr; } }
 .relnews-card { display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--gov-ink); }
-/* Рубрика лежит на обложке, а не в потоке: иначе карточка с рубрикой
-   съезжает вниз относительно соседей по ряду, у которых её нет. */
-.relnews-card__frame { position: relative; display: block; border-radius: 12px; overflow: hidden; }
 .relnews-card__media { aspect-ratio: 16/10; border-radius: 12px; background-color: #24425f; background-position: center; background-size: cover; background-repeat: no-repeat; display: block; width: 100%; object-fit: cover; }
 .relnews-card__media--empty { background: linear-gradient(120deg, color-mix(in srgb, var(--gov-navy) 14%, var(--gov-surface)), var(--gov-surface)); }
 .relnews-card__date { color: var(--gov-muted); font-size: .82rem; }
