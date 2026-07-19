@@ -803,3 +803,19 @@
             });
         });
     })();
+
+    // Интерактивный «прожектор» (Spotlight) для карточек
+    (function () {
+        var cards = document.querySelectorAll('.cat-tile, .contact-card, .project-card, .team-card');
+        if (!cards.length) { return; }
+        cards.forEach(function (card) {
+            card.addEventListener('mousemove', function (e) {
+                var rect = card.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', x + 'px');
+                card.style.setProperty('--mouse-y', y + 'px');
+            });
+        });
+    })();
+})();

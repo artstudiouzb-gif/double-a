@@ -2000,3 +2000,23 @@ body.design-header-dark .a11y-toggle:hover,
 .cms-empty-notice strong { font-weight: 700; }
 .cms-empty-notice span { color: var(--text-muted, #666); }
 .cms-empty-notice__edit { margin-left: auto; font-weight: 600; white-space: nowrap; }
+
+/* --- Интерактивный Spotlight-блик при наведении --- */
+.cat-tile, .contact-card, .project-card, .team-card {
+    position: relative;
+    overflow: hidden;
+}
+.cat-tile::before, .contact-card::before, .project-card::before, .team-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(220px circle at var(--mouse-x, 0) var(--mouse-y, 0), color-mix(in srgb, var(--color-accent, #2f6fed) 7%, transparent), transparent 80%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+.cat-tile:hover::before, .contact-card:hover::before, .project-card:hover::before, .team-card:hover::before {
+    opacity: 1;
+}

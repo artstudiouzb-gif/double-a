@@ -735,7 +735,26 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
 .timeline-card { background: color-mix(in srgb, var(--gov-navy) 5%, var(--gov-bg)); border-radius: var(--radius); padding: 30px; }
 .timeline-card__title { font-size: 1.4rem; margin: 0 0 22px; }
 .timeline-list { list-style: none; margin: 0; padding: 0; position: relative; }
-.timeline-list::before { content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px; background: color-mix(in srgb, var(--gov-navy) 18%, transparent); }
+.timeline-list::before { 
+    content: ''; 
+    position: absolute; 
+    left: 5px; 
+    top: 8px; 
+    bottom: 8px; 
+    width: 2px; 
+    background: linear-gradient(to bottom, 
+        color-mix(in srgb, var(--gov-navy) 18%, transparent) 0%, 
+        color-mix(in srgb, var(--gov-navy) 18%, transparent) 35%, 
+        var(--gov-teal) 50%, 
+        color-mix(in srgb, var(--gov-navy) 18%, transparent) 65%, 
+        color-mix(in srgb, var(--gov-navy) 18%, transparent) 100%);
+    background-size: 100% 200%;
+    animation: timeline-flow 3.5s linear infinite;
+}
+@keyframes timeline-flow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 0% -200%; }
+}
 .timeline-item { position: relative; display: grid; grid-template-columns: 84px 1fr; gap: 12px; padding: 0 0 22px 28px; cursor: default; }
 .timeline-item:last-child { padding-bottom: 0; }
 .timeline-item::before {
