@@ -2506,15 +2506,13 @@ body.design-scrolltop .scroll-top:focus-visible { outline: 2px solid var(--gov-t
 }
 
 /* Анимация фокуса для фильтров, поиска и полей ввода */
-.catlist-toolbar__search input, .catlist-toolbar__sort, .site-search input {
+.catlist-toolbar__search input, .catlist-toolbar__sort {
     transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important;
 }
 .catlist-toolbar__search input:focus,
 .catlist-toolbar__search input:focus-visible,
 .catlist-toolbar__sort:focus,
-.catlist-toolbar__sort:focus-visible,
-.site-search input:focus,
-.site-search input:focus-visible {
+.catlist-toolbar__sort:focus-visible {
     border-color: var(--color-accent, var(--gov-teal)) !important;
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent, var(--gov-teal)) 15%, transparent) !important;
     outline: none !important;
