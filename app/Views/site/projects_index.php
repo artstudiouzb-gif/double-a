@@ -3,20 +3,20 @@
 use App\Core\Locale;
 
 /** @var array $items */
-$metaTitle = t('Проекты');
-$metaDescription = t('Проекты и инициативы Агентства.');
+$metaTitle = t('Кейсы');
+$metaDescription = t('Реализованные кейсы и проекты Double A Solutions.');
 require __DIR__ . '/_header.php';
 
 $crumbs = [
     ['label' => t('Главная'), 'url' => Locale::url('/')],
-    ['label' => t('Проекты')],
+    ['label' => t('Кейсы')],
 ];
 require __DIR__ . '/_crumbs.php';
 ?>
 <div class="listing">
     <div class="listing__head">
-        <h1 class="listing__title"><?= htmlspecialchars(t('Проекты и инициативы'), ENT_QUOTES) ?></h1>
-        <p class="listing__lead"><?= htmlspecialchars(t('Стратегические проекты, которые Агентство реализует для устойчивого развития страны.'), ENT_QUOTES) ?></p>
+        <h1 class="listing__title"><?= htmlspecialchars(t('Кейсы и проекты'), ENT_QUOTES) ?></h1>
+        <p class="listing__lead"><?= htmlspecialchars(t('Практические результаты нашей экспертизы: успешные кейсы по импорту, экспорту, локализации производств и сертификации в Узбекистане.'), ENT_QUOTES) ?></p>
     </div>
     <?php if (empty($items)): ?>
         <p class="listing__empty"><?= htmlspecialchars(t('Проекты ещё не опубликованы.'), ENT_QUOTES) ?></p>

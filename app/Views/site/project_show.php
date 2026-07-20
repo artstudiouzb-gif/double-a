@@ -11,7 +11,7 @@ require __DIR__ . '/_header.php';
 
 $crumbs = [
     ['label' => t('Главная'), 'url' => Locale::url('/')],
-    ['label' => t('Проекты'), 'url' => Locale::url('projects')],
+    ['label' => t('Кейсы'), 'url' => Locale::url('projects')],
     ['label' => (string) $project['title']],
 ];
 require __DIR__ . '/_crumbs.php';
@@ -22,7 +22,7 @@ $others = array_values(array_filter(Project::published(), fn (array $p) => (int)
 <article class="projdetail">
     <div class="projdetail-head<?= $cover === '' ? ' projdetail-head--no-media' : '' ?>">
         <div class="projdetail-head__info">
-            <span class="newsdetail__badge"><?= htmlspecialchars(t('Проект'), ENT_QUOTES) ?></span>
+            <span class="newsdetail__badge"><?= htmlspecialchars(t('Кейс'), ENT_QUOTES) ?></span>
             <h1 class="projdetail__title"><?= htmlspecialchars((string) $project['title'], ENT_QUOTES) ?></h1>
         </div>
         <?php if ($cover !== ''): ?>
@@ -34,8 +34,8 @@ $others = array_values(array_filter(Project::published(), fn (array $p) => (int)
     <?php if (!empty($others)): ?>
         <section class="projdetail-related">
             <div class="section-head">
-                <h2 class="section-head__title"><?= htmlspecialchars(t('Другие проекты'), ENT_QUOTES) ?></h2>
-                <a class="section-head__all" href="<?= htmlspecialchars(Locale::url('projects'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Все проекты'), ENT_QUOTES) ?> →</a>
+                <h2 class="section-head__title"><?= htmlspecialchars(t('Другие кейсы'), ENT_QUOTES) ?></h2>
+                <a class="section-head__all" href="<?= htmlspecialchars(Locale::url('projects'), ENT_QUOTES) ?>"><?= htmlspecialchars(t('Все кейсы'), ENT_QUOTES) ?> →</a>
             </div>
             <div class="projects-grid projects-grid--compact">
                 <?php foreach (array_slice($others, 0, 4) as $item): ?>
