@@ -888,10 +888,16 @@ p {
     justify-content: space-between;
     position: relative;
     overflow: hidden;
+    background: var(--navy) !important;
 }
-.case:nth-child(1) .case-visual { background: linear-gradient(135deg, #073a2e, #0c201a); }
-.case:nth-child(2) .case-visual { background: linear-gradient(135deg, #0e3047, #074637); }
-.case:nth-child(3) .case-visual { background: linear-gradient(135deg, #5b4c2b, #052219); }
+.case-visual:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z M0 0 L60 60 M60 0 L0 60' stroke='rgba(212,175,55,0.06)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+    opacity: 0.8;
+    pointer-events: none;
+}
 .case-visual:after {
     content: "AA";
     position: absolute;
@@ -3890,6 +3896,117 @@ p {
 }
 @media(max-width: 680px) {
     .sectors-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   DOUBLE A SOLUTIONS - BENTO GRID INTERACTIVE ADVISOR
+   ========================================================================== */
+
+.bento-advisor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 40px;
+}
+.bento-col {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.bento-col-title {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--navy);
+    font-family: var(--serif);
+}
+.bento-grid-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+.bento-opt-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(3,32,26,0.01);
+}
+.bento-opt-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(3,32,26,0.03);
+}
+.bento-opt-card.selected {
+    background: var(--navy);
+    border-color: var(--gold);
+    color: #fff;
+    box-shadow: 0 15px 30px rgba(3,32,26,0.12);
+}
+.bento-opt-card .num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 12px;
+}
+.bento-opt-card b {
+    font-size: 16px;
+    color: inherit;
+    margin-bottom: 4px;
+    font-family: var(--serif);
+    font-weight: 600;
+}
+.bento-opt-card.selected b {
+    color: #fff;
+}
+.bento-opt-card span:not(.num) {
+    font-size: 13px;
+    color: var(--muted);
+}
+.bento-opt-card.selected span:not(.num) {
+    color: #a8cfc6;
+}
+.bento-result-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 40px;
+    margin-top: 30px;
+    min-height: 100px;
+    box-shadow: var(--shadow);
+}
+.bento-result-placeholder {
+    text-align: center;
+    color: var(--muted);
+    font-size: 16px;
+    font-style: italic;
+}
+.bento-result-content {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink);
+    animation: fadeInBentoResult 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes fadeInBentoResult {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width: 960px) {
+    .bento-advisor {
+        grid-template-columns: 1fr;
+    }
+}
+@media(max-width: 580px) {
+    .bento-grid-options {
         grid-template-columns: 1fr;
     }
 }

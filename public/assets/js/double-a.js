@@ -94,14 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-    });
+       // 4. Bento Grid Service Advisor
+    const bentoIndustries = document.querySelectorAll('#bentoIndustries .bento-opt-card');
+    const bentoGoals = document.querySelectorAll('#bentoGoals .bento-opt-card');
+    const bentoResultPanel = document.getElementById('bentoResultPanel');
+    const bentoResultBody = document.getElementById('bentoResultBody');
 
-    // 4. Premium Service Advisor W    const selectIndustry = document.getElementById('advisorIndustry');
-    const selectGoal = document.getElementById('advisorGoal');
-    const resultCard = document.getElementById('advisorResultCard');
-    const resultBody = document.getElementById('advisorResultBody');
+    if (bentoIndustries.length > 0 && bentoGoals.length > 0 && bentoResultPanel && bentoResultBody) {
+        let selectedIndustry = null;
+        let selectedGoal = null;
 
-    if (selectIndustry && selectGoal && resultCard && resultBody) {
         const advisorDb = {
             'agro_import': '<strong>Выбранное направление: Агросектор -> Импорт</strong><br><br>Для импорта СЗР и удобрений в Узбекистан требуется оформление государственной регистрации в Минсельхозе РУз. <br><br><strong>Шаги маршрута:</strong><br>1. Подготовка регистрационного досье и химико-токсикологический анализ.<br>2. Организация и проведение полевых испытаний (длительность — 1 вегетационный период).<br>3. Токсиколого-гигиеническая экспертиза и утверждение регламентов применения.<br>4. Включение в государственный реестр разрешенных препаратов.',
             'agro_production': '<strong>Выбранное направление: Агросектор -> Производство</strong><br><br>Организация производства пестицидов и агрохимикатов в РУз подлежит строгому экологическому и промышленному лицензированию.<br><br><strong>Шаги маршрута:</strong><br>1. Проектирование завода и проведение государственной экологической экспертизы (ЗВОС).<br>2. Получение лицензии на работу с сильнодействующими ядовитыми веществами.<br>3. Разработка технических условий (ТС) на каждый выпускаемый препарат и госрегистрация.',
@@ -124,28 +126,43 @@ document.addEventListener('DOMContentLoaded', () => {
             'vet_iso': '<strong>Выбранное направление: Ветеринария -> Сертификация ISO</strong><br><br>Внедрение систем ISO/IEC 17025 для испытательных лабораторий ветеринарного контроля.<br><br><strong>Шаги маршрута:</strong><br>1. Оценка материально-технической базы ветеринарной лаборатории.<br>2. Внедрение системы качества, разработка процедур градуировки и поверки.<br>3. Проведение раундов межлабораторных сличительных испытаний (МСИ).<br>4. Прохождение аккредитации.',
         };
 
-        const updateResult = () => {
-            const industry = selectIndustry.value;
-            const goal = selectGoal.value;
-            if (industry && goal) {
-                const key = `${industry}_${goal}`;
+        const updateBentoResult = () => {
+            if (selectedIndustry && selectedGoal) {
+                const key = `${selectedIndustry}_${selectedGoal}`;
                 const text = advisorDb[key] || 'Данный маршрут находится в процессе разработки. Обратитесь к эксперту за детальной консультацией.';
-                resultBody.innerHTML = `
-                    <div class="result-content">
+                bentoResultBody.innerHTML = `
+                    <div class="bento-result-content">
                         ${text}
                         <div style="margin-top: 30px;">
                             <a class="btn primary" href="/kontakty">Обсудить этот проект с координатором</a>
                         </div>
                     </div>
                 `;
-                resultBody.style.display = 'block';
-                const placeholder = resultCard.querySelector('.result-placeholder');
+                bentoResultBody.style.display = 'block';
+                const placeholder = bentoResultPanel.querySelector('.bento-result-placeholder');
                 if (placeholder) placeholder.style.display = 'none';
             }
         };
 
-        selectIndustry.addEventListener('change', updateResult);
-        selectGoal.addEventListener('change', updateResult);
+        bentoIndustries.forEach(card => {
+            card.addEventListener('click', () => {
+                bentoIndustries.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedIndustry = card.getAttribute('data-value');
+                updateBentoResult();
+            });
+        });
+
+        bentoGoals.forEach(card => {
+            card.addEventListener('click', () => {
+                bentoGoals.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedGoal = card.getAttribute('data-value');
+                updateBentoResult();
+            });
+        });
+    }
+
     // 5. Quick Selector Modal dialog
     const quickButtons = document.querySelectorAll('.quick');
     const modal = document.getElementById('infoModal');

@@ -159,46 +159,77 @@ HTML
 </section>
 HTML
     ],
-    // 3. Service Advisor Sentence Builder
+    // 3. Bento Grid Service Advisor (Full Width)
     [
         'title' => '03. Service Advisor',
         'html' => <<<'HTML'
 <section class="section soft" id="advisor-section">
-  <div class="wrap" style="max-width: 900px">
-    <div style="text-align: center; margin-bottom: 50px">
+  <div class="wrap">
+    <div class="section-head-centered">
       <div class="eyebrow" style="color:var(--gold)">Интерактивный навигатор</div>
-      <h2 style="font-size: clamp(32px, 4vw, 48px); margin-top: 10px; font-family:var(--serif); font-weight:600; color:var(--navy)">Подобрать услугу за 60 секунд</h2>
-      <p style="color: var(--muted); margin-top: 10px">Составьте маршрут вашего проекта в один клик с помощью нашего интерактивного конструктора.</p>
+      <h2 style="font-family:var(--serif); font-weight:600; color:var(--navy)">Подобрать услугу за 60 секунд</h2>
+      <p style="color: var(--muted); margin-top: 10px">Выберите вашу сферу деятельности слева и основную цель справа для автоматического построения маршрута.</p>
     </div>
     
-    <div class="advisor-sentence-card">
-      <div class="advisor-sentence">
-        Мы представляем компанию в сфере 
-        <span class="advisor-select-wrap">
-          <select id="advisorIndustry" aria-label="Сфера деятельности">
-            <option value="" disabled selected>выберите отрасль</option>
-            <option value="agro">сельского хозяйства / удобрений</option>
-            <option value="food">пищевого бизнеса / БАДов</option>
-            <option value="cosmetic">косметики и парфюмерии</option>
-            <option value="vet">ветеринарии и ветпрепаратов</option>
-          </select>
-        </span>, 
-        и наша основная цель — 
-        <span class="advisor-select-wrap">
-          <select id="advisorGoal" aria-label="Цель проекта">
-            <option value="" disabled selected>выберите цель</option>
-            <option value="import">импортировать и реализовывать продукцию</option>
-            <option value="production">локализовать производство в Узбекистане</option>
-            <option value="export">выйти на экспорт (в СНГ или ЕС)</option>
-            <option value="iso">пройти сертификацию ISO / аккредитацию</option>
-          </select>
-        </span>.
+    <div class="bento-advisor" id="bentoAdvisor">
+      <!-- Left side: Industries -->
+      <div class="bento-col">
+        <div class="bento-col-title">1. Ваша сфера деятельности</div>
+        <div class="bento-grid-options" id="bentoIndustries">
+          <div class="bento-opt-card" data-value="agro">
+            <span class="num">01</span>
+            <b>Сельское хозяйство</b>
+            <span>Удобрения, СЗР и агрохимия</span>
+          </div>
+          <div class="bento-opt-card" data-value="food">
+            <span class="num">02</span>
+            <b>Пищевая отрасль</b>
+            <span>БАДы, продукты питания и ХАССП</span>
+          </div>
+          <div class="bento-opt-card" data-value="cosmetic">
+            <span class="num">03</span>
+            <b>Косметика</b>
+            <span>Парфюмерия и стандарты GMP</span>
+          </div>
+          <div class="bento-opt-card" data-value="vet">
+            <span class="num">04</span>
+            <b>Ветеринария</b>
+            <span>Ветпрепараты и кормовые добавки</span>
+          </div>
+        </div>
       </div>
       
-      <div class="advisor-sentence-result" id="advisorResultCard">
-        <div class="result-placeholder">Выберите параметры выше для построения маршрута...</div>
-        <div class="result-content" id="advisorResultBody" style="display:none"></div>
+      <!-- Right side: Goals -->
+      <div class="bento-col">
+        <div class="bento-col-title">2. Ваша главная цель</div>
+        <div class="bento-grid-options" id="bentoGoals">
+          <div class="bento-opt-card" data-value="import">
+            <span class="num">01</span>
+            <b>Импорт под ключ</b>
+            <span>Ввоз и госрегистрация</span>
+          </div>
+          <div class="bento-opt-card" data-value="production">
+            <span class="num">02</span>
+            <b>Локализация</b>
+            <span>Запуск производства в РУз</span>
+          </div>
+          <div class="bento-opt-card" data-value="export">
+            <span class="num">03</span>
+            <b>Выход на экспорт</b>
+            <span>Поставки в ЕС и страны СНГ</span>
+          </div>
+          <div class="bento-opt-card" data-value="iso">
+            <span class="num">04</span>
+            <b>Сертификация ISO</b>
+            <span>ISO 9001, 17025, HACCP</span>
+          </div>
+        </div>
       </div>
+    </div>
+    
+    <div class="bento-result-panel" id="bentoResultPanel">
+      <div class="bento-result-placeholder">Выберите отрасль и цель для автоматического расчета маршрута...</div>
+      <div class="bento-result-content" id="bentoResultBody" style="display:none"></div>
     </div>
   </div>
 </section>
