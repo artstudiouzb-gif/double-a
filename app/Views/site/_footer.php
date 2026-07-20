@@ -40,10 +40,10 @@ if ($siteTemplate === 'double_a'): ?>
       </div>
       <div>
         <h4>Услуги</h4>
-        <a href="/services">Выход на рынок</a>
-        <a href="/services">Разрешительные документы</a>
-        <a href="/services">Экспортное сопровождение</a>
-        <a href="/services">Стандарты качества</a>
+        <a href="/#service-market">Выход на рынок</a>
+        <a href="/#service-permits">Разрешительные документы</a>
+        <a href="/#service-export">Экспортное сопровождение</a>
+        <a href="/#service-iso">Стандарты качества</a>
       </div>
       <div>
         <h4>Отрасли</h4>

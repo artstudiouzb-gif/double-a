@@ -46,32 +46,15 @@ $pagesToCreate = [
         'is_home' => 0,
         'layout_type' => 'no_sidebar',
     ],
-    'services-market-entry' => [
-        'title' => 'Выход на рынок Узбекистана',
-        'is_home' => 0,
-        'layout_type' => 'no_sidebar',
-    ],
-    'services-permits' => [
-        'title' => 'Получение разрешительных документов',
-        'is_home' => 0,
-        'layout_type' => 'no_sidebar',
-    ],
-    'services-export' => [
-        'title' => 'Экспортное сопровождение',
-        'is_home' => 0,
-        'layout_type' => 'no_sidebar',
-    ],
-    'services-iso' => [
-        'title' => 'Стандарты качества & Аккредитация',
-        'is_home' => 0,
-        'layout_type' => 'no_sidebar',
-    ],
     'kontakty' => [
         'title' => 'Контакты',
         'is_home' => 0,
         'layout_type' => 'no_sidebar',
     ],
 ];
+
+// Clean up old subpages from the database
+$pdo->exec("DELETE FROM pages WHERE slug IN ('services-market-entry', 'services-permits', 'services-export', 'services-iso')");
 
 $pageIds = [];
 
@@ -243,25 +226,25 @@ HTML
       <p>Выберите интересующее вас направление для перехода к подробному описанию, срокам и требованиям.</p>
     </div>
     <div class="services-grid">
-      <a class="service" href="/services-market-entry">
+      <a class="service quick" href="#service-market" data-value="market">
         <span class="service-no">01</span>
         <h3>Выход на рынок</h3>
         <p>Анализ конкурентной среды, барьеров и разработка оптимальной юридической модели присутствия.</p>
         <span class="go">↗</span>
       </a>
-      <a class="service featured" href="/services-permits">
+      <a class="service featured quick" href="#service-permits" data-value="permits">
         <span class="service-no">02</span>
         <h3>Разрешения</h3>
         <p>Государственная регистрация БАД, удобрений, косметики и ветеринарной продукции под ключ.</p>
         <span class="go">↗</span>
       </a>
-      <a class="service" href="/services-export">
+      <a class="service quick" href="#service-export" data-value="export">
         <span class="service-no">03</span>
         <h3>Экспортное сопровождение</h3>
         <p>Приведение производства, маркировки и упаковки продукции к строгим регламентам ЕС и СНГ.</p>
         <span class="go">↗</span>
       </a>
-      <a class="service" href="/services-iso">
+      <a class="service quick" href="#service-iso" data-value="iso">
         <span class="service-no">04</span>
         <h3>Международные стандарты</h3>
         <p>Внедрение систем ISO, HACCP, GMP, подготовка испытательных лабораторий к аккредитации.</p>
@@ -283,16 +266,16 @@ HTML
       <p>Отраслевой контекст определяет тонкости лабораторных испытаний, досье и стратегии запуска.</p>
     </div>
     <div class="sectors">
-      <a class="pill" href="/services-permits">Сельское хозяйство ↗</a>
-      <a class="pill" href="/services-permits">Пищевая промышленность ↗</a>
-      <a class="pill" href="/services-permits">Химическая отрасль ↗</a>
-      <a class="pill" href="/services-permits">Удобрения и СЗР ↗</a>
-      <a class="pill" href="/services-permits">Косметика и парфюмерия ↗</a>
-      <a class="pill" href="/services-permits">БАДы ↗</a>
-      <a class="pill" href="/services-permits">Ветеринария ↗</a>
-      <a class="pill" href="/services-iso">Лаборатории & Тесты ↗</a>
-      <a class="pill" href="/services-iso">HoReCa ↗</a>
-      <a class="pill" href="/services-export">Экспорт и импорт ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">Сельское хозяйство ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">Пищевая промышленность ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">Химическая отрасль ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">Удобрения и СЗР ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">Косметика и парфюмерия ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">БАДы ↗</a>
+      <a class="pill quick" href="#service-permits" data-value="permits">Ветеринария ↗</a>
+      <a class="pill quick" href="#service-iso" data-value="iso">Лаборатории & Тесты ↗</a>
+      <a class="pill quick" href="#service-iso" data-value="iso">HoReCa ↗</a>
+      <a class="pill quick" href="#service-export" data-value="export">Экспорт и импорт ↗</a>
     </div>
   </div>
 </section>
@@ -488,25 +471,25 @@ HTML
 <section class="section">
   <div class="wrap">
     <div class="services-grid">
-      <a class="service" href="/services-market-entry">
+      <a class="service quick" href="#service-market" data-value="market">
         <span class="service-no">01</span>
         <h3>Выход на рынок Узбекистана</h3>
         <p>Анализ конкурентов, пошлин, емкости рынка и подготовка юридической схемы работы.</p>
         <span class="go">↗</span>
       </a>
-      <a class="service" href="/services-permits">
+      <a class="service quick" href="#service-permits" data-value="permits">
         <span class="service-no">02</span>
         <h3>Разрешительные документы</h3>
         <p>Регистрация удобрений, СЗР, пищевой продукции, БАД, косметики и ветпрепаратов.</p>
         <span class="go">↗</span>
       </a>
-      <a class="service" href="/services-export">
+      <a class="service quick" href="#service-export" data-value="export">
         <span class="service-no">03</span>
         <h3>Экспортное сопровождение</h3>
         <p>Подготовка производственных линий и упаковки для беспрепятственного экспорта в ЕС и СНГ.</p>
         <span class="go">↗</span>
       </a>
-      <a class="service" href="/services-iso">
+      <a class="service quick" href="#service-iso" data-value="iso">
         <span class="service-no">04</span>
         <h3>Международные стандарты</h3>
         <p>Разработка СОП, ХАССП (ISO 22000), GMP, подготовка лабораторий к аккредитации по ISO 17025.</p>
@@ -524,110 +507,8 @@ foreach ($servicesBlocks as $idx => $b) {
 }
 
 
-// ==========================================
-// ДЕТАЛЬНЫЕ СТРАНИЦЫ УСЛУГ (/services-*)
-// ==========================================
-$serviceDetailsData = [
-    'services-market-entry' => [
-        'title' => 'Выход на рынок Узбекистана',
-        'desc' => 'Разработка дорожной карты запуска коммерческой деятельности и юридической схемы работы в РУз.',
-        'content' => <<<'HTML'
-<h2>Комплексный запуск проектов</h2>
-<p>Выход на новый рынок требует детального понимания местных коммерческих условий и юридических требований. DOUBLE A SOLUTIONS предлагает аналитическую и практическую поддержку на этапе планирования.</p>
-
-<h3>Что входит в услугу:</h3>
-<ul>
-  <li><b>Маркетинговые исследования:</b> Оценка емкости рынка, ценового позиционирования конкурентов, выявление ключевых дистрибьюторов.</li>
-  <li><b>Анализ барьеров:</b> Расчет таможенных пошлин, акцизов, НДС и обязательных платежей при импорте.</li>
-  <li><b>Разработка схемы работы:</b> Выбор формы присутствия (дочернее общество, совместное предприятие, представительство) и налогового режима.</li>
-  <li><b>Дорожная карта:</b> Подробный график запуска с указанием этапов, ответственных сторон и необходимых бюджетов.</li>
-</ul>
-
-<h3>Сроки выполнения:</h3>
-<p>В зависимости от сложности отрасли и глубины требуемых исследований разработка стратегии занимает от 15 до 30 рабочих дней.</p>
-HTML
-    ],
-    'services-permits' => [
-        'title' => 'Получение разрешительных документов',
-        'desc' => 'Регистрация продукции, БАДов, СЗР, косметики и ветеринарных товаров в уполномоченных ведомствах.',
-        'content' => <<<'HTML'
-<h2>Регистрация и сертификация под ключ</h2>
-<p>Регулируемая продукция требует прохождения строгих экспертиз перед выпуском в обращение на рынке Узбекистана. Мы берем на себя полную подготовку досье и сопровождение испытаний.</p>
-
-<h3>Ключевые направления:</h3>
-<ul>
-  <li><b>Удобрения и пестициды (СЗР):</b> Подача заявок в Минсельхоз РУз, координация полевых тестов, токсикологическая экспертиза.</li>
-  <li><b>БАДы и продукты питания:</b> Получение гигиенического заключения СЭС РУз, проведение лабораторных тестов на показатели безопасности.</li>
-  <li><b>Парфюмерия и косметика:</b> Оформление санитарно-эпидемиологических заключений и регистрация деклараций соответствия.</li>
-  <li><b>Ветеринарные препараты:</b> Регистрация в Комитете ветеринарии и развития животноводства РУз.</li>
-</ul>
-
-<h3>Результат сотрудничества:</h3>
-<p>Вы получаете готовые регистрационные свидетельства, декларации и сертификаты соответствия без риска задержки документов из-за ошибок в досье.</p>
-HTML
-    ],
-    'services-export' => [
-        'title' => 'Экспортное сопровождение',
-        'desc' => 'Приведение продукции, маркировки и технической документации к требованиям стран импортеров.',
-        'content' => <<<'HTML'
-<h2>Выход на международные рынки</h2>
-<p>Экспорт узбекской продукции в страны СНГ и Евросоюз требует приведения системы контроля безопасности к регламентам целевой страны. Мы поможем подготовить ваше предприятие к прохождению внешних проверок.</p>
-
-<h3>Основные этапы подготовки:</h3>
-<ul>
-  <li><b>Аудит упаковки и маркировки:</b> Адаптация этикеток под требования технических регламентов ТС или ЕС (языки, знаки соответствия, пищевая ценность).</li>
-  <li><b>Оформление сертификатов:</b> Помощь в получении сертификатов происхождения (СТ-1, Form A), фитосанитарных и ветеринарных документов.</li>
-  <li><b>Подготовка к проверкам:</b> Предварительный аудит производственных линий на соответствие стандартам стран-импортеров.</li>
-</ul>
-HTML
-    ],
-    'services-iso' => [
-        'title' => 'Стандарты качества & Аккредитация',
-        'desc' => 'Внедрение стандартов менеджмента ISO 9001, HACCP, GMP и аккредитация испытательных лабораторий.',
-        'content' => <<<'HTML'
-<h2>Стандартизация бизнес-процессов</h2>
-<p>Наличие сертифицированной системы менеджмента — это обязательное требование для крупных тендеров и экспорта, а для пищевых предприятий — законодательная норма.</p>
-
-<h3>Наши направления работы:</h3>
-<ul>
-  <li><b>Пищевая безопасность:</b> Разработка и внедрение принципов ХАССП (HACCP / ISO 22000 / FSSC 22000).</li>
-  <li><b>Косметическое GMP:</b> Внедрение стандарта ISO 22716 на косметических производствах.</li>
-  <li><b>Аккредитация лабораторий:</b> Подготовка испытательных лабораторий к аккредитации по международному стандарту ISO/IEC 17025 (СОП, калибровка, сличительные испытания).</li>
-</ul>
-HTML
-    ]
-];
-
-foreach ($serviceDetailsData as $slug => $s) {
-    $pId = $pageIds[$slug];
-    
-    // Блок 1: Шапка услуги
-    $headerHtml = <<<HTML
-<section class="page-header">
-  <div class="wrap">
-    <div class="eyebrow" style="color:var(--gold)">Услуги</div>
-    <h1>{$s['title']}</h1>
-    <p>{$s['desc']}</p>
-  </div>
-</section>
-HTML;
-    Block::create($pId, 'ru', 'html', '01. Page Header', ['html' => $headerHtml], '', null, 0);
-
-    // Блок 2: Детали услуги
-    $detailHtml = <<<HTML
-<section class="section">
-  <div class="wrap" style="max-width:800px">
-    <div class="rich-text">
-      {$s['content']}
-    </div>
-    <div style="margin-top:50px;padding-top:30px;border-top:1px solid var(--line)">
-      <a class="btn primary" href="/kontakty">Отправить запрос на расчет</a>
-    </div>
-  </div>
-</section>
-HTML;
-    Block::create($pId, 'ru', 'html', '02. Service Details', ['html' => $detailHtml], '', null, 0);
-}
+// Detailed subpages are no longer needed because all services detailed descriptions
+// are handled inline on the same page dynamically via modal triggers.
 
 
 // ==========================================

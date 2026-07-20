@@ -217,11 +217,16 @@ document.addEventListener('DOMContentLoaded', () => {
             'market': {
                 title: 'Выход на рынок Узбекистана',
                 content: `
-                    <p>Подготовка стратегии запуска коммерческой деятельности и импорта в Республику Узбекистан.</p>
+                    <p>Разработка дорожной карты запуска коммерческой деятельности и юридической схемы работы в РУз.</p>
+                    <h3 style="margin: 25px 0 12px; font-family: var(--serif); font-size: 20px;">Что входит в услугу:</h3>
+                    <ul style="margin: 0 0 20px; padding-left: 20px; line-height: 1.6; display: grid; gap: 8px;">
+                      <li><b>Маркетинговые исследования:</b> Оценка рынка, анализ ценового позиционирования конкурентов, выявление ключевых дистрибьюторов.</li>
+                      <li><b>Анализ барьеров:</b> Расчет таможенных пошлин, акцизов, НДС и обязательных платежей при импорте.</li>
+                      <li><b>Разработка схемы работы:</b> Выбор формы присутствия (дочернее общество, СП, представительство) и налогового режима.</li>
+                      <li><b>Дорожная карта:</b> Подробный график запуска с указанием этапов, сроков и бюджетов.</li>
+                    </ul>
                     <div class="detail-grid">
-                        <div class="detail"><b>Сроки:</b><span>От 15 рабочих дней</span></div>
-                        <div class="detail"><b>Анализ:</b><span>Конкуренты, цены и емкость рынка</span></div>
-                        <div class="detail"><b>Логика:</b><span>Разработка дорожной карты запуска</span></div>
+                        <div class="detail"><b>Сроки:</b><span>От 15 до 30 рабочих дней</span></div>
                         <div class="detail"><b>Результат:</b><span>Практический план коммерческой деятельности</span></div>
                     </div>
                 `
@@ -229,11 +234,16 @@ document.addEventListener('DOMContentLoaded', () => {
             'permits': {
                 title: 'Разрешительные документы',
                 content: `
-                    <p>Сопровождение государственной регистрации и сертификации регулируемой продукции под ключ.</p>
+                    <p>Сопровождение государственной регистрации и сертификации регулируемой продукции под ключ в уполномоченных ведомствах Узбекистана.</p>
+                    <h3 style="margin: 25px 0 12px; font-family: var(--serif); font-size: 20px;">Ключевые направления:</h3>
+                    <ul style="margin: 0 0 20px; padding-left: 20px; line-height: 1.6; display: grid; gap: 8px;">
+                      <li><b>Удобрения и пестициды (СЗР):</b> Подача заявок в Минсельхоз РУз, координация полевых тестов, токсикологическая экспертиза.</li>
+                      <li><b>БАДы и продукты питания:</b> Получение гигиенического заключения СЭС РУз, проведение лабораторных тестов на показатели безопасности.</li>
+                      <li><b>Парфюмерия и косметика:</b> Оформление санитарно-эпидемиологических заключений и регистрация деклараций соответствия.</li>
+                      <li><b>Ветеринарные препараты:</b> Регистрация в Комитете ветеринарии и развития животноводства РУз.</li>
+                    </ul>
                     <div class="detail-grid">
-                        <div class="detail"><b>Проверка:</b><span>Аудит досье производителя перед подачей</span></div>
-                        <div class="detail"><b>Испытания:</b><span>Токсикологические тесты и полевые испытания</span></div>
-                        <div class="detail"><b>Реестр:</b><span>Внесение в реестр Минсельхоза, СЭС или Комитета вет</span></div>
+                        <div class="detail"><b>Экспертиза:</b><span>Аудит досье производителя перед подачей</span></div>
                         <div class="detail"><b>Результат:</b><span>Официальное регистрационное свидетельство</span></div>
                     </div>
                 `
@@ -242,10 +252,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Экспортное сопровождение',
                 content: `
                     <p>Оформление пакета документов для легальных поставок товаров из Узбекистана в СНГ и Евросоюз.</p>
+                    <h3 style="margin: 25px 0 12px; font-family: var(--serif); font-size: 20px;">Основные этапы подготовки:</h3>
+                    <ul style="margin: 0 0 20px; padding-left: 20px; line-height: 1.6; display: grid; gap: 8px;">
+                      <li><b>Аудит упаковки и маркировки:</b> Адаптация этикеток под требования технических регламентов ТС или ЕС (языки, знаки соответствия, пищевая ценность).</li>
+                      <li><b>Оформление сертификатов:</b> Помощь в получении сертификатов происхождения (СТ-1, Form A), фитосанитарных и ветеринарных документов.</li>
+                      <li><b>Подготовка к проверкам:</b> Предварительный аудит производственных линий перед государственным инспектированием.</li>
+                    </ul>
                     <div class="detail-grid">
-                        <div class="detail"><b>Маркировка:</b><span>Подготовка этикеток по техническим регламентам</span></div>
-                        <div class="detail"><b>Сертификация:</b><span>Оформление сертификатов СТ-1, фито и вет</span></div>
-                        <div class="detail"><b>Аудит:</b><span>Проверка производства перед государственным инспектированием</span></div>
+                        <div class="detail"><b>Документы:</b><span>Сертификаты происхождения, фито и вет</span></div>
                         <div class="detail"><b>Результат:</b><span>Беспрепятственное прохождение таможни</span></div>
                     </div>
                 `
@@ -254,18 +268,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Стандарты качества & Аккредитация',
                 content: `
                     <p>Разработка, внедрение и сопровождение сертификации систем управления качеством.</p>
+                    <h3 style="margin: 25px 0 12px; font-family: var(--serif); font-size: 20px;">Наши направления работы:</h3>
+                    <ul style="margin: 0 0 20px; padding-left: 20px; line-height: 1.6; display: grid; gap: 8px;">
+                      <li><b>Пищевая безопасность:</b> Разработка и внедрение принципов ХАССП (HACCP / ISO 22000 / FSSC 22000).</li>
+                      <li><b>Косметическое GMP:</b> Внедрение стандарта ISO 22716 на косметических производствах.</li>
+                      <li><b>Аккредитация лабораторий:</b> Подготовка испытательных лабораторий к аккредитации по международному стандарту ISO/IEC 17025.</li>
+                    </ul>
                     <div class="detail-grid">
-                        <div class="detail"><b>Стандарты:</b><span>ISO 9001, ISO 22000 (HACCP), ISO 22716 (GMP)</span></div>
-                        <div class="detail"><b>Лаборатории:</b><span>Подготовка к аккредитации по ISO/IEC 17025</span></div>
-                        <div class="detail"><b>Обучение:</b><span>Обучение аудиторов, разработка СОП и руководств</span></div>
+                        <div class="detail"><b>Стандарты:</b><span>ISO 9001, ISO 22000, ISO 22716</span></div>
                         <div class="detail"><b>Результат:</b><span>Успешный внешний аудит и сертификат соответствия</span></div>
                     </div>
                 `
             }
         };
 
+        const openServiceModal = (val) => {
+            const data = selectorDb[val];
+            if (data) {
+                modalTitle.textContent = data.title;
+                modalContent.innerHTML = data.content;
+                modal.classList.add('show');
+            }
+        };
+
         window.closeModal = () => {
             modal.classList.remove('show');
+            if (window.location.hash.startsWith('#service-')) {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
         };
 
         closeBtn.addEventListener('click', window.closeModal);
@@ -273,18 +303,32 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === modal) window.closeModal();
         });
 
-        quickButtons.forEach(btn => {
+        // Open by click
+        document.querySelectorAll('.quick, [href^="#service-"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const val = btn.getAttribute('data-value');
-                const data = selectorDb[val];
-                if (data) {
-                    modalTitle.textContent = data.title;
-                    modalContent.innerHTML = data.content;
-                    modal.classList.add('show');
+                const href = btn.getAttribute('href');
+                const val = btn.getAttribute('data-value') || (href && href.startsWith('#service-') ? href.replace('#service-', '') : null);
+                if (val && selectorDb[val]) {
+                    e.preventDefault();
+                    openServiceModal(val);
+                    window.location.hash = 'service-' + val;
                 }
             });
         });
+
+        // Open by hash on page load
+        const handleHash = () => {
+            const hash = window.location.hash;
+            if (hash.startsWith('#service-')) {
+                const val = hash.replace('#service-', '');
+                if (selectorDb[val]) {
+                    openServiceModal(val);
+                }
+            }
+        };
+
+        window.addEventListener('hashchange', handleHash);
+        handleHash();
     }
 
     // 6. Cookie notice popup
