@@ -115,49 +115,18 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .a11y-toggle, .site-theme-toggle, .site-search, .site-search input, .site-search-toggle { color: var(--gov-title); }
 .site-search {
     border: 1px solid var(--gov-border);
-    border-radius: 50%;
-    background: transparent;
-    width: 44px;
-    height: 44px;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, border-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 0;
-    overflow: hidden;
+    border-radius: 999px;
+    background: var(--gov-surface);
 }
 .site-search input {
     border: 0 !important;
     background: transparent !important;
     background-image: none !important;
     border-radius: 0 !important;
-    padding: 0 !important;
-    width: 0;
-    opacity: 0;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
 }
 .site-search button {
     border: 0 !important;
     background: transparent !important;
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    padding: 0;
-}
-.site-search.is-active {
-    width: 220px;
-    border-radius: 999px;
-    background: var(--gov-surface);
-    padding-inline: 14px 4px;
-}
-.site-search.is-active input {
-    width: 140px;
-    opacity: 1;
-    padding: 6px 0 !important;
 }
 .site-burger { color: var(--gov-title); border-color: var(--gov-border); }
 
@@ -175,7 +144,7 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 :root[data-theme="dark"] .site-lang-switcher__item { color: var(--gov-ink); }
 :root[data-theme="dark"] .site-lang-switcher__item.is-active { color: var(--gov-teal-text, #3fc1c0); }
 :root[data-theme="dark"] .site-burger { color: var(--gov-ink); border-color: var(--gov-border); }
-:root[data-theme="dark"] .site-search.is-active { background: color-mix(in srgb, var(--gov-surface) 70%, #000); }
+:root[data-theme="dark"] .site-search { background: color-mix(in srgb, var(--gov-surface) 70%, #000); }
 /* Свой цвет шапки (конструктор: middlebar/bottombar bg) не зависит от темы —
    в ночном режиме фон остаётся заданным (обычно светлым). Возвращаем шапке
    светлые значения токенов, чтобы текст/иконки/лого не перекрашивались в
@@ -1536,8 +1505,7 @@ body .site-header--transparent:not(.is-scrolled) .site-header__logo:has(.site-he
 .site-header--transparent:not(.is-scrolled) .site-menu__link:hover,
 .site-header--transparent:not(.is-scrolled) .site-menu__link:focus-visible { color: #9fe3e4; }
 body .site-header--transparent:not(.is-scrolled) .site-nav { border-top-color: rgba(255,255,255,.16); background: transparent; }
-.site-header--transparent:not(.is-scrolled) .site-search:not(.is-active) { background: transparent !important; border-color: rgba(255,255,255,.3) !important; }
-.site-header--transparent:not(.is-scrolled) .site-search.is-active { background: rgba(255,255,255,.18) !important; border-color: rgba(255,255,255,.4) !important; }
+.site-header--transparent:not(.is-scrolled) .site-search { background: rgba(255,255,255,.15) !important; border-color: rgba(255,255,255,.3) !important; }
 .site-header--transparent:not(.is-scrolled) .site-search input { color: #fff !important; }
 .site-header--transparent:not(.is-scrolled) .site-search button { color: #fff !important; }
 .site-header--transparent:not(.is-scrolled) .site-search input::placeholder { color: rgba(255,255,255,.6); }
