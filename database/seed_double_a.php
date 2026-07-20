@@ -562,31 +562,158 @@ HTML
         'html' => <<<'HTML'
 <section class="section">
   <div class="wrap">
-    <div class="services-grid">
-      <a class="service quick" href="#service-market" data-value="market">
-        <span class="service-no">01</span>
-        <h3>Выход на рынок Узбекистана</h3>
-        <p>Анализ конкурентов, пошлин, емкости рынка и подготовка юридической схемы работы.</p>
-        <span class="go">↗</span>
-      </a>
-      <a class="service quick" href="#service-permits" data-value="permits">
-        <span class="service-no">02</span>
-        <h3>Разрешительные документы</h3>
-        <p>Регистрация удобрений, СЗР, пищевой продукции, БАД, косметики и ветпрепаратов.</p>
-        <span class="go">↗</span>
-      </a>
-      <a class="service quick" href="#service-export" data-value="export">
-        <span class="service-no">03</span>
-        <h3>Экспортное сопровождение</h3>
-        <p>Подготовка производственных линий и упаковки для беспрепятственного экспорта в ЕС и СНГ.</p>
-        <span class="go">↗</span>
-      </a>
-      <a class="service quick" href="#service-iso" data-value="iso">
-        <span class="service-no">04</span>
-        <h3>Международные стандарты</h3>
-        <p>Разработка СОП, ХАССП (ISO 22000), GMP, подготовка лабораторий к аккредитации по ISO 17025.</p>
-        <span class="go">↗</span>
-      </a>
+    <div class="services-editorial-list">
+      <!-- 01. Market Entry -->
+      <article class="service-editorial-item">
+        <div class="service-editorial-left">
+          <span class="service-editorial-num">01</span>
+          <h2>Выход на рынок Узбекистана</h2>
+          <p>Комплексная стратегия запуска коммерческой деятельности, анализ регуляторных рисков и разработка оптимальной юридической модели присутствия.</p>
+          <a class="btn primary" href="/kontakty">Обсудить проект</a>
+        </div>
+        <div class="service-editorial-right">
+          <div class="service-sublist-title">Что входит в услугу</div>
+          <div class="service-subitems">
+            <div class="service-subitem">
+              <h4>Маркетинговые исследования</h4>
+              <p>Оценка емкости рынка, анализ цен конкурентов и выявление надежных дистрибьюторских сетей.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Анализ таможенных барьеров</h4>
+              <p>Расчет пошлин, акцизов, импортного НДС и определение нетарифных мер регулирования.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Юридическое структурирование</h4>
+              <p>Выбор оптимальной формы присутствия (дочернее общество, СП, представительство) и налогового режима.</p>
+            </div>
+          </div>
+          <div class="service-metrics-grid">
+            <div class="service-metric">
+              <b>Сроки реализации</b>
+              <span>От 15 до 30 рабочих дней</span>
+            </div>
+            <div class="service-metric">
+              <b>Итоговый результат</b>
+              <span>Детальный бизнес-план запуска</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02. Permits & Registrations -->
+      <article class="service-editorial-item">
+        <div class="service-editorial-left">
+          <span class="service-editorial-num">02</span>
+          <h2>Разрешительные документы</h2>
+          <p>Профессиональное сопровождение государственной регистрации и обязательной сертификации регулируемых категорий продукции под ключ.</p>
+          <a class="btn primary" href="/kontakty">Начать регистрацию</a>
+        </div>
+        <div class="service-editorial-right">
+          <div class="service-sublist-title">Отраслевая экспертиза</div>
+          <div class="service-subitems">
+            <div class="service-subitem">
+              <h4>Сельское хозяйство и агрохимия</h4>
+              <p>Регистрация минеральных удобрений, СЗР и пестицидов. Организация полевых и токсикологических испытаний.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Пищевая продукция и БАД</h4>
+              <p>Получение гигиенических заключений СЭС РУз, проведение лабораторных тестов безопасности.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Косметика и парфюмерия</h4>
+              <p>Разработка технических досье, декларирование соответствия, прохождение санитарно-эпидемиологического контроля.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Ветеринария и ветпрепараты</h4>
+              <p>Регистрация препаратов и кормовых добавок в Комитете ветеринарии и развития животноводства РУз.</p>
+            </div>
+          </div>
+          <div class="service-metrics-grid">
+            <div class="service-metric">
+              <b>Сроки ведения</b>
+              <span>От 45 до 90 рабочих дней</span>
+            </div>
+            <div class="service-metric">
+              <b>Итоговый документ</b>
+              <span>Регистрационное удостоверение РУз</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03. Export Support -->
+      <article class="service-editorial-item">
+        <div class="service-editorial-left">
+          <span class="service-editorial-num">03</span>
+          <h2>Экспортное сопровождение</h2>
+          <p>Комплексная адаптация продукции, упаковки и технологических процессов для успешного экспорта товаров из Узбекистана в СНГ и ЕС.</p>
+          <a class="btn primary" href="/kontakty">Подготовить экспорт</a>
+        </div>
+        <div class="service-editorial-right">
+          <div class="service-sublist-title">Ключевые направления</div>
+          <div class="service-subitems">
+            <div class="service-subitem">
+              <h4>Аудит упаковки и маркировки</h4>
+              <p>Приведение этикеток и текстовой информации в соответствие техническим регламентам стран импорта.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Сертификаты происхождения (СТ-1)</h4>
+              <p>Полноценное оформление сертификатов происхождения СТ-1, Form A, фитосанитарных и ветеринарных документов.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Инспекционный аудит</h4>
+              <p>Предварительный технологический аудит производства перед визитом зарубежных инспекторов.</p>
+            </div>
+          </div>
+          <div class="service-metrics-grid">
+            <div class="service-metric">
+              <b>Подготовка</b>
+              <span>От 20 рабочих дней</span>
+            </div>
+            <div class="service-metric">
+              <b>Итоговый результат</b>
+              <span>Зеленый коридор на таможне импорта</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04. Standards & Accreditation -->
+      <article class="service-editorial-item">
+        <div class="service-editorial-left">
+          <span class="service-editorial-num">04</span>
+          <h2>Международные стандарты</h2>
+          <p>Внедрение современных систем менеджмента качества и техническая подготовка лабораторий к признанию на мировом уровне.</p>
+          <a class="btn primary" href="/kontakty">Внедрить стандарт</a>
+        </div>
+        <div class="service-editorial-right">
+          <div class="service-sublist-title">Стандарты качества</div>
+          <div class="service-subitems">
+            <div class="service-subitem">
+              <h4>ХАССП (HACCP / ISO 22000)</h4>
+              <p>Внедрение систем контроля рисков и пищевой безопасности для производств и экспортеров.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Косметическое GMP (ISO 22716)</h4>
+              <p>Внедрение надлежащей производственной практики на парфюмерно-косметических предприятиях.</p>
+            </div>
+            <div class="service-subitem">
+              <h4>Аккредитация лабораторий (ISO 17025)</h4>
+              <p>Разработка СОП, методик калибровки, проведение МСИ и аудит готовности к аккредитации.</p>
+            </div>
+          </div>
+          <div class="service-metrics-grid">
+            <div class="service-metric">
+              <b>Внедрение</b>
+              <span>От 30 до 60 рабочих дней</span>
+            </div>
+            <div class="service-metric">
+              <b>Итоговый статус</b>
+              <span>Международный сертификат соответствия</span>
+            </div>
+          </div>
+        </div>
+      </article>
     </div>
   </div>
 </section>
