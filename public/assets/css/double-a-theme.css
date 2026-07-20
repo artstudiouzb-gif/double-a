@@ -7,19 +7,19 @@
    ========================================================================== */
 
 :root {
-    --ink: #0b1a16 !important;
-    --muted: #566863 !important;
-    --navy: #05251d !important;
-    --navy2: #09372c !important;
-    --emerald: #0b493a !important;
-    --mint: #d1ebd5 !important;
-    --cream: #faf8f5 !important;
+    --ink: #051411 !important;
+    --muted: #5a6e69 !important;
+    --navy: #03201a !important;
+    --navy2: #052b23 !important;
+    --emerald: #04261f !important;
+    --mint: #cee6e0 !important;
+    --cream: #fbfaf7 !important;
     --white: #fff !important;
-    --gold: #e2bf75 !important;
-    --gold-hover: #edd195 !important;
-    --line: rgba(5,37,29,0.08) !important;
-    --shadow: 0 30px 70px rgba(5,37,29,0.06) !important;
-    --radius: 20px !important;
+    --gold: #d4af37 !important; /* Authentic Silk Gold */
+    --gold-hover: #e2c057 !important;
+    --line: rgba(3,32,26,0.06) !important;
+    --shadow: 0 35px 80px rgba(3,32,26,0.05) !important;
+    --radius: 24px !important;
     
     /* Typography */
     --serif: 'Playfair Display', Georgia, "Times New Roman", serif !important;
@@ -131,7 +131,22 @@ p {
     padding: 120px 0;
 }
 .section.soft {
-    background: #f2f0eb;
+    background: #f4f2ea;
+    position: relative;
+    overflow: hidden;
+}
+.section.soft:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='rgba(11,73,58,0.015)' stroke-width='0.8'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M0 0 L80 80 M80 0 L0 80'/%3E%3Ccircle cx='40' cy='40' r='10'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 80px 80px;
+    opacity: 0.85;
+    pointer-events: none;
+}
+.section.soft > * {
+    position: relative;
+    z-index: 1;
 }
 .section.dark {
     background: var(--navy);
@@ -438,10 +453,10 @@ p {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(226,191,117,0.14) 1px, transparent 1px);
-    background-size: 40px 40px;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
-    -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='rgba(212,175,55,0.045)' stroke-width='0.8'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M0 0 L80 80 M80 0 L0 80'/%3E%3Ccircle cx='40' cy='40' r='10'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 80px 80px;
+    mask-image: radial-gradient(circle at center, black, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at center, black, transparent 85%);
 }
 .hero:after {
     content: "";
