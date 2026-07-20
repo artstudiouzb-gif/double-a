@@ -113,21 +113,9 @@ body.design-header-accent .site-nav, body.design-header-dark .site-nav { border-
 .site-lang-switcher__item.is-active { color: var(--gov-teal); }
 .site-lang-switcher__item:not(.is-active):hover { color: var(--color-accent, var(--gov-teal)) !important; opacity: 0.85; }
 .a11y-toggle, .site-theme-toggle, .site-search, .site-search input, .site-search-toggle { color: var(--gov-title); }
-.site-search {
-    border: 1px solid var(--gov-border);
-    border-radius: 999px;
-    background: var(--gov-surface);
-}
-.site-search input {
-    border: 0 !important;
-    background: transparent !important;
-    background-image: none !important;
-    border-radius: 0 !important;
-}
-.site-search button {
-    border: 0 !important;
-    background: transparent !important;
-}
+.site-search { border: 1px solid var(--gov-border); border-radius: 999px; background: var(--gov-surface); }
+.site-search input { border: 0 !important; background: transparent !important; background-image: none !important; border-radius: 0 !important; }
+.site-search button { border: 0 !important; background: transparent !important; }
 .site-burger { color: var(--gov-title); border-color: var(--gov-border); }
 
 /* Тёмная тема: элементы управления в сплошной (непрозрачной) шапке. Без этих
@@ -1062,9 +1050,7 @@ body:has(.site-header--transparent) .block-hero .content-crumbs--on-hero { top: 
    чего в тёмной теме подложка оставалась белой. */
 :root { --gov-bg-alt: #f8f9fa; }
 :root[data-theme="dark"] { --gov-bg-alt: #1c2942; }
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
-    outline-offset: 2px; border-radius: 4px;
-}
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline-offset: 2px; border-radius: 4px; }
 .cms-block--bg-navy a:focus-visible, .block-ctaband a:focus-visible, .featband a:focus-visible, .timeline-cta a:focus-visible { outline-color: #fff; }
 .section-head__all, .newsfeat__more, .person-card__more, .imgcard__more { color: var(--gov-teal-text); }
 .imgcard__more { color: rgba(255,255,255,.92); } /* на тёмном фото остаётся белым */
@@ -2474,14 +2460,5 @@ body.design-scrolltop .scroll-top:focus-visible { outline: 2px solid var(--gov-t
 }
 
 /* Анимация фокуса для фильтров, поиска и полей ввода */
-.catlist-toolbar__search input, .catlist-toolbar__sort {
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important;
-}
-.catlist-toolbar__search input:focus,
-.catlist-toolbar__search input:focus-visible,
-.catlist-toolbar__sort:focus,
-.catlist-toolbar__sort:focus-visible {
-    border-color: var(--color-accent, var(--gov-teal)) !important;
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent, var(--gov-teal)) 15%, transparent) !important;
-    outline: none !important;
-}
+.catlist-toolbar__search input, .catlist-toolbar__sort { transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important; }
+.catlist-toolbar__search input:focus, .catlist-toolbar__search input:focus-visible, .catlist-toolbar__sort:focus, .catlist-toolbar__sort:focus-visible { border-color: var(--color-accent, var(--gov-teal)) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent, var(--gov-teal)) 15%, transparent) !important; outline: none !important; }
