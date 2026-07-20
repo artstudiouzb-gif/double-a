@@ -159,59 +159,45 @@ HTML
 </section>
 HTML
     ],
-    // 3. Service Advisor Wizard
+    // 3. Service Advisor Sentence Builder
     [
         'title' => '03. Service Advisor',
         'html' => <<<'HTML'
 <section class="section soft" id="advisor-section">
-  <div class="wrap" style="max-width: 800px">
+  <div class="wrap" style="max-width: 900px">
     <div style="text-align: center; margin-bottom: 50px">
-      <h2 style="font-size: 36px; margin-top: 10px">Подобрать услугу за 60 секунд</h2>
-      <p style="color: var(--muted); margin-top: 10px">Ответьте на 2 простых вопроса для составления предварительного маршрута вашего проекта.</p>
+      <div class="eyebrow" style="color:var(--gold)">Интерактивный навигатор</div>
+      <h2 style="font-size: clamp(32px, 4vw, 48px); margin-top: 10px; font-family:var(--serif); font-weight:600; color:var(--navy)">Подобрать услугу за 60 секунд</h2>
+      <p style="color: var(--muted); margin-top: 10px">Составьте маршрут вашего проекта в один клик с помощью нашего интерактивного конструктора.</p>
     </div>
     
-    <div class="advisor-card" id="serviceAdvisor">
-      <div class="advisor-progress" aria-hidden="true" style="background: rgba(3,32,26,0.06); height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 35px;">
-        <div class="advisor-bar" id="advisorBar" style="background: var(--gold); height: 100%; width: 33.3%; transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);"></div>
+    <div class="advisor-sentence-card">
+      <div class="advisor-sentence">
+        Мы представляем компанию в сфере 
+        <span class="advisor-select-wrap">
+          <select id="advisorIndustry" aria-label="Сфера деятельности">
+            <option value="" disabled selected>выберите отрасль</option>
+            <option value="agro">сельского хозяйства / удобрений</option>
+            <option value="food">пищевого бизнеса / БАДов</option>
+            <option value="cosmetic">косметики и парфюмерии</option>
+            <option value="vet">ветеринарии и ветпрепаратов</option>
+          </select>
+        </span>, 
+        и наша основная цель — 
+        <span class="advisor-select-wrap">
+          <select id="advisorGoal" aria-label="Цель проекта">
+            <option value="" disabled selected>выберите цель</option>
+            <option value="import">импортировать и реализовывать продукцию</option>
+            <option value="production">локализовать производство в Узбекистане</option>
+            <option value="export">выйти на экспорт (в СНГ или ЕС)</option>
+            <option value="iso">пройти сертификацию ISO / аккредитацию</option>
+          </select>
+        </span>.
       </div>
-      <!-- Step 1 -->
-      <div class="advisor-step active" data-step="1">
-        <div class="advisor-title">Шаг 1: Какова ваша сфера деятельности?</div>
-        <div class="advisor-desc">Это поможет сузить перечень регуляторных требований.</div>
-        <div class="advisor-options">
-          <button type="button" class="advisor-opt" data-value="agro">Сельское хозяйство / Удобрения / СЗР</button>
-          <button type="button" class="advisor-opt" data-value="food">Пищевой бизнес / БАДы</button>
-          <button type="button" class="advisor-opt" data-value="cosmetic">Косметика и парфюмерия</button>
-          <button type="button" class="advisor-opt" data-value="vet">Ветеринарные препараты</button>
-        </div>
-      </div>
-      <!-- Step 2 -->
-      <div class="advisor-step" data-step="2">
-        <div class="advisor-title">Шаг 2: Какая ваша основная цель?</div>
-        <div class="advisor-desc">Выберите целевое действие на рынке.</div>
-        <div class="advisor-options">
-          <button type="button" class="advisor-opt" data-value="import">Импорт и реализация продукции</button>
-          <button type="button" class="advisor-opt" data-value="production">Локализация производства</button>
-          <button type="button" class="advisor-opt" data-value="export">Выход на экспорт (СНГ/ЕС)</button>
-          <button type="button" class="advisor-opt" data-value="iso">Сертификация ISO / Аккредитация</button>
-        </div>
-      </div>
-      <!-- Step 3: Result -->
-      <div class="advisor-step" data-step="3">
-        <div class="advisor-title">Рекомендуемый маршрут проекта</div>
-        <div class="advisor-desc">Наш экспертный алгоритм сформировал следующие шаги:</div>
-        <div class="advisor-result" id="advisorResultText">
-          <!-- Result text will be injected here -->
-        </div>
-        <div style="margin-top:30px;display:flex;gap:12px;flex-wrap:wrap">
-          <a class="btn primary" href="/kontakty">Обсудить с координатором</a>
-          <button type="button" class="btn ghost" id="advisorResetBtn" style="color:var(--navy);border-color:var(--line)">Начать заново</button>
-        </div>
-      </div>
-      <!-- Controls -->
-      <div class="advisor-controls" id="advisorControls">
-        <button type="button" class="btn ghost" id="advisorPrevBtn" style="visibility:hidden;color:var(--navy);border-color:var(--line);min-height:46px;padding:0 20px;font-size:12px">Назад</button>
-        <button type="button" class="btn ink" id="advisorNextBtn" style="min-height:46px;padding:0 20px;font-size:12px" disabled>Продолжить</button>
+      
+      <div class="advisor-sentence-result" id="advisorResultCard">
+        <div class="result-placeholder">Выберите параметры выше для построения маршрута...</div>
+        <div class="result-content" id="advisorResultBody" style="display:none"></div>
       </div>
     </div>
   </div>

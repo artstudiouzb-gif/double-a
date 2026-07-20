@@ -96,22 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 4. Premium Service Advisor Wizard
-    const serviceAdvisor = document.getElementById('serviceAdvisor');
-    if (serviceAdvisor) {
-        let currentStep = 1;
-        const steps = serviceAdvisor.querySelectorAll('.advisor-step');
-        const prevBtn = document.getElementById('advisorPrevBtn');
-        const nextBtn = document.getElementById('advisorNextBtn');
-        const controls = document.getElementById('advisorControls');
-        const resetBtn = document.getElementById('advisorResetBtn');
-        const resultText = document.getElementById('advisorResultText');
+    // 4. Premium Service Advisor W    const selectIndustry = document.getElementById('advisorIndustry');
+    const selectGoal = document.getElementById('advisorGoal');
+    const resultCard = document.getElementById('advisorResultCard');
+    const resultBody = document.getElementById('advisorResultBody');
 
-        let selection = {
-            industry: null,
-            goal: null
-        };
-
+    if (selectIndustry && selectGoal && resultCard && resultBody) {
         const advisorDb = {
             'agro_import': '<strong>Выбранное направление: Агросектор -> Импорт</strong><br><br>Для импорта СЗР и удобрений в Узбекистан требуется оформление государственной регистрации в Минсельхозе РУз. <br><br><strong>Шаги маршрута:</strong><br>1. Подготовка регистрационного досье и химико-токсикологический анализ.<br>2. Организация и проведение полевых испытаний (длительность — 1 вегетационный период).<br>3. Токсиколого-гигиеническая экспертиза и утверждение регламентов применения.<br>4. Включение в государственный реестр разрешенных препаратов.',
             'agro_production': '<strong>Выбранное направление: Агросектор -> Производство</strong><br><br>Организация производства пестицидов и агрохимикатов в РУз подлежит строгому экологическому и промышленному лицензированию.<br><br><strong>Шаги маршрута:</strong><br>1. Проектирование завода и проведение государственной экологической экспертизы (ЗВОС).<br>2. Получение лицензии на работу с сильнодействующими ядовитыми веществами.<br>3. Разработка технических условий (ТС) на каждый выпускаемый препарат и госрегистрация.',
@@ -134,82 +124,28 @@ document.addEventListener('DOMContentLoaded', () => {
             'vet_iso': '<strong>Выбранное направление: Ветеринария -> Сертификация ISO</strong><br><br>Внедрение систем ISO/IEC 17025 для испытательных лабораторий ветеринарного контроля.<br><br><strong>Шаги маршрута:</strong><br>1. Оценка материально-технической базы ветеринарной лаборатории.<br>2. Внедрение системы качества, разработка процедур градуировки и поверки.<br>3. Проведение раундов межлабораторных сличительных испытаний (МСИ).<br>4. Прохождение аккредитации.',
         };
 
-        const updateSteps = () => {
-            steps.forEach((step, idx) => {
-                if (idx + 1 === currentStep) {
-                    step.classList.add('active');
-                } else {
-                    step.classList.remove('active');
-                }
-            });
-
-            const bar = document.getElementById('advisorBar');
-            if (bar) {
-                const percent = (currentStep / 3) * 100;
-                bar.style.width = percent + '%';
-            }
-
-            if (currentStep === 1) {
-                prevBtn.style.visibility = 'hidden';
-                nextBtn.textContent = 'Продолжить';
-                nextBtn.disabled = !selection.industry;
-                controls.style.display = 'flex';
-            } else if (currentStep === 2) {
-                prevBtn.style.visibility = 'visible';
-                nextBtn.textContent = 'Сформировать маршрут';
-                nextBtn.disabled = !selection.goal;
-                controls.style.display = 'flex';
-            } else if (currentStep === 3) {
-                controls.style.display = 'none';
-                const key = `${selection.industry}_${selection.goal}`;
+        const updateResult = () => {
+            const industry = selectIndustry.value;
+            const goal = selectGoal.value;
+            if (industry && goal) {
+                const key = `${industry}_${goal}`;
                 const text = advisorDb[key] || 'Данный маршрут находится в процессе разработки. Обратитесь к эксперту за детальной консультацией.';
-                resultText.innerHTML = text;
+                resultBody.innerHTML = `
+                    <div class="result-content">
+                        ${text}
+                        <div style="margin-top: 30px;">
+                            <a class="btn primary" href="/kontakty">Обсудить этот проект с координатором</a>
+                        </div>
+                    </div>
+                `;
+                resultBody.style.display = 'block';
+                const placeholder = resultCard.querySelector('.result-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
             }
         };
 
-        // Option selection
-        serviceAdvisor.querySelectorAll('.advisor-step[data-step="1"] .advisor-opt').forEach(opt => {
-            opt.addEventListener('click', () => {
-                serviceAdvisor.querySelectorAll('.advisor-step[data-step="1"] .advisor-opt').forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                selection.industry = opt.getAttribute('data-value');
-                nextBtn.disabled = false;
-            });
-        });
-
-        serviceAdvisor.querySelectorAll('.advisor-step[data-step="2"] .advisor-opt').forEach(opt => {
-            opt.addEventListener('click', () => {
-                serviceAdvisor.querySelectorAll('.advisor-step[data-step="2"] .advisor-opt').forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                selection.goal = opt.getAttribute('data-value');
-                nextBtn.disabled = false;
-            });
-        });
-
-        nextBtn.addEventListener('click', () => {
-            if (currentStep < 3) {
-                currentStep++;
-                updateSteps();
-            }
-        });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                updateSteps();
-            }
-        });
-
-        resetBtn.addEventListener('click', () => {
-            currentStep = 1;
-            selection = { industry: null, goal: null };
-            serviceAdvisor.querySelectorAll('.advisor-opt').forEach(o => o.classList.remove('selected'));
-            updateSteps();
-        });
-
-        updateSteps();
-    }
-
+        selectIndustry.addEventListener('change', updateResult);
+        selectGoal.addEventListener('change', updateResult);
     // 5. Quick Selector Modal dialog
     const quickButtons = document.querySelectorAll('.quick');
     const modal = document.getElementById('infoModal');
