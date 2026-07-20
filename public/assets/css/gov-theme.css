@@ -1568,7 +1568,6 @@ body:has(.site-header--borders-none) .site-topbar--light { border-bottom: 0; }
 body .site-header--borders-container { border-bottom: 0; }
 body .site-header--borders-container .site-nav { border-top: 0; }
 body .site-header--borders-container .site-header__inner { border-bottom: 1px solid var(--gov-border); }
-body .site-header--borders-container .site-nav .site-nav__inner { border-top: 1px solid var(--gov-border); }
 body .site-header--borders-container.site-header--transparent:not(.is-scrolled) .site-header__inner { border-bottom-color: rgba(255,255,255,.16); }
 body .site-header--borders-container.site-header--transparent:not(.is-scrolled) .site-nav .site-nav__inner { border-top-color: rgba(255,255,255,.16); }
 
