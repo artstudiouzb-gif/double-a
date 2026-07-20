@@ -470,11 +470,15 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/fonts.css'), ENT_QUOTES) ?>">
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/gov-fonts.css'), ENT_QUOTES) ?>">
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/frontend.css'), ENT_QUOTES) ?>">
-<link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/gov-theme.css'), ENT_QUOTES) ?>">
 <?php
 $siteTemplate = \App\Models\Setting::get('design_site_template', 'gov');
-if ($siteTemplate === 'modern_gov'): ?>
+if ($siteTemplate === 'double_a'): ?>
+<link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/double-a-theme.css'), ENT_QUOTES) ?>">
+<?php else: ?>
+<link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/gov-theme.css'), ENT_QUOTES) ?>">
+<?php if ($siteTemplate === 'modern_gov'): ?>
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/modern-gov-theme.css'), ENT_QUOTES) ?>">
+<?php endif; ?>
 <?php endif; ?>
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/rich-content.css'), ENT_QUOTES) ?>">
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/a11y.css'), ENT_QUOTES) ?>">
@@ -520,7 +524,7 @@ if ($siteTemplate === 'modern_gov'): ?>
 </style>
 <?php endif; ?>
 </head>
-<body class="<?= htmlspecialchars(trim($designBodyClass . (!empty($previewNotice) ? ' is-preview' : '')), ENT_QUOTES) ?>">
+<body class="<?= htmlspecialchars(trim($designBodyClass . (!empty($previewNotice) ? ' is-preview' : '') . (!empty($isStaticPage) ? ' page-static' : '')), ENT_QUOTES) ?>">
 <a href="#main-content" class="skip-link"><?= $et('Перейти к содержимому') ?></a>
 <?php if (!empty($previewNotice)): ?>
 <div class="preview-bar" role="status">
@@ -528,6 +532,37 @@ if ($siteTemplate === 'modern_gov'): ?>
 </div>
 <?php endif; ?>
 <?php if (empty($hideChrome)): // лендинг (группа 6) скрывает шапку сайта ?>
+<?php if ($siteTemplate === 'double_a'): ?>
+  <header class="header">
+    <div class="wrap nav">
+      <a class="brand" href="<?= htmlspecialchars(Locale::url('/', $currentLang), ENT_QUOTES) ?>" aria-label="DOUBLE A SOLUTIONS">
+        <span class="brandmark" aria-hidden="true"></span>
+        <span><strong>DOUBLE A SOLUTIONS</strong><small>MARKET · COMPLIANCE · GROWTH</small></span>
+      </a>
+      <nav class="navlinks" id="navlinks" aria-label="Main navigation">
+        <?php foreach ($menuItems as $mi): ?>
+          <a href="<?= htmlspecialchars(MenuItem::resolveUrl($mi, $currentLang), ENT_QUOTES) ?>">
+            <?= htmlspecialchars($mi['title'], ENT_QUOTES) ?>
+          </a>
+        <?php endforeach; ?>
+      </nav>
+      <div class="lang" id="lang">
+        <button class="lang-btn" id="langBtn" aria-expanded="false" aria-label="Choose language"><b id="langCode"><?= strtoupper($currentLang) ?></b><span>⌄</span></button>
+        <div class="lang-menu" id="langMenu">
+          <?php foreach ($activeLangs as $l): ?>
+            <button data-lang="<?= htmlspecialchars((string) $l['code'], ENT_QUOTES) ?>"><?= htmlspecialchars($l['name'], ENT_QUOTES) ?></button>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <?php if ($hcfg['cta']['enabled'] && $hcfg['cta']['text'] !== ''): ?>
+        <a class="btn ink" href="<?= htmlspecialchars($hcfg['cta']['url'] !== '' ? $hcfg['cta']['url'] : '#contact', ENT_QUOTES) ?>">
+          <?= htmlspecialchars($hcfg['cta']['text'], ENT_QUOTES) ?>
+        </a>
+      <?php endif; ?>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+<?php else: ?>
 <div class="a11y-panel<?= $a11y['on'] ? ' is-open' : '' ?>" id="a11y-panel" role="region" aria-label="<?= $et('Настройки версии для слабовидящих') ?>">
     <div class="a11y-panel__group">
         <b><?= $et('Цвет:') ?></b>
@@ -598,6 +633,7 @@ $headerExtraVars = ($midBg !== '' ? '--header-mid-bg:' . $midBg . ';' : '')
         <button type="button" class="site-search-overlay__close" aria-label="<?= $et('Закрыть поиск') ?>" data-search-close>&times;</button>
     </form>
 </div>
+<?php endif; ?>
 <?php endif; ?>
 <?php endif; ?>
 <main class="site-content" id="main-content">

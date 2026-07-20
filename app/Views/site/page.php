@@ -12,6 +12,7 @@ $extraHeadCss = $blockCss;
 $hideChrome = !empty($page['hide_chrome']); // лендинг (группа 6)
 // Флаг страницы «Прозрачная шапка» — активирует режим из конструктора.
 $transparentHeader = !empty($page['transparent_header']);
+$isStaticPage = true;
 require __DIR__ . '/_header.php';
 
 // Первый блок — hero (шапка-герой)? Тогда он служит заголовком страницы.

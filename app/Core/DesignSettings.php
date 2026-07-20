@@ -28,6 +28,7 @@ final class DesignSettings
         'emerald' => ['Изумруд', '#14532d', '#059669'],
         'graphite' => ['Графит', '#111827', '#374151'],
         'violet' => ['Индиго', '#312e81', '#6d28d9'],
+        'double_a' => ['Double A', '#062c37', '#d5ae62'],
         'custom' => ['Свои цвета', '', ''],
     ];
 
@@ -74,7 +75,7 @@ final class DesignSettings
             'label' => 'Цветовая палитра',
             'hint' => 'Основной и акцентный цвета сайта. «Свои цвета» — ручные значения ниже.',
             'group' => 'Цвета и шрифт',
-            'choices' => ['gov_blue' => 'Гос-синий', 'classic_red' => 'Классика', 'emerald' => 'Изумруд', 'graphite' => 'Графит', 'violet' => 'Индиго', 'custom' => 'Свои цвета'],
+            'choices' => ['gov_blue' => 'Гос-синий', 'classic_red' => 'Классика', 'emerald' => 'Изумруд', 'graphite' => 'Графит', 'violet' => 'Индиго', 'double_a' => 'Double A', 'custom' => 'Свои цвета'],
             'default' => 'custom',
         ],
         'font_style' => [
@@ -86,10 +87,10 @@ final class DesignSettings
         ],
         'site_template' => [
             'label' => 'Шаблон сайта',
-            'hint' => 'Основной визуальный стиль и сетка сайта. «Официальный» — классическая гос-тема с засечками. «Современный» — трендовый дизайн без засечек с просторным расположением блоков и мягкими тенями.',
+            'hint' => 'Основной визуальный стиль и сетка сайта. «Официальный» — классическая гос-тема с засечками. «Современный» — трендовый дизайн без засечек с просторным расположением блоков и мягкими тенями. «Double A» — премиум-дизайн в темных изумрудных и золотых тонах.',
             'group' => 'Общие',
-            'choices' => ['gov' => 'Официальный', 'modern_gov' => 'Современный'],
-            'default' => 'gov',
+            'choices' => ['gov' => 'Официальный', 'modern_gov' => 'Современный', 'double_a' => 'Double A Solutions'],
+            'default' => 'double_a',
         ],
         'container' => [
             'label' => 'Ширина контейнера',
@@ -230,6 +231,11 @@ final class DesignSettings
      * Готовые конфигурации: применяют набор опций одним кликом.
      */
     public const PRESETS = [
+        'double_a' => [
+            'label' => 'Double A Solutions',
+            'desc' => 'Премиум-дизайн для Double A Solutions (темный изумруд, золото, шрифт Inter/Georgia).',
+            'values' => ['site_template' => 'double_a', 'container' => 'wide', 'radius' => 'large', 'card_gap' => 'md', 'density' => 'spacious', 'font_size' => 'md', 'line_height' => 'relaxed', 'button' => 'pill', 'card_style' => 'elevated', 'sidebar_position' => 'floating', 'catalog_layout' => 'cards_lg', 'header_style' => 'light', 'header_sticky' => 'on', 'search_type' => 'overlay', 'detail_layout' => 'sidebar', 'footer_style' => 'columns', 'mobile_menu' => 'burger', 'mobile_header' => 'fixed', 'type_scale' => 'fluid', 'scroll_top' => 'on', 'palette' => 'double_a', 'font_style' => 'inter'],
+        ],
         'classic' => [
             'label' => 'Классический',
             'desc' => 'Строгий официальный стиль, умеренные отступы.',

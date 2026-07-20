@@ -27,6 +27,70 @@ if ($privacyPageId > 0) {
 </main>
 <?php if (empty($hideChrome)): // лендинг (группа 6) скрывает футер сайта ?>
 <?php
+$siteTemplate = \App\Models\Setting::get('design_site_template', 'gov');
+if ($siteTemplate === 'double_a'): ?>
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="<?= htmlspecialchars(\App\Core\Locale::url('/', $currentLang ?? null), ENT_QUOTES) ?>" style="margin-bottom:20px;display:flex">
+          <span class="brandmark" aria-hidden="true" style="background:#fff"></span>
+          <span style="color:#fff"><strong>DOUBLE A SOLUTIONS</strong><small style="color:rgba(255,255,255,.5)">MARKET · COMPLIANCE · GROWTH</small></span>
+        </a>
+        <p style="font-size:11px;color:rgba(255,255,255,.55);max-width:320px">Регуляторный консалтинг, сопровождение выхода на рынок Узбекистана и развитие экспорта.</p>
+      </div>
+      <div>
+        <h4>Услуги</h4>
+        <a href="/services">Выход на рынок</a>
+        <a href="/services">Разрешительные документы</a>
+        <a href="/services">Экспортное сопровождение</a>
+        <a href="/services">Стандарты качества</a>
+      </div>
+      <div>
+        <h4>Отрасли</h4>
+        <a href="/#industries">Сельское хозяйство</a>
+        <a href="/#industries">Пищевой бизнес</a>
+        <a href="/#industries">Химическая отрасль</a>
+        <a href="/#industries">Косметика и БАД</a>
+      </div>
+      <div>
+        <h4>Компания</h4>
+        <a href="/o-nas">О нас</a>
+        <a href="/projects">Кейсы</a>
+        <a href="/press-centr">База знаний</a>
+        <a href="/kontakty">Контакты</a>
+      </div>
+    </div>
+    <div class="wrap footer-bottom">
+      <span>&copy; <?= date('Y') ?> DOUBLE A SOLUTIONS. All rights reserved.</span>
+      <span>Created by <a href="https://artstudio.uz" target="_blank" style="display:inline;color:inherit;text-decoration:underline">ArtStudio</a></span>
+    </div>
+  </footer>
+
+  <!-- Global Modal Popup -->
+  <div class="modal" id="infoModal">
+    <div class="modal-card">
+        <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+        <h2 id="modalTitle">Консультация</h2>
+        <div id="modalContent"></div>
+        <div style="margin-top:28px">
+            <a class="btn ink" href="/kontakty" onclick="closeModal()">Обсудить проект</a>
+        </div>
+    </div>
+  </div>
+
+  <!-- Global Cookie Bar -->
+  <div class="cookie" id="cookieBar">
+    <p>Мы используем файлы cookie для анализа трафика и улучшения работы сайта. Продолжая использование, вы соглашаетесь с условиями.</p>
+    <div class="cookie-actions">
+        <button type="button" class="btn primary" id="cookieAccept" style="min-height:38px;padding:0 15px;font-size:11px">Принять</button>
+        <button type="button" class="btn ghost" id="cookieDecline" style="min-height:38px;padding:0 15px;font-size:11px;color:var(--navy);border-color:var(--line)">Отклонить</button>
+    </div>
+  </div>
+
+  <!-- Global Toast -->
+  <div class="toast" id="toast"></div>
+<?php else: ?>
+<?php
 $footerCfg = \App\Core\FooterConfig::get();
 $footerStyle = $footerCfg['style'];
 $phone = Setting::get('contact_phone', '');
@@ -159,6 +223,7 @@ $renderFooterWidget = function (array $col) use ($footerLogo, $siteName, $addres
 </footer>
 <?php endif; ?>
 <?php endif; ?>
+<?php endif; ?>
 <?php // Плавающая кнопка «Наверх» — видимостью управляет класс body.design-scrolltop
       // (тумблер в «Дизайн») и JS (появляется после прокрутки). ?>
 <button type="button" class="scroll-top" data-scroll-top aria-label="<?= htmlspecialchars(t('Наверх'), ENT_QUOTES) ?>" title="<?= htmlspecialchars(t('Наверх'), ENT_QUOTES) ?>">
@@ -167,6 +232,9 @@ $renderFooterWidget = function (array $col) use ($footerLogo, $siteName, $addres
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/a11y.js'), ENT_QUOTES) ?>" defer></script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/frontend.js'), ENT_QUOTES) ?>" defer></script>
 <script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/forms.js'), ENT_QUOTES) ?>" defer></script>
+<?php if (\App\Models\Setting::get('design_site_template', 'gov') === 'double_a'): ?>
+<script src="<?= htmlspecialchars(\App\Core\Asset::url('/assets/js/double-a.js'), ENT_QUOTES) ?>" defer></script>
+<?php endif; ?>
 <?php $cspNonce = \App\Core\SecurityHeaders::nonce(); ?>
 <?php if (\App\Core\WebPush::isEnabled()): ?>
 <script nonce="<?= $cspNonce ?>">window.__pushEnabled = true; window.__pushLabels = <?= json_encode([
