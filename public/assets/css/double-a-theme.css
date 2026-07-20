@@ -2926,3 +2926,196 @@ p {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   DOUBLE A SOLUTIONS - CASE/PROJECT INDEX & DETAIL STYLES
+   ========================================================================== */
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.projects-grid--compact {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Image Card (Bespoke case layout overlay) */
+.imgcard {
+    position: relative;
+    aspect-ratio: 4/5;
+    min-height: 420px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-decoration: none;
+    color: #fff;
+    box-shadow: var(--shadow);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--navy);
+}
+
+.imgcard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 45px 85px rgba(5,37,29,0.15);
+}
+
+.imgcard__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.imgcard:hover .imgcard__media {
+    transform: scale(1.04);
+}
+
+.imgcard__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, rgba(5,37,29,0) 0%, rgba(5,37,29,0.3) 45%, rgba(5,37,29,0.85) 100%);
+    transition: background 0.3s;
+}
+
+.imgcard:hover .imgcard__overlay {
+    background: linear-gradient(180deg, rgba(5,37,29,0) 0%, rgba(5,37,29,0.4) 40%, rgba(5,37,29,0.92) 100%);
+}
+
+.imgcard__body {
+    position: relative;
+    z-index: 3;
+    padding: 35px;
+    display: flex;
+    flex-direction: column;
+}
+
+.imgcard__title {
+    font-family: var(--serif);
+    font-size: clamp(20px, 2.5vw, 26px);
+    line-height: 1.25;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.imgcard__desc {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: #bcd5cf;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.imgcard__more {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s;
+}
+
+.imgcard:hover .imgcard__more {
+    transform: translateX(4px);
+    color: #fff;
+}
+
+/* Detail Case Page Layout */
+.projdetail {
+    width: min(1180px, calc(100% - 40px));
+    margin: 60px auto 100px;
+}
+
+.projdetail-head {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.projdetail-head--no-media {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.projdetail-head__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.projdetail-head--no-media .projdetail-head__info {
+    align-items: center;
+}
+
+.projdetail__title {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 52px);
+    color: var(--navy);
+    line-height: 1.15;
+    margin: 15px 0 0;
+    font-weight: 600;
+}
+
+.projdetail__media {
+    aspect-ratio: 16/10;
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.projdetail__content {
+    max-width: 800px;
+    margin: 0 auto 80px;
+}
+
+.projdetail-related {
+    border-top: 1px solid var(--line);
+    padding-top: 60px;
+    margin-top: 80px;
+}
+
+/* Responsive adjustments for cases */
+@media(max-width:960px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .projects-grid--compact {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .projdetail-head {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .imgcard {
+        min-height: 380px;
+    }
+}
+
+@media(max-width:680px) {
+    .projects-grid, .projects-grid--compact {
+        grid-template-columns: 1fr;
+    }
+}
