@@ -221,35 +221,41 @@ HTML
         'html' => <<<'HTML'
 <section class="section" id="services">
   <div class="wrap">
-    <div class="section-head-stacked">
-      <h2>Всё необходимое для запуска, соответствия и роста</h2>
-      <p>Выберите интересующее вас направление для перехода к подробному описанию, срокам и требованиям.</p>
-    </div>
-    <div class="services-grid">
-      <a class="service quick" href="#service-market" data-value="market">
-        <span class="service-no">01</span>
-        <h3>Выход на рынок</h3>
-        <p>Анализ конкурентной среды, барьеров и разработка оптимальной юридической модели присутствия.</p>
-        <span class="go">↗</span>
-      </a>
-      <a class="service featured quick" href="#service-permits" data-value="permits">
-        <span class="service-no">02</span>
-        <h3>Разрешения</h3>
-        <p>Государственная регистрация БАД, удобрений, косметики и ветеринарной продукции под ключ.</p>
-        <span class="go">↗</span>
-      </a>
-      <a class="service quick" href="#service-export" data-value="export">
-        <span class="service-no">03</span>
-        <h3>Экспортное сопровождение</h3>
-        <p>Приведение производства, маркировки и упаковки продукции к строгим регламентам ЕС и СНГ.</p>
-        <span class="go">↗</span>
-      </a>
-      <a class="service quick" href="#service-iso" data-value="iso">
-        <span class="service-no">04</span>
-        <h3>Международные стандарты</h3>
-        <p>Внедрение систем ISO, HACCP, GMP, подготовка испытательных лабораторий к аккредитации.</p>
-        <span class="go">↗</span>
-      </a>
+    <div class="services-split">
+      <div class="services-left">
+        <div class="eyebrow" style="color:var(--gold)">Направления экспертизы</div>
+        <h2 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Всё необходимое для <em>запуска, соответствия и роста</em></h2>
+        <p style="color:var(--muted);font-size:16px;line-height:1.6">Каждое направление деятельности DOUBLE A SOLUTIONS — это детально проработанный регламент действий для успешного коммерческого результата.</p>
+        <div style="margin-top:35px">
+          <a class="btn primary" href="/kontakty">Обсудить проект с экспертом</a>
+        </div>
+      </div>
+      <div class="services-right">
+        <a class="service quick" href="#service-market" data-value="market">
+          <span class="service-no">01</span>
+          <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Выход на рынок</h3>
+          <p style="color:var(--muted);font-size:16px;line-height:1.6">Анализ конкурентной среды, пошлин и барьеров. Разработка оптимальной юридической модели присутствия.</p>
+          <span class="go">↗</span>
+        </a>
+        <a class="service quick" href="#service-permits" data-value="permits">
+          <span class="service-no">02</span>
+          <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Разрешительные документы</h3>
+          <p style="color:var(--muted);font-size:16px;line-height:1.6">Государственная регистрация БАД, удобрений, пестицидов (СЗР), косметики и ветеринарной продукции под ключ.</p>
+          <span class="go">↗</span>
+        </a>
+        <a class="service quick" href="#service-export" data-value="export">
+          <span class="service-no">03</span>
+          <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Экспортное сопровождение</h3>
+          <p style="color:var(--muted);font-size:16px;line-height:1.6">Приведение производства, маркировки и упаковки продукции к требованиям регламентов ЕС и СНГ.</p>
+          <span class="go">↗</span>
+        </a>
+        <a class="service quick" href="#service-iso" data-value="iso">
+          <span class="service-no">04</span>
+          <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Международные стандарты</h3>
+          <p style="color:var(--muted);font-size:16px;line-height:1.6">Внедрение систем ISO 9001, HACCP, GMP, подготовка испытательных лабораторий к аккредитации по ISO 17025.</p>
+          <span class="go">↗</span>
+        </a>
+      </div>
     </div>
   </div>
 </section>
@@ -289,15 +295,39 @@ HTML
   <div class="wrap journey">
     <div class="journey-intro">
       <div class="eyebrow" style="color:var(--gold)">Метод DOUBLE A</div>
-      <h2>Два анализа. Один управляемый маршрут.</h2>
+      <h2>Два анализа. <em>Один маршрут.</em></h2>
       <p>Мы параллельно оцениваем коммерческую целесообразность запуска и жесткие регуляторные рамки, формируя единый бесшовный план.</p>
       <a class="btn primary" href="/kontakty" style="margin-top:20px">Получить консультацию</a>
     </div>
-    <div class="steps">
-      <article class="step"><div><h3>Диагностика проекта</h3><p>Анализ состава продукции, имеющихся сертификатов и коммерческих целей.</p></div></article>
-      <article class="step"><div><h3>Market & Regulatory Fit</h3><p>Определение точного списка пошлин, испытаний, барьеров и каналов продаж.</p></div></article>
-      <article class="step"><div><h3>Дорожная карта</h3><p>Разработка последовательного плана действий с указанием бюджетов и сроков.</p></div></article>
-      <article class="step"><div><h3>Сопровождение запуска</h3><p>Подача досье в ведомства, организация тестов и контроль до выдачи лицензий.</p></div></article>
+    <div class="timeline">
+      <div class="timeline-step">
+        <div class="timeline-dot">1</div>
+        <div class="timeline-content">
+          <h3>Диагностика проекта</h3>
+          <p>Анализ состава продукции, имеющихся сертификатов и коммерческих целей.</p>
+        </div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">2</div>
+        <div class="timeline-content">
+          <h3>Market & Regulatory Fit</h3>
+          <p>Определение точного списка пошлин, испытаний, барьеров и каналов продаж.</p>
+        </div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">3</div>
+        <div class="timeline-content">
+          <h3>Дорожная карта</h3>
+          <p>Разработка последовательного плана действий с указанием бюджетов и сроков.</p>
+        </div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">4</div>
+        <div class="timeline-content">
+          <h3>Сопровождение запуска</h3>
+          <p>Подача досье в ведомства, организация тестов и контроль до выдачи лицензий.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>

@@ -3634,3 +3634,182 @@ p {
         position: static;
     }
 }
+
+/* ==========================================================================
+   DOUBLE A SOLUTIONS - PREMIUM EDITORIAL ASYMMETRIC LAYOUTS
+   ========================================================================== */
+
+.services-split {
+    display: grid;
+    grid-template-columns: 0.45fr 0.55fr;
+    gap: 80px;
+    align-items: start;
+    margin-bottom: 40px;
+}
+.services-left {
+    position: sticky;
+    top: 130px;
+}
+.services-left h2 {
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1.1;
+    margin-bottom: 24px;
+}
+.services-right {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.services-right .service {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 35px;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+}
+.services-right .service:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212,175,55,0.3);
+    box-shadow: var(--shadow);
+}
+.services-right .service .service-no {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: block;
+}
+.services-right .service h3 {
+    font-size: clamp(22px, 2.5vw, 28px);
+    margin: 0 0 10px;
+    color: var(--navy);
+}
+.services-right .service p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+}
+.services-right .service .go {
+    position: absolute;
+    right: 35px;
+    top: 35px;
+    font-size: 20px;
+    color: var(--gold);
+    transition: transform 0.3s;
+}
+.services-right .service:hover .go {
+    transform: translate(3px, -3px);
+}
+
+/* Vertical Progressive Timeline */
+.journey {
+    display: grid;
+    grid-template-columns: 0.42fr 0.58fr;
+    gap: 80px;
+    align-items: start;
+}
+.journey-intro {
+    position: sticky;
+    top: 130px;
+}
+.timeline {
+    position: relative;
+    padding-left: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.timeline:before {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 15px;
+    bottom: 15px;
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+}
+.timeline-step {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.timeline-dot {
+    position: absolute;
+    left: -55px;
+    top: 18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #03201a;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--gold);
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.4s;
+}
+.timeline-step:hover .timeline-dot {
+    background: var(--gold);
+    color: #03201a;
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(212,175,55,0.4);
+}
+.timeline-content {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    padding: 30px;
+    border-radius: 20px;
+    transition: all 0.4s;
+}
+.timeline-step:hover .timeline-content {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(212,175,55,0.15);
+    transform: translateX(10px);
+}
+.timeline-content h3 {
+    font-size: 22px;
+    color: #fff;
+    margin: 0 0 10px;
+    font-family: var(--serif);
+    font-weight: 600;
+}
+.timeline-content p {
+    margin: 0;
+    color: #a8cfc6;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Editorial Split layouts responsive */
+@media(max-width: 960px) {
+    .services-split {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .services-left {
+        position: static;
+    }
+    .journey {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .journey-intro {
+        position: static;
+    }
+    .timeline {
+        padding-left: 45px;
+    }
+    .timeline-dot {
+        left: -45px;
+    }
+}
