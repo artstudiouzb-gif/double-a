@@ -368,28 +368,28 @@ HTML
     </div>
     <div class="timeline">
       <div class="timeline-step">
-        <div class="timeline-dot">1</div>
+        <div class="timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg><span class="step-num">1</span></div>
         <div class="timeline-content">
           <h3>Диагностика проекта</h3>
           <p>Анализ состава продукции, имеющихся сертификатов и коммерческих целей.</p>
         </div>
       </div>
       <div class="timeline-step">
-        <div class="timeline-dot">2</div>
+        <div class="timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg><span class="step-num">2</span></div>
         <div class="timeline-content">
           <h3>Market & Regulatory Fit</h3>
           <p>Определение точного списка пошлин, испытаний, барьеров и каналов продаж.</p>
         </div>
       </div>
       <div class="timeline-step">
-        <div class="timeline-dot">3</div>
+        <div class="timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg><span class="step-num">3</span></div>
         <div class="timeline-content">
           <h3>Дорожная карта</h3>
           <p>Разработка последовательного плана действий с указанием бюджетов и сроков.</p>
         </div>
       </div>
       <div class="timeline-step">
-        <div class="timeline-dot">4</div>
+        <div class="timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span class="step-num">4</span></div>
         <div class="timeline-content">
           <h3>Сопровождение запуска</h3>
           <p>Подача досье в ведомства, организация тестов и контроль до выдачи лицензий.</p>
@@ -582,15 +582,15 @@ HTML
           <div class="service-sublist-title">Что входит в услугу</div>
           <div class="service-subitems">
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">📈</span><h4>Маркетинговые исследования</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span><h4>Маркетинговые исследования</h4></div>
               <p>Оценка емкости рынка, анализ цен конкурентов и выявление надежных дистрибьюторских сетей.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🛡</span><h4>Анализ таможенных барьеров</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span><h4>Анализ таможенных барьеров</h4></div>
               <p>Расчет пошлин, акцизов, импортного НДС и определение нетарифных мер регулирования.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">⚖</span><h4>Юридическое структурирование</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span><h4>Юридическое структурирование</h4></div>
               <p>Выбор оптимальной формы присутствия (дочернее общество, СП, представительство) и налогового режима.</p>
             </div>
           </div>
@@ -619,19 +619,19 @@ HTML
           <div class="service-sublist-title">Отраслевая экспертиза</div>
           <div class="service-subitems">
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🌱</span><h4>Сельское хозяйство и агрохимия</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg></span><h4>Сельское хозяйство и агрохимия</h4></div>
               <p>Регистрация минеральных удобрений, СЗР и пестицидов. Организация полевых и токсикологических испытаний.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🍏</span><h4>Пищевая продукция и БАД</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span><h4>Пищевая продукция и БАД</h4></div>
               <p>Получение гигиенических заключений СЭС РУз, проведение лабораторных тестов безопасности.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🧴</span><h4>Косметика и парфюмерия</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg></span><h4>Косметика и парфюмерия</h4></div>
               <p>Разработка технических досье, декларирование соответствия, прохождение санитарно-эпидемиологического контроля.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🐾</span><h4>Ветеринария и ветпрепараты</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span><h4>Ветеринария и ветпрепараты</h4></div>
               <p>Регистрация препаратов и кормовых добавок в Комитете ветеринарии и развития животноводства РУз.</p>
             </div>
           </div>
@@ -660,15 +660,15 @@ HTML
           <div class="service-sublist-title">Ключевые направления</div>
           <div class="service-subitems">
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">📦</span><h4>Аудит упаковки и маркировки</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><polygon points="12 22.08 12 12 3 6.92 3 17.08 12 22.08"></polygon><polygon points="12 22.08 21 17.08 21 6.92 12 12 12 22.08"></polygon><polygon points="12 12 21 6.92 12 2 3 6.92 12 12"></polygon></svg></span><h4>Аудит упаковки и маркировки</h4></div>
               <p>Приведение этикеток и текстовой информации в соответствие техническим регламентам стран импорта.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">📜</span><h4>Сертификаты происхождения (СТ-1)</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span><h4>Сертификаты происхождения (СТ-1)</h4></div>
               <p>Полноценное оформление сертификатов происхождения СТ-1, Form A, фитосанитарных и ветеринарных документов.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🔍</span><h4>Инспекционный аудит</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span><h4>Инспекционный аудит</h4></div>
               <p>Предварительный технологический аудит производства перед визитом зарубежных инспекторов.</p>
             </div>
           </div>
@@ -697,15 +697,15 @@ HTML
           <div class="service-sublist-title">Стандарты качества</div>
           <div class="service-subitems">
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🛡</span><h4>ХАССП (HACCP / ISO 22000)</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span><h4>ХАССП (HACCP / ISO 22000)</h4></div>
               <p>Внедрение систем контроля рисков и пищевой безопасности для производств и экспортеров.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🧪</span><h4>Косметическое GMP (ISO 22716)</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span><h4>Косметическое GMP (ISO 22716)</h4></div>
               <p>Внедрение надлежащей производственной практики на парфюмерно-косметических предприятиях.</p>
             </div>
             <div class="service-subitem">
-              <div class="service-subitem-header"><span class="service-subitem-icon">🔬</span><h4>Аккредитация лабораторий (ISO 17025)</h4></div>
+              <div class="service-subitem-header"><span class="service-subitem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></span><h4>Аккредитация лабораторий (ISO 17025)</h4></div>
               <p>Разработка СОП, методик калибровки, проведение МСИ и аудит готовности к аккредитации.</p>
             </div>
           </div>

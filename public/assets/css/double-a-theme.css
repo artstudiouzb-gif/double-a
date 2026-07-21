@@ -3748,7 +3748,7 @@ p {
 }
 .timeline {
     position: relative;
-    padding-left: 55px;
+    padding-left: 64px;
     display: flex;
     flex-direction: column;
     gap: 30px;
@@ -3756,7 +3756,7 @@ p {
 .timeline:before {
     content: "";
     position: absolute;
-    left: 17px;
+    left: 31px;
     top: 15px;
     bottom: 15px;
     width: 1px;
@@ -3768,28 +3768,55 @@ p {
 }
 .timeline-dot {
     position: absolute;
-    left: -55px;
-    top: 18px;
-    width: 36px;
-    height: 36px;
+    left: -64px;
+    top: 10px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
     background: #03201a;
     border: 1px solid rgba(255,255,255,0.15);
     color: var(--gold);
-    font-family: var(--serif);
-    font-size: 16px;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
     transition: all 0.4s;
 }
-.timeline-step:hover .timeline-dot {
+.timeline-dot svg {
+    width: 26px;
+    height: 26px;
+    color: var(--gold);
+    stroke-width: 1.5;
+    transition: color 0.4s;
+}
+.timeline-dot .step-num {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     background: var(--gold);
-    color: #03201a;
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    font-family: var(--sans);
+    border: 2px solid #03201a;
+    transition: background 0.4s, color 0.4s;
+}
+.timeline-step:hover .timeline-dot {
+    background: #03201a;
     border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(212,175,55,0.4);
+    box-shadow: 0 0 20px rgba(212,175,55,0.25);
+}
+.timeline-step:hover .timeline-dot svg {
+    color: #fff;
+}
+.timeline-step:hover .timeline-dot .step-num {
+    background: #fff;
+    color: var(--navy);
 }
 .timeline-content {
     background: rgba(255,255,255,0.02);
@@ -3834,10 +3861,15 @@ p {
         position: static;
     }
     .timeline {
-        padding-left: 45px;
+        padding-left: 54px;
+    }
+    .timeline:before {
+        left: 26px;
     }
     .timeline-dot {
-        left: -45px;
+        left: -54px;
+        width: 52px;
+        height: 52px;
     }
 }
 
