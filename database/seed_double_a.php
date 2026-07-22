@@ -106,17 +106,51 @@ $homeBlocks = [
         'html' => <<<'HTML'
 <section class="hero" id="hero">
   <div class="hero-glow-2" aria-hidden="true"></div>
-  <div class="wrap" style="position: relative; z-index: 2; max-width: 900px; text-align: left;">
-    <div class="eyebrow" style="color:var(--gold)">Единая точка входа на новые рынки</div>
-    <h1 style="margin: 20px 0 30px;">От требований — <em>к работающему бизнесу.</em></h1>
-    <p class="hero-copy" style="max-width: 700px; margin-bottom: 40px;">Сопровождаем компании при выходе на рынок Узбекистана и развитии экспорта в СНГ и ЕС: аналитика, регуляторная стратегия, разрешения, стандарты и запуск проектов.</p>
-    <div class="hero-actions">
-      <a class="btn primary" href="/kontakty"><span>Обсудить проект</span><span class="arrow">↗</span></a>
-      <a class="btn outline" href="/services">Выбрать услугу</a>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow" style="color:var(--gold)">Единая точка входа на новые рынки</div>
+      <h1 style="margin: 20px 0 28px;">От требований — <em>к работающему бизнесу.</em></h1>
+      <p class="hero-copy">Сопровождаем компании при выходе на рынок Узбекистана и развитии экспорта в СНГ и ЕС: аналитика, регуляторная стратегия, разрешения, стандарты и запуск проектов.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/kontakty"><span>Обсудить проект</span><span class="arrow">↗</span></a>
+        <a class="btn outline" href="/services">Выбрать услугу</a>
+      </div>
+      <div class="hero-foot">
+        <div><i></i><span>Регуляторная логика до начала работ</span></div>
+        <div><i></i><span>Один координатор по проекту</span></div>
+      </div>
     </div>
-    <div class="hero-foot" style="margin-top: 60px;">
-      <div><i></i><span>Регуляторная логика до начала работ</span></div>
-      <div><i></i><span>Один координатор по проекту</span></div>
+    <div class="route-card" aria-label="Карта присутствия в Узбекистане">
+      <div class="route-top"><span>Присутствие · Узбекистан</span><span class="live">Ташкент · регионы</span></div>
+      <div class="map uz-map">
+        <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+          <defs>
+            <pattern id="uzDots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="1.4" cy="1.4" r="1.4" fill="rgba(255,255,255,.09)"/></pattern>
+          </defs>
+          <rect x="0" y="0" width="1000" height="620" fill="url(#uzDots)"/>
+          <path class="uz-land" d="M 48 262 C 44 218, 82 192, 126 194 C 178 150, 262 130, 344 142 C 428 150, 498 150, 566 158 C 628 144, 690 150, 740 174 C 790 178, 814 196, 812 222 C 848 214, 892 232, 908 262 C 930 268, 938 296, 918 314 C 902 330, 872 330, 852 320 C 838 342, 806 350, 782 338 C 774 360, 742 368, 720 356 C 706 386, 672 402, 648 392 C 648 424, 636 468, 618 486 C 606 500, 588 494, 586 470 C 584 440, 596 410, 604 392 C 578 402, 548 396, 536 372 C 500 384, 452 380, 430 356 C 388 366, 336 356, 318 330 C 274 342, 212 340, 182 320 C 148 336, 100 332, 82 306 C 56 306, 44 288, 48 262 Z"/>
+          <path class="uz-route" d="M 180 278 L 400 300 L 548 300 L 700 252 L 828 272" fill="none" pathLength="1"/>
+          <path class="uz-route uz-route--branch" d="M 548 300 L 606 452" fill="none" pathLength="1"/>
+          <g class="uz-pin"><circle class="uz-pin-dot" cx="180" cy="278" r="6"/></g>
+          <g class="uz-pin"><circle class="uz-pin-dot" cx="400" cy="300" r="6"/></g>
+          <g class="uz-pin"><circle class="uz-pin-dot" cx="548" cy="300" r="6"/></g>
+          <g class="uz-pin uz-pin--cap"><circle class="uz-pin-ring" cx="700" cy="252" r="15"/><circle class="uz-pin-dot" cx="700" cy="252" r="8"/></g>
+          <g class="uz-pin"><circle class="uz-pin-dot" cx="828" cy="272" r="6"/></g>
+          <g class="uz-pin"><circle class="uz-pin-dot" cx="606" cy="452" r="6"/></g>
+          <text class="uz-label" x="118" y="270" text-anchor="end">Нукус</text>
+          <text class="uz-label" x="386" y="334" text-anchor="middle">Бухара</text>
+          <text class="uz-label" x="566" y="360" text-anchor="middle">Самарканд</text>
+          <text class="uz-label uz-label--cap" x="716" y="238" text-anchor="start">Ташкент</text>
+          <text class="uz-label" x="846" y="268" text-anchor="start">Андижан</text>
+          <text class="uz-label" x="622" y="486" text-anchor="start">Термез</text>
+        </svg>
+      </div>
+      <div class="route-stages">
+        <div class="stage"><b>01</b>Анализ рынка</div>
+        <div class="stage"><b>02</b>Требования</div>
+        <div class="stage"><b>03</b>Разрешения</div>
+        <div class="stage"><b>04</b>Запуск и рост</div>
+      </div>
     </div>
   </div>
 </section>
