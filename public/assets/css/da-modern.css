@@ -355,6 +355,50 @@ img, svg { max-width: 100%; }
 .footer-bottom { display: flex; justify-content: space-between; margin-top: 42px; padding-top: 20px; border-top: 1px solid rgba(200,239,229,0.12); font-size: 11px; color: #a7bcbb; }
 
 /* ==========================================================================
+   СПИСКИ: КЕЙСЫ (проекты) и НОВОСТИ
+   ========================================================================== */
+.listing { padding: 20px 0 100px; }
+.listing__head { margin-bottom: 36px; }
+.listing__title { color: var(--text); }
+.listing__lead { color: var(--muted); font-size: 18px; max-width: 760px; }
+.listing__empty { color: var(--muted); font-size: 16px; }
+.listing-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.listing-filter__item { border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 30px; padding: 9px 15px; font-size: 13px; cursor: pointer; text-decoration: none; }
+.listing-filter__item:hover { border-color: var(--accent-text); color: var(--accent-text); }
+.listing-filter__item.is-active { background: var(--lime); color: #143038; border-color: var(--lime); }
+.listing-pager { display: flex; gap: 8px; justify-content: center; margin-top: 40px; }
+.listing-pager__item { border: 1px solid var(--line); border-radius: 8px; padding: 9px 14px; color: var(--muted); text-decoration: none; }
+.listing-pager__item:hover, .listing-pager__item.is-active { border-color: var(--lime); color: var(--accent-text); }
+
+/* Карточки-плитки (проекты) */
+.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.imgcard { position: relative; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--panel); text-decoration: none; }
+.imgcard:hover { border-color: var(--accent-text); transform: translateY(-3px); }
+.imgcard__media { display: block; height: 190px; background: linear-gradient(140deg, #0e4653, #062c37); background-size: cover; background-position: center; position: relative; }
+.imgcard__overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(4,34,43,.55)); }
+.imgcard__body { padding: 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.imgcard__title { color: var(--text); font-family: var(--serif); font-size: 20px; font-weight: 700; margin: 0; }
+.imgcard__desc { color: var(--muted); font-size: 14px; margin: 0; flex: 1; }
+.imgcard__more { color: var(--accent-text); font-size: 13px; font-weight: 700; margin-top: 6px; }
+
+/* Новости: крупная ведущая + сетка карточек */
+.newslist-lead { display: grid; grid-template-columns: 1.25fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--panel); text-decoration: none; margin-bottom: 20px; }
+.newslist-lead__media { display: block; width: 100%; height: 100%; min-height: 300px; object-fit: cover; background: linear-gradient(140deg, #0e4653, #062c37); }
+.newslist-lead__body { padding: 30px; display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+.newslist-lead__title { font-family: var(--serif); color: var(--text); font-size: clamp(22px, 2.4vw, 30px); font-weight: 700; line-height: 1.15; }
+.newslist-lead__excerpt { color: var(--muted); font-size: 15px; }
+.newslist__date, .relnews-card__date { color: var(--accent-text); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.newslist-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.relnews-card { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--panel); text-decoration: none; }
+.relnews-card:hover { border-color: var(--accent-text); transform: translateY(-3px); }
+.relnews-card__media { display: block; width: 100%; height: 150px; object-fit: cover; background: linear-gradient(140deg, #0e4653, #062c37); }
+.relnews-card__body, .relnews-card > span:not(.relnews-card__media) { }
+.relnews-card__title { font-family: var(--serif); color: var(--text); font-size: 17px; font-weight: 700; line-height: 1.2; margin: 8px 0; padding: 0 16px; display: block; }
+.relnews-card__date { padding: 14px 16px 0; display: inline-block; }
+.relnews-card__excerpt { color: var(--muted); font-size: 13px; padding: 0 16px 16px; display: block; }
+.imgcard, .relnews-card, .newslist-lead { transition: transform .25s ease, border-color .25s ease; }
+
+/* ==========================================================================
    МОДАЛКА / COOKIE / TOAST (глобальные — скрыты по умолчанию)
    ========================================================================== */
 .modal { position: fixed; inset: 0; z-index: 100; background: rgba(3,26,32,0.78); -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px); display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -378,7 +422,9 @@ img, svg { max-width: 100%; }
     .hero-grid, .services-split, .faq-layout, .about-grid, .contact-grid,
     .service-editorial-item, .block-testimonials__track { grid-template-columns: 1fr; gap: 36px; }
     .services-left, .faq-intro, .service-editorial-left { position: static; }
-    .sectors-grid { grid-template-columns: 1fr 1fr; }
+    .sectors-grid, .projects-grid, .newslist-grid { grid-template-columns: 1fr 1fr; }
+    .newslist-lead { grid-template-columns: 1fr; }
+    .newslist-lead__media { min-height: 220px; }
     .trust-grid { grid-template-columns: 1fr 1fr; }
     .trust-intro { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid var(--line); }
     .metric { border-bottom: 1px solid var(--line); }
@@ -390,9 +436,22 @@ img, svg { max-width: 100%; }
 @media (max-width: 640px) {
     .top-note { display: none; }
     .hero { padding: 66px 0; }
-    .sectors-grid, .footer-grid, .values, .form { grid-template-columns: 1fr; }
+    .sectors-grid, .footer-grid, .values, .form, .projects-grid, .newslist-grid { grid-template-columns: 1fr; }
     .hero-foot { flex-direction: column; gap: 12px; }
     .brand small { display: none; }
+    /* Шапка на узких экранах: бренд не должен налезать на язык/бургер. */
+    .nav { height: 64px; gap: 12px; }
+    .navlinks { inset: 64px 0 auto; }
+    .brand { gap: 9px; overflow: hidden; }
+    .brandmark { width: 36px; height: 36px; flex-basis: 36px; }
+    .brandmark::before, .brandmark::after { font-size: 25px; top: 5px; }
+    .brand strong { font-size: 12px; letter-spacing: 0.04em; overflow: hidden; text-overflow: ellipsis; }
+    .lang-btn { padding: 8px 10px; }
+    .menu-btn { font-size: 22px; }
+}
+@media (max-width: 380px) {
+    .brand strong { font-size: 0; letter-spacing: 0; } /* очень узко — оставляем только знак */
+    .brand strong::after { content: "DOUBLE A"; font-size: 12px; letter-spacing: 0.06em; }
 }
 @media (prefers-reduced-motion: reduce) {
     .uz-route { animation: none; stroke-dashoffset: 0; }
