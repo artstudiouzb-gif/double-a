@@ -121,7 +121,7 @@ $homeBlocks = [
       </div>
     </div>
     <div class="route-card" aria-label="Карта присутствия в Узбекистане">
-      <div class="route-top"><span>Присутствие · Узбекистан</span><span class="live">Ташкент · регионы</span></div>
+      <div class="route-top"><span>presence.uz</span><span class="live">live</span></div>
       <div class="map uz-map">
         <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
           <defs>
