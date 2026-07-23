@@ -19,6 +19,21 @@ final class Session
             return;
         }
 
+        // Файлы сессий храним в собственной папке приложения. Системный
+        // save_path PHP (напр. /var/lib/php/session/N/N/) на shared-хостинге
+        // (Plesk/cPanel) часто не существует или недоступен для записи —
+        // session_start() падает с "No such file or directory".
+        $sessionPath = (defined('APP_ROOT') ? APP_ROOT : dirname(__DIR__, 2)) . '/storage/sessions';
+        if (!is_dir($sessionPath)) {
+            @mkdir($sessionPath, 0770, true);
+        }
+        if (is_dir($sessionPath) && is_writable($sessionPath)) {
+            session_save_path($sessionPath);
+            ini_set('session.save_path', $sessionPath);
+            ini_set('session.gc_probability', '1');
+            ini_set('session.gc_divisor', '100');
+        }
+
         $lifetime = (int) Config::get('session.lifetime', 7200);
         session_name((string) Config::get('session.name', 'asc_session'));
         ini_set('session.use_strict_mode', '1');

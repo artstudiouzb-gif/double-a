@@ -18,3 +18,5 @@
 
 # Локальные настройки Claude Code (сессионные, не для репозитория)
 /.claude/
+/storage/sessions/*
+!/storage/sessions/.gitkeep
