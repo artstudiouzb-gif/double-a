@@ -160,8 +160,8 @@ img, svg { max-width: 100%; }
 .lang-btn:hover { border-color: var(--lime); }
 .lang-menu { position: absolute; right: 0; top: 50px; width: 190px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px; box-shadow: 0 24px 60px rgba(0,0,0,.5); display: none; z-index: 60; }
 .lang.open .lang-menu { display: grid; }
-.lang-menu button { border: 0; background: transparent; border-radius: 8px; text-align: left; padding: 9px 11px; cursor: pointer; color: #a7bcbb; font-size: 13px; }
-.lang-menu button:hover, .lang-menu button.active { background: rgba(200,239,229,0.08); color: var(--accent-text); }
+.lang-menu button, .lang-menu a { display: block; border: 0; background: transparent; border-radius: 8px; text-align: left; padding: 9px 11px; cursor: pointer; color: #cddedd; font-size: 13px; text-decoration: none; }
+.lang-menu button:hover, .lang-menu a:hover, .lang-menu .is-active { background: rgba(200,239,229,0.10); color: #e4c47a; }
 .menu-btn { display: none; border: 0; background: transparent; font-size: 24px; color: #eef4f1; cursor: pointer; margin-left: auto; }
 
 /* ==========================================================================

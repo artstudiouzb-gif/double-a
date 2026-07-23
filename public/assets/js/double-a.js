@@ -94,7 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-       // 4. Bento Grid Service Advisor
+    });
+
+    // 4. Bento Grid Service Advisor
     const bentoIndustries = document.querySelectorAll('#bentoIndustries .bento-opt-card');
     const bentoGoals = document.querySelectorAll('#bentoGoals .bento-opt-card');
     const bentoResultPanel = document.getElementById('bentoResultPanel');
@@ -397,4 +399,5 @@ document.addEventListener('DOMContentLoaded', () => {
             resultDiv.classList.add('show');
         });
     }
+});
 });

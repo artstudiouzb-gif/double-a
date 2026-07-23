@@ -548,9 +548,10 @@ if ($siteTemplate === 'double_a'): ?>
       </nav>
       <div class="lang" id="lang">
         <button class="lang-btn" id="langBtn" aria-expanded="false" aria-label="Choose language"><b id="langCode"><?= strtoupper($currentLang) ?></b><span>⌄</span></button>
-        <div class="lang-menu" id="langMenu">
-          <?php foreach ($activeLangs as $l): ?>
-            <button data-lang="<?= htmlspecialchars((string) $l['code'], ENT_QUOTES) ?>"><?= htmlspecialchars($l['name'], ENT_QUOTES) ?></button>
+        <div class="lang-menu" id="langMenu" role="menu">
+          <?php $lpath = Locale::path(); foreach ($activeLangs as $l): $lc = (string) $l['code'];
+            $lhref = Locale::url($lpath, $lc) . '?' . \App\Core\LocalePreference::QUERY . '=' . rawurlencode($lc); ?>
+            <a role="menuitem" hreflang="<?= htmlspecialchars($lc, ENT_QUOTES) ?>" href="<?= htmlspecialchars($lhref, ENT_QUOTES) ?>"<?= $lc === $currentLang ? ' class="is-active" aria-current="true"' : '' ?>><?= htmlspecialchars($l['name'], ENT_QUOTES) ?></a>
           <?php endforeach; ?>
         </div>
       </div>
