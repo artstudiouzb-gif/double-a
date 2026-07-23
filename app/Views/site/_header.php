@@ -473,6 +473,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 <?php
 $siteTemplate = \App\Models\Setting::get('design_site_template', 'gov');
 if ($siteTemplate === 'double_a'): ?>
+<link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/noto-fonts.css'), ENT_QUOTES) ?>">
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/da-modern.css'), ENT_QUOTES) ?>">
 <?php else: ?>
 <link rel="stylesheet" href="<?= htmlspecialchars(\App\Core\Asset::url('/assets/css/gov-theme.css'), ENT_QUOTES) ?>">

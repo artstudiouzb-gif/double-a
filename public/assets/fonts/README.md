@@ -29,3 +29,10 @@ curl -A '<современный UA>' \
 
 - **PT Serif** — заголовки, **PT Sans** — текст (веса 400/700, cyrillic+latin, OFL).
   Подключаются через `public/assets/css/gov-fonts.css` (см. `gov-theme.css`).
+
+## Тема DOUBLE A (modern)
+
+- **Noto Serif** (condensed, ось ширины) — заголовки; **Noto Sans** — текст.
+  Веса вариативные (Sans 300–800; Serif 400–900 + italic), подмножества
+  cyrillic+latin, OFL. Подключаются через `public/assets/css/noto-fonts.css`
+  (см. `_header.php`, ветка `double_a`) — без внешних CDN ради строгого CSP.

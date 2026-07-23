@@ -15,6 +15,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 0. Подсказка региона на карте hero (стилизованный лейбл, в теме).
+    (function () {
+        const map = document.querySelector('.uz-map');
+        if (!map) { return; }
+        const tip = document.createElement('div');
+        tip.className = 'uz-tip';
+        tip.setAttribute('aria-hidden', 'true');
+        map.appendChild(tip);
+        map.addEventListener('mousemove', function (e) {
+            const el = e.target && e.target.closest ? e.target.closest('.uz-reg') : null;
+            const name = el && el.getAttribute('data-name');
+            if (name) {
+                tip.textContent = name;
+                const r = map.getBoundingClientRect();
+                tip.style.left = (e.clientX - r.left) + 'px';
+                tip.style.top = (e.clientY - r.top) + 'px';
+                tip.classList.add('is-on');
+            } else {
+                tip.classList.remove('is-on');
+            }
+        });
+        map.addEventListener('mouseleave', function () { tip.classList.remove('is-on'); });
+    })();
+
     // 1. Language switcher dropdown
     const lang = document.getElementById('lang');
     const langBtn = document.getElementById('langBtn');
