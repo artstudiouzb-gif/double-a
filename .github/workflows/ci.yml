@@ -9,7 +9,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # head_ref (для pull_request) и ref_name (для push) сводят оба события одной
+  # ветки в общую группу — иначе push и pull_request гоняли CI дважды на коммит.
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:

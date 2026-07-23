@@ -50,14 +50,10 @@ test('Мега-меню: значение сохраняется и читает
     $pdo->exec("DELETE FROM menu_items WHERE id IN ({$childId}, {$id})");
 });
 
-test('Мега-меню: шапка получает класс и число колонок', function () {
-    $header = (string) file_get_contents(dirname(__DIR__, 2) . '/app/Views/site/_header.php');
-    assert_contains('site-menu__item--mega', $header);
-    assert_contains('site-submenu--mega', $header);
-    assert_contains('--mega-cols:', $header);
-
+test('Мега-меню: тема содержит раскладку колонок подменю', function () {
+    // Шапка double_a выводит плоскую навигацию; стилизация многоколоночной
+    // панели подменю остаётся в теме на случай её использования.
     $css = (string) file_get_contents(dirname(__DIR__, 2) . '/public/assets/css/da-modern.css');
-    // Раскладка включается только на десктопе: на мобильных меню вертикальное.
     assert_contains('.site-submenu--mega', $css);
     assert_contains('repeat(var(--mega-cols, 3), minmax(0, 1fr))', $css);
 });

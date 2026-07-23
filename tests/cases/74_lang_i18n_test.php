@@ -33,7 +33,7 @@ test('Словари UZ и EN синхронны и не содержат пус
 
 test('Публичная шапка переводит навигацию, поиск и панель доступности', function () {
     $header = (string) file_get_contents(APP_ROOT . '/app/Views/site/_header.php');
-    foreach (['Основное меню', 'Открыть подменю', 'Для слабовидящих', 'Перейти к содержимому', 'Закрыть поиск'] as $label) {
+    foreach (['Для слабовидящих', 'Перейти к содержимому', 'Закрыть поиск'] as $label) {
         assert_contains("\$et('{$label}')", $header, "шапка переводит: {$label}");
     }
     assert_not_contains('>Перейти к содержимому</a>', $header);
