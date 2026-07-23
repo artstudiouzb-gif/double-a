@@ -18,8 +18,8 @@
     --line-soft: rgba(200,239,229,0.07) !important;
     --text: #eef4f1 !important;
     --muted: #a7bcbb !important;
-    --lime: #d5ae62 !important;         /* PRIMARY ACCENT = gold (заливки) */
-    --accent-text: #e4c47a !important;  /* текстовый акцент (gold на тёмном) */
+    --lime: var(--color-accent, #d5ae62) !important;         /* PRIMARY ACCENT = акцент из админки (по умолч. gold) */
+    --accent-text: color-mix(in srgb, var(--lime) 84%, #ffffff) !important;  /* текстовый акцент (светлее на тёмном) */
     --signal: #33b18d !important;       /* «живые» индикаторы, маршрут = emerald/mint */
     --route: #2caf8b !important;
     --btn-ink: #143038;                 /* тёмный текст на gold-кнопке */
@@ -34,9 +34,7 @@
     --sans: 'Noto Sans', ui-sans-serif, system-ui, sans-serif !important;
     --radius: 14px !important;
 
-    /* CMS-переменные */
-    --color-primary: var(--lime) !important;
-    --color-accent: var(--lime) !important;
+    /* CMS-переменные (акцент НЕ переопределяем — берётся из админки выше) */
     --bg-primary: var(--ink) !important;
     --bg-surface: var(--panel) !important;
     --text-main: var(--text) !important;
@@ -62,12 +60,12 @@
     --line-soft: #e8efec !important;
     --text: #0b2430 !important;
     --muted: #5f7178 !important;
-    --accent-text: #0a765f !important;  /* emerald для текста на светлом */
+    --accent-text: color-mix(in srgb, var(--lime) 58%, #0b2430) !important;  /* акцент текста на светлом (темнее для контраста) */
     --signal: #0a765f !important;
     /* Индирекция var(--navy)=var(--text) захватывает :root-значение, поэтому
        переопределяем напрямую — иначе инлайн-заголовки остаются светлыми. */
     --navy: #0b2430 !important;
-    --gold: #0a765f !important;
+    --gold: var(--accent-text) !important;
     --emerald: #0a765f !important;
     color: var(--text);
 }
@@ -83,8 +81,8 @@ body {
     background: var(--ink) !important;
     color: var(--text) !important;
     font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.62;
+    font-size: var(--base-font-size, 16px);
+    line-height: var(--base-line-height, 1.62);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
@@ -122,7 +120,7 @@ img, svg { max-width: 100%; }
 /* --- Кнопки --- */
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    min-height: 52px; padding: 0 26px; border-radius: 7px;
+    min-height: 52px; padding: 0 26px; border-radius: var(--btn-radius, 7px);
     border: 1px solid transparent; font-family: var(--sans);
     font-size: 13px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
     cursor: pointer; white-space: nowrap;
@@ -141,9 +139,11 @@ img, svg { max-width: 100%; }
    ШАПКА (тёмная)
    ========================================================================== */
 .header, .design-header-light, .design-header-sticky {
+    position: sticky; top: 0; z-index: 50;
     background: rgba(6,44,55,0.86) !important;
     border-bottom: 1px solid var(--line) !important;
     -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.28);
 }
 .nav { height: 76px; display: flex; align-items: center; gap: 30px; }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -252,7 +252,7 @@ img, svg { max-width: 100%; }
 .services-left { position: sticky; top: 100px; align-self: start; }
 .services-left h2 { margin: 16px 0 20px; }
 .services-right { display: grid; gap: 12px; }
-.service.quick { position: relative; display: block; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 26px 28px; overflow: hidden; }
+.service.quick { position: relative; display: block; border: 1px solid var(--line); border-radius: var(--radius, 14px); background: var(--panel); padding: 26px 28px; overflow: hidden; }
 .service.quick::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--lime); transform: scaleY(0); transform-origin: top; transition: transform .3s ease; }
 .service.quick:hover { border-color: color-mix(in srgb, var(--lime) 45%, var(--line)); transform: translateY(-3px); }
 .service.quick:hover::before { transform: scaleY(1); }
@@ -264,7 +264,7 @@ img, svg { max-width: 100%; }
 
 /* Отрасли (светлая) */
 .sectors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.sector-card { display: block; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 26px; min-height: 200px; }
+.sector-card { display: block; border: 1px solid var(--line); border-radius: var(--radius, 14px); background: var(--panel); padding: 26px; min-height: 200px; }
 .sector-card:hover { border-color: var(--accent-text); transform: translateY(-3px); }
 .sector-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
 .sector-num { font-size: 12px; color: var(--accent-text); letter-spacing: .1em; font-weight: 700; }
@@ -545,7 +545,7 @@ html { scroll-behavior: smooth; }
 .cookie.show { display: block; }
 .cookie p { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
 .cookie-actions { display: flex; gap: 8px; }
-.toast { position: fixed; right: 20px; bottom: 20px; z-index: 120; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 14px; padding: 15px 18px; box-shadow: 0 24px 60px rgba(0,0,0,.4); font-size: 13px; transform: translateY(120px); opacity: 0; transition: .3s; }
+.toast { position: fixed; right: 20px; bottom: 20px; z-index: 120; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius, 14px); padding: 15px 18px; box-shadow: 0 24px 60px rgba(0,0,0,.4); font-size: 13px; transform: translateY(120px); opacity: 0; transition: .3s; }
 .toast.show { transform: none; opacity: 1; }
 
 /* ==========================================================================

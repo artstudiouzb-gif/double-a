@@ -21,6 +21,9 @@ $settings = [
     'design_site_template' => 'double_a',
     'design_palette' => 'double_a',
     'site_name' => 'DOUBLE A SOLUTIONS',
+    // Фирменный акцент по умолчанию — тема берёт его из --color-accent.
+    'color_accent' => '#d5ae62',
+    'color_primary' => '#062c37',
 ];
 
 foreach ($settings as $key => $val) {
