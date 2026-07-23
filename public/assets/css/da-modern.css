@@ -187,17 +187,21 @@ img, svg { max-width: 100%; }
 .hero-foot div { display: flex; gap: 12px; align-items: center; color: #bcd0d0; font-size: 13px; letter-spacing: 0.02em; }
 .hero-foot i { width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 12px var(--signal); }
 
-/* Дата-чип */
-.route-card { position: relative; border: 1px solid rgba(255,255,255,0.12); background: rgba(4,34,43,0.55); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border-radius: 16px; padding: 20px; box-shadow: 0 40px 100px rgba(0,0,0,.4); z-index: 2; }
-.route-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #bcd0d0; font-weight: 600; }
+/* Карта присутствия — без карточки-обёртки: «плавает» прямо на фоне hero. */
+.route-card { position: relative; border: 0; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 0; padding: 0; box-shadow: none; z-index: 2; }
+.route-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #bcd0d0; font-weight: 600; }
 .live { display: flex; gap: 8px; align-items: center; color: var(--signal) !important; }
 .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 10px var(--signal); animation: da-pulse 2s infinite; }
 @keyframes da-pulse { 0%,100% { opacity: 1; transform: scale(.9);} 50% { opacity: .5; transform: scale(1.35);} }
 
 /* Неон-карта Узбекистана (gold контур + emerald маршрут) */
-.map, .uz-map { height: 250px; border-radius: 10px; position: relative; overflow: hidden; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.06); }
+.map, .uz-map { height: 340px; border-radius: 0; position: relative; overflow: visible; background: transparent; border: 0; }
 .uz-map svg, .map svg { display: block; width: 100%; height: 100%; }
 .uz-land { fill: rgba(213,174,98,0.06); stroke: var(--lime); stroke-width: 2; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(213,174,98,.28)); }
+/* Регионы (вилояты): тонкие gold-границы, подсветка emerald при наведении. */
+.uz-regions { filter: drop-shadow(0 0 6px rgba(213,174,98,.22)); }
+.uz-reg { fill: rgba(213,174,98,0.05); stroke: rgba(213,174,98,0.42); stroke-width: 0.8; stroke-linejoin: round; transition: fill .2s ease, stroke .2s ease; }
+.uz-reg:hover { fill: rgba(44,175,139,0.30); stroke: rgba(51,177,141,0.85); }
 .uz-route { stroke: var(--route); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 0.03 0.045; stroke-dashoffset: 1; animation: uz-route-draw 3.2s ease-in-out forwards; }
 .uz-route--branch { stroke: rgba(44,175,139,.7); animation-delay: 1.1s; animation-duration: 2.2s; }
 .uz-pin-dot { fill: var(--lime); }
@@ -211,8 +215,8 @@ img, svg { max-width: 100%; }
 @keyframes uz-pin-pulse { 0% { stroke-width: 1.6; opacity: .9; r: 15; } 70% { stroke-width: .4; opacity: 0; r: 27; } 100% { opacity: 0; } }
 @keyframes uz-pin-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-.route-stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
-.stage { background: rgba(4,34,43,0.6); padding: 13px 12px; font-size: 11px; letter-spacing: .02em; color: #bcd0d0; }
+.route-stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 18px; background: transparent; border: 0; border-top: 1px solid rgba(255,255,255,0.12); border-radius: 0; overflow: visible; }
+.stage { background: transparent; padding: 14px 14px 0 0; font-size: 11px; letter-spacing: .02em; color: #bcd0d0; }
 .stage:nth-child(4) { display: none; }
 .stage b { display: block; color: var(--accent-text); font-size: 20px; font-weight: 800; margin-bottom: 4px; font-family: var(--serif); }
 
