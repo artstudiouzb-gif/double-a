@@ -53,7 +53,7 @@ if ($privacyPageId > 0) {
         <h4>Компания</h4>
         <a href="/o-nas">О нас</a>
         <a href="/projects">Кейсы</a>
-        <a href="/press-centr">База знаний</a>
+        <a href="/news">База знаний</a>
         <a href="/kontakty">Контакты</a>
       </div>
     </div>
