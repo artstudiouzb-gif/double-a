@@ -1442,3 +1442,13 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
     content: ""; display: block; width: 54px; height: 3px; border-radius: 3px;
     background: var(--accent-text); margin: 18px auto 0; opacity: .8;
 }
+
+/* Scroll-reveal (premium-motion). Классы навешивает double-a.js; без него
+   контент виден. Reduced-motion — без анимации. */
+@media (prefers-reduced-motion: no-preference) {
+    .site-content > .cms-block.reveal-init { opacity: 0; transform: translateY(28px); will-change: opacity, transform; }
+    .site-content > .cms-block.reveal-in {
+        opacity: 1; transform: none;
+        transition: opacity .7s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
+    }
+}

@@ -430,3 +430,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 });
+
+// Scroll-reveal: секции плавно появляются при входе во вьюпорт (premium-motion).
+// Fail-safe: без JS/при reduced-motion классы не навешиваются — контент виден.
+(function () {
+    function initReveal() {
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce || !('IntersectionObserver' in window)) { return; }
+        var blocks = Array.prototype.slice.call(document.querySelectorAll('.site-content > .cms-block'));
+        if (blocks.length < 2) { return; }
+        blocks.shift(); // первый блок (hero/LCP) не прячем
+        blocks.forEach(function (b) { b.classList.add('reveal-init'); });
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                    e.target.classList.add('reveal-in');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.06, rootMargin: '0px 0px -6% 0px' });
+        blocks.forEach(function (b) { io.observe(b); });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReveal);
+    } else {
+        initReveal();
+    }
+})();
