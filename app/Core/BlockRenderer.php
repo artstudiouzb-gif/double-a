@@ -523,6 +523,8 @@ final class BlockRenderer
                     'title' => (string) $p['title'],
                     'text' => '',
                     'url' => Locale::url('projects/' . $p['slug'], $lang),
+                    'metric' => (string) ($p['result_metric'] ?? ''),
+                    'metric_label' => (string) ($p['result_label'] ?? ''),
                 ];
             }
             $data['items'] = $items;

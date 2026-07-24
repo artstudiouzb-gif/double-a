@@ -280,7 +280,7 @@
     // Счётчики (группа 4): анимация инкремента числа при попадании в зону
     // видимости. Переиспользуем IntersectionObserver. Уважает reduced-motion.
     (function () {
-        var counters = document.querySelectorAll('.counter__value[data-counter-target]');
+        var counters = document.querySelectorAll('[data-counter-target]');
         if (!counters.length) { return; }
         var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (reduce || !('IntersectionObserver' in window)) {

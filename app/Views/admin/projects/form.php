@@ -86,6 +86,17 @@ $action = $isEdit ? '/admin/projects/' . (int) $project['id'] . '/edit' : '/admi
         ]) ?>
 
         <div class="form-field">
+            <label for="result_metric">Результат — акцент</label>
+            <input type="text" id="result_metric" name="result_metric" maxlength="80" value="<?= htmlspecialchars($project['result_metric'] ?? '', ENT_QUOTES) ?>" placeholder="напр. −3 месяца, 12 стран, +40%">
+            <span class="form-hint">Короткая измеримая метрика кейса — выводится бейджем на карточке и в шапке кейса.</span>
+        </div>
+
+        <div class="form-field">
+            <label for="result_label">Результат — пояснение</label>
+            <input type="text" id="result_label" name="result_label" maxlength="160" value="<?= htmlspecialchars($project['result_label'] ?? '', ENT_QUOTES) ?>" placeholder="напр. сокращение сроков разрешений">
+        </div>
+
+        <div class="form-field">
             <label for="status">Статус</label>
             <select id="status" name="status">
                 <option value="draft" <?= ($project['status'] ?? 'draft') === 'draft' ? 'selected' : '' ?>>Черновик</option>

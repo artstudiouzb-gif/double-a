@@ -17,6 +17,8 @@
 /test-results/
 
 # Локальные настройки Claude Code (сессионные, не для репозитория)
-/.claude/
+/.claude/*
+# ...кроме установленных скиллов — они версионируются вместе с проектом.
+!/.claude/skills/
 /storage/sessions/*
 !/storage/sessions/.gitkeep

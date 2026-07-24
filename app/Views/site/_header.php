@@ -33,7 +33,8 @@ $fontHeading = Setting::get('font_heading', "'PT Serif', Georgia, 'Times New Rom
 $extraHeadCss = $extraHeadCss ?? '';
 
 // --- Дизайн-система: тема и локальный шрифт ---
-$defaultTheme = Setting::get('default_theme', 'light'); // light | dark | auto
+// Double A — тёмная тема по умолчанию (светлая доступна переключателем).
+$defaultTheme = Setting::get('default_theme', 'dark'); // light | dark | auto
 if (!in_array($defaultTheme, ['light', 'dark', 'auto'], true)) {
     $defaultTheme = 'light';
 }
@@ -269,7 +270,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 </style>
 <?php endif; ?>
 </head>
-<body class="<?= htmlspecialchars(trim($designBodyClass . (!empty($previewNotice) ? ' is-preview' : '') . (!empty($isStaticPage) ? ' page-static' : '')), ENT_QUOTES) ?>">
+<body class="<?= htmlspecialchars(trim($designBodyClass . (!empty($previewNotice) ? ' is-preview' : '') . (!empty($isStaticPage) ? ' page-static' : '') . (!empty($transparentHeader) ? ' has-transparent-header' : '')), ENT_QUOTES) ?>">
 <a href="#main-content" class="skip-link"><?= $et('Перейти к содержимому') ?></a>
 <?php if (!empty($previewNotice)): ?>
 <div class="preview-bar" role="status">
@@ -277,7 +278,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 </div>
 <?php endif; ?>
 <?php if (empty($hideChrome)): // лендинг (группа 6) скрывает шапку сайта ?>
-  <header class="header">
+  <header class="header<?= !empty($transparentHeader) ? ' header--transparent' : '' ?>"<?= !empty($transparentHeader) ? ' data-header-scroll' : '' ?>>
     <div class="wrap nav">
       <a class="brand" href="<?= htmlspecialchars(Locale::url('/', $currentLang), ENT_QUOTES) ?>" aria-label="DOUBLE A SOLUTIONS">
         <span class="brandmark" aria-hidden="true"></span>
@@ -291,7 +292,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
         <?php endforeach; ?>
       </nav>
       <div class="lang" id="lang">
-        <button class="lang-btn" id="langBtn" aria-expanded="false" aria-label="Choose language"><b id="langCode"><?= strtoupper($currentLang) ?></b><span>⌄</span></button>
+        <button class="lang-btn" id="langBtn" aria-expanded="false" aria-label="Choose language"><b id="langCode"><?= strtoupper($currentLang) ?></b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="lang-menu" id="langMenu" role="menu">
           <?php $lpath = Locale::path(); foreach ($activeLangs as $l): $lc = (string) $l['code'];
             $lhref = Locale::url($lpath, $lc) . '?' . \App\Core\LocalePreference::QUERY . '=' . rawurlencode($lc); ?>

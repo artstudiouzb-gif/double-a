@@ -224,6 +224,8 @@ CREATE TABLE IF NOT EXISTS projects (
     title           VARCHAR(255) NOT NULL,
     slug            VARCHAR(255) NOT NULL,
     description     LONGTEXT NULL,
+    result_metric   VARCHAR(80) NULL COMMENT 'короткий результат-акцент для карточки кейса',
+    result_label    VARCHAR(160) NULL COMMENT 'пояснение к метрике результата',
     cover_image     VARCHAR(255) NULL,
     status          ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
     is_featured     TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'показывать на главной (блок Проекты)',
@@ -934,7 +936,8 @@ INSERT INTO migrations (filename) VALUES
     ('2026_07_17_video_translations.sql'),
     ('2026_07_18_menu_per_language.sql'),
     ('2026_07_18_menu_mega.sql'),
-    ('2026_07_19_news_translation_badge.sql')
+    ('2026_07_19_news_translation_badge.sql'),
+    ('2026_07_24_project_result_metric.sql')
 ON DUPLICATE KEY UPDATE filename = filename;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -34,13 +34,13 @@ test('critical homepage sections keep their order, size and stacking', async ({ 
     // Главная DOUBLE A: hero с картой → полоса доверия (счётчики) → услуги.
     const hero = page.locator('.hero').first();
     const trust = page.locator('.trust-strip').first();
-    const services = page.locator('.sectors-grid').first();
+    const services = page.locator('#services .services-split').first();
     await expect(hero).toBeVisible();
     await expect(trust).toBeVisible();
     await expect(services).toBeVisible();
 
     const sectionGeometry = await page.evaluate(() => {
-        const selectors = ['.hero', '.trust-strip', '.sectors-grid'];
+        const selectors = ['.hero', '.trust-strip', '#services .services-split'];
         return selectors.map((selector) => {
             const rect = document.querySelector(selector).getBoundingClientRect();
             return { top: rect.top + window.scrollY, bottom: rect.bottom + window.scrollY, width: rect.width };
@@ -55,7 +55,7 @@ test('critical homepage sections keep their order, size and stacking', async ({ 
         expect(section.width).toBeLessThanOrEqual(viewportWidth);
     }
 
-    const card = page.locator('.sector-card').first();
+    const card = page.locator('#services .service.quick').first();
     await card.scrollIntoViewIfNeeded();
     await expect(card).toBeVisible();
     await expectElementNotCovered(card);
