@@ -1039,3 +1039,74 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
 }
 .header .hdr-tools .site-search input::placeholder { color: var(--muted); }
 @media (max-width: 900px) { .header .hdr-tools { display: none; } }
+
+/* ==========================================================================
+   ПРАВКИ ВЁРСТКИ (полная ширина, прозрачная шапка, тёмная/светлая тема,
+   услуги в 4 колонки). В конце файла — перебивают правила выше.
+   ========================================================================== */
+
+/* 1. Сайт на всю ширину: полосы-секции (.hero/.trust-strip/.section, тёмные
+   шапки внутренних страниц) растягиваются до краёв экрана. Ширину контента
+   держит .wrap (1280/контейнер). Внутренним страницам без .wrap задаём ширину. */
+.site-content { max-width: none !important; margin: 0 !important; padding: 0 !important; }
+.listing,
+.content-pagehead__inner { width: min(var(--container-max, 1280px), calc(100% - 80px)); margin-inline: auto; }
+
+/* 3. Hero прижат к верху: у первого блока страницы нет верхнего отступа-обёртки. */
+.site-content > .cms-block:first-child { padding-top: 0 !important; }
+
+/* 2 + 5. Прозрачная шапка поверх hero (флаг страницы «Прозрачная шапка»):
+   без фона/полосы/тени и вне потока, поэтому hero уходит под неё к самому верху.
+   При прокрутке (.is-scrolled, ставит frontend.js) — возвращается сплошная. */
+.header--transparent {
+    position: absolute; left: 0; right: 0; top: 0;
+    background: transparent !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+.header--transparent.is-scrolled {
+    position: fixed;
+    background: rgba(6,44,55,0.86) !important;
+    border-bottom: 1px solid var(--line) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+    -webkit-backdrop-filter: blur(16px) !important; backdrop-filter: blur(16px) !important;
+}
+
+/* 7. Услуги (Направления экспертизы): карточки в один ряд, 4 колонки.
+   Интро-колонка — сверху во всю ширину, карточки — сеткой 4×1 под ней. */
+.services-split { grid-template-columns: 1fr; gap: 44px; }
+.services-split .services-left { position: static; top: auto; }
+.services-split .services-right { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 1024px) { .services-split .services-right { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px)  { .services-split .services-right { grid-template-columns: 1fr; } }
+
+/* 4. Светлая тема (переключатель «солнце/луна»): базовые токены на светлую
+   палитру. Тёмная (по умолчанию) — из :root выше. Оба набора !important,
+   выигрывает по специфичности :root[data-theme=...]. */
+:root[data-theme="light"] {
+    --ink: #f5f2e9 !important; --panel: #ffffff !important; --panel-2: #eef4f0 !important;
+    --line: #dce5e2 !important; --line-soft: #e8efec !important;
+    --text: #0b2430 !important; --muted: #5f7178 !important;
+    --accent-text: color-mix(in srgb, var(--lime) 58%, #0b2430) !important;
+    --signal: #0a765f !important; --route: #0a765f !important;
+    --navy: #0b2430 !important; --gold: color-mix(in srgb, var(--lime) 58%, #0b2430) !important;
+    --emerald: #0a765f !important; --btn-ink: #143038 !important;
+    --bg-primary: #f5f2e9 !important; --bg-surface: #ffffff !important;
+    --text-main: #0b2430 !important; --text-muted: #5f7178 !important;
+    --border-color: #dce5e2 !important;
+    --gov-ink: #0b2430 !important; --gov-muted: #5f7178 !important; --gov-title: #0b2430 !important;
+}
+/* Шапка и «тёмные полосы» остаются фирменно-тёмными и в светлой теме
+   (hero/шапки внутренних страниц задуманы тёмными). */
+:root[data-theme="light"] .header:not(.header--transparent) { background: rgba(255,255,255,0.9) !important; }
+:root[data-theme="light"] .header:not(.header--transparent) .navlinks a { color: #5f7178; }
+:root[data-theme="light"] .header:not(.header--transparent) .brand strong { color: #0b2430; }
+:root[data-theme="light"] .hero,
+:root[data-theme="light"] .page-header,
+:root[data-theme="light"] .corp-case-header {
+    background: linear-gradient(140deg, #062c37 0%, #073943 60%, #0a5b4c 150%) !important;
+    --text: #eef4f1 !important; --muted: #bcd0d0 !important; --navy: #fff !important;
+    --accent-text: #e4c47a !important;
+}
+:root[data-theme="light"] .footer { background: #04222b !important; }

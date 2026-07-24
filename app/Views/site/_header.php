@@ -33,7 +33,8 @@ $fontHeading = Setting::get('font_heading', "'PT Serif', Georgia, 'Times New Rom
 $extraHeadCss = $extraHeadCss ?? '';
 
 // --- Дизайн-система: тема и локальный шрифт ---
-$defaultTheme = Setting::get('default_theme', 'light'); // light | dark | auto
+// Double A — тёмная тема по умолчанию (светлая доступна переключателем).
+$defaultTheme = Setting::get('default_theme', 'dark'); // light | dark | auto
 if (!in_array($defaultTheme, ['light', 'dark', 'auto'], true)) {
     $defaultTheme = 'light';
 }
@@ -269,7 +270,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 </style>
 <?php endif; ?>
 </head>
-<body class="<?= htmlspecialchars(trim($designBodyClass . (!empty($previewNotice) ? ' is-preview' : '') . (!empty($isStaticPage) ? ' page-static' : '')), ENT_QUOTES) ?>">
+<body class="<?= htmlspecialchars(trim($designBodyClass . (!empty($previewNotice) ? ' is-preview' : '') . (!empty($isStaticPage) ? ' page-static' : '') . (!empty($transparentHeader) ? ' has-transparent-header' : '')), ENT_QUOTES) ?>">
 <a href="#main-content" class="skip-link"><?= $et('Перейти к содержимому') ?></a>
 <?php if (!empty($previewNotice)): ?>
 <div class="preview-bar" role="status">
@@ -277,7 +278,7 @@ foreach ([(string) $font, (string) $fontHeading] as $selectedFont) {
 </div>
 <?php endif; ?>
 <?php if (empty($hideChrome)): // лендинг (группа 6) скрывает шапку сайта ?>
-  <header class="header">
+  <header class="header<?= !empty($transparentHeader) ? ' header--transparent' : '' ?>"<?= !empty($transparentHeader) ? ' data-header-scroll' : '' ?>>
     <div class="wrap nav">
       <a class="brand" href="<?= htmlspecialchars(Locale::url('/', $currentLang), ENT_QUOTES) ?>" aria-label="DOUBLE A SOLUTIONS">
         <span class="brandmark" aria-hidden="true"></span>
