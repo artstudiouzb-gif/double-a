@@ -365,11 +365,11 @@ HTML
     </div>
 </div>
 HTML
-    ],
-    // 7. Финальный CTA-band (перед подвалом)
-    [
-        'title' => '07. Призыв к действию',
-        'html' => <<<'HTML'
+    ]
+];
+
+// CTA-band выводится последним (после блока аналитики ниже).
+$ctaBandHtml = <<<'HTML'
 <section class="cta-band">
   <div class="wrap cta-band__inner">
     <div class="cta-band__text">
@@ -380,13 +380,16 @@ HTML
     <a class="btn primary" href="/kontakty"><span>Обсудить проект</span><span class="arrow">↗</span></a>
   </div>
 </section>
-HTML
-    ]
-];
+HTML;
 
 foreach ($homeBlocks as $idx => $b) {
     Block::create($homeId, 'ru', 'html', $b['title'], ['html' => $b['html']], '', null, 0);
 }
+// Аналитика/инсайты (thought leadership) — динамический блок последних новостей
+// (graceful-пусто, если материалов ещё нет).
+Block::create($homeId, 'ru', 'news_latest', 'Аналитика', ['title' => 'Аналитика и инсайты', 'limit' => 3], '', null, 0);
+// Финальный CTA-band — последним, перед подвалом.
+Block::create($homeId, 'ru', 'html', '07. Призыв к действию', ['html' => $ctaBandHtml], '', null, 0);
 
 
 // ==========================================
@@ -735,6 +738,37 @@ foreach ($menuItemsList as $m) {
         ':title' => $m['title'],
         ':val' => $m['val'],
         ':so' => $m['so']
+    ]);
+}
+
+// 4c. Кейсы (проекты) с измеримым результатом — «доказательство результата».
+// Идемпотентно по slug (uq_projects_slug). is_featured=1 — попадают в блок
+// «Проекты» на главной. Метрика выводится бейджем на карточке и в шапке кейса.
+$projectRows = [
+    ['Импорт СЗР для агрохолдинга', 'import-szr-agroholding',
+        '<p>Полный цикл государственной регистрации средств защиты растений и ввод на рынок Узбекистана под ключ: досье, полевые испытания, токсиколого-гигиеническая экспертиза, включение в госреестр.</p>',
+        '−3 месяца', 'к плановому сроку вывода на рынок'],
+    ['Локализация косметического бренда', 'localizaciya-kosmetiki',
+        '<p>Сертификация и запуск линейки косметики с нуля: оценка безопасности, СЭЗ-заключения, разрешительные документы и сопровождение первых поставок.</p>',
+        '18 SKU', 'выведено на рынок за один цикл'],
+    ['Экспорт продуктов питания в ЕС', 'eksport-pitaniya-es',
+        '<p>Приведение производства, маркировки и упаковки к регламентам ЕС, внедрение системы HACCP и подготовка к аудиту.</p>',
+        '5 стран', 'рынков ЕС открыто для поставок'],
+];
+$pstmt = $pdo->prepare(
+    'INSERT INTO projects (title, slug, description, result_metric, result_label, status, is_featured, sort_order, created_at)
+     VALUES (:t, :s, :d, :rm, :rl, \'published\', 1, :so, NOW())
+     ON DUPLICATE KEY UPDATE title = :t2, description = :d2, result_metric = :rm2,
+        result_label = :rl2, status = \'published\', is_featured = 1, sort_order = :so2'
+);
+foreach ($projectRows as $i => $pr) {
+    $pstmt->execute([
+        ':t' => $pr[0], ':t2' => $pr[0],
+        ':s' => $pr[1],
+        ':d' => $pr[2], ':d2' => $pr[2],
+        ':rm' => $pr[3], ':rm2' => $pr[3],
+        ':rl' => $pr[4], ':rl2' => $pr[4],
+        ':so' => $i, ':so2' => $i,
     ]);
 }
 

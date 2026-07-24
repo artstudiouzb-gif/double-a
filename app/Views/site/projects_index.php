@@ -32,6 +32,12 @@ require __DIR__ . '/_crumbs.php';
                     <?php endif; ?>
                     <span class="imgcard__overlay"></span>
                     <span class="imgcard__body">
+                        <?php if (!empty($item['result_metric'])): ?>
+                            <span class="imgcard__metric">
+                                <b><?= htmlspecialchars((string) $item['result_metric'], ENT_QUOTES) ?></b>
+                                <?php if (!empty($item['result_label'])): ?><span><?= htmlspecialchars((string) $item['result_label'], ENT_QUOTES) ?></span><?php endif; ?>
+                            </span>
+                        <?php endif; ?>
                         <span class="imgcard__title"><?= htmlspecialchars((string) $item['title'], ENT_QUOTES) ?></span>
                         <?php if (!empty($item['description'])): ?>
                             <span class="imgcard__desc"><?= htmlspecialchars(excerpt((string) $item['description'], 120), ENT_QUOTES) ?></span>

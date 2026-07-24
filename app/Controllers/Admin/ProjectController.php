@@ -216,10 +216,15 @@ final class ProjectController
 
         $coverImage = ImageField::resolve('cover_image_file', 'cover_image_url', $existing['cover_image'] ?? null, Auth::id());
 
+        $resultMetric = trim((string) ($_POST['result_metric'] ?? ''));
+        $resultLabel = trim((string) ($_POST['result_label'] ?? ''));
+
         $data = [
             'title' => $title,
             'slug' => $slug,
             'description' => $description !== '' ? $description : null,
+            'result_metric' => $resultMetric !== '' ? $resultMetric : null,
+            'result_label' => $resultLabel !== '' ? $resultLabel : null,
             'cover_image' => $coverImage,
             'status' => $status,
             'is_featured' => !empty($_POST['is_featured']),

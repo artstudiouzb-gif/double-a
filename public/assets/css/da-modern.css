@@ -1317,3 +1317,15 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
 .cta-band h2 { color: #fff; margin: 14px 0 12px; font-size: clamp(28px, 3.4vw, 44px); }
 .cta-band p { color: #c7d8d8; font-size: 17px; max-width: 520px; margin: 0; }
 .cta-band__text { max-width: 640px; }
+
+/* --- Кейсы: измеримый результат (бейдж на карточке + акцент в шапке кейса). --- */
+.imgcard--project .imgcard__metric { display: flex; flex-direction: column; gap: 2px; margin-bottom: 2px; }
+.imgcard--project .imgcard__metric b { font-family: var(--serif); font-size: 26px; font-weight: 800; color: var(--accent-text); line-height: 1; letter-spacing: -.01em; }
+.imgcard--project .imgcard__metric span { font-size: 13px; color: var(--muted); }
+.corp-case-result {
+    display: inline-flex; flex-direction: column; gap: 5px;
+    margin: 10px 0 26px; padding: 16px 24px; border-radius: 14px;
+    border: 1px solid rgba(213,174,98,.35); background: rgba(213,174,98,.10);
+}
+.corp-case-result b { font-family: var(--serif); font-size: clamp(28px, 3.4vw, 38px); font-weight: 800; color: #e4c47a; line-height: 1; letter-spacing: -.02em; }
+.corp-case-result span { font-size: 14px; color: #bcd0d0; letter-spacing: .01em; }

@@ -313,13 +313,15 @@ final class Project
     public static function create(array $data): int
     {
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO projects (title, slug, description, cover_image, status, is_featured, sort_order, created_at)
-             VALUES (:title, :slug, :description, :cover_image, :status, :is_featured, :sort_order, NOW())'
+            'INSERT INTO projects (title, slug, description, result_metric, result_label, cover_image, status, is_featured, sort_order, created_at)
+             VALUES (:title, :slug, :description, :result_metric, :result_label, :cover_image, :status, :is_featured, :sort_order, NOW())'
         );
         $stmt->execute([
             ':title' => $data['title'],
             ':slug' => $data['slug'],
             ':description' => $data['description'],
+            ':result_metric' => $data['result_metric'] ?? null,
+            ':result_label' => $data['result_label'] ?? null,
             ':cover_image' => $data['cover_image'],
             ':status' => $data['status'],
             ':is_featured' => !empty($data['is_featured']) ? 1 : 0,
@@ -338,6 +340,7 @@ final class Project
     {
         $stmt = Database::pdo()->prepare(
             'UPDATE projects SET title = :title, slug = :slug, description = :description,
+             result_metric = :result_metric, result_label = :result_label,
              cover_image = :cover_image, status = :status, is_featured = :is_featured,
              sort_order = :sort_order, lock_version = lock_version + 1
              WHERE id = :id' . ($expectedLockVersion !== null ? ' AND lock_version = :expected_lock_version' : '')
@@ -346,6 +349,8 @@ final class Project
             ':title' => $data['title'],
             ':slug' => $data['slug'],
             ':description' => $data['description'],
+            ':result_metric' => $data['result_metric'] ?? null,
+            ':result_label' => $data['result_label'] ?? null,
             ':cover_image' => $data['cover_image'],
             ':status' => $data['status'],
             ':is_featured' => !empty($data['is_featured']) ? 1 : 0,

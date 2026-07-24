@@ -20,7 +20,14 @@ $others = array_values(array_filter(Project::published(), fn (array $p) => (int)
     <div class="corp-wrap">
         <?php require __DIR__ . '/_crumbs.php'; ?>
         <h1><?= htmlspecialchars((string) $project['title'], ENT_QUOTES) ?></h1>
-        
+
+        <?php if (!empty($project['result_metric'])): ?>
+            <div class="corp-case-result">
+                <b><?= htmlspecialchars((string) $project['result_metric'], ENT_QUOTES) ?></b>
+                <?php if (!empty($project['result_label'])): ?><span><?= htmlspecialchars((string) $project['result_label'], ENT_QUOTES) ?></span><?php endif; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="corp-case-grid">
             <div class="corp-case-stat">
                 <b>Отрасль</b>
