@@ -98,9 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const question = item.querySelector('.faq-q');
         const answer = item.querySelector('.faq-a');
         if (question && answer) {
+            // Доступность: состояние аккордеона озвучивается скринридерам.
+            question.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
             question.addEventListener('click', () => {
                 const isOpen = item.classList.contains('open');
-                
+
                 // Close other items
                 faqItems.forEach(other => {
                     other.classList.remove('open');
@@ -109,12 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         otherAnswer.style.maxHeight = null;
                         otherAnswer.style.paddingBottom = null;
                     }
+                    const otherQ = other.querySelector('.faq-q');
+                    if (otherQ) { otherQ.setAttribute('aria-expanded', 'false'); }
                 });
 
                 if (!isOpen) {
                     item.classList.add('open');
                     answer.style.maxHeight = answer.scrollHeight + 'px';
                     answer.style.paddingBottom = '24px';
+                    question.setAttribute('aria-expanded', 'true');
                 }
             });
         }

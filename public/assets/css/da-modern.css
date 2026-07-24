@@ -1130,3 +1130,20 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
 
 /* P4 — иконка-шеврон у переключателя языка (SVG вместо глифа ⌄, одно семейство с прочими контролами). */
 .lang-btn svg { width: 11px; height: 11px; flex: 0 0 auto; }
+
+/* P4 — декоративные стрелки-глифы (↗) → единый SVG через CSS-маску.
+   Работает и на существующем контенте в БД: глиф скрывается (font-size:0),
+   ::before рисует вектор currentColor'ом. Крестально чётко, без
+   шрифтозависимости, тянет цвет/hover как было. */
+:root {
+    --i-arrow-ur: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>');
+}
+.arrow, .sector-arrow, .service .go { font-size: 0; }
+.arrow::before, .sector-arrow::before, .service .go::before {
+    content: ""; display: inline-block; background: currentColor;
+    -webkit-mask: var(--i-arrow-ur) center / contain no-repeat;
+            mask: var(--i-arrow-ur) center / contain no-repeat;
+}
+.arrow::before { width: 15px; height: 15px; }
+.sector-arrow::before { width: 18px; height: 18px; }
+.service .go::before { width: 18px; height: 18px; }
