@@ -44,10 +44,10 @@ if ($privacyPageId > 0) {
       </div>
       <div>
         <h4>Отрасли</h4>
-        <a href="/#industries">Сельское хозяйство</a>
-        <a href="/#industries">Пищевой бизнес</a>
-        <a href="/#industries">Химическая отрасль</a>
-        <a href="/#industries">Косметика и БАД</a>
+        <a href="/services">Сельское хозяйство</a>
+        <a href="/services">Пищевой бизнес</a>
+        <a href="/services">Химическая отрасль</a>
+        <a href="/services">Косметика и БАД</a>
       </div>
       <div>
         <h4>Компания</h4>

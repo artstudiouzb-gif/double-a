@@ -132,9 +132,9 @@ $homeBlocks = [
 </section>
 HTML
     ],
-    // 2. Trust Strip
+    // 2. Доверие: статистика + стандарты/регуляторы (объединено в один блок)
     [
-        'title' => '02. Trust Strip',
+        'title' => '02. Доверие (статистика + стандарты)',
         'html' => <<<'HTML'
 <section class="trust-strip">
   <div class="wrap trust-grid">
@@ -144,26 +144,16 @@ HTML
     <div class="metric"><strong data-counter-target="12">12</strong><span>Целевых отраслей</span></div>
     <div class="metric"><strong data-counter-target="1">1</strong><span>Координатор проекта</span></div>
   </div>
-</section>
-HTML
-    ],
-    // 2b. Trust — стандарты и регуляторы (соцпруф)
-    [
-        'title' => '02b. Стандарты и регуляторы',
-        'html' => <<<'HTML'
-<section class="section" style="padding-top:56px;padding-bottom:56px">
-  <div class="wrap">
-    <div class="trust-logos">
-      <span class="trust-logos__label">Работаем по международным стандартам и с регуляторами Узбекистана</span>
-      <div class="trust-logos__row">
-        <span class="trust-chip">ISO 9001</span>
-        <span class="trust-chip">HACCP</span>
-        <span class="trust-chip">GMP</span>
-        <span class="trust-chip">ISO 17025</span>
-        <span class="trust-chip">СЭС РУз</span>
-        <span class="trust-chip">Минсельхоз</span>
-        <span class="trust-chip">Госстандарт</span>
-      </div>
+  <div class="wrap trust-logos" style="margin-top:36px;padding-top:32px;border-top:1px solid var(--line)">
+    <span class="trust-logos__label">Работаем по международным стандартам и с регуляторами Узбекистана</span>
+    <div class="trust-logos__row">
+      <span class="trust-chip">ISO 9001</span>
+      <span class="trust-chip">HACCP</span>
+      <span class="trust-chip">GMP</span>
+      <span class="trust-chip">ISO 17025</span>
+      <span class="trust-chip">СЭС РУз</span>
+      <span class="trust-chip">Минсельхоз</span>
+      <span class="trust-chip">Госстандарт</span>
     </div>
   </div>
 </section>
@@ -231,98 +221,6 @@ HTML
       <div class="process-step"><span class="process-step__num">02</span><h3>Стратегия</h3><p>Дорожная карта: юридическая модель, перечень разрешений, сроки и бюджет.</p></div>
       <div class="process-step"><span class="process-step__num">03</span><h3>Разрешения</h3><p>Подготовка досье, лабораторные испытания, государственная регистрация под ключ.</p></div>
       <div class="process-step process-step--result"><span class="process-step__num">04</span><h3>Результат</h3><p>Продукт легально на рынке. Сопровождение и поддержка после запуска.</p></div>
-    </div>
-  </div>
-</section>
-HTML
-    ],
-    // 4. Industries (Sectors)
-    [
-        'title' => '04. Industries Section',
-        'html' => <<<'HTML'
-<section class="section soft" id="industries">
-  <div class="wrap">
-    <div class="section-head-centered">
-      <h2>Понимаем продукт, а не только регламенты</h2>
-      <p>Отраслевой контекст определяет тонкости лабораторных испытаний, досье и стратегии запуска.</p>
-    </div>
-    <div class="sectors-grid">
-      <a class="sector-card quick" href="/services" data-value="permits">
-        <div class="sector-top">
-          <span class="sector-num">01</span>
-          <span class="sector-arrow">↗</span>
-        </div>
-        <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Сельское хозяйство</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6">Регистрация СЗР, удобрений, дефолиантов и координация полевых тестов.</p>
-      </a>
-      <a class="sector-card quick" href="/services" data-value="permits">
-        <div class="sector-top">
-          <span class="sector-num">02</span>
-          <span class="sector-arrow">↗</span>
-        </div>
-        <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Пищевая промышленность</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6">Сертификация БАД, продуктов питания, регламенты ХАССП и гигиена СЭС.</p>
-      </a>
-      <a class="sector-card quick" href="/services" data-value="permits">
-        <div class="sector-top">
-          <span class="sector-num">03</span>
-          <span class="sector-arrow">↗</span>
-        </div>
-        <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Химическая отрасль</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6">Паспорта безопасности (MSDS), регистрация химвеществ и прекурсоров.</p>
-      </a>
-      <a class="sector-card quick" href="/services" data-value="permits">
-        <div class="sector-top">
-          <span class="sector-num">04</span>
-          <span class="sector-arrow">↗</span>
-        </div>
-        <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Косметика и парфюмерия</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6">Испытания безопасности, СЭЗ заключения и GMP стандарты производства.</p>
-      </a>
-      <a class="sector-card quick" href="/services" data-value="permits">
-        <div class="sector-top">
-          <span class="sector-num">05</span>
-          <span class="sector-arrow">↗</span>
-        </div>
-        <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Ветеринария</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6">Регистрация кормовых добавок, вакцин и ветпрепаратов в Комитете ветеринарии.</p>
-      </a>
-      <a class="sector-card quick" href="/services" data-value="iso">
-        <div class="sector-top">
-          <span class="sector-num">06</span>
-          <span class="sector-arrow">↗</span>
-        </div>
-        <h3 style="font-family:var(--serif);font-weight:600;color:var(--navy)">Лаборатории & Тесты</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6">Внедрение ISO 17025, калибровка оборудования и государственная аккредитация.</p>
-      </a>
-    </div>
-  </div>
-</section>
-HTML
-    ],
-    // 5. FAQ
-    [
-        'title' => '05. FAQ Section',
-        'html' => <<<'HTML'
-<section class="section" id="faq">
-  <div class="wrap faq-layout">
-    <div class="faq-intro">
-      <h2>Ответы на ключевые вопросы</h2>
-      <p>Мы собрали ответы на базовые вопросы клиентов о регулировании рынков в Узбекистане.</p>
-    </div>
-    <div>
-      <div class="faq-item">
-        <button class="faq-q">Сколько времени занимает государственная регистрация БАД? <i>+</i></button>
-        <div class="faq-a"><p>Полный цикл государственной регистрации БАД в органах санитарно-эпидемиологического благополучия (СЭС) занимает в среднем от 2 до 4 месяцев, в зависимости от комплектности исходного досье и длительности лабораторных исследований.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q">Обязательно ли учреждать местную компанию для получения разрешений? <i>+</i></button>
-        <div class="faq-a"><p>Для большинства видов продукции (косметика, удобрения, ветпрепараты) заявителем на государственную регистрацию может выступать иностранный завод-производитель. Однако для физического импорта и дистрибуции вам потребуется резидент Узбекистана.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q">Какова роль полевых испытаний при регистрации удобрений? <i>+</i></button>
-        <div class="faq-a"><p>Полевые испытания являются обязательным условием для включения любого пестицида или агрохимиката в Государственный реестр РУз. Испытания проводятся в течение одного полного вегетационного периода на опытных станциях Минсельхоза.</p></div>
-      </div>
     </div>
   </div>
 </section>
