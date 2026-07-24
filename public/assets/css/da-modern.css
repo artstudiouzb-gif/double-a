@@ -1343,3 +1343,8 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
     font-family: var(--serif); font-weight: 800; font-size: 15px; letter-spacing: -.01em;
     padding: 6px 14px; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.28);
 }
+
+/* Карта: маркеры регионов (в дополнение к пинам городов) — мельче и emerald,
+   чтобы читалась иерархия «города-хабы vs регионы». */
+.uz-pin--region .uz-pin-dot { fill: var(--route); opacity: .9; }
+.uz-label--region { fill: #9fb8b4; font-size: 20px; font-weight: 500; }
