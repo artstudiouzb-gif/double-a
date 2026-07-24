@@ -292,22 +292,31 @@ HTML
         <figure class="testimonial">
             <blockquote class="testimonial__quote">DOUBLE A SOLUTIONS обеспечили бесшовный выход нашей продукции на рынок Узбекистана.</blockquote>
             <figcaption class="testimonial__author">
-                <span class="testimonial__name">Джон Смит</span>
-                <span class="testimonial__company">Глобальный Директор, AgriCorp</span>
+                <span class="testimonial__avatar" aria-hidden="true">ДС</span>
+                <span class="testimonial__meta">
+                    <span class="testimonial__name">Джон Смит</span>
+                    <span class="testimonial__company">Глобальный Директор, AgriCorp</span>
+                </span>
             </figcaption>
         </figure>
         <figure class="testimonial">
             <blockquote class="testimonial__quote">Высочайший уровень экспертизы и абсолютная прозрачность. Рекомендуем.</blockquote>
             <figcaption class="testimonial__author">
-                <span class="testimonial__name">Елена Власова</span>
-                <span class="testimonial__company">CEO, PharmaTech</span>
+                <span class="testimonial__avatar" aria-hidden="true">ЕВ</span>
+                <span class="testimonial__meta">
+                    <span class="testimonial__name">Елена Власова</span>
+                    <span class="testimonial__company">CEO, PharmaTech</span>
+                </span>
             </figcaption>
         </figure>
         <figure class="testimonial">
             <blockquote class="testimonial__quote">Сократили сроки получения разрешений на 3 месяца благодаря их стратегии.</blockquote>
             <figcaption class="testimonial__author">
-                <span class="testimonial__name">Азиз Рахимов</span>
-                <span class="testimonial__company">Директор по развитию, FoodGroup</span>
+                <span class="testimonial__avatar" aria-hidden="true">АР</span>
+                <span class="testimonial__meta">
+                    <span class="testimonial__name">Азиз Рахимов</span>
+                    <span class="testimonial__company">Директор по развитию, FoodGroup</span>
+                </span>
             </figcaption>
         </figure>
     </div>
