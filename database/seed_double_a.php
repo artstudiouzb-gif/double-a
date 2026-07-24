@@ -457,6 +457,26 @@ foreach ($aboutBlocks as $idx => $b) {
     Block::create($aboutId, 'ru', 'html', $b['title'], ['html' => $b['html']], '', null, 0);
 }
 
+// Команда экспертов (демо) — засеваем только если таблица пуста, чтобы не
+// плодить дубли при пересиде и не затирать реальных сотрудников.
+if ((int) $pdo->query('SELECT COUNT(*) FROM team_members')->fetchColumn() === 0) {
+    $teamRows = [
+        ['Алишер Каримов', 'Управляющий партнёр', 0],
+        ['Дилноза Юсупова', 'Руководитель регуляторной практики', 1],
+        ['Тимур Рахматов', 'Эксперт по сертификации и стандартам', 2],
+        ['Нигора Абдуллаева', 'Ведущий специалист по экспортному сопровождению', 3],
+    ];
+    $tstmt = $pdo->prepare(
+        'INSERT INTO team_members (name, position, status, sort_order, created_at)
+         VALUES (:n, :p, \'published\', :so, NOW())'
+    );
+    foreach ($teamRows as $tr) {
+        $tstmt->execute([':n' => $tr[0], ':p' => $tr[1], ':so' => $tr[2]]);
+    }
+}
+// Блок «Команда» на странице «О компании».
+Block::create($aboutId, 'ru', 'team_list', 'Команда', ['title' => 'Команда экспертов', 'limit' => 0], '', null, 0);
+
 
 // ==========================================
 // СТРАНИЦА «УСЛУГИ» (/services)
