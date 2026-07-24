@@ -1371,3 +1371,29 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
 .team-card__position { color: var(--muted); font-size: 14px; margin-top: 5px; }
 @media (max-width: 860px) { .block-team__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px) { .block-team__grid { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   ФИКС полной ширины: динамические CMS-блоки раньше ограничивались капом
+   .site-content (снят ради полноширинных полос-секций). Не-band блоки
+   ограничиваем контейнером сами, иначе их контент прилипает к краям экрана.
+   Band-блоки (hero, banner, cta_band, feature_band, testimonials) — full-bleed.
+   ========================================================================== */
+.block-advantages, .block-anchornav, .block-bio, .block-cards, .block-categories,
+.block-contact-cards, .block-counters, .block-docslist, .block-faq, .block-form,
+.block-gallery, .block-imgcards, .block-map, .block-mediagallery, .block-media,
+.block-newsdocs, .block-newsfeat, .block-news, .block-orgstruct, .block-partners,
+.block-persons, .block-profile, .block-projects, .block-slider, .block-stages,
+.block-team, .block-text, .block-textimage, .block-timeline, .block-cta {
+    width: min(var(--container-max, 1280px), calc(100% - 80px));
+    margin-inline: auto;
+}
+@media (max-width: 960px) {
+    .block-advantages, .block-anchornav, .block-bio, .block-cards, .block-categories,
+    .block-contact-cards, .block-counters, .block-docslist, .block-faq, .block-form,
+    .block-gallery, .block-imgcards, .block-map, .block-mediagallery, .block-media,
+    .block-newsdocs, .block-newsfeat, .block-news, .block-orgstruct, .block-partners,
+    .block-persons, .block-profile, .block-projects, .block-slider, .block-stages,
+    .block-team, .block-text, .block-textimage, .block-timeline, .block-cta {
+        width: min(var(--container-max, 1280px), calc(100% - 40px));
+    }
+}
