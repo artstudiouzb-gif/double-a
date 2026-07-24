@@ -37,6 +37,7 @@ $pagesToCreate = [
         'title' => 'DOUBLE A SOLUTIONS — регуляторный консалтинг',
         'is_home' => 1,
         'layout_type' => 'no_sidebar',
+        'transparent_header' => 1, // прозрачная шапка поверх hero
     ],
     'o-nas' => [
         'title' => 'О компании',
@@ -67,20 +68,22 @@ foreach ($pagesToCreate as $slug => $p) {
 
     if ($row) {
         $id = (int) $row['id'];
-        $stmt = $pdo->prepare('UPDATE pages SET title = :title, is_home = :is_home, layout_type = :lt, status = "published" WHERE id = :id');
+        $stmt = $pdo->prepare('UPDATE pages SET title = :title, is_home = :is_home, layout_type = :lt, transparent_header = :th, status = "published" WHERE id = :id');
         $stmt->execute([
             ':title' => $p['title'],
             ':is_home' => $p['is_home'],
             ':lt' => $p['layout_type'],
+            ':th' => $p['transparent_header'] ?? 0,
             ':id' => $id
         ]);
     } else {
-        $stmt = $pdo->prepare('INSERT INTO pages (title, slug, status, is_home, layout_type, hide_chrome, transparent_header, created_at) VALUES (:title, :slug, "published", :is_home, :lt, 0, 0, NOW())');
+        $stmt = $pdo->prepare('INSERT INTO pages (title, slug, status, is_home, layout_type, hide_chrome, transparent_header, created_at) VALUES (:title, :slug, "published", :is_home, :lt, 0, :th, NOW())');
         $stmt->execute([
             ':title' => $p['title'],
             ':slug' => $slug,
             ':is_home' => $p['is_home'],
-            ':lt' => $p['layout_type']
+            ':lt' => $p['layout_type'],
+            ':th' => $p['transparent_header'] ?? 0
         ]);
         $id = (int) $pdo->lastInsertId();
     }
