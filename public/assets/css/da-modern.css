@@ -1125,8 +1125,42 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
     .navlinks a { display: block; width: 100%; padding: 12px 2px; } /* строки выпадашки ≥44px */
 }
 
-/* P6 — Typography: микро-подписи не мельче 12px (тэглайн 9px — декоративный, оставлен). */
-.metric span, .stage, .route-top { font-size: 12px; }
+/* P6 — Typography: единый порог. База — 16px (body/p), вспомогательный
+   текст — не мельче 14px. Ниже подняты все служебные подписи/лейблы/мета/
+   ссылки-меню/подвал. Исключение — микротипографика логотипа (.brand small /
+   .brand strong): это часть знака, а не читаемый вспомогательный текст. */
+.eyebrow { font-size: 14px !important; }
+.top-note,
+.navlinks a,
+.lang-btn,
+.lang-menu button, .lang-menu a,
+.hero-foot div,
+.route-top,
+.stage,
+.trust-intro span,
+.metric span,
+.service-no,
+.sector-num,
+.testimonial__company,
+.content-crumbs, .breadcrumbs, nav[aria-label="breadcrumb"],
+.corp-article-meta,
+.corp-case-stat span,
+.service-editorial-num,
+.service-sublist-title,
+.service-metric b, .service-metric span,
+.value span,
+.expert-kicker,
+.expert-tags span,
+.form label,
+.footer h4,
+.footer a,
+.footer-bottom,
+.listing-filter__item,
+.imgcard__more,
+.newslist__date, .relnews-card__date,
+.cookie p,
+.toast,
+.uz-tip { font-size: 14px; }
 
 /* P4 — иконка-шеврон у переключателя языка (SVG вместо глифа ⌄, одно семейство с прочими контролами). */
 .lang-btn svg { width: 11px; height: 11px; flex: 0 0 auto; }

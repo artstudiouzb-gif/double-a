@@ -33,7 +33,7 @@ if ($privacyPageId > 0) {
           <span class="brandmark" aria-hidden="true" style="background:#fff"></span>
           <span style="color:#fff"><strong>DOUBLE A SOLUTIONS</strong><small style="color:rgba(255,255,255,.5)">MARKET · COMPLIANCE · GROWTH</small></span>
         </a>
-        <p style="font-size:11px;color:rgba(255,255,255,.55);max-width:320px">Регуляторный консалтинг, сопровождение выхода на рынок Узбекистана и развитие экспорта.</p>
+        <p style="font-size:14px;color:rgba(255,255,255,.55);max-width:320px">Регуляторный консалтинг, сопровождение выхода на рынок Узбекистана и развитие экспорта.</p>
       </div>
       <div>
         <h4>Услуги</h4>
@@ -79,8 +79,8 @@ if ($privacyPageId > 0) {
   <div class="cookie" id="cookieBar">
     <p>Мы используем файлы cookie для анализа трафика и улучшения работы сайта. Продолжая использование, вы соглашаетесь с условиями.</p>
     <div class="cookie-actions">
-        <button type="button" class="btn primary" id="cookieAccept" style="min-height:38px;padding:0 15px;font-size:11px">Принять</button>
-        <button type="button" class="btn ghost" id="cookieDecline" style="min-height:38px;padding:0 15px;font-size:11px;color:var(--navy);border-color:var(--line)">Отклонить</button>
+        <button type="button" class="btn primary" id="cookieAccept" style="min-height:38px;padding:0 15px;font-size:14px">Принять</button>
+        <button type="button" class="btn ghost" id="cookieDecline" style="min-height:38px;padding:0 15px;font-size:14px;color:var(--navy);border-color:var(--line)">Отклонить</button>
     </div>
   </div>
 
