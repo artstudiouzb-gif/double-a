@@ -1056,7 +1056,7 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
 .content-pagehead__inner { width: min(var(--container-max, 1280px), calc(100% - 80px)); margin-inline: auto; }
 
 /* 3. Hero прижат к верху: у первого блока страницы нет верхнего отступа-обёртки. */
-.site-content > .cms-block:first-child { padding-top: 0 !important; }
+.site-content > .cms-block:first-of-type { padding-top: 0 !important; }
 
 /* 2 + 5. Прозрачная шапка поверх hero (флаг страницы «Прозрачная шапка»):
    без фона/полосы/тени и вне потока, поэтому hero уходит под неё к самому верху.
@@ -1452,3 +1452,8 @@ body.design-search-overlay .site-header .site-search-toggle { display: grid; }
         transition: opacity .7s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
     }
 }
+
+/* Убираем лишний зазор между hero и следующей секцией: у hero-обёртки нет
+   нижнего отступа, у следующего блока — верхнего (полосы-секции стыкуются). */
+.site-content > .cms-block:first-of-type { padding-bottom: 0; }
+.site-content > .cms-block:first-of-type + .cms-block { padding-top: 0; }
