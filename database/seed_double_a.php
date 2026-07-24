@@ -828,6 +828,64 @@ foreach ($newsRows as $nr) {
     ]);
 }
 
+// 4e. UZ-переводы демо-сущностей (кейсы, новости, команда). Латиница — как в
+// словаре uz.php. Идемпотентно (ON DUPLICATE KEY по (entity_id, lang)).
+$projTr = [
+    ['import-szr-agroholding', 'Agroxolding uchun OʻSV importi',
+        '<p>Oʻsimliklarni himoya vositalarini davlat roʻyxatidan oʻtkazish va Oʻzbekiston bozoriga toʻliq siklda chiqarish: dosye, dala sinovlari, toksikologik-gigiyenik ekspertiza, davlat reyestriga kiritish.</p>'],
+    ['localizaciya-kosmetiki', 'Kosmetika brendini lokalizatsiya qilish',
+        '<p>Kosmetika liniyasini noldan sertifikatlash va bozorga chiqarish: xavfsizlikni baholash, ruxsat hujjatlari va birinchi yetkazib berishlarni qoʻllab-quvvatlash.</p>'],
+    ['eksport-pitaniya-es', 'Oziq-ovqat mahsulotlarini Yevropa Ittifoqiga eksport qilish',
+        '<p>Ishlab chiqarish va markirovkani YeI reglamentlariga moslashtirish, HACCP tizimini joriy etish va auditga tayyorlash.</p>'],
+];
+$ptstmt = $pdo->prepare(
+    'INSERT INTO project_translations (project_id, lang, title, description)
+     SELECT id, \'uz\', :t, :d FROM projects WHERE slug = :s
+     ON DUPLICATE KEY UPDATE title = :t2, description = :d2'
+);
+foreach ($projTr as $r) {
+    $ptstmt->execute([':t' => $r[1], ':t2' => $r[1], ':d' => $r[2], ':d2' => $r[2], ':s' => $r[0]]);
+}
+
+$newsTr = [
+    ['trebovaniya-registracii-bad-2026', '2026-yilda BADlarni roʻyxatdan oʻtkazishga yangi talablar', 'Tahlil',
+        'Oʻzbekistonning regulyator bazasidagi asosiy oʻzgarishlarni va bu importchilar hamda ishlab chiqaruvchilar uchun nimani anglatishini tahlil qilamiz.',
+        '<p>2026-yildan biologik faol qoʻshimchalarni davlat roʻyxatidan oʻtkazishning yangilangan tartibi kuchga kiradi. Asosiy oʻzgarishlar dosye tarkibi, laboratoriya tadqiqotlari va koʻrib chiqish muddatlariga tegishli.</p>'],
+    ['eksport-es-markirovka', 'YeIga eksport: markirovka reglamentlari yangilandi', 'Eksport',
+        'YeI bozorlari uchun mahsulot markirovkasi va qadoqlashida nima oʻzgardi va ishlab chiqarishni qanday moslashtirish kerak.',
+        '<p>YeIning markirovka reglamentlari qatʼiylashib bormoqda. Oziq-ovqat va kosmetika mahsulotlariga qanday talablar qoʻyilishini tahlil qilamiz.</p>'],
+    ['iso-17025-akkreditaciya', 'ISO 17025: laboratoriyani qanday akkreditatsiyadan oʻtkazish', 'Standartlar',
+        'Sinov laboratoriyasini ISO/IEC 17025 boʻyicha akkreditatsiyaga tayyorlashning bosqichma-bosqich tahlili.',
+        '<p>Laboratoriyani ISO/IEC 17025 boʻyicha akkreditatsiyadan oʻtkazish — sinov natijalarini tan olishning zaruriy sharti. Asosiy bosqichlar haqida hikoya qilamiz.</p>'],
+    ['predstavitelstvo-tashkent', 'Toshkentda vakolatxona ochilishi', 'Yangiliklar',
+        'Mijozlarni tezroq qoʻllab-quvvatlash uchun Oʻzbekiston bozoridagi ishtirokimizni kengaytiramiz.',
+        '<p>Biz Toshkentda yangi vakolatxona ochdik. Bu mijozlar loyihalarini tezroq qoʻllab-quvvatlash imkonini beradi.</p>'],
+];
+$ntstmt = $pdo->prepare(
+    'INSERT INTO news_translations (news_id, lang, title, badge, excerpt, content)
+     SELECT id, \'uz\', :t, :b, :e, :c FROM news WHERE slug = :s
+     ON DUPLICATE KEY UPDATE title = :t2, badge = :b2, excerpt = :e2, content = :c2'
+);
+foreach ($newsTr as $r) {
+    $ntstmt->execute([':t' => $r[1], ':t2' => $r[1], ':b' => $r[2], ':b2' => $r[2],
+        ':e' => $r[3], ':e2' => $r[3], ':c' => $r[4], ':c2' => $r[4], ':s' => $r[0]]);
+}
+
+$teamTr = [
+    ['Алишер Каримов', 'Alisher Karimov', 'Boshqaruvchi hamkor'],
+    ['Дилноза Юсупова', 'Dilnoza Yusupova', 'Regulyator amaliyoti rahbari'],
+    ['Тимур Рахматов', 'Timur Rahmatov', 'Sertifikatlash va standartlar boʻyicha ekspert'],
+    ['Нигора Абдуллаева', 'Nigora Abdullayeva', 'Eksportni qoʻllab-quvvatlash boʻyicha yetakchi mutaxassis'],
+];
+$ttstmt = $pdo->prepare(
+    'INSERT INTO team_member_translations (member_id, lang, name, position)
+     SELECT id, \'uz\', :n, :p FROM team_members WHERE name = :ru LIMIT 1
+     ON DUPLICATE KEY UPDATE name = :n2, position = :p2'
+);
+foreach ($teamTr as $r) {
+    $ttstmt->execute([':n' => $r[1], ':n2' => $r[1], ':p' => $r[2], ':p2' => $r[2], ':ru' => $r[0]]);
+}
+
 // 5. Очистка кэша всех измененных страниц
 foreach ($pageIds as $slug => $id) {
     \App\Core\Cache::forgetPrefix('page:' . $id);
